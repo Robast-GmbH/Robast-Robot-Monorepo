@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
@@ -27,26 +26,42 @@ class _MenuPageState extends State<MenuPage> {
   int selectedMainMenuIndex = 0;
 
   final sidebarMenuPoints = [
-    SidebarMenuPoint(title: 'Home', icon: Icons.home, userGroupWidgets: {
-      'ADMIN': StaffHomeView.new,
-      'STAFF': StaffHomeView.new,
-      'PATIENT': PatientHomeView.new,
-    },),
-    SidebarMenuPoint(title: 'Karte', icon: Icons.map, userGroupWidgets: {
-      'ADMIN': RobotMapView.new,
-      'STAFF': RobotMapView.new,
-      'PATIENT': RobotMapView.new,
-    },),
-    SidebarMenuPoint(title: 'Infos', icon: Icons.info_outline, userGroupWidgets: {
-      'ADMIN': InfoView.new,
-      'STAFF': InfoView.new,
-      'PATIENT': InfoView.new,
-    },),
-    SidebarMenuPoint(title: 'Einstellungen', icon: Icons.settings, userGroupWidgets: {
-      'ADMIN': AdminSettingsView.new,
-      'STAFF': RobotMapView.new,
-      'PATIENT': RobotMapView.new,
-    },),
+    SidebarMenuPoint(
+      title: 'Home',
+      icon: Icons.home,
+      userGroupWidgets: {
+        'ADMIN': StaffHomeView.new,
+        'STAFF': StaffHomeView.new,
+        'PATIENT': PatientHomeView.new,
+      },
+    ),
+    SidebarMenuPoint(
+      title: 'Karte',
+      icon: Icons.map,
+      userGroupWidgets: {
+        'ADMIN': RobotMapView.new,
+        'STAFF': RobotMapView.new,
+        'PATIENT': RobotMapView.new,
+      },
+    ),
+    SidebarMenuPoint(
+      title: 'Infos',
+      icon: Icons.info_outline,
+      userGroupWidgets: {
+        'ADMIN': InfoView.new,
+        'STAFF': InfoView.new,
+        'PATIENT': InfoView.new,
+      },
+    ),
+    SidebarMenuPoint(
+      title: 'Einstellungen',
+      icon: Icons.settings,
+      userGroupWidgets: {
+        'ADMIN': AdminSettingsView.new,
+        'STAFF': RobotMapView.new,
+        'PATIENT': RobotMapView.new,
+      },
+    ),
   ];
 
   @override
@@ -76,85 +91,85 @@ class _MenuPageState extends State<MenuPage> {
                   user: user,
                 ),
                 Expanded(
-                    child: Padding(
-                  padding: const EdgeInsets.only(top: 16, right: 16, bottom: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        child: Stack(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.only(top: 12),
-                              child: Align(
-                                child: ClockView(
-                                  
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 16, right: 16, bottom: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          child: Stack(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 12),
+                                child: Align(
+                                  child: ClockView(),
                                 ),
                               ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 16),
-                                  child: Text(
-                                    sidebarMenuPoints[selectedMainMenuIndex].title,
-                                    style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w400),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 16),
+                                    child: Text(
+                                      sidebarMenuPoints[selectedMainMenuIndex].title,
+                                      style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w400),
+                                    ),
                                   ),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
-                                    Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
-                                    Navigator.pop(context);
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 16),
-                                    child: Container(
-                                      decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(16)),
-                                      child: const Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              'Abmelden',
-                                              style: TextStyle(color: Colors.white, fontSize: 32),
-                                            ),
-                                            SizedBox(
-                                              width: 16,
-                                            ),
-                                            Icon(
-                                              Icons.logout,
-                                              size: 40,
-                                            ),
-                                          ],
+                                  InkWell(
+                                    onTap: () {
+                                      Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
+                                      Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
+                                      Navigator.pop(context);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(bottom: 16),
+                                      child: Container(
+                                        decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(16)),
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                'Abmelden',
+                                                style: TextStyle(color: Colors.white, fontSize: 32),
+                                              ),
+                                              SizedBox(
+                                                width: 16,
+                                              ),
+                                              Icon(
+                                                Icons.logout,
+                                                size: 40,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        width: double.infinity,
-                        height: 2,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.black.withOpacity(0.1),
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          width: double.infinity,
+                          height: 2,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.black.withOpacity(0.1),
+                          ),
                         ),
-                      ),
-                      Expanded(
+                        Expanded(
                           child: Padding(
-                        padding: const EdgeInsets.only(top: 16),
-                        child: sidebarMenuPoints[selectedMainMenuIndex].userGroupWidgets[user!.userGroups.last]!(),
-                      ),),
-                    ],
+                            padding: const EdgeInsets.only(top: 16),
+                            child: sidebarMenuPoints[selectedMainMenuIndex].userGroupWidgets[user!.userGroups.last]!(),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),),
+                ),
               ],
             );
           },

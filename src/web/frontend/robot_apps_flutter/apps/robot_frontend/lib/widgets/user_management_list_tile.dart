@@ -118,7 +118,7 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                     PopupMenuItem(
                       child: ListTile(
                         leading: const Icon(Icons.nfc),
-                        title: const Text('NFC beschreiben'),
+                        title: const Text('NFC zuweisen'),
                         onTap: () async {
                           Navigator.pop(context);
                           await showDialog<NFCWritingDialog>(
