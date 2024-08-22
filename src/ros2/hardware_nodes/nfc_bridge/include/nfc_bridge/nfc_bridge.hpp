@@ -10,8 +10,9 @@
 #include <memory>
 #include <thread>
 
+#include "communication_interfaces/srv/read_nfc_ntag_payload.hpp"
 #include "communication_interfaces/srv/read_nfc_tag.hpp"
-#include "communication_interfaces/srv/write_nfc_tag.hpp"
+#include "communication_interfaces/srv/write_nfc_ntag_payload.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "serial_helper/serial_helper.hpp"
 #include "std_msgs/msg/string.hpp"
@@ -29,7 +30,8 @@ namespace nfc_bridge
 
    private:
     std::unique_ptr<serial_helper::ISerialHelper> _serial_connector;
-    rclcpp::Service<communication_interfaces::srv::WriteNfcTag>::SharedPtr _write_service;
+    rclcpp::Service<communication_interfaces::srv::WriteNfcNtagPayload>::SharedPtr _write_payload_service;
+    rclcpp::Service<communication_interfaces::srv::ReadNfcNtagPayload>::SharedPtr _read_payload_service;
     rclcpp::Service<communication_interfaces::srv::ReadNfcTag>::SharedPtr _read_service;
 
     static const Twn4Elatec _twn4_msg_converter;
@@ -38,12 +40,20 @@ namespace nfc_bridge
     void boot_beep();
     void start_up_scanner();
     void shutdown_scanner();
-    bool wait_for_tag(uint32_t max_iterations = 100);
+    bool wait_for_tag(std::string& tag_id, uint32_t max_iterations = 100);
     bool read_nfc_code(std::string& nfc_code, const uint32_t max_iterations = 100);
-    bool write_nfc_code(const std::string nfc_key, const std::string nfc_tag_type = "", const uint32_t max_iterations = 20);
+    bool read_nfc_payload(std::string& nfc_code, const uint32_t max_iterations = 100);
+    bool write_nfc_payload(const std::string nfc_key,
+                           const std::string nfc_tag_type = "",
+                           const uint32_t max_iterations = 20);
 
-    void write_nfc_callback(const std::shared_ptr<communication_interfaces::srv::WriteNfcTag::Request> request,
-                            std::shared_ptr<communication_interfaces::srv::WriteNfcTag::Response> response);
+    void write_nfc_payload_callback(
+        const std::shared_ptr<communication_interfaces::srv::WriteNfcNtagPayload::Request> request,
+        std::shared_ptr<communication_interfaces::srv::WriteNfcNtagPayload::Response> response);
+
+    void read_nfc_payload_callback(
+        const std::shared_ptr<communication_interfaces::srv::ReadNfcNtagPayload::Request> request,
+        std::shared_ptr<communication_interfaces::srv::ReadNfcNtagPayload::Response> response);
 
     void read_nfc_callback(const std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Request> request,
                            std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Response> response);

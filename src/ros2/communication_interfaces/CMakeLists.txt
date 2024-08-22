@@ -34,8 +34,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/HandleDrawer.srv"
   "srv/ShelfSetupInfo.srv"
   "srv/ShowDrawerInterface.srv"
-  "srv/WriteNfcTag.srv"
+  "srv/WriteNfcNtagPayload.srv"
   "srv/ReadNfcTag.srv"
+  "srv/ReadNfcNtagPayload.srv"
 
   "msg/Box.msg"
   "msg/DrawerAddress.msg"

@@ -1,8 +1,6 @@
 # request
-string nfc_tag_id
 uint16 timeout_in_s
-
 ---
 # response
-bool success
+string nfc_payload
 
