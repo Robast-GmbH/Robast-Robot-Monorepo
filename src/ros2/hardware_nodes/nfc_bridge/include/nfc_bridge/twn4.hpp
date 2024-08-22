@@ -14,9 +14,8 @@
 
 namespace nfc_bridge
 {
-#define TAG_TYPE_NTAG213       "04"
-#define TAG_TYPE_NTAG215       "05"
-#define TAG_TYPE_MIFARE_CLASIC "80"
+// returned value from the TWN4 RFID reader as tag type for NTAG aswell as MIFARE Classic maybe its the type for the iso norm?
+constexpr char TAG_TYPE_ISOA[] = "80";
 
   class Twn4Elatec
   {
@@ -129,7 +128,7 @@ namespace nfc_bridge
 
   bool Twn4Elatec::TagTypeValidation(const std::string& tagType)
   {
-    return tagType == TAG_TYPE_NTAG213 || tagType == TAG_TYPE_NTAG215 || tagType == TAG_TYPE_MIFARE_CLASIC;
+    return tagType == TAG_TYPE_ISOA;
   }
 
 }   // namespace nfc_bridge
