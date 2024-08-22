@@ -11,8 +11,8 @@
 constexpr uint32_t MODULE_ID = 6;
 constexpr uint8_t LOCK_ID = 0;
 constexpr bool USE_ENCODER = true;
-constexpr bool IS_SHAFT_DIRECTION_INVERTED = false;
-constexpr switch_lib::Switch::SwitchType ENDSTOP_SWITCH_TYPE = switch_lib::Switch::normally_closed;
+constexpr bool IS_SHAFT_DIRECTION_INVERTED = true;
+constexpr switch_lib::Switch::SwitchType ENDSTOP_SWITCH_TYPE = switch_lib::Switch::normally_open;
 
 constexpr uint8_t NUM_OF_LEDS = 21;
 
