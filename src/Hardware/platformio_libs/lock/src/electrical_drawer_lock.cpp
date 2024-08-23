@@ -15,6 +15,7 @@ namespace lock
         _switch_pressed_threshold{switch_pressed_threshold},
         _switch_new_reading_weight{switch_new_reading_weight}
   {
+    initialize_lock();
   }
 
   void ElectricalDrawerLock::initialize_lock()
@@ -35,7 +36,7 @@ namespace lock
   void ElectricalDrawerLock::handle_lock_control()
   {
     // Mind that the expected lock state is changed in the handle_lock_status function when a CAN msg is received
-    bool change_lock_state = !(_expected_lock_state_current_step == _lock_state_previous_step);
+    bool change_lock_state = _expected_lock_state_current_step != _lock_state_previous_step;
 
     unsigned long current_timestamp = millis();
     unsigned long time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;
@@ -55,7 +56,7 @@ namespace lock
     }
 
     if (_expected_lock_state_current_step == LockState::unlocked &&
-        (time_since_lock_was_opened > _ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED_IN_MS))
+        time_since_lock_was_opened > _ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED_IN_MS) 
     {
       // Close the lock automatically after some seconds when drawer wasn't opened for safety reasons
       set_expected_lock_state_current_step(LockState::locked);

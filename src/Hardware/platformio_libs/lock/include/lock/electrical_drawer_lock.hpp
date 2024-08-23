@@ -21,8 +21,6 @@ namespace lock
                          const float switch_pressed_threshold,
                          const float switch_new_reading_weight);
 
-    void initialize_lock();
-
     void handle_lock_control();
 
     void set_expected_lock_state_current_step(const LockState expected_lock_state_current_step);
@@ -76,6 +74,8 @@ namespace lock
     void close_lock() const;
 
     void set_lock_output_low() const;
+
+    void initialize_lock();
   };
 }   // namespace lock
 #endif   // LOCK_ELECTRICAL_DRAWER_LOCK_HPP

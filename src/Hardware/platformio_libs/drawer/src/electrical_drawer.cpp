@@ -36,10 +36,6 @@ namespace drawer
 
   void ElectricalDrawer::init() const
   {
-    if (_drawer_lock.has_value())
-    {
-      _drawer_lock.value()->initialize_lock();
-    }
     _motor->init();
   }
 
