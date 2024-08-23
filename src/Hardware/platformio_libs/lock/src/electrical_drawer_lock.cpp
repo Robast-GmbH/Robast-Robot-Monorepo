@@ -29,26 +29,28 @@ namespace lock
 
     _lock_state_previous_step = LockState::locked;
     set_expected_lock_state_current_step(LockState::locked);
-    set_drawer_opening_is_in_progress(false);
+    set_is_drawer_opening_in_progress(false);
     set_drawer_auto_close_timeout_triggered(false);
   }
 
   void ElectricalDrawerLock::handle_lock_control()
   {
     // Mind that the expected lock state is changed in the handle_lock_status function when a CAN msg is received
-    bool change_lock_state = _expected_lock_state_current_step != _lock_state_previous_step;
+    const bool change_lock_state = _expected_lock_state_current_step != _lock_state_previous_step;
 
-    unsigned long current_timestamp = millis();
-    unsigned long time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;
-    unsigned long time_since_lock_was_opened = current_timestamp - _timestamp_last_lock_opening;
+    const unsigned long current_timestamp = millis();
+    const unsigned long time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;
+    const unsigned long time_since_lock_was_opened = current_timestamp - _timestamp_last_lock_opening;
+    const bool has_lock_mechanism_time_passed =
+      time_since_lock_state_was_changed >= _ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS;
 
-    if (change_lock_state && (time_since_lock_state_was_changed >= _ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS))
+    if (change_lock_state && has_lock_mechanism_time_passed)
     {
       _lock_state_previous_step = _expected_lock_state_current_step;
       _timestamp_last_lock_change = current_timestamp;
       _expected_lock_state_current_step == LockState::unlocked ? open_lock() : close_lock();
     }
-    else if (!change_lock_state && (time_since_lock_state_was_changed >= _ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS))
+    else if (!change_lock_state && has_lock_mechanism_time_passed)
     {
       // this makes sure, there is only a 5V pulse with the duration of ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS on the
       // respective input of the lock
@@ -60,7 +62,7 @@ namespace lock
     {
       // Close the lock automatically after some seconds when drawer wasn't opened for safety reasons
       set_expected_lock_state_current_step(LockState::locked);
-      set_drawer_opening_is_in_progress(false);
+      set_is_drawer_opening_in_progress(false);
       set_drawer_auto_close_timeout_triggered(true);
       debug_println(
         "[ElectricalDrawerLock]: Lock was automatically closed due to timeout! time_since_lock_was_opened: ");
@@ -88,14 +90,14 @@ namespace lock
     _timestamp_last_lock_opening = millis();
   }
 
-  void ElectricalDrawerLock::set_drawer_opening_is_in_progress(const bool drawer_opening_is_in_progress)
+  void ElectricalDrawerLock::set_is_drawer_opening_in_progress(const bool drawer_opening_is_in_progress)
   {
-    _drawer_opening_is_in_progress = drawer_opening_is_in_progress;
+    _is_drawer_opening_in_progress = drawer_opening_is_in_progress;
   }
 
   bool ElectricalDrawerLock::is_drawer_opening_in_progress() const
   {
-    return _drawer_opening_is_in_progress;
+    return _is_drawer_opening_in_progress;
   }
 
   bool ElectricalDrawerLock::is_lock_switch_pushed() const
@@ -127,7 +129,7 @@ namespace lock
     {
       set_expected_lock_state_current_step(LockState::unlocked);
       set_timestamp_last_lock_change();
-      set_drawer_opening_is_in_progress(true);
+      set_is_drawer_opening_in_progress(true);
     }
   }
 

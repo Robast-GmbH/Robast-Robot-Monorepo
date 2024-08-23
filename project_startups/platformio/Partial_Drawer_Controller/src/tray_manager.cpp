@@ -57,7 +57,7 @@ namespace partial_drawer_controller
       _electrical_tray_locks[vector_id]->set_expected_lock_state_current_step(lock::LockState::locked);
 
       debug_println("[TrayManager]: Triggered closing the lock because tray just openend!");
-      _electrical_tray_locks[vector_id]->set_drawer_opening_is_in_progress(false);
+      _electrical_tray_locks[vector_id]->set_is_drawer_opening_in_progress(false);
     }
   }
 }   // namespace partial_drawer_controller

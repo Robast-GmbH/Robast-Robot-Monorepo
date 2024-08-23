@@ -22,25 +22,27 @@ namespace partial_drawer_controller
     // lock will be closed when the set the lock to closed in the current step
     _lock_state_previous_step = lock::LockState::unlocked;
     set_expected_lock_state_current_step(lock::LockState::locked);
-    set_drawer_opening_is_in_progress(false);
+    set_is_drawer_opening_in_progress(false);
   }
 
   void ElectricalTrayLock::update_state()
   {
     // Mind that the state for open_lock_current_step_ is changed in the handle_lock_status function when a CAN msg is
     // received
-    const bool change_lock_state = !(_expected_lock_state_current_step == _lock_state_previous_step);
+    const bool change_lock_state = _expected_lock_state_current_step != _lock_state_previous_step;
 
     const unsigned long current_timestamp = millis();
     const unsigned long time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;
+    const bool has_lock_mechanism_time_passed =
+      time_since_lock_state_was_changed >= _ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS;
 
-    if (change_lock_state && (time_since_lock_state_was_changed >= _ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS))
+    if (change_lock_state && has_lock_mechanism_time_passed)
     {
       _lock_state_previous_step = _expected_lock_state_current_step;
       _timestamp_last_lock_change = current_timestamp;
       _expected_lock_state_current_step == lock::LockState::unlocked ? open_lock() : close_lock();
     }
-    else if (!change_lock_state && (time_since_lock_state_was_changed >= _ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS))
+    else if (!change_lock_state && has_lock_mechanism_time_passed)
     {
       // this makes sure, there is only a 5V pulse with the duration of ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS on the
       // respective input of the lock
@@ -53,14 +55,14 @@ namespace partial_drawer_controller
     _expected_lock_state_current_step = expected_lock_state_current_step;
   }
 
-  void ElectricalTrayLock::set_drawer_opening_is_in_progress(const bool drawer_opening_is_in_progress)
+  void ElectricalTrayLock::set_is_drawer_opening_in_progress(const bool is_drawer_opening_in_progress)
   {
-    _drawer_opening_is_in_progress = drawer_opening_is_in_progress;
+    _is_drawer_opening_in_progress = is_drawer_opening_in_progress;
   }
 
   bool ElectricalTrayLock::is_drawer_opening_in_progress()
   {
-    return _drawer_opening_is_in_progress;
+    return _is_drawer_opening_in_progress;
   }
 
   void ElectricalTrayLock::unlock()
@@ -72,7 +74,7 @@ namespace partial_drawer_controller
     else
     {
       set_expected_lock_state_current_step(lock::LockState::unlocked);
-      set_drawer_opening_is_in_progress(true);
+      set_is_drawer_opening_in_progress(true);
     }
   }
 

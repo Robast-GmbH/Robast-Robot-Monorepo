@@ -27,7 +27,7 @@ namespace lock
 
     void set_timestamp_last_lock_change();
 
-    void set_drawer_opening_is_in_progress(const bool drawer_opening_is_in_progress);
+    void set_is_drawer_opening_in_progress(const bool is_drawer_opening_in_progress);
 
     bool is_drawer_opening_in_progress() const;
 
@@ -55,7 +55,7 @@ namespace lock
     LockState _expected_lock_state_current_step;   // flag to store which state the locks should have
     LockState _lock_state_previous_step;           // flag to store state of the lock of the previous step
 
-    bool _drawer_opening_is_in_progress = false;
+    bool _is_drawer_opening_in_progress = false;
 
     bool _is_drawer_auto_close_timeout_triggered = false;
 

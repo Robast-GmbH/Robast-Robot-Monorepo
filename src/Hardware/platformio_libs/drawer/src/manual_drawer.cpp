@@ -68,7 +68,7 @@ namespace drawer
 
     if (_drawer_lock->is_drawer_opening_in_progress() && is_drawer_closed && _triggered_closing_lock_after_opening)
     {
-      _drawer_lock->set_drawer_opening_is_in_progress(false);
+      _drawer_lock->set_is_drawer_opening_in_progress(false);
       _triggered_closing_lock_after_opening = false; // reset this flag for the next opening of the drawer
       _can_utils->enqueue_drawer_feedback_msg(
           _module_id, _id, _endstop_switch->is_switch_pressed(), _drawer_lock->is_lock_switch_pushed());

@@ -455,7 +455,7 @@ namespace drawer
       if (_drawer_lock.value()->is_drawer_opening_in_progress())
       {
         // Reset these flags for the next opening of the drawer.
-        _drawer_lock.value()->set_drawer_opening_is_in_progress(false);
+        _drawer_lock.value()->set_is_drawer_opening_in_progress(false);
       }
       else
       {
