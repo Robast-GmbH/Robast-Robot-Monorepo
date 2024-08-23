@@ -17,7 +17,7 @@ namespace statemachine
    * @brief A BT::ConditionNode that returns SUCCESS when goal is
    * updated on the blackboard and FAILURE otherwise
    */
-  class EvaluateDriveDirection : public BT::StatefulActionNode
+  class EvaluateDriveDirection : public BT::SyncActionNode
   {
   public:
     EvaluateDriveDirection(
@@ -30,10 +30,7 @@ namespace statemachine
      * @brief The main override required by a BT action
      * @return BT::NodeStatus Status of tick execution
      */
-    BT::NodeStatus onStart() override;
-    BT::NodeStatus onRunning() override;
-    void onHalted() override;
-
+    BT::NodeStatus tick() override;
     /**
      * @brief Creates list of BT ports
      * @return BT::PortsList Containing node-specific ports
@@ -48,15 +45,14 @@ namespace statemachine
   private:
     rclcpp::Node::SharedPtr _node;
 
-    std::string _topic_name;
+    std::string _topic_name = "plan";
     rclcpp::CallbackGroup::SharedPtr _callback_group;
     rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
     rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr _drawer_open_sub;
-    nav_msgs::msg::Path _path;
+    nav_msgs::msg::Path _path = nav_msgs::msg::Path();
     std::string _direction;
-    rclcpp::TimerBase::SharedPtr _timer;
 
-    void exposeDriveDirectionTimerCallback();
+    void exposeDriveDirection();
     void callbackPathReceived(const nav_msgs::msg::Path::SharedPtr msg);
   };
 } // namespace statemachine

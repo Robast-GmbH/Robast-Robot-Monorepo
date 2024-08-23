@@ -76,7 +76,7 @@
               <AlwaysSuccess/>
             </IfThenElse>
             <Sequence>
-              <EvaluateDriveDirection path_topic="path"
+              <EvaluateDriveDirection path_topic="plan"
                                       direction="{direction}"/>
               <Switch4 case_1="standing"
                        case_2="left"
@@ -86,18 +86,18 @@
                 <AlwaysSuccess/>
                 <Sequence>
                   <PartialColorizeLED LEDs="{leds}"
-                                      blue="0"
+                                      blue="20"
                                       brightness="100"
-                                      green="0"
+                                      green="128"
                                       lower_bound="40.0"
-                                      red="255"
+                                      red="128"
                                       upper_bound="60.0"
                                       LEDs_colored="{leds}"/>
                   <LEDPublisherAction drawer_address="{drawer}"
                                       fading_time_ms="100"
                                       led_topic="/led_cmd"
                                       leds="{leds}"/>
-                  <Delay delay_msec="1000">
+                  <Delay delay_msec="500">
                     <PartialColorizeLED LEDs="{leds}"
                                         blue="0"
                                         brightness="100"
@@ -111,24 +111,24 @@
                                       fading_time_ms="100"
                                       led_topic="/led_cmd"
                                       leds="{leds}"/>
-                  <Delay delay_msec="1000">
+                  <Delay delay_msec="500">
                     <AlwaysSuccess/>
                   </Delay>
                 </Sequence>
                 <Sequence>
                   <PartialColorizeLED LEDs="{leds}"
-                                      blue="0"
+                                      blue="20"
                                       brightness="100"
-                                      green="0"
+                                      green="128"
                                       lower_bound="15.0"
-                                      red="255"
+                                      red="128"
                                       upper_bound="35.0"
                                       LEDs_colored="{leds}"/>
                   <LEDPublisherAction drawer_address="{drawer}"
                                       fading_time_ms="100"
                                       led_topic="/led_cmd"
                                       leds="{leds}"/>
-                  <Delay delay_msec="1000">
+                  <Delay delay_msec="500">
                     <PartialColorizeLED LEDs="{leds}"
                                         blue="0"
                                         brightness="100"
@@ -142,10 +142,11 @@
                                       fading_time_ms="100"
                                       led_topic="/led_cmd"
                                       leds="{leds}"/>
-                  <Delay delay_msec="1000">
+                  <Delay delay_msec="500">
                     <AlwaysSuccess/>
                   </Delay>
                 </Sequence>
+                <AlwaysSuccess/>
                 <AlwaysSuccess/>
               </Switch4>
             </Sequence>

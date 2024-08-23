@@ -5,7 +5,7 @@ namespace statemachine
   EvaluateDriveDirection::EvaluateDriveDirection(
       const std::string &name,
       const BT::NodeConfig &config)
-      : BT::StatefulActionNode(name, config)
+      : BT::SyncActionNode(name, config)
   {
     _node = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
     getInput("path_topic", _topic_name);
@@ -19,17 +19,17 @@ namespace statemachine
         10,
         std::bind(&EvaluateDriveDirection::callbackPathReceived, this, std::placeholders::_1),
         sub_option);
-    _timer = _node->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&EvaluateDriveDirection::exposeDriveDirectionTimerCallback, this));
-    _path = nav_msgs::msg::Path();
   }
 
   void EvaluateDriveDirection::callbackPathReceived(const nav_msgs::msg::Path::SharedPtr msg)
   {
+    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "path received");
     _path = *msg;
   }
 
-  void EvaluateDriveDirection::exposeDriveDirectionTimerCallback()
+  void EvaluateDriveDirection::exposeDriveDirection()
   {
+    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "path size: %d", _path.poses.size());
     if (_path.poses.size() > 60)
     {
       auto start_pose = _path.poses[0].pose.position;
@@ -42,8 +42,18 @@ namespace statemachine
       _direction = "standing";
     }
     _path = nav_msgs::msg::Path();
+    RCLCPP_INFO(rclcpp::get_logger("EvaluateDriveDirection"), "direction: %s", _direction.c_str());
     setOutput("direction", _direction);
   }
+
+  BT::NodeStatus EvaluateDriveDirection::tick()
+  {
+    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "EvaluateDriveDirection tick");
+    _callback_group_executor.spin_some();
+    exposeDriveDirection();
+    return BT::NodeStatus::SUCCESS;
+  }
+
 }
 
 #include "behaviortree_cpp/bt_factory.h"
