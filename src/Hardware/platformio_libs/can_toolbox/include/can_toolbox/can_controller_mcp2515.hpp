@@ -36,9 +36,9 @@ namespace can_toolbox
     const std::shared_ptr<interfaces::IGpioWrapper> _gpio_wrapper;
     const uint8_t _oe_txb0104_pin_id;
 
-    static constexpr uint32_t _CAN_BIT_RATE = 250 * 1000;
+    static constexpr uint32_t _CAN_BIT_RATE = 250_000;
 
-    static constexpr uint32_t _QUARTZ_FREQUENCY = 8 * 1000 * 1000;   // 8 MHz
+    static constexpr uint32_t _QUARTZ_FREQUENCY = 8_000_000;   // 8 MHz
 
     static constexpr uint16_t _RECEIVE_BUFFER_SIZE = 150;
 
