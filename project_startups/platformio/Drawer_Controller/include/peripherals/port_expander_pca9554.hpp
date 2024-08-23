@@ -43,14 +43,17 @@ namespace port_expander
     {
       _wire->beginTransmission(_slave_address);
       _wire->write(register_address);
-      _wire->endTransmission();
-      _wire->requestFrom(_slave_address, 1);
-
-      while (_wire->available() < 1)
+      if (_wire->endTransmission() == 0)
       {
+        _wire->requestFrom(_slave_address, 1);
+
+        while (_wire->available() < 1)
+        {
+        }
+        register_address = _wire->read();
+        return true;
       }
-      register_address = _wire->read();
-      return true;
+      return false;
     }
 
     bool twi_write(byte register_address, byte data_write)
