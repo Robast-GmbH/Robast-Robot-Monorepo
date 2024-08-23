@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/controller/user_name_controller.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/custom_dropdown_button.dart';
@@ -37,7 +38,7 @@ class _UserNameEditorState extends State<UserNameEditor> {
           children: [
             const Text(
               'Name',
-              style: TextStyle(fontSize: 24, color: Colors.white70),
+              style: TextStyle(fontSize: 24, color: RobotColors.secondaryText),
             ),
             const SizedBox(
               width: 16,
@@ -58,7 +59,7 @@ class _UserNameEditorState extends State<UserNameEditor> {
               child: TextField(
                 controller: firstNameController,
                 onChanged: (value) => widget.controller.firstName = value,
-                style: const TextStyle(fontSize: 24, color: Colors.white70),
+                style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),
               ),
             ),
             const SizedBox(
@@ -69,7 +70,7 @@ class _UserNameEditorState extends State<UserNameEditor> {
               child: TextField(
                 controller: lastNameController,
                 onChanged: (value) => widget.controller.lastName = value,
-                style: const TextStyle(fontSize: 24, color: Colors.white70),
+                style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),
               ),
             ),
           ],

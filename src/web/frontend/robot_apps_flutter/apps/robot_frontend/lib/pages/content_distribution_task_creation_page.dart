@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/controller/location_selection_controller.dart';
 import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
 import 'package:robot_frontend/models/controller/user_selection_controller.dart';
@@ -8,6 +9,7 @@ import 'package:robot_frontend/models/enums/creation_steps.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/content_distribution_view.dart';
+import 'package:robot_frontend/widgets/custom_elevated_button.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/modules_overview.dart';
 import 'package:robot_frontend/widgets/reservation_view.dart';
@@ -142,27 +144,20 @@ class _ContentDistributionTaskCreationPageState extends State<ContentDistributio
                   alignment: Alignment.bottomRight,
                   child: Padding(
                     padding: const EdgeInsets.all(32),
-                    child: ElevatedButton(
-                      onPressed: reservedSubmodules.isEmpty
-                          ? null
-                          : () async {
-                              if (currentStep == CreationSteps.reserveSubmodules) {
-                                setState(() {
-                                  currentStep = CreationSteps.fillModules;
-                                });
-                              } else if (currentStep == CreationSteps.fillModules) {
-                                setState(() {
-                                  currentStep = CreationSteps.assignTargets;
-                                });
-                              }
-                            },
-                      child: const Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Text(
-                          'Weiter',
-                          style: TextStyle(fontSize: 40),
-                        ),
-                      ),
+                    child: CustomElevatedButton(
+                      enabled: reservedSubmodules.isNotEmpty,
+                      onPressed: () async {
+                        if (currentStep == CreationSteps.reserveSubmodules) {
+                          setState(() {
+                            currentStep = CreationSteps.fillModules;
+                          });
+                        } else if (currentStep == CreationSteps.fillModules) {
+                          setState(() {
+                            currentStep = CreationSteps.assignTargets;
+                          });
+                        }
+                      },
+                      label: 'Weiter',
                     ),
                   ),
                 ),

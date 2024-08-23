@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/controller/location_selection_controller.dart';
 import 'package:robot_frontend/models/controller/module_content_controller.dart';
 import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
@@ -9,6 +10,7 @@ import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/location_selector.dart';
 import 'package:robot_frontend/widgets/module_content_creation_view.dart';
 import 'package:robot_frontend/widgets/rounded_button.dart';
+import 'package:robot_frontend/widgets/rounded_container.dart';
 import 'package:robot_frontend/widgets/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/user_selector.dart';
 
@@ -36,7 +38,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
     return CustomScaffold(
       title: 'Lieferauftrag erstellen',
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 64, vertical: 32),
+        padding: const EdgeInsets.only(left: 64, right: 64, bottom: 32, top: 16),
         child: Column(
           children: [
             Expanded(
@@ -44,8 +46,10 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                 moduleContentController: moduleContentController,
               ),
             ),
-            Card(
-              color: Colors.white.withOpacity(0.4),
+            const SizedBox(
+              height: 16,
+            ),
+            RoundedContainer(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
@@ -53,9 +57,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                     const Text(
                       'Benötigte Größe',
                       textAlign: TextAlign.start,
-                      style: TextStyle(
-                        fontSize: 24,
-                      ),
+                      style: TextStyle(fontSize: 24, color: RobotColors.secondaryText),
                     ),
                     const SizedBox(
                       width: 16,
@@ -88,11 +90,11 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                 const Padding(
                   padding: EdgeInsets.only(
                     left: 8,
-                    top: 4,
+                    top: 8,
                   ),
                   child: Text(
                     'Sender',
-                    style: TextStyle(fontSize: 28),
+                    style: TextStyle(fontSize: 28, color: RobotColors.primaryText),
                   ),
                 ),
                 Row(
@@ -103,6 +105,9 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                         initWithSessionUser: true,
                       ),
                     ),
+                    SizedBox(
+                      width: 8,
+                    ),
                     Expanded(
                       child: UserGroupsSelector(
                         controller: senderUserGroupsSelectionController,
@@ -110,18 +115,21 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                     ),
                   ],
                 ),
+                SizedBox(
+                  height: 8,
+                ),
                 LocationSelector(
                   controller: startController,
                   label: 'Start',
                 ),
                 const Padding(
                   padding: EdgeInsets.only(
-                    top: 4,
+                    top: 8,
                     left: 8,
                   ),
                   child: Text(
                     'Empfänger',
-                    style: TextStyle(fontSize: 28),
+                    style: TextStyle(fontSize: 28, color: RobotColors.primaryText),
                   ),
                 ),
                 Row(
@@ -131,12 +139,18 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                         controller: recipientUserController,
                       ),
                     ),
+                    SizedBox(
+                      width: 8,
+                    ),
                     Expanded(
                       child: UserGroupsSelector(
                         controller: recipientUserGroupsSelectionController,
                       ),
                     ),
                   ],
+                ),
+                SizedBox(
+                  height: 8,
                 ),
                 LocationSelector(
                   controller: targetController,
@@ -149,7 +163,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
             ),
             RoundedButton(
               padding: const EdgeInsets.symmetric(horizontal: 4),
-              color: Colors.white.withOpacity(0.5),
+              color: Colors.black.withOpacity(0.2),
               onPressed: () async {
                 await Provider.of<TaskProvider>(context, listen: false).createDeliveryTaskRequest(
                   requiredSubmoduleType: requiredSubmoduleType,
@@ -173,7 +187,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                 padding: EdgeInsets.symmetric(vertical: 8),
                 child: Text(
                   'Auftrag erstellen',
-                  style: TextStyle(fontSize: 40, color: Colors.white),
+                  style: TextStyle(fontSize: 40, color: RobotColors.primaryText),
                 ),
               ),
             ),
@@ -193,7 +207,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: requiredSubmoduleType == type ? Colors.blue.withOpacity(0.5) : Colors.white.withOpacity(0.4),
+          color: requiredSubmoduleType == type ? RobotColors.accent : Colors.black.withOpacity(0.1),
           border: Border.all(color: Colors.white.withOpacity(0.4)),
           borderRadius: BorderRadius.circular(8),
         ),
@@ -202,6 +216,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 24,
+            color: RobotColors.secondaryText,
           ),
         ),
       ),

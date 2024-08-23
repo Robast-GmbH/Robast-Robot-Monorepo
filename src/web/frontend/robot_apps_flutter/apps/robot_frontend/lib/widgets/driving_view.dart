@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/data/svgs.dart';
 
 class DrivingView extends StatefulWidget {
@@ -85,12 +86,12 @@ class _DrivingViewState extends State<DrivingView> {
                                       SvgPicture.string(
                                         logo,
                                         width: double.infinity,
-                                        color: Colors.white,
+                                        color: RobotColors.primaryIcon,
                                       ),
                                     SvgPicture.string(
                                       logoBlink,
                                       width: double.infinity,
-                                      color: Colors.white,
+                                      color: RobotColors.primaryIcon,
                                     ),
                                   ],
                                 )
@@ -98,7 +99,7 @@ class _DrivingViewState extends State<DrivingView> {
                                 SvgPicture.string(
                                   logoHappy,
                                   width: double.infinity,
-                                  color: Colors.white,
+                                  color: RobotColors.primaryIcon,
                                 ),
                             ],
                           ),
@@ -107,12 +108,12 @@ class _DrivingViewState extends State<DrivingView> {
                     ),
                     const SizedBox(height: 64),
                     Container(
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(64), color: Colors.white),
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(64), color: RobotColors.primaryText),
                       child: const Padding(
                         padding: EdgeInsets.symmetric(vertical: 8, horizontal: 92),
                         child: Text(
                           'Bitte berühren',
-                          style: TextStyle(color: Color.fromARGB(255, 99, 201, 226), fontSize: 66),
+                          style: TextStyle(color: Color(0xFF769FCD), fontSize: 66),
                         ),
                       ),
                     ),

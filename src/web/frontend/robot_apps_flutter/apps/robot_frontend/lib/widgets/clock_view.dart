@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 
 class ClockView extends StatefulWidget {
   const ClockView({
@@ -33,7 +34,7 @@ class _ClockViewState extends State<ClockView> {
           "${date.hour}:${date.minute < 10 ? "0${date.minute}" : date.minute}",
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: Colors.white,
+            color: RobotColors.primaryText,
             fontSize: widget.fontSize,
           ),
         );

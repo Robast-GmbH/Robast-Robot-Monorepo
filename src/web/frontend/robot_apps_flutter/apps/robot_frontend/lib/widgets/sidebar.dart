@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/sidebar_menu_point.dart';
 
 class Sidebar extends StatefulWidget {
@@ -34,7 +35,7 @@ class _SidebarState extends State<Sidebar> {
                 quarterTurns: isSidebarExpanded ? 3 : 1,
                 child: const Icon(
                   Icons.expand_less,
-                  color: Colors.white,
+                  color: RobotColors.primaryIcon,
                   size: 40,
                 ),
               ),
@@ -56,7 +57,7 @@ class _SidebarState extends State<Sidebar> {
                   (index) => buildMenuButton(
                     icon: Icon(
                       widget.sidebarMenuPoints[index].icon,
-                      color: index == selectedMainMenuIndex ? Colors.white : Colors.white70,
+                      color: index == selectedMainMenuIndex ? RobotColors.primaryIcon : RobotColors.secondaryIcon,
                       size: 40,
                     ),
                     title: widget.sidebarMenuPoints[index].title,
@@ -76,7 +77,7 @@ class _SidebarState extends State<Sidebar> {
               padding: const EdgeInsets.all(16),
               child: Container(
                 width: isSidebarExpanded ? double.infinity : null,
-                decoration: BoxDecoration(color: const Color.fromARGB(255, 85, 186, 211), borderRadius: BorderRadius.circular(8)),
+                decoration: BoxDecoration(color: RobotColors.accent, borderRadius: BorderRadius.circular(8)),
                 child: Padding(
                   padding: const EdgeInsets.all(8),
                   child: Row(
@@ -92,7 +93,7 @@ class _SidebarState extends State<Sidebar> {
                         Expanded(
                             child: Text(
                           '${widget.user?.firstName[0]}. ${widget.user?.lastName}',
-                          style: const TextStyle(fontSize: 24, color: Colors.white),
+                          style: const TextStyle(fontSize: 24, color: RobotColors.primaryText),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         )),
@@ -136,7 +137,7 @@ class _SidebarState extends State<Sidebar> {
                       title,
                       style: const TextStyle(
                         fontSize: 24,
-                        color: Colors.white,
+                        color: RobotColors.primaryText,
                       ),
                     ),
                   ],

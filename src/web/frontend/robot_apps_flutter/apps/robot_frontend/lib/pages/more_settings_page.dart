@@ -11,7 +11,7 @@ class MoreSettingsPage extends StatelessWidget {
     return CustomScaffold(
       title: 'Weitere Einstellungen',
       child: Padding(
-        padding: const EdgeInsets.all(128),
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
             Expanded(
@@ -30,6 +30,9 @@ class MoreSettingsPage extends StatelessWidget {
                       },
                     ),
                   ),
+                  SizedBox(
+                    height: 16,
+                  ),
                   Expanded(
                     child: CustomButtonView(
                       text: 'Platzhalter',
@@ -39,6 +42,9 @@ class MoreSettingsPage extends StatelessWidget {
                 ],
               ),
             ),
+            SizedBox(
+              width: 16,
+            ),
             Expanded(
               child: Column(
                 children: [
@@ -47,6 +53,9 @@ class MoreSettingsPage extends StatelessWidget {
                       text: 'Platzhalter',
                       onPressed: () {},
                     ),
+                  ),
+                  SizedBox(
+                    height: 16,
                   ),
                   Expanded(
                     child: CustomButtonView(

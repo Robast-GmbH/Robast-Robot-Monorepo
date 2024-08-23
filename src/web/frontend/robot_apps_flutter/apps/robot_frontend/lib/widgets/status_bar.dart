@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
 
 class StatusBar extends StatelessWidget {
@@ -22,7 +23,7 @@ class StatusBar extends StatelessWidget {
               iconSize: 48,
               icon: const Icon(
                 Icons.arrow_back,
-                color: Colors.white,
+                color: RobotColors.primaryIcon,
               ),
               onPressed: onBackButtonPressed,
             ),
@@ -36,7 +37,7 @@ class StatusBar extends StatelessWidget {
               child: Text(
                 title!,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: RobotColors.primaryText,
                   fontSize: 32,
                 ),
               ),

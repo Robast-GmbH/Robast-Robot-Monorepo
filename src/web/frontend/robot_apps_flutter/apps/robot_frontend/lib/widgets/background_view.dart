@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 
 class BackgroundView extends StatelessWidget {
   const BackgroundView({required this.child, super.key});
@@ -10,7 +11,7 @@ class BackgroundView extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color.fromARGB(255, 99, 201, 226), Color.fromARGB(255, 37, 173, 207)],
+          colors: [RobotColors.secondaryBackground, RobotColors.primaryBackground],
         ),
       ),
       child: child,

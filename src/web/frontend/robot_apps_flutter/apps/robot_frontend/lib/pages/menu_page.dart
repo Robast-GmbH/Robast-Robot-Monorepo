@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/models/sidebar_menu_point.dart';
@@ -12,6 +13,7 @@ import 'package:robot_frontend/widgets/info_view.dart';
 
 import 'package:robot_frontend/widgets/robot_map_view.dart';
 import 'package:robot_frontend/widgets/settings_views/admin_settings_view.dart';
+import 'package:robot_frontend/widgets/settings_views/staff_settings_view.dart';
 import 'package:robot_frontend/widgets/sidebar.dart';
 
 class MenuPage extends StatefulWidget {
@@ -58,8 +60,8 @@ class _MenuPageState extends State<MenuPage> {
       icon: Icons.settings,
       userGroupWidgets: {
         'ADMIN': AdminSettingsView.new,
-        'STAFF': RobotMapView.new,
-        'PATIENT': RobotMapView.new,
+        'STAFF': StaffSettingsView.new,
+        'PATIENT': StaffSettingsView.new,
       },
     ),
   ];
@@ -112,7 +114,7 @@ class _MenuPageState extends State<MenuPage> {
                                     padding: const EdgeInsets.only(left: 16),
                                     child: Text(
                                       sidebarMenuPoints[selectedMainMenuIndex].title,
-                                      style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w400),
+                                      style: const TextStyle(color: RobotColors.primaryText, fontSize: 40, fontWeight: FontWeight.w400),
                                     ),
                                   ),
                                   InkWell(
@@ -131,7 +133,7 @@ class _MenuPageState extends State<MenuPage> {
                                             children: [
                                               Text(
                                                 'Abmelden',
-                                                style: TextStyle(color: Colors.white, fontSize: 32),
+                                                style: TextStyle(color: RobotColors.primaryText, fontSize: 32),
                                               ),
                                               SizedBox(
                                                 width: 16,

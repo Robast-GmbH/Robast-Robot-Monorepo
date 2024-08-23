@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 
 class CustomButtonView extends StatelessWidget {
   const CustomButtonView({
@@ -49,7 +50,7 @@ class CustomButtonView extends StatelessWidget {
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               height: 0,
-                              color: Colors.white,
+                              color: RobotColors.primaryText,
                               fontSize: 40,
                               fontWeight: FontWeight.w400,
                             ),

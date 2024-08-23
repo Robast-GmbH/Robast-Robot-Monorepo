@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
 
 class WeatherView extends StatelessWidget {
@@ -30,7 +31,7 @@ class WeatherView extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(color: Colors.white70, fontSize: 32),
+          style: const TextStyle(color: RobotColors.secondaryText, fontSize: 32),
         ),
         const SizedBox(
           height: 8,
@@ -44,14 +45,14 @@ class WeatherView extends StatelessWidget {
           children: [
             Text(
               '$highestTemperature°',
-              style: const TextStyle(color: Colors.white70, fontSize: 32),
+              style: const TextStyle(color: RobotColors.secondaryText, fontSize: 32),
             ),
             const SizedBox(
               width: 16,
             ),
             Text(
               '$lowestTemperature°',
-              style: const TextStyle(color: Colors.white38, fontSize: 32),
+              style: const TextStyle(color: RobotColors.tertiaryText, fontSize: 32),
             ),
           ],
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 
 class ModuleDetailsDialog extends StatelessWidget {
   const ModuleDetailsDialog({required this.moduleID, required this.submodules, super.key});
@@ -10,10 +11,10 @@ class ModuleDetailsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: Colors.white,
+      backgroundColor: RobotColors.primaryBackground,
       title: Text(
         'Modul $moduleID',
-        style: const TextStyle(fontSize: 32),
+        style: const TextStyle(fontSize: 32, color: RobotColors.primaryText),
       ),
       content: FractionallySizedBox(
         heightFactor: 0.4,
@@ -30,24 +31,24 @@ class ModuleDetailsDialog extends StatelessWidget {
                     children: [
                       Text(
                         'Submodul ${submodule.address.submoduleID}',
-                        style: const TextStyle(fontSize: 28, color: Colors.white),
+                        style: const TextStyle(fontSize: 28, color: RobotColors.primaryText),
                       ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
                           Text(
                             'Status: ${submodule.isReserved() ? 'reserviert' : 'frei'}',
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: RobotColors.secondaryText),
                           ),
                           const SizedBox(width: 16),
                           Text(
                             'Typ: ${submodule.size}',
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: RobotColors.secondaryText),
                           ),
                           const SizedBox(width: 16),
                           Text(
                             'Variante: ${submodule.variant.toString().split('.').last}',
-                            style: const TextStyle(color: Colors.white),
+                            style: const TextStyle(color: RobotColors.secondaryText),
                           ),
                         ],
                       ),
@@ -65,7 +66,7 @@ class ModuleDetailsDialog extends StatelessWidget {
           },
           child: const Text(
             'Schließen',
-            style: TextStyle(color: Colors.black87, fontSize: 24),
+            style: TextStyle(color: RobotColors.secondaryText, fontSize: 24),
           ),
         ),
       ],

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
+import 'package:robot_frontend/widgets/rounded_button.dart';
 import 'package:robot_frontend/widgets/titled_view.dart';
 
 class ModulesSetupPage extends StatefulWidget {
@@ -60,7 +62,7 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 16, bottom: 32),
+                  padding: const EdgeInsets.only(top: 28, bottom: 28),
                   child: Selector<ModuleProvider, List<Submodule>>(
                     selector: (_, provider) => provider.submodules,
                     builder: (context, modules, child) {
@@ -92,9 +94,20 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                                   }
                                 },
                                 child: Container(
+                                  width: double.infinity,
                                   decoration: BoxDecoration(
-                                    color: slotOccupancy[index] ? Colors.grey : Colors.greenAccent,
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: slotOccupancy[index] ? Colors.black.withOpacity(0.2) : RobotColors.accent,
                                     border: selectedSlots[index] ? Border.all(width: 5) : null,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Center(
+                                      child: Text(
+                                        slotOccupancy[index] ? 'Belegt' : 'Frei',
+                                        style: TextStyle(color: RobotColors.primaryText, fontSize: 28),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -109,71 +122,102 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(32),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: isElectric,
-                            onChanged: (value) {
-                              setState(() {
-                                isElectric = value ?? false;
-                              });
-                            },
-                          ),
-                          const Text('Ist elektrisch'),
-                        ],
-                      ),
-                      TextField(
-                        controller: controller,
-                        decoration: const InputDecoration(
-                          hintText: 'Module ID',
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Zum Einrichten eines Moduls bitte entsprechende Slots auswählen und Modulinformationen angeben.',
+                            style: TextStyle(color: RobotColors.primaryText, fontSize: 32)),
+                        SizedBox(
+                          height: 8,
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          TextButton.icon(
-                            onPressed: () async {
-                              if (selectedSlots.every((slot) => !slot)) return;
-                              await Provider.of<ModuleProvider>(context, listen: false).createSubmodule(
-                                robotName: 'rb_theron',
-                                submoduleAddress: SubmoduleAddress(
-                                  moduleID: int.tryParse(controller.text) ?? 0,
-                                  submoduleID: 0,
+                        TextField(
+                          style: const TextStyle(color: RobotColors.secondaryText, fontSize: 26),
+                          controller: controller,
+                          decoration: const InputDecoration(
+                            hintText: 'Modul ID',
+                          ),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Row(
+                          children: [
+                            Checkbox(
+                              activeColor: RobotColors.accent,
+                              checkColor: RobotColors.secondaryText,
+                              value: isElectric,
+                              onChanged: (value) {
+                                setState(() {
+                                  isElectric = value ?? false;
+                                });
+                              },
+                            ),
+                            const Text(
+                              'Ist elektrisch',
+                              style: TextStyle(color: RobotColors.primaryText),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: RoundedButton(
+                                onPressed: () async {
+                                  if (selectedSlots.every((slot) => !slot)) return;
+                                  await Provider.of<ModuleProvider>(context, listen: false).createSubmodule(
+                                    robotName: 'rb_theron',
+                                    submoduleAddress: SubmoduleAddress(
+                                      moduleID: int.tryParse(controller.text) ?? 0,
+                                      submoduleID: 0,
+                                    ),
+                                    position: selectedSlots.indexWhere((slot) => slot) + 1,
+                                    size: selectedSlots.where((slot) => slot).length,
+                                    variant: isElectric ? 'electric' : 'manual',
+                                  );
+                                  selectedSlots.fillRange(0, selectedSlots.length, false);
+                                  isElectric = false;
+                                  if (context.mounted) {
+                                    await Provider.of<ModuleProvider>(context, listen: false).fetchSubmodules();
+                                  }
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: const Text(
+                                    'Erstellen',
+                                    style: TextStyle(fontSize: 28, color: RobotColors.primaryText),
+                                  ),
                                 ),
-                                position: selectedSlots.indexWhere((slot) => slot) + 1,
-                                size: selectedSlots.where((slot) => slot).length,
-                                variant: isElectric ? 'electric' : 'manual',
-                              );
-                              selectedSlots.fillRange(0, selectedSlots.length, false);
-                              isElectric = false;
-                              if (context.mounted) {
-                                await Provider.of<ModuleProvider>(context, listen: false).fetchSubmodules();
-                              }
-                            },
-                            label: const Text('Add'),
-                            icon: const Icon(Icons.add),
-                          ),
-                          TextButton.icon(
-                            onPressed: () async {
-                              final modulesProvider = Provider.of<ModuleProvider>(context, listen: false);
-                              for (final submodule in modulesProvider.submodules) {
-                                await modulesProvider.deleteSubmodule(
-                                  robotName: 'rb_theron',
-                                  submoduleAddress: submodule.address,
-                                );
-                              }
-                              selectedSlots.fillRange(0, selectedSlots.length, false);
-                            },
-                            label: const Text('Delete all'),
-                            icon: const Icon(Icons.delete),
-                          ),
-                        ],
-                      ),
-                    ],
+                              ),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Expanded(
+                              child: RoundedButton(
+                                onPressed: () async {
+                                  final modulesProvider = Provider.of<ModuleProvider>(context, listen: false);
+                                  for (final submodule in modulesProvider.submodules) {
+                                    await modulesProvider.deleteSubmodule(
+                                      robotName: 'rb_theron',
+                                      submoduleAddress: submodule.address,
+                                    );
+                                  }
+                                  selectedSlots.fillRange(0, selectedSlots.length, false);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text('Zurücksetzen', style: const TextStyle(fontSize: 28, color: RobotColors.primaryText)),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

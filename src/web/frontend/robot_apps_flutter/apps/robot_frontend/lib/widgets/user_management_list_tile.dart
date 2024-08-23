@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/controller/location_selection_controller.dart';
 import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
 import 'package:robot_frontend/models/controller/user_name_controller.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/location_selector.dart';
-import 'package:robot_frontend/widgets/nfc_writing_dialog.dart';
+import 'package:robot_frontend/widgets/nfc_assignment_dialog.dart';
 import 'package:robot_frontend/widgets/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/user_name_editor.dart';
 
@@ -74,7 +75,7 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                 ),
                 IconButton(
                   iconSize: 32,
-                  color: Colors.white,
+                  color: RobotColors.primaryIcon,
                   onPressed: () {
                     final userGroups = userGroupsSelectionController.selectionAsStringList();
                     Provider.of<UserProvider>(context, listen: false).updateUser(
@@ -92,7 +93,7 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                   },
                   icon: const Icon(
                     Icons.save_alt,
-                    color: Colors.white70,
+                    color: RobotColors.secondaryIcon,
                   ),
                 ),
               ],
@@ -113,7 +114,7 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                 ),
                 PopupMenuButton(
                   iconSize: 32,
-                  iconColor: Colors.white70,
+                  iconColor: RobotColors.secondaryIcon,
                   itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
                     PopupMenuItem(
                       child: ListTile(
@@ -121,9 +122,9 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                         title: const Text('NFC zuweisen'),
                         onTap: () async {
                           Navigator.pop(context);
-                          await showDialog<NFCWritingDialog>(
+                          await showDialog<NFCAssignmentDialog>(
                             context: context,
-                            builder: (context) => NFCWritingDialog(
+                            builder: (context) => NFCAssignmentDialog(
                               userID: widget.user.id,
                             ),
                           );
