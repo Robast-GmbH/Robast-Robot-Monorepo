@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 
 class CustomDropdownButton extends StatelessWidget {
   const CustomDropdownButton({
@@ -24,12 +25,12 @@ class CustomDropdownButton extends StatelessWidget {
       hint: hint != null
           ? Text(
               hint!,
-              style: const TextStyle(fontSize: 24, color: Colors.white70),
+              style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),
             )
           : null,
       disabledHint: Text(
         value ?? '',
-        style: const TextStyle(fontSize: 24, color: Colors.white70),
+        style: const TextStyle(fontSize: 24, color: RobotColors.secondaryIcon),
       ),
       onChanged: onChanged,
       items: items
@@ -39,7 +40,7 @@ class CustomDropdownButton extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 item,
-                style: const TextStyle(fontSize: 24, color: Colors.white70),
+                style: const TextStyle(fontSize: 24, color: RobotColors.secondaryIcon),
               ),
             ),
           )
