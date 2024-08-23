@@ -113,7 +113,7 @@ class _DrivingViewState extends State<DrivingView> {
                         padding: EdgeInsets.symmetric(vertical: 8, horizontal: 92),
                         child: Text(
                           'Bitte berühren',
-                          style: TextStyle(color: Color(0xFF769FCD), fontSize: 66),
+                          style: TextStyle(color: RobotColors.primaryBackground, fontSize: 66),
                         ),
                       ),
                     ),
