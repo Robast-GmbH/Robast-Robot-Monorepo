@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/controller/location_selection_controller.dart';
 import 'package:robot_frontend/models/provider/map_provider.dart';
 import 'package:robot_frontend/widgets/custom_dropdown_button.dart';
@@ -33,7 +34,7 @@ class _LocationSelectorState extends State<LocationSelector> {
             Text(
               widget.label,
               textAlign: TextAlign.end,
-              style: const TextStyle(fontSize: 24, color: Colors.white70),
+              style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),
             ),
             const SizedBox(
               width: 16,

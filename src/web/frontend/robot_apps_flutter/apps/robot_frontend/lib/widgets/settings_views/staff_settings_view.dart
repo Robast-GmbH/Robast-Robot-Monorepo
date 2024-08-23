@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/pages/cleaning_page.dart';
 import 'package:robot_frontend/pages/config_page.dart';
 import 'package:robot_frontend/pages/screen_settings_page.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
@@ -29,8 +30,15 @@ class StaffSettingsView extends StatelessWidget {
               const SizedBox(height: 16),
               Expanded(
                 child: CustomButtonView(
-                  text: 'Platzhalter',
-                  onPressed: () {},
+                  text: 'Reinigungsmodus',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute<CleaningPage>(
+                        builder: (context) => const CleaningPage(),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
