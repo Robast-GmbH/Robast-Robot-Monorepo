@@ -49,8 +49,8 @@ namespace statemachine
                     "target_position", 0, "goal position between 0-255"),
                 BT::InputPort<uint8_t>(
                     "speed", 0, "speed between 0-255"),
-                BT::InputPort<bool>(
-                    "stall_guard_enable", true, "stall_guard_enable"),
+                BT::InputPort<uint8_t>(
+                    "stall_guard_value", 0, "value between 0-255, 0 disables stall guard, higher value increases stall sensitivity"),
 
                 BT::InputPort<std::string>(
                     "move_electric_drawer_topic",
