@@ -7,6 +7,7 @@ namespace partial_drawer_controller
                                          const uint8_t power_close_pin_id)
       : _gpio_wrapper{gpio_wrapper}, _power_open_pin_id{power_open_pin_id}, _power_close_pin_id{power_close_pin_id}
   {
+    initialize_lock();
   }
 
   void ElectricalTrayLock::initialize_lock()

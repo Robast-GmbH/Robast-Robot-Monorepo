@@ -18,8 +18,6 @@ namespace partial_drawer_controller
                        const uint8_t power_open_pin_id,
                        const uint8_t power_close_pin_id);
 
-    void initialize_lock();
-
     void update_state();
 
     void set_expected_lock_state_current_step(const lock::LockState expected_lock_state_current_step);
@@ -51,6 +49,8 @@ namespace partial_drawer_controller
     void close_lock();
 
     void set_lock_output_low();
+
+    void initialize_lock();
   };
 }   // namespace partial_drawer_controller
 #endif   // PARTIAL_DRAWER_CONTROLLER_ELECTRICAL_TRAY_LOCK_HPP

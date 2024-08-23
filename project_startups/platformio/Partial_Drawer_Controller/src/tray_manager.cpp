@@ -25,11 +25,6 @@ namespace partial_drawer_controller
 
   void TrayManager::init(std::function<void()> set_enable_pin_high)
   {
-    for (const auto& electrical_tray_lock : _electrical_tray_locks)
-    {
-      electrical_tray_lock->initialize_lock();
-    }
-
     _onboard_led_driver->initialize(set_enable_pin_high);
   }
 
