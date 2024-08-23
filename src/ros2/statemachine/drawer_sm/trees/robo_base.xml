@@ -84,15 +84,33 @@
                        case_4="forward"
                        variable="{direction}">
                 <AlwaysSuccess/>
-                <PartialColorizeLED LEDs="{leds}"
-                                    blue="0"
-                                    brightness="255"
-                                    green="80"
-                                    lower_bound="47.0"
-                                    red="255"
-                                    upper_bound="80.0"
-                                    LEDs_colored="{leds}"/>
                 <Sequence>
+                  <PartialColorizeLED LEDs="{leds}"
+                                      blue="0"
+                                      brightness="0"
+                                      green="0"
+                                      lower_bound="0"
+                                      red="0"
+                                      upper_bound="100.0"
+                                      LEDs_colored="{leds}"/>
+                  <PartialColorizeLED LEDs="{leds}"
+                                      blue="0"
+                                      brightness="255"
+                                      green="80"
+                                      lower_bound="47.0"
+                                      red="255"
+                                      upper_bound="80.0"
+                                      LEDs_colored="{leds}"/>
+                </Sequence>
+                <Sequence>
+                  <PartialColorizeLED LEDs="{leds}"
+                                      blue="0"
+                                      brightness="0"
+                                      green="0"
+                                      lower_bound="0"
+                                      red="0"
+                                      upper_bound="100.0"
+                                      LEDs_colored="{leds}"/>
                   <PartialColorizeLED LEDs="{leds}"
                                       blue="0"
                                       brightness="255"
