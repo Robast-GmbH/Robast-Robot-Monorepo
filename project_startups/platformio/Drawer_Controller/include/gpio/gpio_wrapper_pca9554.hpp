@@ -11,7 +11,7 @@ namespace gpio
 {
   using slave_address_by_register = std::tuple<uint8_t, uint8_t>;
 
-  constexpr bool FOUND_PIN_INFO = true;
+  constexpr bool PIN_INFO_FOUND = true;
   constexpr bool PIN_INFO_NOT_FOUND = false;
 
   class GpioWrapperPca9554 : public interfaces::IGpioWrapper
@@ -55,7 +55,7 @@ namespace gpio
       }
 
       // check if requested pin is accessible via GPIO from the microcontroller
-      if (_pin_mapping_id_to_gpio_info.find(pin_mapping_id) != _pin_mapping_id_to_gpio_info.end())
+      if (_pin_mapping_id_to_gpio_info.contains(pin_mapping_id))
       {
         if (_pin_mapping_id_to_gpio_info.at(pin_mapping_id).is_input && !is_input)
         {
@@ -91,7 +91,7 @@ namespace gpio
         return true;
       }
 
-      if (_pin_mapping_id_to_gpio_info.find(pin_mapping_id) != _pin_mapping_id_to_gpio_info.end())
+      if (_pin_mapping_id_to_gpio_info.contains(pin_mapping_id))
       {
         value = digitalRead(_pin_mapping_id_to_gpio_info.at(pin_mapping_id).pin_number);
         return true;
@@ -117,7 +117,7 @@ namespace gpio
         return _slave_address_to_port_expander.at(slave_address)->digital_write(register_id, state ? HIGH : LOW);
       }
 
-      if (_pin_mapping_id_to_gpio_info.find(pin_mapping_id) != _pin_mapping_id_to_gpio_info.end())
+      if (_pin_mapping_id_to_gpio_info.contains(pin_mapping_id))
       {
         digitalWrite(_pin_mapping_id_to_gpio_info.at(pin_mapping_id).pin_number, state);
         return true;
@@ -127,15 +127,15 @@ namespace gpio
       return false;
     }
 
-    uint8_t get_gpio_num_for_pin_id(const uint8_t pin_id) const
+    uint8_t get_gpio_num_for_pin_id(const uint8_t pin_mapping_id) const
     {
-      if (_pin_mapping_id_to_gpio_info.find(pin_id) == _pin_mapping_id_to_gpio_info.end())
+      if (!_pin_mapping_id_to_gpio_info.contains(pin_mapping_id))
       {
-        Serial.printf("Error! Pin mapping ID %d not found when trying to get GPIO number!\n", pin_id);
+        Serial.printf("Error! Pin mapping ID %d not found when trying to get GPIO number!\n", pin_mapping_id);
         return 0;
       }
 
-      return _pin_mapping_id_to_gpio_info.at(pin_id).pin_number;
+      return _pin_mapping_id_to_gpio_info.at(pin_mapping_id).pin_number;
     }
 
    private:
@@ -154,7 +154,7 @@ namespace gpio
       {
         auto [slave_address, register_id] = _pin_mapping_id_to_slave_address_by_register.at(pin_mapping_id);
 
-        return std::make_tuple(FOUND_PIN_INFO, slave_address, register_id);
+        return std::make_tuple(PIN_INFO_FOUND, slave_address, register_id);
       }
       return std::make_tuple(PIN_INFO_NOT_FOUND, 0, 0);   // Default values if not found
     }
