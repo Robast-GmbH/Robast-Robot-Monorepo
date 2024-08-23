@@ -110,6 +110,9 @@ list(APPEND plugin_libs get_blackboard_value_action_bt_node)
 add_library(publish_drawer_status_action_bt_node SHARED src/action/publish_drawer_status_action.cpp)
 list(APPEND plugin_libs publish_drawer_status_action_bt_node)
 
+add_library(partial_drawer_leds_action_bt_node SHARED src/action/partial_drawer_leds_action.cpp)
+list(APPEND plugin_libs partial_drawer_leds_action_bt_node)
+
 add_library(bool_topic_condition_node SHARED src/condition/bool_topic_condition.cpp)
 list(APPEND plugin_libs bool_topic_condition_node)
 
@@ -118,6 +121,9 @@ list(APPEND plugin_libs led_changed_condition_node)
 
 add_library(is_robot_charging_condition_node SHARED src/condition/is_robot_charging_condition.cpp)
 list(APPEND plugin_libs is_robot_charging_condition_node)
+
+add_library(reactive_if_then_else_node SHARED src/control/reactive_if_then_else.cpp)
+list(APPEND plugin_libs reactive_if_then_else_node)
 
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})

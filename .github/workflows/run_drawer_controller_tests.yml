@@ -1,0 +1,26 @@
+name: Drawer Controller Test
+on: 
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - src/Hardware/platformio_libs/**
+      - .github/workflows/run_hardware_node_tests.yml
+       
+jobs:
+  test-run-drawer-controller:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v4
+           
+    - name: Execute tests 
+      working-directory: src/Hardware/platformio_libs
+      run: >
+          cd $(pwd)/utils &&
+          cmake -S . -B build -DBUILD_TESTING=ON &&
+          cd build &&
+          cmake --build . &&
+          ctest
+
