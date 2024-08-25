@@ -28,29 +28,35 @@ class TaskAssignmentSystem:
         self,
         task: Task,
     ) -> Tuple[bool, str]:
-        if self.__task_assignment_trigger_timer is not None:
-            self.__task_assignment_trigger_timer.cancel()
-
         if not self.__validate_subtask_targets(task):
             return False, "Invalid request, target node not found."
         if not self.__validate_task_requirements(task):
-            return False, "Invalid request, drawer type not mounted in fleet."
+            return False, "Invalid request, submodule type not mounted in fleet."
+        if task.assignee_name and task.assignee_name not in self.__robots:
+            return False, "Invalid request, assignee not found."
+
+        if self.__task_assignment_trigger_timer is not None:
+            self.__task_assignment_trigger_timer.cancel()
 
         self.__task_repository.create_task(task)
+
+        if task.assignee_name:
+            robot = self.__robots[task.assignee_name]
+            robot.accept_direct_task(task)
 
         self.__trigger_task_assignment()
         return True, "Request added to queue."
 
     def __validate_task_requirements(self, task: Task) -> bool:
-        if "required_drawer_type" in task.requirements:
-            robots_with_required_drawer_type = [
+        if "required_submodule_type" in task.requirements:
+            robots_with_required_submodule_type = [
                 robot
                 for robot in self.__robots.values()
-                if robot.is_drawer_type_mounted(
-                    task.requirements["required_drawer_type"]
+                if robot.is_submodule_type_mounted(
+                    task.requirements["required_submodule_type"]
                 )
             ]
-            if not robots_with_required_drawer_type:
+            if not robots_with_required_submodule_type:
                 return False
         return True
 
@@ -76,9 +82,8 @@ class TaskAssignmentSystem:
 
             assignee = self.__find_cheapest_assignment(unassigned_task)
 
-            if assignee is not None:
-                print(f"Assigning task {unassigned_task.id}")
-                assignee.accept_task(unassigned_task)
+            if assignee and assignee.accept_assigned_task(unassigned_task):
+                print(f"Assigned task {unassigned_task.id} to {assignee}")
 
         self.__start_task_assignment_trigger_timer()
 

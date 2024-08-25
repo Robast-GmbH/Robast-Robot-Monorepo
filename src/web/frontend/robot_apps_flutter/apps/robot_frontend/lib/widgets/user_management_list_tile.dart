@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +9,6 @@ import 'package:robot_frontend/widgets/location_selector.dart';
 import 'package:robot_frontend/widgets/nfc_writing_dialog.dart';
 import 'package:robot_frontend/widgets/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/user_name_editor.dart';
-import 'package:uuid/uuid.dart';
 
 class UserManagementListTile extends StatefulWidget {
   const UserManagementListTile({required this.user, required this.onUserUpdate, super.key});
@@ -113,7 +110,7 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                     PopupMenuItem(
                       child: ListTile(
                         leading: const Icon(Icons.nfc),
-                        title: const Text('NFC beschreiben'),
+                        title: const Text('NFC zuweisen'),
                         onTap: () async {
                           Navigator.pop(context);
                           await showDialog<NFCWritingDialog>(

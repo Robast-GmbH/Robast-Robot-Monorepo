@@ -1,8 +1,8 @@
 import sqlite3
 import json
 from typing import List
-from pydantic_models.drawer import Drawer
-from pydantic_models.drawer_address import DrawerAddress
+from pydantic_models.submodule import Submodule
+from pydantic_models.submodule_address import SubmoduleAddress
 
 DB_PATH = "modules.db"
 
@@ -26,9 +26,9 @@ class ModuleRepository:
             self.__db_path = db_path
             self.__create_table()
 
-    def create_drawer(self, drawer: Drawer) -> int | None:
+    def create_submodule(self, submodule: Submodule) -> int | None:
         sql = """
-        INSERT INTO drawers (robot_name, module_id, drawer_id, position, size, variant, module_process_status, module_process_type, module_process_items_by_change, items_by_count, reserved_for_task, reserved_for_ids, reserved_for_groups)
+        INSERT INTO submodules (robot_name, module_id, submodule_id, position, size, variant, module_process_status, module_process_type, module_process_items_by_change, items_by_count, reserved_for_task, reserved_for_ids, reserved_for_groups)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         db_connection = sqlite3.connect(self.__db_path)
@@ -37,19 +37,19 @@ class ModuleRepository:
             cursor.execute(
                 sql,
                 (
-                    drawer.address.robot_name,
-                    drawer.address.module_id,
-                    drawer.address.drawer_id,
-                    drawer.position,
-                    drawer.size,
-                    drawer.variant,
-                    drawer.module_process_status,
-                    drawer.module_process_type,
-                    json.dumps(drawer.module_process_items_by_change),
-                    json.dumps(drawer.items_by_count),
-                    drawer.reserved_for_task,
-                    json.dumps(drawer.reserved_for_ids),
-                    json.dumps(drawer.reserved_for_groups),
+                    submodule.address.robot_name,
+                    submodule.address.module_id,
+                    submodule.address.submodule_id,
+                    submodule.position,
+                    submodule.size,
+                    submodule.variant,
+                    submodule.module_process_status,
+                    submodule.module_process_type,
+                    json.dumps(submodule.module_process_items_by_change),
+                    json.dumps(submodule.items_by_count),
+                    submodule.reserved_for_task,
+                    json.dumps(submodule.reserved_for_ids),
+                    json.dumps(submodule.reserved_for_groups),
                 ),
             )
         except Exception as e:
@@ -60,19 +60,21 @@ class ModuleRepository:
             db_connection.close()
         return cursor.lastrowid
 
-    def read_drawer(self, address: DrawerAddress) -> Drawer | None:
-        sql = "SELECT * FROM drawers WHERE robot_name = ? AND module_id = ? AND drawer_id = ?"
+    def read_submodule(self, address: SubmoduleAddress) -> Submodule | None:
+        sql = "SELECT * FROM submodules WHERE robot_name = ? AND module_id = ? AND submodule_id = ?"
         db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
-        cursor.execute(sql, (address.robot_name, address.module_id, address.drawer_id))
+        cursor.execute(
+            sql, (address.robot_name, address.module_id, address.submodule_id)
+        )
         row = cursor.fetchone()
         db_connection.close()
         if row:
-            return Drawer(
-                address=DrawerAddress(
+            return Submodule(
+                address=SubmoduleAddress(
                     robot_name=row[0],
                     module_id=row[1],
-                    drawer_id=row[2],
+                    submodule_id=row[2],
                 ),
                 position=row[3],
                 size=row[4],
@@ -87,21 +89,21 @@ class ModuleRepository:
             )
         return None
 
-    def read_robot_drawers(self, robot_name: str) -> List[Drawer]:
-        sql = "SELECT * FROM drawers WHERE robot_name = ?"
+    def read_robot_submodules(self, robot_name: str) -> List[Submodule]:
+        sql = "SELECT * FROM submodules WHERE robot_name = ?"
         db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
         cursor.execute(sql, (robot_name,))
         rows = cursor.fetchall()
         db_connection.close()
-        drawers = []
+        submodules = []
         for row in rows:
-            drawers.append(
-                Drawer(
-                    address=DrawerAddress(
+            submodules.append(
+                Submodule(
+                    address=SubmoduleAddress(
                         robot_name=row[0],
                         module_id=row[1],
-                        drawer_id=row[2],
+                        submodule_id=row[2],
                     ),
                     position=row[3],
                     size=row[4],
@@ -115,39 +117,39 @@ class ModuleRepository:
                     reserved_for_groups=json.loads(row[12]),
                 )
             )
-        return drawers
+        return submodules
 
-    def update_drawer(self, drawer: Drawer):
+    def update_submodule(self, submodule: Submodule):
         sql = """
-        UPDATE drawers
+        UPDATE submodules
         SET position = ?, size = ?, variant = ?, items_by_count = ?, reserved_for_task = ?, reserved_for_ids = ?, reserved_for_groups = ?, module_process_status = ?, module_process_type = ?, module_process_items_by_change = ?
-        WHERE robot_name = ? AND module_id = ? AND drawer_id = ?
+        WHERE robot_name = ? AND module_id = ? AND submodule_id = ?
         """
         db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
         cursor.execute(
             sql,
             (
-                drawer.position,
-                drawer.size,
-                drawer.variant,
-                json.dumps(drawer.items_by_count),
-                drawer.reserved_for_task,
-                json.dumps(drawer.reserved_for_ids),
-                json.dumps(drawer.reserved_for_groups),
-                drawer.module_process_status,
-                drawer.module_process_type,
-                json.dumps(drawer.module_process_items_by_change),
-                drawer.address.robot_name,
-                drawer.address.module_id,
-                drawer.address.drawer_id,
+                submodule.position,
+                submodule.size,
+                submodule.variant,
+                json.dumps(submodule.items_by_count),
+                submodule.reserved_for_task,
+                json.dumps(submodule.reserved_for_ids),
+                json.dumps(submodule.reserved_for_groups),
+                submodule.module_process_status,
+                submodule.module_process_type,
+                json.dumps(submodule.module_process_items_by_change),
+                submodule.address.robot_name,
+                submodule.address.module_id,
+                submodule.address.submodule_id,
             ),
         )
         db_connection.commit()
         db_connection.close()
 
-    def delete_drawer(self, address: DrawerAddress):
-        sql = "DELETE FROM drawers WHERE robot_name = ? AND module_id = ? AND drawer_id = ?"
+    def delete_submodule(self, address: SubmoduleAddress):
+        sql = "DELETE FROM submodules WHERE robot_name = ? AND module_id = ? AND submodule_id = ?"
         db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
         cursor.execute(
@@ -155,7 +157,7 @@ class ModuleRepository:
             (
                 address.robot_name,
                 address.module_id,
-                address.drawer_id,
+                address.submodule_id,
             ),
         )
         db_connection.commit()
@@ -163,10 +165,10 @@ class ModuleRepository:
 
     def __create_table(self):
         create_table_sql = """
-        CREATE TABLE IF NOT EXISTS drawers (
+        CREATE TABLE IF NOT EXISTS submodules (
             robot_name TEXT NOT NULL,
             module_id INTEGER NOT NULL,
-            drawer_id INTEGER NOT NULL,
+            submodule_id INTEGER NOT NULL,
             position INTEGER,
             size INTEGER,
             variant TEXT,
@@ -177,7 +179,7 @@ class ModuleRepository:
             reserved_for_task TEXT,
             reserved_for_ids TEXT,
             reserved_for_groups TEXT,
-            PRIMARY KEY (robot_name, module_id, drawer_id)
+            PRIMARY KEY (robot_name, module_id, submodule_id)
         );
         """
         try:

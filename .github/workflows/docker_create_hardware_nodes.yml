@@ -40,7 +40,9 @@ jobs:
       with:
         context: src/ros2/${{ env.Project-Name }}/
         target: devel
-        build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }} #TODO @TAlscher find a smarter way then using this token
+        build-args: |
+          GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
+          GIT_BRANCH=${{ github.ref_name }}
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
         tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
