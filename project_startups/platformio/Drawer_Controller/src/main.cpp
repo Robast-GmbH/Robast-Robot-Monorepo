@@ -217,6 +217,10 @@ void setup()
 
   led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>>();
 
+  // Very important to initialize this before the can_controller is created
+  can_queue_mutex = xSemaphoreCreateMutex();
+  can_msg_queue = std::make_unique<utils::Queue<robast_can_msgs::CanMessage>>();
+
 #if HARDWARE_VERSION == 3
   can_controller = std::make_unique<can_toolbox::CanController<peripherals::pinout::SPI_MISO,
                                                                peripherals::pinout::SPI_MOSI,
@@ -228,9 +232,6 @@ void setup()
   can_controller = std::make_unique<can_toolbox::CanController>(
     MODULE_ID, can_db, peripherals::pinout::TWAI_TX_PIN, peripherals::pinout::TWAI_RX_PIN);
 #endif
-
-  can_queue_mutex = xSemaphoreCreateMutex();
-  can_msg_queue = std::make_unique<utils::Queue<robast_can_msgs::CanMessage>>();
 
   drawer_lock = std::make_shared<lock::ElectricalDrawerLock>(gpio_wrapper,
                                                              gpio_defines::pin_id::LOCK_1_OPEN_CONTROL,
@@ -274,6 +275,8 @@ void setup()
 
   debug_println("[Main]: Finished setup()!");
 
+  delay(500);
+
   xTaskCreatePinnedToCore(receive_can_msg_task_loop, /* Task function. */
                           "Task1",                   /* name of task. */
                           10000,                     /* Stack size of task */
@@ -282,7 +285,7 @@ void setup()
                           &Task1,                    /* Task handle to keep track of created task */
                           0);                        /* pin task to core 0 */
 
-  delay(100);
+  delay(500);
 
   xTaskCreatePinnedToCore(process_can_msgs_task_loop, /* Task function. */
                           "Task2",                    /* name of task. */
