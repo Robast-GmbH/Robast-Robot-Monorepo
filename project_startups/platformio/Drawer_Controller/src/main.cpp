@@ -27,6 +27,7 @@ constexpr bool USE_ENCODER = true;
 constexpr bool IS_SHAFT_DIRECTION_INVERTED = false;
 constexpr switch_lib::Switch::SwitchType ENDSTOP_SWITCH_TYPE = switch_lib::Switch::normally_open;
 constexpr uint8_t NUM_OF_LEDS = 18;   // 18 LEDs at the old drawer and 21 LEDs at the new drawer
+constexpr bool USE_COLOR_FADE = true;
 
 std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
 
@@ -215,7 +216,7 @@ void setup()
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   can_message_converter = std::make_unique<utils::CanMessageConverter>();
 
-  led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>>();
+  led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>>(USE_COLOR_FADE);
 
   // Very important to initialize this before the can_controller is created
   can_queue_mutex = xSemaphoreCreateMutex();

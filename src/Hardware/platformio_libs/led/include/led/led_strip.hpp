@@ -30,8 +30,8 @@ namespace led
   template <uint8_t led_pixel_pin, uint8_t num_of_leds>
   class LedStrip
   {
-   public:
-    LedStrip();
+  public:
+    LedStrip(const bool use_color_fading);
 
     void handle_led_control();
 
@@ -54,7 +54,9 @@ namespace led
 
     CRGBArray<num_of_leds> _leds;
 
-    unsigned long _previous_millis = 0;   // makes sure that applying led animations is not done more then required
+    unsigned long _previous_millis = 0; // makes sure that applying led animations is not done more then required
+
+    const bool _use_color_fading;
 
     void led_init_mode();
 
@@ -81,12 +83,13 @@ namespace led
   *********************************************************************************************************/
 
   template <uint8_t led_pixel_pin, uint8_t num_of_leds>
-  LedStrip<led_pixel_pin, num_of_leds>::LedStrip()
+  LedStrip<led_pixel_pin, num_of_leds>::LedStrip(const bool use_color_fading)
       : _starting_led_states(num_of_leds),
         _current_led_states(num_of_leds),
         _target_led_animation(std::vector<LedState>(num_of_leds), 0, num_of_leds, 0),
         _new_target_led_animation(std::vector<LedState>(num_of_leds), 0, num_of_leds, 0),
-        _led_animations_queue(std::make_unique<utils::Queue<LedAnimation>>())
+        _led_animations_queue(std::make_unique<utils::Queue<LedAnimation>>()),
+        _use_color_fading(use_color_fading)
   {
     initialize_led_strip();
   }
@@ -139,7 +142,6 @@ namespace led
   template <uint8_t led_pixel_pin, uint8_t num_of_leds>
   void LedStrip<led_pixel_pin, num_of_leds>::apply_led_states_to_led_strip()
   {
-    FastLED.setBrightness(LED_MAX_BRIGHTNESS);   // individual led brightness will be scaled down in the for loop
     for (uint16_t i = _target_led_animation.start_index_led_states;
          i < _target_led_animation.num_of_led_states_to_change;
          ++i)
@@ -200,18 +202,25 @@ namespace led
           // TODO@Jacob: For the leds at the base it seems that all these interpolation computations disturb the change
           // TODO@Jacob: of the correct leds. At least when i comment this out the correct leds are changed.
           // TODO@Jacob: Find a way to not need the linear interpolation as this is computationally expensive
-          // _current_led_states[i].red =
-          //   linear_interpolation(_starting_led_states[i].red, _target_led_animation.target_led_states[i].red,
-          //   progress);
-          // _current_led_states[i].green = linear_interpolation(
-          //   _starting_led_states[i].green, _target_led_animation.target_led_states[i].green, progress);
-          // _current_led_states[i].blue = linear_interpolation(
-          //   _starting_led_states[i].blue, _target_led_animation.target_led_states[i].blue, progress);
-          _current_led_states[i].red = _target_led_animation.target_led_states[i].red;
-          _current_led_states[i].green = _target_led_animation.target_led_states[i].green;
-          _current_led_states[i].blue = _target_led_animation.target_led_states[i].blue;
+          if (_use_color_fading)
+          {
+            _current_led_states[i].red =
+                linear_interpolation(_starting_led_states[i].red, _target_led_animation.target_led_states[i].red,
+                                     progress);
+            _current_led_states[i].green = linear_interpolation(
+                _starting_led_states[i].green, _target_led_animation.target_led_states[i].green, progress);
+            _current_led_states[i].blue = linear_interpolation(
+                _starting_led_states[i].blue, _target_led_animation.target_led_states[i].blue, progress);
+          }
+          else
+          {
+            _current_led_states[i].red = _target_led_animation.target_led_states[i].red;
+            _current_led_states[i].green = _target_led_animation.target_led_states[i].green;
+            _current_led_states[i].blue = _target_led_animation.target_led_states[i].blue;
+          }
+
           _current_led_states[i].brightness = linear_interpolation(
-            _starting_led_states[i].brightness, _target_led_animation.target_led_states[i].brightness, progress);
+              _starting_led_states[i].brightness, _target_led_animation.target_led_states[i].brightness, progress);
         }
       }
       else
