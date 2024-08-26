@@ -118,6 +118,10 @@
                                         upper_bound="100.0"
                                         LEDs_colored="{leds}"/>
                   </Delay>
+                  <LEDPublisherAction drawer_address="{drawer}"
+                                      fading_time_ms="100"
+                                      led_topic="/led_cmd"
+                                      leds="{leds}"/>
                 </Sequence>
                 <Sequence>
                   <PartialColorizeLED LEDs="{leds}"
@@ -158,6 +162,10 @@
                                         upper_bound="100.0"
                                         LEDs_colored="{leds}"/>
                   </Delay>
+                  <LEDPublisherAction drawer_address="{drawer}"
+                                      fading_time_ms="100"
+                                      led_topic="/led_cmd"
+                                      leds="{leds}"/>
                 </Sequence>
                 <AlwaysSuccess/>
                 <AlwaysSuccess/>
