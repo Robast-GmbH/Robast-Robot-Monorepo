@@ -35,7 +35,7 @@ def generate_test_description():
         executable='drawer_bridge_test',
         name='drawer_bridge',
     )
-    context = {'dut': dut  }
+    context = {'dut': dut}
 
     return (launch.LaunchDescription([   
         dut,

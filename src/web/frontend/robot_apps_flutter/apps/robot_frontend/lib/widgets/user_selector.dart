@@ -7,22 +7,38 @@ import 'package:robot_frontend/models/provider/user_provider.dart';
 class UserSelector extends StatefulWidget {
   const UserSelector({
     required this.controller,
+    this.initWithSessionUser = false,
+    this.onChanged,
     super.key,
   });
 
   final UserSelectionController controller;
+  final bool initWithSessionUser;
+  final void Function()? onChanged;
 
   @override
   State<UserSelector> createState() => _UserSelectorState();
 }
 
 class _UserSelectorState extends State<UserSelector> {
-  late Future<List<User>> loadUsersFuture;
+  late Future<List<User>> initUserSelectorFuture;
+
+  Future<List<User>> initUserSelector() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final users = await userProvider.getUsers();
+    if (widget.initWithSessionUser) {
+      final userSession = await userProvider.getUserSession(robotName: 'rb_theron');
+      if (userSession != null) {
+        widget.controller.selectedUser = users.firstWhere((element) => userSession.id == element.id);
+      }
+    }
+    return users;
+  }
 
   @override
   void initState() {
     super.initState();
-    loadUsersFuture = Provider.of<UserProvider>(context, listen: false).getUsers();
+    initUserSelectorFuture = initUserSelector();
   }
 
   @override
@@ -45,20 +61,20 @@ class _UserSelectorState extends State<UserSelector> {
             ),
             Expanded(
               child: FutureBuilder<List<User>>(
-                future: loadUsersFuture,
+                future: initUserSelectorFuture,
                 builder: (context, snapshot) {
-                  return DropdownButton<User>(
+                  return DropdownButton<String>(
                     disabledHint: const Text(''),
                     isExpanded: true,
-                    value: widget.controller.selectedUser,
+                    value: widget.controller.selectedUser?.id,
                     items: snapshot.connectionState != ConnectionState.done
                         ? []
                         : snapshot.data!
                             .map(
-                              (e) => DropdownMenuItem<User>(
-                                value: e,
+                              (e) => DropdownMenuItem<String>(
+                                value: e.id,
                                 child: Text(
-                                  '${e.title} ${e.firstName} ${e.lastName}',
+                                  ' ${e.title}${e.title.isNotEmpty ? ' ' : ''}${e.firstName} ${e.lastName}',
                                   style: const TextStyle(
                                     fontSize: 24,
                                   ),
@@ -68,7 +84,10 @@ class _UserSelectorState extends State<UserSelector> {
                             .toList(),
                     onChanged: (value) {
                       setState(() {
-                        widget.controller.selectedUser = value;
+                        if (snapshot.data?.any((element) => element.id == value) ?? false) {
+                          widget.controller.selectedUser = snapshot.data!.firstWhere((element) => element.id == value);
+                        }
+                        widget.onChanged?.call();
                       });
                     },
                   );
@@ -83,6 +102,7 @@ class _UserSelectorState extends State<UserSelector> {
                 setState(() {
                   widget.controller.selectedUser = null;
                 });
+                widget.onChanged?.call();
               },
               icon: const Icon(Icons.delete),
             ),

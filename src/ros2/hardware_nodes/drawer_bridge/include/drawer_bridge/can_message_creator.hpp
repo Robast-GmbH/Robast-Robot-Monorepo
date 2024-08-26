@@ -5,6 +5,7 @@
 #include "communication_interfaces/msg/drawer_task.hpp"
 #include "communication_interfaces/msg/led.hpp"
 #include "communication_interfaces/msg/led_cmd.hpp"
+#include "communication_interfaces/msg/tray_task.hpp"
 
 namespace drawer_bridge
 {
@@ -15,6 +16,7 @@ namespace drawer_bridge
     using DrawerTask = communication_interfaces::msg::DrawerTask;
     using Led = communication_interfaces::msg::Led;
     using LedCmd = communication_interfaces::msg::LedCmd;
+    using TrayTask = communication_interfaces::msg::TrayTask;
 
     can_msgs::msg::Frame create_can_msg_drawer_unlock(const DrawerAddress& msg) const;
 
@@ -24,6 +26,14 @@ namespace drawer_bridge
 
     can_msgs::msg::Frame create_can_msg_set_single_led_state(const Led& led_state,
                                                              const DrawerAddress& drawer_address) const;
+
+    can_msgs::msg::Frame create_can_msg_tray_led_brightness(const DrawerAddress& drawer_address,
+                                                            const uint8_t led_row,
+                                                            const uint8_t brightness) const;
+
+    can_msgs::msg::Frame create_can_msg_set_module_config(const DrawerAddress& drawer_address,
+                                                          const uint8_t config_id,
+                                                          const uint32_t config_value) const;
 
    private:
     CanEncoderDecoder _can_encoder_decoder = CanEncoderDecoder();

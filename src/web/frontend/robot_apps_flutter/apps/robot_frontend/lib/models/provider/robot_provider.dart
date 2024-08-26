@@ -6,16 +6,13 @@ import 'package:shared_data_models/shared_data_models.dart';
 
 class RobotProvider extends ChangeNotifier {
   Pose? _robotPose;
-  List<DrawerModule>? _modules;
   bool _isNavigationBlocked = false;
 
   Timer? _robotPoseUpdateTimer;
-  Timer? _modulesUpdateTimer;
 
   late RobotApiUtilities _robotAPI;
 
   Pose? get robotPose => _robotPose;
-  List<DrawerModule>? get modules => _modules;
 
   void initRobotAPI({required String prefix}) {
     _robotAPI = RobotApiUtilities(prefix: prefix);
@@ -28,11 +25,6 @@ class RobotProvider extends ChangeNotifier {
 
   Future<void> updateRobotPose() async {
     _robotPose = await _robotAPI.getRobotPose();
-    notifyListeners();
-  }
-
-  Future<void> updateModules() async {
-    _modules = await _robotAPI.getModules();
     notifyListeners();
   }
 
@@ -50,17 +42,6 @@ class RobotProvider extends ChangeNotifier {
     );
   }
 
-  void startPeriodicModulesUpdate() {
-    _modulesUpdateTimer = startPeriodicUpdate(
-      updateModules,
-      const Duration(milliseconds: 500),
-    );
-  }
-
-  void stopPeriodicModuleUpdate() {
-    _modulesUpdateTimer?.cancel();
-  }
-
   void stopPeriodicRobotPoseUpdate() {
     _robotPoseUpdateTimer?.cancel();
   }
@@ -72,19 +53,19 @@ class RobotProvider extends ChangeNotifier {
     });
   }
 
-  void closeDrawer(DrawerModule module) {
-    _robotAPI.closeDrawer(moduleID: module.moduleID, drawerID: module.drawerID);
-  }
-
-  void openDrawer(DrawerModule module) {
-    _robotAPI.openDrawer(moduleID: module.moduleID, drawerID: module.drawerID);
-  }
-
   Future<void> blockNavigation() async {
     await _robotAPI.blockNavigation();
   }
 
   Future<void> unblockNavigation() async {
     await _robotAPI.unblockNavigation();
+  }
+
+  Future<bool> waitForDisinfectionTriggered({required VoidCallback onDisinfection, int timeout = 10}) async {
+    final wasSuccessful = await _robotAPI.waitForDisinfectionTriggered(timeout: timeout);
+    if (wasSuccessful) {
+      onDisinfection();
+    }
+    return wasSuccessful;
   }
 }

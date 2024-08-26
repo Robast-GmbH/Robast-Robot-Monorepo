@@ -31,11 +31,11 @@ class UserProvider extends ChangeNotifier {
     return _middlewareApiUtilities.users.deleteUser(id: id);
   }
 
-  Future<bool> createAndWriteUserNFC({
+  Future<bool> readAndAssignUserNFC({
     required String robotName,
     required String userID,
   }) async {
-    return _middlewareApiUtilities.users.createAndWriteUserNFC(robotName: robotName, userID: userID);
+    return _middlewareApiUtilities.users.readAndAssignUserNFC(robotName: robotName, userID: userID);
   }
 
   Future<User?> getUserSession({required String robotName}) async {

@@ -39,7 +39,7 @@ class AuthSessionManager:
         try:
             # Fetch NFC tag data from the robot's API
             response = requests.get(
-                f"http://{self.__fleet_ip_config[robot_name]}:{self.__robot_api_port}/read_nfc_tag"
+                f"http://{self.__fleet_ip_config[robot_name]}:{self.__robot_api_port}/read_nfc_tag?timeout_in_s=30"
             )
 
             # Check if the request was successful

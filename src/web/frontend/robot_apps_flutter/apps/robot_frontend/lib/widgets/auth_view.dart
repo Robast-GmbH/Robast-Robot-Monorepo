@@ -15,7 +15,7 @@ class AuthView extends StatefulWidget {
   });
   final List<String> requiredUserIDs;
   final List<String> requiredUserGroups;
-  final void Function(bool) onAuthCompleted;
+  final void Function({required bool wasSuccessful}) onAuthCompleted;
   final VoidCallback? onRetry;
 
   @override
@@ -33,7 +33,7 @@ class _AuthViewState extends State<AuthView> {
       requiredUserIDs: widget.requiredUserIDs,
       requiredUserGroups: widget.requiredUserGroups,
     );
-    widget.onAuthCompleted(wasSuccessful);
+    widget.onAuthCompleted(wasSuccessful: wasSuccessful);
 
     return wasSuccessful;
   }
@@ -102,16 +102,8 @@ class _AuthViewState extends State<AuthView> {
         FutureBuilder<bool>(
           future: tryStartUserSessionFuture,
           builder: (context, snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
+            if (snapshot.connectionState != ConnectionState.done || snapshot.data!) {
               return const CircularProgressIndicator();
-            } else if (snapshot.data!) {
-              return const Text(
-                'Authentifizierung erfolgreich',
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold,
-                ),
-              );
             } else {
               return InkWell(
                 onTap: () {

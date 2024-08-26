@@ -1,0 +1,6 @@
+# request
+uint16 timeout_in_s
+---
+# response
+string nfc_payload
+

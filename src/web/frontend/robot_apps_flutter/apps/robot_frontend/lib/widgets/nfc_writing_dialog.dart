@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 
-enum NFCWritingStatus {
+enum NFCAssignmentStatus {
   inProgress,
   success,
   error,
@@ -18,20 +18,20 @@ class NFCWritingDialog extends StatefulWidget {
 }
 
 class _NFCWritingDialogState extends State<NFCWritingDialog> {
-  NFCWritingStatus status = NFCWritingStatus.inProgress;
+  NFCAssignmentStatus status = NFCAssignmentStatus.inProgress;
 
-  Future<void> writeNFC() async {
-    status = NFCWritingStatus.inProgress;
+  Future<void> readAndAssignNFC() async {
+    status = NFCAssignmentStatus.inProgress;
     setState(() {});
 
-    final isSuccess = await Provider.of<UserProvider>(context, listen: false).createAndWriteUserNFC(
+    final isSuccess = await Provider.of<UserProvider>(context, listen: false).readAndAssignUserNFC(
       robotName: 'rb_theron',
       userID: widget.userID,
     );
     if (isSuccess) {
-      status = NFCWritingStatus.success;
+      status = NFCAssignmentStatus.success;
     } else {
-      status = NFCWritingStatus.error;
+      status = NFCAssignmentStatus.error;
     }
     if (mounted) {
       setState(() {});
@@ -41,12 +41,12 @@ class _NFCWritingDialogState extends State<NFCWritingDialog> {
   @override
   void initState() {
     super.initState();
-    writeNFC();
+    readAndAssignNFC();
   }
 
   Widget buildContent() {
     switch (status) {
-      case NFCWritingStatus.inProgress:
+      case NFCAssignmentStatus.inProgress:
         return const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -57,25 +57,25 @@ class _NFCWritingDialogState extends State<NFCWritingDialog> {
             Center(child: CircularProgressIndicator()),
           ],
         );
-      case NFCWritingStatus.success:
-        return const Text('NFC Tag erfolgreich beschrieben');
-      case NFCWritingStatus.error:
-        return const Text('Fehler beim Beschreiben des NFC Tags');
+      case NFCAssignmentStatus.success:
+        return const Text('NFC Tag erfolgreich zugewiesen');
+      case NFCAssignmentStatus.error:
+        return const Text('Fehler beim Zuweisen des NFC Tags');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('NFC Tag schreiben'),
+      title: const Text('NFC Tag zuweisen'),
       content: buildContent(),
       actions: <Widget>[
-        if (status == NFCWritingStatus.error)
+        if (status == NFCAssignmentStatus.error)
           TextButton(
-            onPressed: writeNFC,
+            onPressed: readAndAssignNFC,
             child: const Text('Erneut versuchen'),
           ),
-        if (status == NFCWritingStatus.success)
+        if (status == NFCAssignmentStatus.success)
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();

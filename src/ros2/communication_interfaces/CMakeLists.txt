@@ -34,8 +34,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/HandleDrawer.srv"
   "srv/ShelfSetupInfo.srv"
   "srv/ShowDrawerInterface.srv"
-  "srv/WriteNfcTag.srv"
+  "srv/WriteNfcNtagPayload.srv"
   "srv/ReadNfcTag.srv"
+  "srv/ReadNfcNtagPayload.srv"
 
   "msg/Box.msg"
   "msg/DrawerAddress.msg"
@@ -45,12 +46,13 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Led.msg"
   "msg/LedCmd.msg"
   "msg/Module.msg"
+  "msg/ModuleConfig.msg"
   "msg/NfcReadStatus.msg"
   "msg/NfcWriteStatus.msg"
   "msg/Task.msg"
   "msg/TaskStatus.msg"
   "msg/Ticket.msg"
-  "msg/NorelemStepperControl.msg"
+  "msg/TrayTask.msg"
 
   "error_msgs/ErrorBaseMsg.msg"
   DEPENDENCIES builtin_interfaces geometry_msgs std_msgs nav_msgs
