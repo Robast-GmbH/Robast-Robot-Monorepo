@@ -7,7 +7,6 @@ import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/widgets/auth_view.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
 import 'package:robot_frontend/widgets/disinfection_view.dart';
-import 'package:robot_frontend/widgets/drawer_view.dart';
 import 'package:robot_frontend/widgets/hint_view.dart';
 
 class ModuleProcessView extends StatefulWidget {
@@ -35,13 +34,13 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
     isDisinfected = !widget.requireDesinfection;
   }
 
-  Future<void> onFinish(RobotDrawer moduleInProcess) async {
+  Future<void> onFinish(Submodule moduleInProcess) async {
     if (!mounted) {
       return;
     }
     final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
-    await moduleProvider.finishModuleProcess(moduleInProcess);
-    await moduleProvider.fetchModules();
+    await moduleProvider.finishSubmoduleProcess(moduleInProcess);
+    await moduleProvider.fetchSubmodules();
     finishedTimer?.cancel();
     if (mounted) {
       Navigator.pop(context);
@@ -60,19 +59,19 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
       children: [
         const Expanded(child: SizedBox()),
         Expanded(
-          child: Selector<ModuleProvider, List<RobotDrawer>>(
-            selector: (_, provider) => provider.modules,
+          child: Selector<ModuleProvider, List<Submodule>>(
+            selector: (_, provider) => provider.submodules,
             builder: (context, modules, child) {
               if (modules.isEmpty || modules.every((module) => module.moduleProcess.status == ModuleProcessStatus.idle)) {
                 return const Center(child: CircularProgressIndicator());
               }
-              final moduleInProcess = Provider.of<ModuleProvider>(context).modules.firstWhere(
+              final moduleInProcess = Provider.of<ModuleProvider>(context).submodules.firstWhere(
                     (element) => element.moduleProcess.status != ModuleProcessStatus.idle,
                   );
               if (isDisinfected && moduleInProcess.moduleProcess.status == ModuleProcessStatus.waitingForOpening && !openingTriggered) {
                 openingTriggered = true;
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Provider.of<ModuleProvider>(context, listen: false).openDrawer(moduleInProcess);
+                  Provider.of<ModuleProvider>(context, listen: false).openSubmodule(moduleInProcess);
                 });
                 return const Center(child: CircularProgressIndicator());
               }
@@ -81,9 +80,9 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                 return AuthView(
                   requiredUserIDs: moduleInProcess.reservedForIds,
                   requiredUserGroups: moduleInProcess.reservedForGroups,
-                  onAuthCompleted: (wasAuthSuccessful) {
-                    if (wasAuthSuccessful) {
-                      Provider.of<ModuleProvider>(context, listen: false).fetchModules();
+                  onAuthCompleted: ({required bool wasSuccessful}) {
+                    if (wasSuccessful) {
+                      Provider.of<ModuleProvider>(context, listen: false).fetchSubmodules();
                     }
                   },
                 );
@@ -105,30 +104,30 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                     children: [
                       if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.opening) ...[
                         HintView(
-                          text: modules[moduleInProcess.moduleID - 1].variant == DrawerVariant.electric
+                          text: modules[moduleInProcess.address.moduleID - 1].variant == SubmoduleVariant.electric
                               ? 'Gewählte Schublade öffnet sich'
                               : 'Bitte gewählte Schublade öffnen',
-                          moduleLabel: 'Modul ${moduleInProcess.moduleID}',
+                          moduleLabel: 'Modul ${moduleInProcess.address.moduleID}',
                         ),
                       ],
                       if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.open) ...[
                         GestureDetector(
                           onTap: () {
-                            if (moduleInProcess.variant == DrawerVariant.electric) {
-                              Provider.of<ModuleProvider>(context, listen: false).closeDrawer(moduleInProcess);
+                            if (moduleInProcess.variant == SubmoduleVariant.electric) {
+                              Provider.of<ModuleProvider>(context, listen: false).closeSubmodule(moduleInProcess);
                             }
                           },
                           child: HintView(
                             text:
-                                '${moduleInProcess.moduleProcess.itemsByChangeToString()}${moduleInProcess.variant == DrawerVariant.electric ? ' Zum Schließen tippen.' : ''}',
-                            moduleLabel: 'Modul ${moduleInProcess.moduleID}',
+                                '${moduleInProcess.moduleProcess.itemsByChangeToString()}${moduleInProcess.variant == SubmoduleVariant.electric ? ' Zum Schließen tippen.' : ''}',
+                            moduleLabel: 'Modul ${moduleInProcess.address.moduleID}',
                           ),
                         ),
                       ],
                       if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.closing) ...[
                         HintView(
                           text: 'Schublade schließt sich, bitte warten',
-                          moduleLabel: 'Module ${moduleInProcess.moduleID}',
+                          moduleLabel: 'Modul ${moduleInProcess.address.moduleID}',
                         ),
                       ],
                     ],
@@ -164,7 +163,7 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                         child: CustomButtonView(
                           text: 'Reopen',
                           onPressed: () async {
-                            await Provider.of<ModuleProvider>(context, listen: false).openDrawer(moduleInProcess);
+                            await Provider.of<ModuleProvider>(context, listen: false).openSubmodule(moduleInProcess);
                             finishedTimer?.cancel();
                             waitingForFinish = false;
                             finishTimerClockIndex = 0;

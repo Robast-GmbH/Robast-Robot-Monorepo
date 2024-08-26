@@ -2,8 +2,8 @@
 #define DRAWER_BRIDGE__CAN_ENCODER_DECODER_HPP_
 
 #include "can/can_db.hpp"
-#include "can/can_helper.h"
-#include "can/can_message.h"
+#include "can/can_helper.hpp"
+#include "can/can_message.hpp"
 #include "can_msgs/msg/frame.hpp"
 
 namespace drawer_bridge

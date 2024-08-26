@@ -1,6 +1,6 @@
 import unittest
 import os
-from middleware.user_system.user_repository import UserRepository
+from user_system.user_repository import UserRepository
 
 
 # has to be run from middleware directory because of the relative import

@@ -24,11 +24,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   Future<void> startModuleProcess() async {
     final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
-    if (moduleProvider.isInModuleProcess) {
+    if (moduleProvider.isInSubmoduleProcess) {
       return;
     }
 
-    moduleProvider.isInModuleProcess = true;
+    moduleProvider.isInSubmoduleProcess = true;
     await Navigator.push(
       context,
       MaterialPageRoute<ModuleProcessPage>(
@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         ),
       ),
     );
-    moduleProvider.isInModuleProcess = false;
+    moduleProvider.isInSubmoduleProcess = false;
     if (mounted && (ModalRoute.of(context)?.isCurrent ?? false)) {
       await Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
     }
@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!isModuleUpdateActive) {
         isModuleUpdateActive = true;
-        Provider.of<ModuleProvider>(context, listen: false).startModulesUpdateTimer(onModuleProcess: startModuleProcess);
+        Provider.of<ModuleProvider>(context, listen: false).startSubmodulesUpdateTimer(onModuleProcess: startModuleProcess);
       }
     });
     return Scaffold(

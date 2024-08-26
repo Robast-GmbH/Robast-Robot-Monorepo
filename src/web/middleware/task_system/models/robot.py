@@ -1,5 +1,5 @@
 from pydantic_models.sub_task import SubTask
-from pydantic_models.drawer_address import DrawerAddress
+from pydantic_models.submodule_address import SubmoduleAddress
 from task_system.models.node import Node
 from task_system.models.fleet_management_api import FleetManagementAPI
 from task_system.models.nav_graph import NavGraph
@@ -12,6 +12,7 @@ import threading
 
 class Robot:
     UPDATE_TIMER_INTERVAL_IN_S = 1
+    TASK_RECEIVE_WINDOW_IN_S = 5
 
     def __init__(
         self,
@@ -23,7 +24,7 @@ class Robot:
         self.__fleet_management_api = FleetManagementAPI(FLEET_MANAGEMENT_ADDRESS)
         self.__current_node = initial_node
         self.__nav_graph = nav_graph
-        self.__module_manager = ModuleManager()
+        self.__submodule_manager = ModuleManager()
         self.__task_manager = TaskManager()
         self.__current_subtask_id = None
         self.__current_subtask_fm_id = None
@@ -38,52 +39,69 @@ class Robot:
         self.__start_task_status_update_timer()
 
     def get_request_cost(self, task: Task) -> float:
-        if "required_drawer_type" in task.requirements:
-            is_drawer_available = self.__module_manager.is_module_size_available(
-                self.__name,
-                int(task.requirements["required_drawer_type"]),
+        if "required_submodule_type" in task.requirements:
+            is_submodule_available = (
+                self.__submodule_manager.is_submodule_size_available(
+                    self.__name,
+                    int(task.requirements["required_submodule_type"]),
+                )
             )
-            if not is_drawer_available:
+            if not is_submodule_available:
                 return float("inf")
 
         return float(len(self.__subtask_queue))
 
-    def accept_task(self, task: Task) -> None:
-        if not self.__handle_requirements(task):
-            return
+    def accept_assigned_task(self, task: Task) -> bool:
+        self.__open_task_receive_window()
+        if self.__handle_requirements(task):
+            self.__task_manager.assign_task(task.id, self.__name)
+            self.__enqueue_task(task)
+            return True
+        return False
 
-        self.__task_manager.assign_task(task.id, self.__name)
+    def accept_direct_task(self, task: Task) -> None:
+        self.__open_task_receive_window()
+        self.__enqueue_task(task)
 
-        with self.__subtask_queue_lock:
-            self.__subtask_queue.extend([subtask.id for subtask in task.subtasks])
-            self.__optimize_task_queue()
+    def is_submodule_type_mounted(self, submodule_type: int) -> bool:
+        return self.__submodule_manager.is_submodule_type_mounted(
+            self.__name, submodule_type
+        )
 
-    def is_drawer_type_mounted(self, drawer_type: int) -> bool:
-        return self.__module_manager.is_drawer_type_mounted(self.__name, drawer_type)
+    def __open_task_receive_window(self) -> None:
+        if self.__timer:
+            self.__timer.cancel()
+            self.__timer = threading.Timer(
+                self.TASK_RECEIVE_WINDOW_IN_S, self.__task_status_update_callback
+            )
+            self.__timer.start()
 
     def __handle_requirements(self, task: Task) -> bool:
-        if "required_drawer_type" in task.requirements:
-            drawer = self.__module_manager.try_reserve_module_type(
-                self.__name, task.requirements["required_drawer_type"], task.id, [], []
+        if "required_submodule_type" in task.requirements:
+            submodule = self.__submodule_manager.try_reserve_submodule_type(
+                self.__name,
+                task.requirements["required_submodule_type"],
+                task.id,
+                [],
+                [],
             )
-            if not drawer:
+            if not submodule:
                 return False
-            subtasks_with_drawer_process = [
+            subtasks_with_submodule_process = [
                 subtask
                 for subtask in task.subtasks
-                if subtask.contains_drawer_process_action()
+                if subtask.contains_submodule_process_action()
             ]
-            for subtask in subtasks_with_drawer_process:
-                subtask.write_drawer_address(drawer.address)
+            for subtask in subtasks_with_submodule_process:
+                subtask.write_submodule_address(submodule.address)
                 self.__task_manager.update_subtask(subtask)
-            self.__handle_subtask_requirements(subtasks_with_drawer_process[0])
         return True
 
     def __handle_subtask_requirements(self, subtask: SubTask) -> bool:
-        if subtask.requirements["drawer_address"]:
-            was_successful = self.__module_manager.reserve_module(
-                drawer_address=DrawerAddress.from_json(
-                    subtask.requirements["drawer_address"]
+        if subtask.requirements["submodule_address"]:
+            was_successful = self.__submodule_manager.reserve_submodule(
+                submodule_address=SubmoduleAddress.from_json(
+                    subtask.requirements["submodule_address"]
                 ),
                 task_id=subtask.parent_id,
                 user_ids=subtask.requirements["required_user_ids"],
@@ -128,6 +146,7 @@ class Robot:
         current_task = self.__task_manager.read_subtask(self.__current_subtask_id)
         if not current_task:
             return
+        self.__current_node = self.__nav_graph.get_node_by_id(current_task.target_id)
         self.__done_subtasks_ids.append(current_task.id)
         queued_subtasks = self.__task_manager.read_subtasks_by_subtask_ids(
             self.__subtask_queue
@@ -135,15 +154,24 @@ class Robot:
         related_tasks = [
             task for task in queued_subtasks if task.parent_id == current_task.parent_id
         ]
-        related_drawer_tasks = [
-            task for task in related_tasks if task.contains_drawer_process_action()
+        related_submodule_tasks = [
+            task for task in related_tasks if task.contains_submodule_process_action()
         ]
         self.__task_manager.finish_subtask(current_task.parent_id, current_task.id)
-        if related_drawer_tasks:
-            self.__handle_subtask_requirements(related_drawer_tasks[0])
-        elif current_task.contains_drawer_process_action():
-            self.__module_manager.free_module(
-                DrawerAddress.from_json(current_task.requirements["drawer_address"])
+        if related_submodule_tasks:
+            self.__submodule_manager.reserve_submodule(
+                SubmoduleAddress.from_json(
+                    related_submodule_tasks[0].requirements["submodule_address"]
+                ),
+                current_task.parent_id,
+                [],
+                [],
+            )
+        elif current_task.contains_submodule_process_action():
+            self.__submodule_manager.free_submodule(
+                SubmoduleAddress.from_json(
+                    current_task.requirements["submodule_address"]
+                )
             )
 
         if not related_tasks:
@@ -152,9 +180,10 @@ class Robot:
         self.__current_subtask_id = None
 
     def __start_next_task(self) -> None:
-        print(self.__subtask_queue)
         next_subtask = self.__task_manager.read_subtask(self.__subtask_queue[0])
         if not next_subtask:
+            return
+        if not self.__handle_subtask_requirements(next_subtask):
             return
         result = self.__fleet_management_api.dispatch_robot_task(
             next_subtask.to_robot_task_request()
@@ -165,6 +194,11 @@ class Robot:
             self.__current_subtask_fm_id = assigned_id
             self.__current_subtask_id = self.__subtask_queue.pop(0)
             self.__task_manager.start_subtask(self.__current_subtask_id)
+
+    def __enqueue_task(self, task: Task) -> None:
+        with self.__subtask_queue_lock:
+            self.__subtask_queue.extend([subtask.id for subtask in task.subtasks])
+            self.__optimize_task_queue()
 
     def __optimize_task_queue(self) -> None:
         queued_subtasks = self.__task_manager.read_subtasks_by_subtask_ids(

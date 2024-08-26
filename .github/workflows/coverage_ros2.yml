@@ -36,7 +36,7 @@ jobs:
       run: >
           docker build -t coverage project_startups/ros_integration_tests/ &&
           docker run -v $(pwd)/src/ros2:/workspace/src/
-          -v $(pwd)/libs:/workspace/libs 
+          -v $(pwd)/src/Hardware/cpp/libs:/workspace/libs 
           -v /home:/home
           --name coverage coverage
           /bin/sh -c " su robast && cd /workspace/ &&

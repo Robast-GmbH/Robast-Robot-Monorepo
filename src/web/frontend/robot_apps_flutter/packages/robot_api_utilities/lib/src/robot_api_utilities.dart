@@ -27,15 +27,15 @@ class RobotApiUtilities {
     }
   }
 
-  Future<List<DrawerModule>?> getModules() async {
-    final modules = <DrawerModule>[];
+  Future<List<SubmoduleModule>?> getSubmodules() async {
+    final modules = <SubmoduleModule>[];
     try {
-      final response = await http.get(Uri.parse('$prefix/modules'));
+      final response = await http.get(Uri.parse('$prefix/submodules'));
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body) as List<dynamic>;
         for (final module in jsonData) {
           modules.add(
-            DrawerModule.fromJson(data: module as Map<String, dynamic>),
+            SubmoduleModule.fromJson(data: module as Map<String, dynamic>),
           );
         }
       }
@@ -45,13 +45,13 @@ class RobotApiUtilities {
     }
   }
 
-  Future<bool> openDrawer({
+  Future<bool> openSubmodule({
     required int moduleID,
-    required int drawerID,
+    required int submoduleID,
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$prefix/open_drawer?module_id=$moduleID&drawer_id=$drawerID'),
+        Uri.parse('$prefix/open_submodule?module_id=$moduleID&submodule_id=$submoduleID'),
       );
       return response.statusCode == 200;
     } catch (e) {
@@ -59,13 +59,13 @@ class RobotApiUtilities {
     }
   }
 
-  Future<bool> closeDrawer({
+  Future<bool> closeSubmodule({
     required int moduleID,
-    required int drawerID,
+    required int submoduleID,
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('$prefix/close_drawer?module_id=$moduleID&drawer_id=$drawerID'),
+        Uri.parse('$prefix/close_submodule?module_id=$moduleID&submodule_id=$submoduleID'),
       );
       return response.statusCode == 200;
     } catch (e) {
