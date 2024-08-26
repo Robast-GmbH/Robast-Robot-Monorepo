@@ -79,7 +79,7 @@
               <EvaluateDriveDirection path_topic="plan"
                                       prediction_horizon="50"
                                       global_frame="map"
-                                      base_frame="base_link"
+                                      base_frame="robot/base_link"
                                       direction="{direction}"/>
               <Switch4 case_1="standing"
                        case_2="left"
@@ -104,24 +104,6 @@
                                       red="255"
                                       upper_bound="80.0"
                                       LEDs_colored="{leds}"/>
-                  <LEDPublisherAction drawer_address="{drawer}"
-                                      fading_time_ms="100"
-                                      led_topic="/led_cmd"
-                                      leds="{leds}"/>
-                  <Delay delay_msec="900">
-                    <PartialColorizeLED LEDs="{leds}"
-                                        blue="155"
-                                        brightness="25"
-                                        green="155"
-                                        lower_bound="0.0"
-                                        red="0"
-                                        upper_bound="100.0"
-                                        LEDs_colored="{leds}"/>
-                  </Delay>
-                  <LEDPublisherAction drawer_address="{drawer}"
-                                      fading_time_ms="100"
-                                      led_topic="/led_cmd"
-                                      leds="{leds}"/>
                 </Sequence>
                 <Sequence>
                   <PartialColorizeLED LEDs="{leds}"
@@ -148,24 +130,6 @@
                                       red="255"
                                       upper_bound="100.0"
                                       LEDs_colored="{leds}"/>
-                  <LEDPublisherAction drawer_address="{drawer}"
-                                      fading_time_ms="100"
-                                      led_topic="/led_cmd"
-                                      leds="{leds}"/>
-                  <Delay delay_msec="900">
-                    <PartialColorizeLED LEDs="{leds}"
-                                        blue="155"
-                                        brightness="25"
-                                        green="155"
-                                        lower_bound="0.0"
-                                        red="0"
-                                        upper_bound="100.0"
-                                        LEDs_colored="{leds}"/>
-                  </Delay>
-                  <LEDPublisherAction drawer_address="{drawer}"
-                                      fading_time_ms="100"
-                                      led_topic="/led_cmd"
-                                      leds="{leds}"/>
                 </Sequence>
                 <AlwaysSuccess/>
                 <AlwaysSuccess/>
