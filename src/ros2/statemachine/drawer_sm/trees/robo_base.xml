@@ -52,45 +52,14 @@
             <IfThenElse>
               <BoolTopicCondition target_value="true"
                                   topic="/robot/safety_module/emergency_stop"/>
-              <Sequence>
-                <PartialColorizeLED LEDs="{leds}"
-                                    blue="155"
-                                    brightness="25"
-                                    green="155"
-                                    lower_bound="0.0"
-                                    red="0"
-                                    upper_bound="100.0"
-                                    LEDs_colored="{leds}"/>
-                <PartialColorizeLED LEDs="{leds}"
-                                    blue="0"
-                                    brightness="255"
-                                    green="80"
-                                    lower_bound="48.0"
-                                    red="255"
-                                    upper_bound="80.0"
-                                    LEDs_colored="{leds}"/>
-                <LEDPublisherAction drawer_address="{drawer}"
-                                    fading_time_ms="100"
-                                    led_topic="/led_cmd"
-                                    leds="{leds}"/>
-                <Delay delay_msec="800">
-                  <PartialColorizeLED LEDs="{leds}"
-                                      blue="155"
-                                      brightness="25"
-                                      green="155"
-                                      lower_bound="0.0"
-                                      red="0"
-                                      upper_bound="100.0"
-                                      LEDs_colored="{leds}"/>
-                </Delay>
-                <LEDPublisherAction drawer_address="{drawer}"
-                                    fading_time_ms="100"
-                                    led_topic="/led_cmd"
-                                    leds="{leds}"/>
-                <Delay delay_msec="800">
-                  <AlwaysSuccess/>
-                </Delay>
-              </Sequence>
+              <PartialColorizeLED LEDs="{leds}"
+                                  blue="0"
+                                  brightness="255"
+                                  green="0"
+                                  lower_bound="0"
+                                  red="255"
+                                  upper_bound="100"
+                                  LEDs_colored="{leds}"/>
               <AlwaysSuccess/>
             </IfThenElse>
             <IfThenElse>
@@ -120,10 +89,10 @@
                 <AlwaysSuccess/>
                 <Sequence>
                   <PartialColorizeLED LEDs="{leds}"
-                                      blue="0"
-                                      brightness="0"
-                                      green="0"
-                                      lower_bound="0"
+                                      blue="155"
+                                      brightness="25"
+                                      green="155"
+                                      lower_bound="0.0"
                                       red="0"
                                       upper_bound="100.0"
                                       LEDs_colored="{leds}"/>
@@ -135,6 +104,27 @@
                                       red="255"
                                       upper_bound="80.0"
                                       LEDs_colored="{leds}"/>
+                  <LEDPublisherAction drawer_address="{drawer}"
+                                      fading_time_ms="100"
+                                      led_topic="/led_cmd"
+                                      leds="{leds}"/>
+                  <Delay delay_msec="800">
+                    <PartialColorizeLED LEDs="{leds}"
+                                        blue="155"
+                                        brightness="25"
+                                        green="155"
+                                        lower_bound="0.0"
+                                        red="0"
+                                        upper_bound="100.0"
+                                        LEDs_colored="{leds}"/>
+                  </Delay>
+                  <LEDPublisherAction drawer_address="{drawer}"
+                                      fading_time_ms="100"
+                                      led_topic="/led_cmd"
+                                      leds="{leds}"/>
+                  <Delay delay_msec="800">
+                    <AlwaysSuccess/>
+                  </Delay>
                 </Sequence>
                 <Sequence>
                   <PartialColorizeLED LEDs="{leds}"
@@ -161,6 +151,27 @@
                                       red="255"
                                       upper_bound="100.0"
                                       LEDs_colored="{leds}"/>
+                  <LEDPublisherAction drawer_address="{drawer}"
+                                      fading_time_ms="100"
+                                      led_topic="/led_cmd"
+                                      leds="{leds}"/>
+                  <PartialColorizeLED LEDs="{leds}"
+                                      blue="155"
+                                      brightness="25"
+                                      green="155"
+                                      lower_bound="0.0"
+                                      red="0"
+                                      upper_bound="100.0"
+                                      LEDs_colored="{leds}"/>
+                  <Delay delay_msec="800">
+                    <LEDPublisherAction drawer_address="{drawer}"
+                                        fading_time_ms="100"
+                                        led_topic="/led_cmd"
+                                        leds="{leds}"/>
+                  </Delay>
+                  <Delay delay_msec="800">
+                    <AlwaysSuccess/>
+                  </Delay>
                 </Sequence>
                 <AlwaysSuccess/>
                 <AlwaysSuccess/>
