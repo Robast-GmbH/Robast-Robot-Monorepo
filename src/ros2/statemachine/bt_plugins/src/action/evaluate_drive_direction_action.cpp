@@ -7,9 +7,11 @@ namespace statemachine
       const BT::NodeConfig &config)
       : BT::SyncActionNode(name, config)
   {
-    _node = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
     getInput("path_topic", _topic_name);
     getInput("prediction_horizon", _prediction_horizon);
+    getInput("global_frame", _global_frame);
+    getInput("base_frame", _base_frame);
+    _node = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
     _callback_group = _node->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive, false);
     _callback_group_executor.add_callback_group(_callback_group, _node->get_node_base_interface());
 
@@ -38,9 +40,7 @@ namespace statemachine
   {
 
     RCLCPP_INFO(rclcpp::get_logger("EvaluateDriveDirection"), "path size: %d", _path.poses.size());
-    if (!nav2_util::getCurrentPose(
-            _global_pose, *_tf, "map", "base_link",
-            0.2) ||
+    if (!nav2_util::getCurrentPose(_global_pose, *_tf, _global_frame, _base_frame, 0.2) ||
         !(_path.poses.size() > 0))
     {
       RCLCPP_WARN(rclcpp::get_logger("EvaluateDriveDirection"), "Could not get current pose");
@@ -49,12 +49,12 @@ namespace statemachine
 
     _current_path_index = getCurrentIndex(_global_pose.pose, _path);
     _path.poses.erase(_path.poses.begin(), _path.poses.begin() + _current_path_index);
-    if (_path.poses.size() > 60)
+    if (_path.poses.size() > _prediction_horizon)
     {
-      auto start_pose = _path.poses[0].pose.position;
-      auto end_pose = _path.poses[60].pose.position;
+      auto start_pose = _path.poses[0].pose;
+      auto end_pose = _path.poses[_prediction_horizon].pose;
 
-      _direction = utils::DirectionToString(utils::calculateDirection(_path.poses[0].pose, _path.poses[60].pose));
+      _direction = utils::DirectionToString(utils::calculateDirection(start_pose, end_pose));
     }
     else
     {

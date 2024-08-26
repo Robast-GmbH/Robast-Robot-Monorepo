@@ -46,6 +46,8 @@ namespace statemachine
       return {
           BT::InputPort<std::string>("path_topic", "topic"),
           BT::InputPort<uint16_t>("prediction_horizon", "prediction_horizon"),
+          BT::InputPort<std::string>("global_frame", "map"),
+          BT::InputPort<std::string>("base_frame", "base_link"),
           BT::OutputPort<std::string>("direction", "standing")};
     }
 
@@ -63,6 +65,8 @@ namespace statemachine
     std::shared_ptr<tf2_ros::Buffer> _tf;
     std::shared_ptr<tf2_ros::TransformListener> _transform_listener;
     uint16_t _prediction_horizon = 60;
+    std::string _global_frame = "map";
+    std::string _base_frame = "base_link";
 
     void exposeDriveDirection();
     void callbackPathReceived(const nav_msgs::msg::Path::SharedPtr msg);
