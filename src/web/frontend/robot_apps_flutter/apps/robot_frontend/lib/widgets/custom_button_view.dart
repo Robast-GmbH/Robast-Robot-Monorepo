@@ -3,18 +3,20 @@ import 'package:robot_frontend/constants/robot_colors.dart';
 
 class CustomButtonView extends StatelessWidget {
   const CustomButtonView({
-    required this.text,
     required this.onPressed,
     this.content = const SizedBox(),
     this.padding = EdgeInsets.zero,
     this.trailing = const SizedBox(),
+    this.text,
+    this.header,
     super.key,
   });
-  final String text;
+  final String? text;
   final Widget content;
   final Widget trailing;
   final VoidCallback onPressed;
   final EdgeInsets padding;
+  final Widget? header;
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -45,16 +47,20 @@ class CustomButtonView extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            text,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              height: 0,
-                              color: RobotColors.primaryText,
-                              fontSize: 40,
-                              fontWeight: FontWeight.w400,
+                          if (header != null) ...[
+                            header!
+                          ] else ...[
+                            Text(
+                              text ?? '',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                height: 0,
+                                color: RobotColors.primaryText,
+                                fontSize: 40,
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
-                          ),
+                          ],
                           const SizedBox(height: 4),
                           Expanded(child: content),
                         ],

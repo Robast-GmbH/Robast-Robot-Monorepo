@@ -1,5 +1,5 @@
-class Action {
-  Action({
+class RobotAction {
+  RobotAction({
     required this.id,
     required this.name,
     required this.status,
@@ -7,13 +7,13 @@ class Action {
     required this.subaction,
   });
 
-  factory Action.fromJson(Map<String, dynamic> json) {
-    return Action(
+  factory RobotAction.fromJson(Map<String, dynamic> json) {
+    return RobotAction(
       id: json['id'] as String,
       name: json['name'] as String,
       status: json['status'] as String,
       parameters: json['parameters'] as Map<String, dynamic>,
-      subaction: json['subaction'] != null ? Action.fromJson(json['subaction'] as Map<String, dynamic>) : null,
+      subaction: json['subaction'] != null ? RobotAction.fromJson(json['subaction'] as Map<String, dynamic>) : null,
     );
   }
 
@@ -21,7 +21,7 @@ class Action {
   final String name;
   final String status;
   final Map<String, dynamic> parameters;
-  final Action? subaction;
+  final RobotAction? subaction;
 
   Map<String, dynamic> toJson() {
     return {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:robot_frontend/widgets/rounded_container.dart';
 
 class ExpandableTaskTile extends StatefulWidget {
   const ExpandableTaskTile({
@@ -23,23 +24,15 @@ class _ExpandableTaskTileState extends State<ExpandableTaskTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white.withOpacity(0.4),
+    return RoundedContainer(
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Theme(
           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
           child: ExpansionTile(
-            title: Row(
-              children: [
-                const SizedBox(
-                  width: 4,
-                ),
-                Text('at ${widget.task.targetID}'),
-                const SizedBox(
-                  width: 4,
-                ),
-              ],
+            title: Text(
+              '${widget.task.name} bei ${widget.task.targetID}',
+              style: TextStyle(fontSize: 32),
             ),
             children: [
               buildTaskInfoTile(title: 'ID', subtitle: widget.task.id),
@@ -59,7 +52,10 @@ class _ExpandableTaskTileState extends State<ExpandableTaskTile> {
     required String subtitle,
   }) {
     return ListTile(
-      title: Text(title),
+      title: Text(
+        title,
+        style: TextStyle(fontSize: 24),
+      ),
       subtitle: Text(subtitle),
     );
   }

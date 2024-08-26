@@ -7,10 +7,20 @@ class TasksApi {
   final String prefix;
 
   Future<RobotTaskStatus?> getRobotTasks({required String robotName}) async {
-    final response = await RequestService.tryGet(uri: Uri.parse('$prefix/robot_tasks?robot_name=$robotName'));
+    final response = await RequestService.tryGet(uri: Uri.parse('$prefix/tasks/by_assignee?robot_name=$robotName'));
     if (response != null) {
-      final data = RequestService.responseToMap(response: response);
-      return RobotTaskStatus.fromJson(data);
+      final data = RequestService.responseToList(response: response);
+      Map<String, dynamic> json = {'active': null, 'queued': []};
+      for (final task in data) {
+        for (final subtask in task['subtasks']) {
+          if (subtask['status'] == 'active') {
+            json['active'] = subtask;
+          } else if (subtask['status'] == 'pending') {
+            json['queued'].add(subtask);
+          }
+        }
+      }
+      return RobotTaskStatus.fromJson(json);
     } else {
       return null;
     }

@@ -12,18 +12,24 @@ class MenuModulesOverview extends StatelessWidget {
 
   String getModuleStatus(List<Submodule> submodules) {
     var reservedCount = 0;
+    bool isLoaded = false;
     for (final submodule in submodules) {
       if (submodule.isReserved()) {
         reservedCount++;
       }
+      if (submodule.itemsByCount.isNotEmpty) {
+        isLoaded = true;
+      }
     }
+    String moduleStatus = isLoaded ? 'beladen, ' : 'leer, ';
     if (reservedCount == submodules.length) {
-      return 'reserviert';
+      moduleStatus += 'reserviert';
     } else if (reservedCount > 0) {
-      return 'teilweise frei';
+      moduleStatus += 'teilweise frei';
     } else {
-      return 'frei';
+      moduleStatus += 'frei';
     }
+    return moduleStatus;
   }
 
   @override

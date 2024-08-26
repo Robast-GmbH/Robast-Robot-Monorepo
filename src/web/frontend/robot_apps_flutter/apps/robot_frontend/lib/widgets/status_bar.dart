@@ -6,17 +6,19 @@ class StatusBar extends StatelessWidget {
   const StatusBar({
     this.title,
     this.onBackButtonPressed,
+    this.showBackButton = true,
     super.key,
   });
 
   final VoidCallback? onBackButtonPressed;
   final String? title;
+  final bool showBackButton;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        if (onBackButtonPressed != null) ...[
+        if (showBackButton && onBackButtonPressed != null) ...[
           Align(
             alignment: Alignment.topLeft,
             child: IconButton(

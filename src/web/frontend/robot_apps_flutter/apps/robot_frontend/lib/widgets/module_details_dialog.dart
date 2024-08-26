@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/widgets/rounded_container.dart';
 
 class ModuleDetailsDialog extends StatelessWidget {
   const ModuleDetailsDialog({required this.moduleID, required this.submodules, super.key});
@@ -14,49 +15,75 @@ class ModuleDetailsDialog extends StatelessWidget {
       backgroundColor: RobotColors.primaryBackground,
       title: Text(
         'Modul $moduleID',
-        style: const TextStyle(fontSize: 32, color: RobotColors.primaryText),
+        style: const TextStyle(fontSize: 40, color: RobotColors.primaryText),
       ),
-      content: FractionallySizedBox(
-        heightFactor: 0.4,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            for (final submodule in submodules)
-              Card(
-                color: Colors.black.withOpacity(0.2),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Submodul ${submodule.address.submoduleID}',
-                        style: const TextStyle(fontSize: 28, color: RobotColors.primaryText),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(minWidth: 600),
+        child: FractionallySizedBox(
+          heightFactor: 0.6,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (final submodule in submodules)
+                  RoundedContainer(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Status: ${submodule.isReserved() ? 'reserviert' : 'frei'}',
-                            style: const TextStyle(color: RobotColors.secondaryText),
+                            'Submodul ${submodule.address.submoduleID}',
+                            style: const TextStyle(fontSize: 32, color: RobotColors.primaryText),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(height: 4),
                           Text(
-                            'Typ: ${submodule.size}',
-                            style: const TextStyle(color: RobotColors.secondaryText),
+                            'Status: ${submodule.isReserved() ? 'reserviert' : 'frei'}',
+                            style: const TextStyle(color: RobotColors.secondaryText, fontSize: 28),
                           ),
-                          const SizedBox(width: 16),
+                          Text(
+                            'Größe: ${SubmoduleTypes.values[submodule.size - 1].toString().split('.').last}',
+                            style: const TextStyle(color: RobotColors.secondaryText, fontSize: 28),
+                          ),
                           Text(
                             'Variante: ${submodule.variant.toString().split('.').last}',
-                            style: const TextStyle(color: RobotColors.secondaryText),
+                            style: const TextStyle(color: RobotColors.secondaryText, fontSize: 28),
                           ),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          RoundedContainer(
+                              child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text(
+                                  'Inhalte',
+                                  style: const TextStyle(color: RobotColors.secondaryText, fontSize: 28),
+                                ),
+                                if (submodule.itemsByCount.isNotEmpty)
+                                  ...submodule.itemsByCount.entries
+                                      .map((entry) => Text(
+                                            '${entry.key}: ${entry.value}',
+                                            style: TextStyle(color: RobotColors.secondaryText, fontSize: 24),
+                                          ))
+                                      .toList()
+                                else
+                                  Text(
+                                    'leer',
+                                    style: const TextStyle(color: RobotColors.secondaryText, fontSize: 24),
+                                  ),
+                              ],
+                            ),
+                          ))
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-          ],
+              ],
+            ),
+          ),
         ),
       ),
       actions: [
