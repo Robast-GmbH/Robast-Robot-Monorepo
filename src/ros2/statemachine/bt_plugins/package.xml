@@ -22,6 +22,7 @@
   <depend>nav_msgs</depend>
   <depend>geometry_msgs</depend>
   <depend>tf2</depend>
+  <depend>nav2_util</depend>
 
   <export>
     <build_type>ament_cmake</build_type>

@@ -77,7 +77,8 @@
             </IfThenElse>
             <Sequence>
               <EvaluateDriveDirection path_topic="plan"
-                                      direction="{direction}"/>
+                                      direction="{direction}"
+                                      prediction_horizon="50"/>
               <Switch4 case_1="standing"
                        case_2="left"
                        case_3="right"
@@ -189,6 +190,8 @@
                   default="path"/>
       <output_port name="direction"
                    default="standing">standing, left, right, forward</output_port>
+      <input_port name="prediction_horizon"
+                  default="60">nav2 plan steps. approx 5cm per step</input_port>
     </Action>
     <Action ID="GetBlackboardEntry">
       <input_port name="key"

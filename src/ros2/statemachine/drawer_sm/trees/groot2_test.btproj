@@ -41,6 +41,7 @@
         <Action ID="EvaluateDriveDirection" editable="true">
             <input_port name="path_topic" default="path"/>
             <output_port name="direction" default="standing">standing, left, right, forward</output_port>
+            <input_port name="prediction_horizon" default="60">nav2 plan steps. approx 5cm per step</input_port>
         </Action>
         <Action ID="GetBlackboardEntry">
             <input_port name="key" default="drawer_address">string</input_port>

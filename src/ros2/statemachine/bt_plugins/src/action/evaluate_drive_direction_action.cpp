@@ -9,6 +9,7 @@ namespace statemachine
   {
     _node = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
     getInput("path_topic", _topic_name);
+    getInput("prediction_horizon", _prediction_horizon);
     _callback_group = _node->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive, false);
     _callback_group_executor.add_callback_group(_callback_group, _node->get_node_base_interface());
 
@@ -19,17 +20,35 @@ namespace statemachine
         10,
         std::bind(&EvaluateDriveDirection::callbackPathReceived, this, std::placeholders::_1),
         sub_option);
+    _tf = std::make_shared<tf2_ros::Buffer>(_node->get_clock());
+    auto timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
+        _node->get_node_base_interface(),
+        _node->get_node_timers_interface());
+    _tf->setCreateTimerInterface(timer_interface);
+    _transform_listener = std::make_shared<tf2_ros::TransformListener>(*_tf);
   }
 
   void EvaluateDriveDirection::callbackPathReceived(const nav_msgs::msg::Path::SharedPtr msg)
   {
-    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "path received");
+    RCLCPP_INFO(rclcpp::get_logger("EvaluateDriveDirection"), "path received");
     _path = *msg;
   }
 
   void EvaluateDriveDirection::exposeDriveDirection()
   {
-    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "path size: %d", _path.poses.size());
+
+    RCLCPP_INFO(rclcpp::get_logger("EvaluateDriveDirection"), "path size: %d", _path.poses.size());
+    if (!nav2_util::getCurrentPose(
+            _global_pose, *_tf, "map", "base_link",
+            0.2) ||
+        !(_path.poses.size() > 0))
+    {
+      RCLCPP_WARN(rclcpp::get_logger("EvaluateDriveDirection"), "Could not get current pose");
+      return;
+    }
+
+    _current_path_index = getCurrentIndex(_global_pose.pose, _path);
+    _path.poses.erase(_path.poses.begin(), _path.poses.begin() + _current_path_index);
     if (_path.poses.size() > 60)
     {
       auto start_pose = _path.poses[0].pose.position;
@@ -41,9 +60,31 @@ namespace statemachine
     {
       _direction = "standing";
     }
-    _path = nav_msgs::msg::Path();
+    // _path = nav_msgs::msg::Path();
     RCLCPP_INFO(rclcpp::get_logger("EvaluateDriveDirection"), "direction: %s", _direction.c_str());
     setOutput("direction", _direction);
+  }
+
+  int EvaluateDriveDirection::getCurrentIndex(const geometry_msgs::msg::Pose &current_pose, const nav_msgs::msg::Path &path)
+  {
+    int closest_index = -1;
+    double min_distance = std::numeric_limits<double>::max();
+    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "current pose: %f %f", current_pose.position.x, current_pose.position.y);
+
+    for (size_t i = 0; i < path.poses.size(); ++i)
+    {
+      double distance = std::hypot(
+          current_pose.position.x - path.poses[i].pose.position.x,
+          current_pose.position.y - path.poses[i].pose.position.y);
+
+      if (distance < min_distance)
+      {
+        min_distance = distance;
+        closest_index = i;
+      }
+    }
+
+    return closest_index;
   }
 
   BT::NodeStatus EvaluateDriveDirection::tick()
