@@ -119,7 +119,7 @@
                                         LEDs_colored="{leds}"/>
                   </Delay>
                   <LEDPublisherAction drawer_address="{drawer}"
-                                      fading_time_ms="100"
+                                      fading_time_ms="500"
                                       led_topic="/led_cmd"
                                       leds="{leds}"/>
                   <Delay delay_msec="800">
@@ -165,7 +165,7 @@
                                       LEDs_colored="{leds}"/>
                   <Delay delay_msec="800">
                     <LEDPublisherAction drawer_address="{drawer}"
-                                        fading_time_ms="100"
+                                        fading_time_ms="500"
                                         led_topic="/led_cmd"
                                         leds="{leds}"/>
                   </Delay>
