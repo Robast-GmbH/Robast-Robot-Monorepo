@@ -62,25 +62,85 @@ stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
  *    - process_can_msgs_task_loop() is responsible for processing the CAN messages from the queue
  **********************************************************************************************************************/
 
-void receive_can_msg_task_loop(void* pvParameters)
+void add_can_msg_to_queue(std::optional<robast_can_msgs::CanMessage>& received_message)
+{
+  if (xSemaphoreTake(can_queue_mutex, pdMS_TO_TICKS(500)) == pdTRUE)
+  {
+    debug_println("[Main]: Received CAN message and adding it to the queue.");
+    can_msg_queue->enqueue(received_message.value());
+    xSemaphoreGive(can_queue_mutex);
+  }
+  else
+  {
+    Serial.println("[Main]: Error: Could not take the mutex. This should not occur.");
+  }
+}
+
+void receive_can_msg_task_loop_hw_v3(void)
+{
+  uint8_t minimal_loop_time_in_ms = MINIMAL_LOOP_TIME_IN_MS;
+  uint8_t num_of_led_changes = 0;
+
+  for (;;)
+  {
+    TickType_t current_tick_count = xTaskGetTickCount();
+
+    std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
+    if (received_message.has_value())
+    {
+      add_can_msg_to_queue(received_message);
+
+      if (received_message.value().get_id() == robast_can_msgs::can_id::LED_HEADER)
+      {
+        // If a new LED header is received, we set the minimal loop time to 0 to handle the LED changes faster
+        minimal_loop_time_in_ms = 0;
+        num_of_led_changes = received_message.value()
+                               .get_can_signals()
+                               .at(robast_can_msgs::can_signal::id::led_header::NUM_OF_LEDS)
+                               .get_data();
+      }
+    }
+
+    unsigned long loop_time = pdTICKS_TO_MS(xTaskGetTickCount() - current_tick_count);
+
+    if (loop_time < minimal_loop_time_in_ms)
+    {
+      // Task yielding to give IDLE task a chance to run and reset watchdog timer
+      vTaskDelay(pdMS_TO_TICKS(minimal_loop_time_in_ms - pdTICKS_TO_MS(loop_time)));
+    }
+    if (num_of_led_changes > 0)
+    {
+      num_of_led_changes--;
+    }
+    if (num_of_led_changes == 0)
+    {
+      minimal_loop_time_in_ms = MINIMAL_LOOP_TIME_IN_MS;
+    }
+  }
+}
+
+void receive_can_msg_task_loop_hw_v4(void)
 {
   for (;;)
   {
     std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
     if (received_message.has_value())
     {
-      if (xSemaphoreTake(can_queue_mutex, pdMS_TO_TICKS(500)) == pdTRUE)
-      {
-        debug_println("[Main]: Received CAN message and adding it to the queue.");
-        can_msg_queue->enqueue(received_message.value());
-        xSemaphoreGive(can_queue_mutex);
-      }
-      else
-      {
-        Serial.println("[Main]: Error: Could not take the mutex. This should not occur.");
-      }
+      add_can_msg_to_queue(received_message);
     }
   }
+}
+
+void receive_can_msg_task_loop(void* pvParameters)
+{
+#if HARDWARE_VERSION == 3
+  // Hardware Version 3 needs a different task loop with extra task yielding because it uses SPI CAN Controller
+  receive_can_msg_task_loop_hw_v3();
+#elif HARDWARE_VERSION == 4
+  // Hardware Version 4 uses TWAI CAN Controller and does not need extra task yielding because it uses xQueueReceive
+  // which has a task yielding wait
+  receive_can_msg_task_loop_hw_v4();
+#endif
 }
 
 void process_can_msgs_task_loop(void* pvParameters)

@@ -19,6 +19,8 @@ constexpr float SWITCH_WEIGHT_NEW_VALUES = 0.25;
 
 constexpr uint8_t STEPPER_MOTOR_1_ADDRESS = 0x00;
 
+constexpr uint8_t MINIMAL_LOOP_TIME_IN_MS = 1;
+
 TaskHandle_t Task1;
 TaskHandle_t Task2;
 
