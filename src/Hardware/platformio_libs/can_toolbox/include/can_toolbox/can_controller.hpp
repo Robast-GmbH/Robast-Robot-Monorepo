@@ -16,7 +16,7 @@ namespace can_toolbox
 {
   class CanController
   {
-   public:
+  public:
     CanController(const uint32_t module_id,
                   const std::shared_ptr<robast_can_msgs::CanDb> can_db,
                   const gpio_num_t twai_tx_pin,
@@ -26,15 +26,18 @@ namespace can_toolbox
 
     void send_can_message(robast_can_msgs::CanMessage can_msg);
 
-   private:
+    void initialize_can_controller(void);
+
+  private:
     const uint32_t _module_id;
     const std::shared_ptr<robast_can_msgs::CanDb> _can_db;
     const gpio_num_t _twai_tx_pin;
     const gpio_num_t _twai_rx_pin;
 
-    static const uint8_t _RX_QUEUE_SIZE = 150;   // Receive Queue size
+    static constexpr uint8_t _RX_QUEUE_SIZE = 255;               // I think 255 is the maximum size of the queue
+    static constexpr uint8_t _RX_QUEUE_MINIMUM_EMPTY_SPACE = 55; // this is the value where we start to drop msgs
 
-    void initialize_can_controller(void);
+    void handle_emerging_queue_overflow(void);
   };
-}   // namespace can_toolbox
-#endif   // CAN_TOOLBOX_CAN_CONTROLLER_HPP
+} // namespace can_toolbox
+#endif // CAN_TOOLBOX_CAN_CONTROLLER_HPP

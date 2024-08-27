@@ -64,13 +64,8 @@ stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
 
 void receive_can_msg_task_loop(void* pvParameters)
 {
-  uint8_t minimal_loop_time_in_ms = MINIMAL_LOOP_TIME_IN_MS;
-  uint8_t num_of_led_changes = 0;
-
   for (;;)
   {
-    TickType_t current_tick_count = xTaskGetTickCount();
-
     std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
     if (received_message.has_value())
     {
@@ -84,32 +79,6 @@ void receive_can_msg_task_loop(void* pvParameters)
       {
         Serial.println("[Main]: Error: Could not take the mutex. This should not occur.");
       }
-
-      if (received_message.value().get_id() == robast_can_msgs::can_id::LED_HEADER)
-      {
-        // If a new LED header is received, we set the minimal loop time to 0 to handle the LED changes faster
-        minimal_loop_time_in_ms = 0;
-        num_of_led_changes = received_message.value()
-                               .get_can_signals()
-                               .at(robast_can_msgs::can_signal::id::led_header::NUM_OF_LEDS)
-                               .get_data();
-      }
-    }
-
-    unsigned long loop_time = pdTICKS_TO_MS(xTaskGetTickCount() - current_tick_count);
-
-    if (loop_time < minimal_loop_time_in_ms)
-    {
-      // Task yielding to give IDLE task a chance to run and reset watchdog timer
-      vTaskDelay(pdMS_TO_TICKS(minimal_loop_time_in_ms - pdTICKS_TO_MS(loop_time)));
-    }
-    if (num_of_led_changes > 0)
-    {
-      num_of_led_changes--;
-    }
-    if (num_of_led_changes == 0)
-    {
-      minimal_loop_time_in_ms = MINIMAL_LOOP_TIME_IN_MS;
     }
   }
 }
@@ -279,9 +248,8 @@ void setup()
     i_drawer = std::make_shared<drawer::ManualDrawer>(MODULE_ID, LOCK_ID, can_db, endstop_switch, drawer_lock);
   }
 
-  debug_println("[Main]: Finished setup()!");
-
-  delay(500);
+  // Initialize CAN Controller right before can task receive loop is started, otherwise rx_queue might overflow
+  can_controller->initialize_can_controller();
 
   xTaskCreatePinnedToCore(receive_can_msg_task_loop, /* Task function. */
                           "Task1",                   /* name of task. */
@@ -291,7 +259,7 @@ void setup()
                           &Task1,                    /* Task handle to keep track of created task */
                           0);                        /* pin task to core 0 */
 
-  delay(500);
+  delay(100);
 
   xTaskCreatePinnedToCore(process_can_msgs_task_loop, /* Task function. */
                           "Task2",                    /* name of task. */
@@ -300,6 +268,8 @@ void setup()
                           1,                          /* priority of the task */
                           &Task2,                     /* Task handle to keep track of created task */
                           1);                         /* pin task to core 1 */
+
+  debug_println("[Main]: Finished setup()!");
 }
 
 void loop()
