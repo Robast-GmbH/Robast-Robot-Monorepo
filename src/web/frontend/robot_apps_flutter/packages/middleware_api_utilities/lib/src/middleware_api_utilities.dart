@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
@@ -151,6 +152,16 @@ class MiddlewareApiUtilities {
     if (response != null) {
       final data = RequestService.responseToMap(response: response);
       return BuildingMap.fromJson(data);
+    } else {
+      return null;
+    }
+  }
+
+  Future<Uint8List?> getMapImage() async {
+    final response = await RequestService.tryGet(uri: Uri.parse('$_prefix/building_map.png'));
+    if (response != null) {
+      final data = response.bodyBytes;
+      return data;
     } else {
       return null;
     }

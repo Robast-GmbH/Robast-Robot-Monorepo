@@ -788,7 +788,7 @@ packages:
     source: hosted
     version: "3.1.2"
   zoom_widget:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: zoom_widget
       sha256: "50fbaa460ffc938ca14c0077f8c9e5968c437897242d7f552dacff1bf3270225"
