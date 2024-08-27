@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/expandable_task_tile.dart';
@@ -44,7 +45,7 @@ class _TasksOverviewPageState extends State<TasksOverviewPage> {
                     padding: EdgeInsets.only(left: 8),
                     child: Text(
                       'Aktiv',
-                      style: TextStyle(fontSize: 24),
+                      style: TextStyle(fontSize: 40, color: RobotColors.primaryText),
                     ),
                   ),
                   if (activeTask != null)
@@ -55,7 +56,7 @@ class _TasksOverviewPageState extends State<TasksOverviewPage> {
                     padding: EdgeInsets.only(left: 8, top: 16),
                     child: Text(
                       'In Warteschlange',
-                      style: TextStyle(fontSize: 24),
+                      style: TextStyle(fontSize: 40, color: RobotColors.primaryText),
                     ),
                   ),
                   Expanded(

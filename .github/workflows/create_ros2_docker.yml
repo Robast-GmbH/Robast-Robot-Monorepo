@@ -20,6 +20,7 @@ on:
                 type: string
                 default: "linux/amd64"
 
+
 jobs:
     build:
         runs-on: ubuntu-latest

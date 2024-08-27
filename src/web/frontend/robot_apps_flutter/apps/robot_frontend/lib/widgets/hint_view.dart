@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 
 class HintView extends StatelessWidget {
   const HintView({
@@ -14,7 +15,7 @@ class HintView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.lightBlue,
+        color: Colors.black.withOpacity(0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       margin: const EdgeInsets.all(4),
@@ -28,7 +29,7 @@ class HintView extends StatelessWidget {
                 moduleLabel,
                 style: const TextStyle(
                   height: 0,
-                  color: Colors.white,
+                  color: RobotColors.primaryText,
                   fontSize: 40,
                   fontWeight: FontWeight.w400,
                 ),
@@ -40,7 +41,7 @@ class HintView extends StatelessWidget {
                 text,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: RobotColors.primaryText,
                   fontSize: 40,
                   fontWeight: FontWeight.w500,
                 ),
@@ -48,7 +49,11 @@ class HintView extends StatelessWidget {
             ),
             const Padding(
               padding: EdgeInsets.only(bottom: 64),
-              child: Icon(Icons.arrow_downward, size: 100, color: Colors.white),
+              child: Icon(
+                Icons.arrow_downward,
+                size: 100,
+                color: RobotColors.primaryText,
+              ),
             ),
           ],
         ),

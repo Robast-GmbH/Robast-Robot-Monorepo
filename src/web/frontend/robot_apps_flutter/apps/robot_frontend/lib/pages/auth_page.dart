@@ -46,8 +46,8 @@ class _AuthPageState extends State<AuthPage> {
                   child: AuthView(
                     requiredUserIDs: const [],
                     requiredUserGroups: const ['PATIENT', 'STAFF', 'ADMIN'],
-                    onAuthCompleted: (wasAuthSuccessful) {
-                      if (wasAuthSuccessful) {
+                    onAuthCompleted: ({required bool wasSuccessful}) {
+                      if (wasSuccessful) {
                         authCompleted = true;
                         setState(() {});
                       }
@@ -61,12 +61,14 @@ class _AuthPageState extends State<AuthPage> {
               )
             : DisinfectionView(
                 onDisinfection: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute<MenuPage>(
-                      builder: (context) => const MenuPage(),
-                    ),
-                  );
+                  if (context.mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute<MenuPage>(
+                        builder: (context) => const MenuPage(),
+                      ),
+                    );
+                  }
                 },
               ),
       ),

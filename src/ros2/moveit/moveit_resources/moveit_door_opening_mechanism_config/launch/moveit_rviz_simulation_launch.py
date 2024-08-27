@@ -40,9 +40,10 @@ def get_planning_pipelines(context):
 
     if ompl_planning_file is None or ompl_planning_file == "":
         ros_distro = os.environ["ROS_DISTRO"]
-        supported_ros_distros = ["humble", "iron"]
-        if ros_distro in supported_ros_distros:
-            planning_pipelines = [f"ompl_{ros_distro}"]
+        if ros_distro == "humble":
+            planning_pipelines = ["ompl_humble"]
+        elif ros_distro == "iron" or ros_distro == "jazzy":
+            planning_pipelines = ["ompl_iron"]
         else:
             raise Exception("Unknown ROS distro: " + ros_distro)
     else:

@@ -24,9 +24,11 @@ jobs:
 
   create_ros2_release_docker:
       uses: ./.github/workflows/create_ros2_docker.yml
+      needs: create_ros2_devel_docker
       with:
         ros_distro: jazzy
         project_name: statemachine
         tag: release
         target: release
-        platforms: linux/amd64,linux/arm64/v8
+        platforms: linux/arm64/v8
+      secrets: inherit

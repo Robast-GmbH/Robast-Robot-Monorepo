@@ -105,5 +105,6 @@ class NavBridge(BaseBridge):
     def unblock_nav(self) -> bool:
         self.__is_nav_blocked = False
         if self.__goal_pose is not None:
+            self.context["/is_navigating"]["data"] = True
             self.navigate_to_goal_pose(self.__goal_pose)
         return True

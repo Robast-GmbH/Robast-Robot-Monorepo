@@ -1,0 +1,3 @@
+DrawerAddress module_address
+uint8 config_id
+uint32 config_value

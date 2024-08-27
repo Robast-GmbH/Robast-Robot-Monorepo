@@ -21,15 +21,6 @@ jobs:
         target: devel
         platforms: linux/amd64
   
-  create_ros2_iron_docker:
-      uses: ./.github/workflows/create_ros2_docker.yml
-      with:
-        ros_distro: iron
-        project_name: simulation
-        tag: devel
-        target: devel
-        platforms: linux/amd64
-  
   create_ros2_jazzy_docker:
       uses: ./.github/workflows/create_ros2_docker.yml
       with:

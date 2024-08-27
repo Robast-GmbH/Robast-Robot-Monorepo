@@ -27,7 +27,7 @@ class _ModulesViewState extends State<ModulesView> {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<FleetProvider, Map<String, List<RobotDrawer>>>(
+    return Selector<FleetProvider, Map<String, List<Submodule>>>(
       selector: (_, provider) => provider.modules,
       builder: (context, modules, child) {
         final robotModules = modules[widget.robotName];
@@ -37,21 +37,21 @@ class _ModulesViewState extends State<ModulesView> {
           itemBuilder: (context, index) {
             final isOpen = robotModules![index].moduleProcess.status == ModuleProcessStatus.open;
             return ListTile(
-              title: Text('${robotModules[index].moduleID}_${robotModules[index].drawerID}'),
+              title: Text('${robotModules[index].address.moduleID}_${robotModules[index].address.submoduleID}'),
               subtitle: Text(isOpen ? 'Opened' : 'Closed'),
               style: ListTileStyle.list,
               onTap: () {
-                if (isOpen && robotModules[index].variant == DrawerVariant.electric) {
-                  Provider.of<FleetProvider>(context, listen: false).closeDrawer(
+                if (isOpen && robotModules[index].variant == SubmoduleVariant.electric) {
+                  Provider.of<FleetProvider>(context, listen: false).closeSubmodule(
                     robotName: widget.robotName,
-                    moduleID: robotModules[index].moduleID,
-                    drawerID: robotModules[index].drawerID,
+                    moduleID: robotModules[index].address.moduleID,
+                    submoduleID: robotModules[index].address.submoduleID,
                   );
                 } else if (!isOpen) {
-                  Provider.of<FleetProvider>(context, listen: false).openDrawer(
+                  Provider.of<FleetProvider>(context, listen: false).openSubmodule(
                     robotName: widget.robotName,
-                    moduleID: robotModules[index].moduleID,
-                    drawerID: robotModules[index].drawerID,
+                    moduleID: robotModules[index].address.moduleID,
+                    submoduleID: robotModules[index].address.submoduleID,
                   );
                 }
               },

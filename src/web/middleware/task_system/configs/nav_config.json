@@ -1,0 +1,2762 @@
+{
+  "name": "tiplu",
+  "levels": [
+    {
+      "name": "Tiplu",
+      "elevation": 0,
+      "images": [
+        {
+          "name": "6OG_bp",
+          "x_offset": 0,
+          "y_offset": 0,
+          "yaw": 0,
+          "scale": 0.01554120983928442,
+          "encoding": "png",
+          "data": "http://localhost:8000/cache/tiplu/Tiplu-6OG_bp.xcovvk5ayyddjvcg53sdfwle6eniwokb.png"
+        }
+      ],
+      "places": [],
+      "doors": [
+        {
+          "name": "example_door",
+          "v1_x": 16.119047164916992,
+          "v1_y": -11.245976448059082,
+          "v2_x": 16.119901657104492,
+          "v2_y": -12.146371841430664,
+          "door_type": 5,
+          "motion_range": 1.5707963705062866,
+          "motion_direction": 1
+        }
+      ],
+      "nav_graphs": [
+        {
+          "name": "0",
+          "vertices": [
+            {
+              "x": 24.836841583251953,
+              "y": -10.605865478515625,
+              "name": "darts",
+              "params": [
+                {
+                  "name": "is_charger",
+                  "type": 4,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": true
+                },
+                {
+                  "name": "is_parking_spot",
+                  "type": 4,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": true
+                }
+              ]
+            },
+            {
+              "x": 24.844348907470703,
+              "y": -11.774175643920898,
+              "name": "robast_door_1",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 31.658702850341797,
+              "y": -11.774175643920898,
+              "name": "robast_door_2",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 33.40303039550781,
+              "y": -11.71487045288086,
+              "name": "kenny",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 34.71410369873047,
+              "y": -10.775808334350586,
+              "name": "jo",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 34.70482635498047,
+              "y": -8.417010307312012,
+              "name": "marketing",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 33.60349655151367,
+              "y": -7.522737979888916,
+              "name": "sales",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 31.89873695373535,
+              "y": -7.404500484466553,
+              "name": "showers",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 18.406837463378906,
+              "y": -7.586394786834717,
+              "name": "floor",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 14.111091613769531,
+              "y": -7.690116882324219,
+              "name": "toilets",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 12.491588592529297,
+              "y": -7.7265143394470215,
+              "name": "kitchen",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 9.305407524108887,
+              "y": -7.693784713745117,
+              "name": "mensa_side_entry",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 9.218609809875488,
+              "y": -9.660943984985352,
+              "name": "mensa_main_entry",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 9.218609809875488,
+              "y": -11.628087997436523,
+              "name": "tt",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 13.702560424804688,
+              "y": -11.628087997436523,
+              "name": "storage",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 18.38901138305664,
+              "y": -11.71487045288086,
+              "name": "printer",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 21.426137924194336,
+              "y": -11.711575508117676,
+              "name": "server",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            },
+            {
+              "x": 6.920609474182129,
+              "y": -9.580549240112305,
+              "name": "mensa",
+              "params": [
+                {
+                  "name": "pickup_dispenser",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_dispenser",
+                  "value_bool": false
+                },
+                {
+                  "name": "dropoff_ingestor",
+                  "type": 1,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "submodule_ingestor",
+                  "value_bool": false
+                }
+              ]
+            }
+          ],
+          "edges": [
+            {
+              "v1_idx": 0,
+              "v2_idx": 1,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 1,
+              "v2_idx": 2,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 2,
+              "v2_idx": 3,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 3,
+              "v2_idx": 4,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 4,
+              "v2_idx": 5,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 5,
+              "v2_idx": 6,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 6,
+              "v2_idx": 7,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 7,
+              "v2_idx": 8,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 8,
+              "v2_idx": 9,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 9,
+              "v2_idx": 10,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 10,
+              "v2_idx": 11,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 11,
+              "v2_idx": 12,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 12,
+              "v2_idx": 13,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 13,
+              "v2_idx": 14,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 14,
+              "v2_idx": 15,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 15,
+              "v2_idx": 16,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 17,
+              "v2_idx": 12,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            },
+            {
+              "v1_idx": 15,
+              "v2_idx": 8,
+              "params": [
+                {
+                  "name": "speed_limit",
+                  "type": 3,
+                  "value_int": 0,
+                  "value_float": 0,
+                  "value_string": "",
+                  "value_bool": false
+                }
+              ],
+              "edge_type": 0
+            }
+          ],
+          "params": []
+        }
+      ],
+      "wall_graph": {
+        "name": "WallGraph",
+        "vertices": [
+          {
+            "x": 10.310551643371582,
+            "y": -6.771833419799805,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 27.822385787963867,
+            "y": -6.740999698638916,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 32.816959381103516,
+            "y": -6.740999698638916,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 33.40273666381836,
+            "y": -6.833485126495361,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 34.20982360839844,
+            "y": -7.038877964019775,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 35.08626937866211,
+            "y": -7.786021709442139,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 35.54605484008789,
+            "y": -8.662483215332031,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 35.574790954589844,
+            "y": -10.559070587158203,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 35.08626937866211,
+            "y": -11.493003845214844,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 34.22418212890625,
+            "y": -12.2257719039917,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 33.347721099853516,
+            "y": -12.54188060760498,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 10.262280464172363,
+            "y": -12.557390213012695,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 10.32578182220459,
+            "y": -12.811348915100098,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 8.12485122680664,
+            "y": -12.769030570983887,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 8.146002769470215,
+            "y": -10.525765419006348,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 1.0141571760177612,
+            "y": -12.79723834991455,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 0.9577115178108215,
+            "y": -1.3693360090255737,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 10.32578182220459,
+            "y": -1.3975588083267212,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 8.153058052062988,
+            "y": -8.705765724182129,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 8.096628189086914,
+            "y": -6.420182228088379,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 6.177864074707031,
+            "y": -6.420182228088379,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 8.463447570800781,
+            "y": -6.4484052658081055,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 10.043600082397461,
+            "y": -6.4484052658081055,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 10.297558784484863,
+            "y": -6.476628303527832,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 33.93306350708008,
+            "y": -10.578558921813965,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 32.689815521240234,
+            "y": -11.019712448120117,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 26.420148849487305,
+            "y": -11.059808731079102,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 26.47361183166504,
+            "y": -8.23912525177002,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 20.618350982666016,
+            "y": -8.23912525177002,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 20.618350982666016,
+            "y": -8.47974967956543,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 19.4285945892334,
+            "y": -8.493130683898926,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 19.41522979736328,
+            "y": -10.712244987487793,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 20.538143157958984,
+            "y": -10.69887924194336,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 20.564889907836914,
+            "y": -10.93950366973877,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 22.008651733398438,
+            "y": -10.952869415283203,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 21.995271682739258,
+            "y": -12.583779335021973,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 23.118202209472656,
+            "y": -10.93950366973877,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 23.104835510253906,
+            "y": -8.26587200164795,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 32.783390045166016,
+            "y": -8.185664176940918,
+            "name": "",
+            "params": []
+          },
+          {
+            "x": 33.95979690551758,
+            "y": -8.573339462280273,
+            "name": "",
+            "params": []
+          }
+        ],
+        "edges": [
+          {
+            "v1_idx": 0,
+            "v2_idx": 1,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 1,
+            "v2_idx": 2,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 2,
+            "v2_idx": 3,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 3,
+            "v2_idx": 4,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 4,
+            "v2_idx": 5,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 5,
+            "v2_idx": 6,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 6,
+            "v2_idx": 7,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 7,
+            "v2_idx": 8,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 8,
+            "v2_idx": 9,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 9,
+            "v2_idx": 10,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 10,
+            "v2_idx": 11,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 11,
+            "v2_idx": 12,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 12,
+            "v2_idx": 13,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 13,
+            "v2_idx": 14,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 13,
+            "v2_idx": 15,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 15,
+            "v2_idx": 16,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 16,
+            "v2_idx": 17,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 17,
+            "v2_idx": 0,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 18,
+            "v2_idx": 19,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 19,
+            "v2_idx": 20,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 19,
+            "v2_idx": 21,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 22,
+            "v2_idx": 23,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 24,
+            "v2_idx": 25,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 25,
+            "v2_idx": 26,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 26,
+            "v2_idx": 27,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 27,
+            "v2_idx": 28,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 28,
+            "v2_idx": 29,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 29,
+            "v2_idx": 30,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 30,
+            "v2_idx": 31,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 31,
+            "v2_idx": 32,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 32,
+            "v2_idx": 33,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 33,
+            "v2_idx": 34,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 34,
+            "v2_idx": 35,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 34,
+            "v2_idx": 36,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 36,
+            "v2_idx": 37,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 27,
+            "v2_idx": 38,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 38,
+            "v2_idx": 39,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          },
+          {
+            "v1_idx": 39,
+            "v2_idx": 24,
+            "params": [
+              {
+                "name": "alpha",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_height",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 2.5,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_name",
+                "type": 1,
+                "value_int": 0,
+                "value_float": 0,
+                "value_string": "default",
+                "value_bool": false
+              },
+              {
+                "name": "texture_scale",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              },
+              {
+                "name": "texture_width",
+                "type": 3,
+                "value_int": 0,
+                "value_float": 1,
+                "value_string": "",
+                "value_bool": false
+              }
+            ],
+            "edge_type": 0
+          }
+        ],
+        "params": []
+      }
+    }
+  ],
+  "lifts": []
+}

@@ -12,6 +12,9 @@ namespace statemachine
 
     BT::NodeStatus BoolTopicCondition::tick()
     {
+        // Please mind we need to call spin_some() TWICE because we have a topic history of 2,
+        // so we need to wait for the second message to arrive before we can compare
+        callback_group_executor_.spin_some();
         callback_group_executor_.spin_some();
         if (_compare_result)
         {

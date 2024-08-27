@@ -64,14 +64,14 @@ class RMFProvider extends ChangeNotifier {
       await dispatchDeliveryTask(
         pickup: controller.pickupPlaceID!,
         dropoff: controller.dropoffPlaceID!,
-        drawerID: controller.drawerID!,
+        submoduleID: controller.submoduleID!,
       );
     } else if (taskType == 'Multi Dropoff') {
       await dispatchPatrolTask(places: ['floor'], rounds: 1);
-      for (final dropoffPlaceDrawerAssignment in controller.dropoffPlaceDrawerAssignments) {
+      for (final dropoffPlaceSubmoduleAssignment in controller.dropoffPlaceSubmoduleAssignments) {
         await dispatchDropOffTask(
-          dropoff: dropoffPlaceDrawerAssignment.dropoffPlaceID!,
-          drawerID: dropoffPlaceDrawerAssignment.drawerID!,
+          dropoff: dropoffPlaceSubmoduleAssignment.dropoffPlaceID!,
+          submoduleID: dropoffPlaceSubmoduleAssignment.submoduleID!,
         );
       }
     }
@@ -80,29 +80,18 @@ class RMFProvider extends ChangeNotifier {
   Future<void> dispatchDeliveryTask({
     required String pickup,
     required String dropoff,
-    required String drawerID,
+    required String submoduleID,
   }) async {
-    try {
-      // await _rmfApi.dispatchDeliveryTask(
-      //   pickup: pickup,
-      //   dropoff: dropoff,
-      //   drawerID: drawerID,
-      // );
-    } catch (e) {
+    try {} catch (e) {
       debugPrint('Error dispatching delivery task: $e');
     }
   }
 
   Future<void> dispatchDropOffTask({
     required String dropoff,
-    required String drawerID,
+    required String submoduleID,
   }) async {
-    try {
-      // await _rmfApi.dispatchDropOffTask(
-      //   dropoff: dropoff,
-      //   drawerID: drawerID,
-      // );
-    } catch (e) {
+    try {} catch (e) {
       debugPrint('Error dispatching dropoff task: $e');
     }
   }
@@ -111,12 +100,7 @@ class RMFProvider extends ChangeNotifier {
     required List<String> places,
     required int rounds,
   }) async {
-    try {
-      // await _rmfApi.dispatchPatrolTask(
-      //   places: places,
-      //   rounds: rounds,
-      // );
-    } catch (e) {
+    try {} catch (e) {
       debugPrint('Error dispatching patrol task: $e');
     }
   }

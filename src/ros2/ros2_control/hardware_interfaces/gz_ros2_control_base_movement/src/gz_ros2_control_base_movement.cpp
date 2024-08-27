@@ -4,10 +4,10 @@ namespace gz_ros2_control_base_movement
 {
 
   bool GzBaseMovementSystemHardware::initSim(rclcpp::Node::SharedPtr &model_nh,
-                                             std::map<std::string, sim::Entity> &enableJoints,
+                                             std::map<std::string, sim::Entity> &joints,
                                              const hardware_interface::HardwareInfo &hardware_info,
                                              sim::EntityComponentManager &_ecm,
-                                             int &update_rate)
+                                             unsigned int update_rate)
   {
     return true;
   }

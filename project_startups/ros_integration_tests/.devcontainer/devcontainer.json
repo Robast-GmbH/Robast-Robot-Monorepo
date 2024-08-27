@@ -11,7 +11,7 @@
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/,target=/workspace/src/ros2,type=bind",
-		"source=${localWorkspaceFolder}/../../libs/,target=/workspace/libs,type=bind"
+		"source=${localWorkspaceFolder}/../../Hardware/cpp/libs/,target=/workspace/libs,type=bind"
 		// "source=${localWorkspaceFolder}/../../src/web,target=/workspace/src/web,type=bind",
 		// "source=${localWorkspaceFolder}/../../src/preprocessing,target=/workspace/src/preprocessing,type=bind",
 	],
