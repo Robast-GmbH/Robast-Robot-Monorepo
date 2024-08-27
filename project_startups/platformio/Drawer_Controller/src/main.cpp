@@ -4,7 +4,7 @@
 #include "led/led_strip.hpp"
 
 // VERY IMPORTANT: Set the hardware version of the drawer controller pcb here (currently 3 and 4 are supported):
-#define HARDWARE_VERSION 3
+#define HARDWARE_VERSION 4
 #if HARDWARE_VERSION == 3
 #include "can_toolbox/can_controller_mcp2515.hpp"
 #include "gpio/gpio_wrapper_pca9554.hpp"
@@ -24,12 +24,12 @@ constexpr bool MODULE_CONTAINS_A_DRAWER = false;
 constexpr bool IS_ELECTRICAL_DRAWER = false;
 constexpr uint32_t MODULE_ID = 0;
 constexpr uint8_t LOCK_ID = 0;
-constexpr bool USE_ENCODER = true;
+constexpr bool USE_ENCODER = false;
 constexpr bool IS_SHAFT_DIRECTION_INVERTED = false;
 constexpr switch_lib::Switch::SwitchType ENDSTOP_SWITCH_TYPE = switch_lib::Switch::normally_open;
 // LED CONFIGS
-constexpr uint8_t NUM_OF_LEDS = 128;     // 18 LEDs at the old drawer and 21 LEDs at the new drawer
-constexpr bool USE_COLOR_FADE = false;   // TODO: be careful with this, led states are sometimes applied to wrong leds
+constexpr uint8_t NUM_OF_LEDS = 128;   // 18 LEDs at the old drawer and 21 LEDs at the new drawer
+constexpr bool USE_COLOR_FADE = false;
 
 std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
 

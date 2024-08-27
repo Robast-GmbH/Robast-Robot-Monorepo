@@ -24,8 +24,6 @@ TaskHandle_t Task2;
 
 SemaphoreHandle_t can_queue_mutex = NULL;
 
-constexpr uint8_t MINIMAL_LOOP_TIME_IN_MS = 1;
-
 std::shared_ptr<robast_can_msgs::CanDb> can_db;
 
 std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper;
@@ -48,4 +46,4 @@ std::unique_ptr<utils::ConfigManager> config_manager;
 // shared resource, so we need a mutex for this
 std::unique_ptr<utils::Queue<robast_can_msgs::CanMessage>> can_msg_queue;
 
-#endif   // DRAWER_CONTROLLER_GLOBAL_HPP
+#endif // DRAWER_CONTROLLER_GLOBAL_HPP
