@@ -15,7 +15,7 @@ class AuthView extends StatefulWidget {
   });
   final List<String> requiredUserIDs;
   final List<String> requiredUserGroups;
-  final void Function(bool) onAuthCompleted;
+  final void Function({required bool wasSuccessful}) onAuthCompleted;
   final VoidCallback? onRetry;
 
   @override
@@ -33,7 +33,7 @@ class _AuthViewState extends State<AuthView> {
       requiredUserIDs: widget.requiredUserIDs,
       requiredUserGroups: widget.requiredUserGroups,
     );
-    widget.onAuthCompleted(wasSuccessful);
+    widget.onAuthCompleted(wasSuccessful: wasSuccessful);
 
     return wasSuccessful;
   }

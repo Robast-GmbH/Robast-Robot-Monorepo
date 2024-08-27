@@ -50,15 +50,13 @@ USER ubuntu
 ############################## Build ##################################
 FROM ros:${ROS_DISTRO}-ros-base as build
 ARG GIT_TOKEN
-ARG GIT_BRANCH=main
-ARG ROS_DISTRO
 COPY --from=devel / /
 COPY . /ws/src/statemachine
 RUN apt-get update && apt-get install -y git
 
 
 WORKDIR /tmp
-RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+RUN git clone -b main https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
 
 
 

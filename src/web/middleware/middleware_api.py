@@ -175,15 +175,9 @@ def get_nfc_tag(robot_url: str = Depends(get_robot_url)):
     return response
 
 
-@app.post("/write_nfc_tag", tags=["NFC"])
-def write_nfc_tag(nfc_tag_id: str, robot_url: str = Depends(get_robot_url)):
-    response = requests.post(
-        f"{robot_url}/write_nfc_tag?nfc_tag_id={nfc_tag_id}"
-    ).json()
-    return response
-
-
 @app.get("/read_nfc_tag", tags=["NFC"])
-def read_nfc_tag(robot_url: str = Depends(get_robot_url)):
-    response = requests.get(f"{robot_url}/read_nfc_tag").json()
+def read_nfc_tag(timeout_in_s: int = 30, robot_url: str = Depends(get_robot_url)):
+    response = requests.get(
+        f"{robot_url}/read_nfc_tag?timeout_in_s={timeout_in_s}"
+    ).json()
     return response

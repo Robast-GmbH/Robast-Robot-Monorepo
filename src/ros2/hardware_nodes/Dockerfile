@@ -38,21 +38,30 @@ USER ubuntu
 ############################## Build ##################################
 FROM ros:jazzy-ros-base AS build
 ARG GIT_TOKEN
-ARG GIT_BRANCH=main
 COPY --from=devel / /
 COPY . /ws/src/hardware_nodes
 RUN apt-get update && apt-get install -y git
 
 
+# TODO: No idea why but it seems that this version is broken: ros-humble-ros2-socketcan/jammy 1.3.0-1jammy.20240729.003002 amd64
+# Therefore we need to install it manually for now
+WORKDIR /ros2_socketcan_ws
+RUN git clone -b ${ROS_DISTRO} https://github.com/autowarefoundation/ros2_socketcan.git
+RUN rosdep update && \
+  rosdep install --from-paths /ros2_socketcan_ws/ros2_socketcan --ignore-src -r -y && \
+  . /opt/ros/${ROS_DISTRO}/setup.sh && \
+  colcon build --install-base /robast/${ROS_DISTRO}/
+
+
 WORKDIR /tmp
-RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+RUN git clone -b main https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
 
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/ && mkdir /robast \
+RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast\
   && mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
   && mv /tmp/Monorepo/src/ros2/error_handling /ws/src/ros2/error_handling \
-  && mv /tmp/Monorepo/libs ws/ \
+  && mv /tmp/Monorepo/src/Hardware/cpp/libs ws/ \
   && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
 
 RUN rosdep update && \

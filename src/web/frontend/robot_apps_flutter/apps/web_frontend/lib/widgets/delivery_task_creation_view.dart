@@ -47,12 +47,12 @@ class _DeliveryTaskCreationViewState extends State<DeliveryTaskCreationView> {
             },
           ),
           CustomDropdownView(
-            value: widget.controller.drawerID,
+            value: widget.controller.submoduleID,
             items: robotProvider.getIDsOfModules(robotName: 'rb_theron'),
             hint: 'Schublade auswählen',
             onChanged: (value) {
               setState(() {
-                widget.controller.drawerID = value;
+                widget.controller.submoduleID = value;
               });
             },
           ),

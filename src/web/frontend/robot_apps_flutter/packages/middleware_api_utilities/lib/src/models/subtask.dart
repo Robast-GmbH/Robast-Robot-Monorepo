@@ -1,4 +1,6 @@
+import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:middleware_api_utilities/src/models/action.dart';
+import 'package:middleware_api_utilities/src/models/submodule_address.dart';
 import 'package:uuid/uuid.dart';
 
 class SubTask {
@@ -34,7 +36,7 @@ class SubTask {
     );
   }
 
-  factory SubTask.drawerProcess({
+  factory SubTask.submoduleProcess({
     required String id,
     required String parentID,
     required String? requiresTaskID,
@@ -45,7 +47,7 @@ class SubTask {
   }) {
     return SubTask(
       id: id,
-      name: 'drawer_process',
+      name: 'submodule_process',
       status: 'pending',
       assigneeName: '',
       requiresTaskID: requiresTaskID,
@@ -60,10 +62,52 @@ class SubTask {
       },
       action: Action(
         id: const Uuid().v4(),
-        name: 'drawer_process',
+        name: 'submodule_process',
         status: 'pending',
         parameters: {
           'items_by_change': itemsByChange,
+        },
+        subaction: null,
+      ),
+    );
+  }
+
+  factory SubTask.assignedSubmoduleProcess({
+    required String id,
+    required String parentID,
+    required String? requiresTaskID,
+    required String targetID,
+    required List<String> requiredUserIDs,
+    required List<String> requiredUserGroups,
+    required Map<String, int> itemsByChange,
+    required SubmoduleAddress submoduleAddress,
+    required String assigneeName,
+  }) {
+    final completeSubmoduleAddress = {'submodule_address': submoduleAddress.toJson()};
+    completeSubmoduleAddress['submodule_address']!['robot_name'] = assigneeName;
+    return SubTask(
+      id: id,
+      name: 'submodule_process',
+      status: 'pending',
+      assigneeName: assigneeName,
+      requiresTaskID: requiresTaskID,
+      isPartOfMonolith: false,
+      parentID: parentID,
+      targetID: targetID,
+      priority: 0,
+      earliestStartTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      requirements: {
+        'required_user_ids': requiredUserIDs,
+        'required_user_groups': requiredUserGroups,
+        ...completeSubmoduleAddress,
+      },
+      action: Action(
+        id: const Uuid().v4(),
+        name: 'submodule_process',
+        status: 'pending',
+        parameters: {
+          'items_by_change': itemsByChange,
+          ...completeSubmoduleAddress,
         },
         subaction: null,
       ),
