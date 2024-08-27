@@ -13,6 +13,7 @@ import 'package:robot_frontend/widgets/info_view.dart';
 
 import 'package:robot_frontend/widgets/robot_map_view.dart';
 import 'package:robot_frontend/widgets/settings_views/admin_settings_view.dart';
+import 'package:robot_frontend/widgets/settings_views/patient_settings_view.dart';
 import 'package:robot_frontend/widgets/settings_views/staff_settings_view.dart';
 import 'package:robot_frontend/widgets/sidebar.dart';
 
@@ -61,7 +62,7 @@ class _MenuPageState extends State<MenuPage> {
       userGroupWidgets: {
         'ADMIN': AdminSettingsView.new,
         'STAFF': StaffSettingsView.new,
-        'PATIENT': StaffSettingsView.new,
+        'PATIENT': PatientSettingsView.new,
       },
     ),
   ];
