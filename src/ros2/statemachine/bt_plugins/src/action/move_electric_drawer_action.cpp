@@ -23,7 +23,7 @@ namespace statemachine
         drawer_task_.target_position = (uint8_t)tmp;
         getInput("speed", tmp);
         drawer_task_.speed = (uint8_t)tmp;
-        getInput("stall_guard_enable", drawer_task_.stall_guard_enable);
+        getInput("stall_guard_value", drawer_task_.stall_guard_value);
 
         initializePublisher();
     }

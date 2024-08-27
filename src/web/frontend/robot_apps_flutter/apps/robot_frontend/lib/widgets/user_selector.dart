@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/controller/user_selection_controller.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
+import 'package:robot_frontend/widgets/rounded_container.dart';
 
 class UserSelector extends StatefulWidget {
   const UserSelector({
@@ -43,8 +45,7 @@ class _UserSelectorState extends State<UserSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white.withOpacity(0.4),
+    return RoundedContainer(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
@@ -54,6 +55,7 @@ class _UserSelectorState extends State<UserSelector> {
               textAlign: TextAlign.end,
               style: TextStyle(
                 fontSize: 24,
+                color: RobotColors.secondaryText,
               ),
             ),
             const SizedBox(
@@ -63,7 +65,9 @@ class _UserSelectorState extends State<UserSelector> {
               child: FutureBuilder<List<User>>(
                 future: initUserSelectorFuture,
                 builder: (context, snapshot) {
-                  return DropdownButton<String>(
+                  return DropdownButtonFormField<String>(
+                    isDense: false,
+                    decoration: const InputDecoration(contentPadding: EdgeInsets.zero),
                     disabledHint: const Text(''),
                     isExpanded: true,
                     value: widget.controller.selectedUser?.id,
@@ -77,6 +81,7 @@ class _UserSelectorState extends State<UserSelector> {
                                   ' ${e.title}${e.title.isNotEmpty ? ' ' : ''}${e.firstName} ${e.lastName}',
                                   style: const TextStyle(
                                     fontSize: 24,
+                                    color: RobotColors.secondaryText,
                                   ),
                                 ),
                               ),
