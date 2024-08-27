@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
@@ -17,6 +19,7 @@ import 'package:robot_frontend/widgets/settings_views/patient_settings_view.dart
 import 'package:robot_frontend/widgets/settings_views/staff_settings_view.dart';
 import 'package:robot_frontend/widgets/sidebar.dart';
 
+class MenuPage extends StatefulWidget {
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
 
@@ -171,9 +174,108 @@ class _MenuPageState extends State<MenuPage> {
                         ),
                       ],
                     ),
+    return Scaffold(
+      body: BackgroundView(
+        child: FutureBuilder<User?>(
+          future: loadCurrentUserFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const SizedBox.expand(child: Center(child: CircularProgressIndicator()));
+            }
+            final user = snapshot.data;
+            return Row(
+              children: [
+                Sidebar(
+                  sidebarMenuPoints: sidebarMenuPoints,
+                  onMenuPointSelected: (index) => setState(() {
+                    selectedMainMenuIndex = index;
+                  }),
+                  user: user,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 16, right: 16, bottom: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          child: Stack(
+                            children: [
+                              const Padding(
+                                padding: EdgeInsets.only(top: 12),
+                                child: Align(
+                                  child: ClockView(),
+                                ),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 16),
+                                    child: Text(
+                                      sidebarMenuPoints[selectedMainMenuIndex].title,
+                                      style: const TextStyle(color: RobotColors.primaryText, fontSize: 40, fontWeight: FontWeight.w400),
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
+                                      Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
+                                      Navigator.pop(context);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(bottom: 16),
+                                      child: Container(
+                                        decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(16)),
+                                        child: const Padding(
+                                          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                'Abmelden',
+                                                style: TextStyle(color: RobotColors.primaryText, fontSize: 32),
+                                              ),
+                                              SizedBox(
+                                                width: 16,
+                                              ),
+                                              Icon(
+                                                Icons.logout,
+                                                size: 40,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 8),
+                          width: double.infinity,
+                          height: 2,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.black.withOpacity(0.1),
+                          ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 16),
+                            child: sidebarMenuPoints[selectedMainMenuIndex].userGroupWidgets[user!.userGroups.last]!(),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
+            );
+          },
+        ),
             );
           },
         ),
