@@ -6,6 +6,7 @@
 /// You can find more details regarding the commands in the TWN4 Simple Protocol DocRev25.pdf
 
 #include <array>
+#include <cstdint>
 #include <iomanip>   // Include for std::setfill and std::setw
 #include <iostream>
 #include <sstream>     // Include for std::ostringstream

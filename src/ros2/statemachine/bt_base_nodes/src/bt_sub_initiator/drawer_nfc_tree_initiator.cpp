@@ -7,7 +7,7 @@ namespace bt_base_nodes
 int main(int argc, char *argv[])
 {
   rclcpp::init(argc, argv);
-  std::map<std::string, communication_interfaces::msg::DrawerAddress> nfc_dictionary{{}};
+  std::map<std::string, communication_interfaces::msg::DrawerAddress> nfc_dictionary;
   for (int i = 1; i <= 8; i++)
   {
     communication_interfaces::msg::DrawerAddress drawer_address;

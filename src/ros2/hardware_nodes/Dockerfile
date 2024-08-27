@@ -1,11 +1,8 @@
-FROM ros:humble-ros-base-jammy as devel
+ARG ROS_DISTRO=jazzy
+FROM ros:${ROS_DISTRO}-ros-base AS devel 
 
-ARG DEBIAN_FRONTEND=noninteractive
-RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
-  echo robast:robast | chpasswd && \
-  echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER robast
-ARG DEBIAN_FRONTEND=
+RUN echo "ubuntu:ubuntu" | chpasswd && \
+    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
 
@@ -19,18 +16,15 @@ RUN apt-get update && apt-get install -y \
   python3-rosdep \
   ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
   libboost-all-dev \
-  ros-humble-ros-testing \
-  ros-humble-ament-cmake-test \
-  ros-humble-launch-testing \
+  ros-${ROS_DISTRO}-ros-testing \
+  ros-${ROS_DISTRO}-ament-cmake-test \
+  ros-${ROS_DISTRO}-launch-testing \
   libpqxx-dev \
+  gdb \
   git \
   && rosdep init || echo "rosdep already initialized"
 
 RUN apt install ros-${ROS_DISTRO}-ros2-socketcan -y
-
-#TODO: @unknown should web stff be realy part of this project?
-RUN pip3 install fastapi -U \ 
-  httpx 
 
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration
@@ -38,9 +32,11 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 
+USER ubuntu
+
 
 ############################## Build ##################################
-FROM ros:humble-ros-base-jammy as build
+FROM ros:jazzy-ros-base AS build
 ARG GIT_TOKEN
 COPY --from=devel / /
 COPY . /ws/src/hardware_nodes
@@ -62,7 +58,7 @@ RUN git clone -b main https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git
 
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast\
+RUN mkdir -p /ws/src/ros2/ && mkdir /robast \
   && mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
   && mv /tmp/Monorepo/src/ros2/error_handling /ws/src/ros2/error_handling \
   && mv /tmp/Monorepo/src/Hardware/cpp/libs ws/ \
@@ -74,7 +70,7 @@ RUN rosdep update && \
   colcon build --install-base /robast/${ROS_DISTRO}/
 
 ############################## Release ##################################
-FROM ros:humble-ros-base-jammy as release
+FROM ros:jazzy-ros-base AS release
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
@@ -91,5 +87,6 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 
-RUN apt-get update \
-  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
+RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
+
+USER ubuntu

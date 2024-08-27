@@ -74,7 +74,7 @@ if(BUILD_TESTING)
   FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG        ab6c7375be9a8e71ee84c6f8537113f9f47daf99 # should equal tag v3.2.1
+    GIT_TAG        v3.6.0
   )
   FetchContent_Declare(
     googletest 

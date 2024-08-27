@@ -62,7 +62,7 @@ public:
         "node",
         std::shared_ptr<rclcpp::Node>(tmp));
 
-    std::map<std::string, DrawerAddress> nfc_dictionary{{}};
+    std::map<std::string, DrawerAddress> nfc_dictionary;
     for (int i = 1; i <= 5; i++)
     {
       DrawerAddress drawer_address;

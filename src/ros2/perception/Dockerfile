@@ -1,9 +1,8 @@
-FROM ros:humble-perception as devel
+ARG ROS_DISTRO=jazzy
+FROM ros:${ROS_DISTRO}-perception AS devel
 
-RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
-    echo robast:robast | chpasswd && \
-    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER robast
+RUN echo "ubuntu:ubuntu" | chpasswd && \
+    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
 
@@ -27,4 +26,5 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 
+USER ubuntu
 #TODO @sagarvl96 do we need a release version? 

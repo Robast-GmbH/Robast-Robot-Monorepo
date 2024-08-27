@@ -29,8 +29,8 @@
   <exec_depend>xacro</exec_depend>
   
   <depend>rb_theron_description</depend>
-  <depend>gz_ros2_control_base_movement</depend>
-  <depend>mobile_base_controller</depend>
+  <!-- <depend>gz_ros2_control_base_movement</depend> -->
+  <!-- <depend>mobile_base_controller</depend> -->
 
   <export>
     <build_type>ament_cmake</build_type>

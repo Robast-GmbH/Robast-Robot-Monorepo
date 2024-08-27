@@ -1,13 +1,12 @@
-ARG ROS_VERSION=humble
-FROM ros:${ROS_VERSION} as devel
-ARG ROS_CONTROL_VERSION=humble
-ARG MOVEIT2_TUTORIALS_VERSION=humble
+ARG ROS_VERSION=jazzy
+FROM ros:${ROS_VERSION} AS devel
+ARG ROS_CONTROL_VERSION=master
+ARG MOVEIT2_TUTORIALS_VERSION=main
 
-RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
-  echo robast:robast | chpasswd && \
-  echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER robast
+RUN echo ubuntu:ubuntu | chpasswd && \
+    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
+ENV USER=ubuntu
 RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/${USER}/.bashrc
 
 RUN apt-get update && apt-get install -y \
@@ -69,6 +68,16 @@ RUN sudo apt-get update && sudo apt install ros-${ROS_DISTRO}-plotjuggler-ros -y
 
 # Adds the workspace to the bashrc
 RUN echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/${USER}/.bashrc
+
+# Builds depthai-ros from source because it is not available as debian package for jazzy yet (as of 07.08.2024)
+# TODO: Remove this once depthai-ros is available as debian package for jazzy
+WORKDIR /depthai_ws/src
+RUN git clone -b ${ROS_DISTRO} https://github.com/luxonis/depthai-ros.git
+WORKDIR /depthai_ws
+RUN rosdep update && rosdep install --from-paths src/depthai-ros --ignore-src -y
+RUN . /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --cmake-args '-DCMAKE_BUILD_TYPE=Release'
+RUN echo "if [ -f /depthai_ws/install/setup.bash ]; then source /depthai_ws/install/setup.bash; fi" >> /home/${USER}/.bashrc
+
 
 # dds setup / configuration
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 

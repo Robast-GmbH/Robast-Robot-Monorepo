@@ -20,8 +20,7 @@
   <depend>behaviortree_cpp</depend>
   <depend>bt_base_nodes</depend>
   <exec_depend>nav2_common</exec_depend>
-  
-  <!-- <depend>behaviortree_cpp_v3</depend> -->
+
 
   <export>
     <build_type>ament_cmake</build_type>

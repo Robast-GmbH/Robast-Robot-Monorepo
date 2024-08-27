@@ -5,7 +5,7 @@
 	"service": "machine-learning-tasks",
 	"workspaceFolder": "/workspace",
 	"shutdownAction": "stopCompose",
-	"remoteUser": "robast",
+	"remoteUser": "ubuntu",
 	"remoteEnv": {
 		"DISPLAY": "${localEnv:DISPLAY}"
 	},
