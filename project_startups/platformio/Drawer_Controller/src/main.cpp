@@ -20,14 +20,16 @@
 #endif
 
 // These are the very basic top level configurations for the drawer controller you need to set.
-constexpr bool IS_ELECTRICAL_DRAWER = true;
-constexpr uint32_t MODULE_ID = 2;
+constexpr bool MODULE_CONTAINS_A_DRAWER = false;
+constexpr bool IS_ELECTRICAL_DRAWER = false;
+constexpr uint32_t MODULE_ID = 0;
 constexpr uint8_t LOCK_ID = 0;
 constexpr bool USE_ENCODER = true;
 constexpr bool IS_SHAFT_DIRECTION_INVERTED = false;
 constexpr switch_lib::Switch::SwitchType ENDSTOP_SWITCH_TYPE = switch_lib::Switch::normally_open;
-constexpr uint8_t NUM_OF_LEDS = 18;   // 18 LEDs at the old drawer and 21 LEDs at the new drawer
-constexpr bool USE_COLOR_FADE = true;
+// LED CONFIGS
+constexpr uint8_t NUM_OF_LEDS = 128;     // 18 LEDs at the old drawer and 21 LEDs at the new drawer
+constexpr bool USE_COLOR_FADE = false;   // TODO: be careful with this, led states are sometimes applied to wrong leds
 
 std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
 
@@ -176,7 +178,10 @@ void process_can_msgs_task_loop(void* pvParameters)
 
     led_strip->handle_led_control();
 
-    i_drawer->update_state();
+    if (MODULE_CONTAINS_A_DRAWER)
+    {
+      i_drawer->update_state();
+    }
 
     std::optional<robast_can_msgs::CanMessage> to_be_sent_message = i_drawer->can_out();
 
