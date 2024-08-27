@@ -1,7 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/map_provider.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
@@ -51,8 +53,21 @@ class RobotFrontend extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       scrollBehavior: MyCustomScrollBehavior(),
-      theme: ThemeData.dark(
-        useMaterial3: true,
+      theme: ThemeData.dark(useMaterial3: true).copyWith(
+        textTheme: GoogleFonts.montserratTextTheme(),
+        textSelectionTheme: const TextSelectionThemeData(cursorColor: RobotColors.secondaryText),
+        inputDecorationTheme: const InputDecorationTheme(
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: RobotColors.tertiaryText,
+            ),
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: RobotColors.secondaryText,
+            ),
+          ),
+        ),
       ),
       home: const ConfigPage(
         autoClose: true,

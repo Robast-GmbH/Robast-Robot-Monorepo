@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 
 class ModuleView extends StatelessWidget {
   const ModuleView({
@@ -31,25 +32,14 @@ class ModuleView extends StatelessWidget {
                 padding: const EdgeInsets.all(4),
                 child: Container(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: !enabled
-                          ? [
-                              Colors.white.withOpacity(0.2),
-                              Colors.white.withOpacity(0.1),
-                            ]
-                          : showReservationStatus && !isReserved
-                              ? [
-                                  Colors.white.withOpacity(0.5),
-                                  Colors.white.withOpacity(0.3),
-                                ]
-                              : [
-                                  const Color(0xCCBBFF33),
-                                  const Color(0x7FA8E52D),
-                                ],
-                    ),
-                    borderRadius: BorderRadius.circular(12),
+                    color: enabled ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.05),
+                    border: isReserved
+                        ? Border.all(
+                            color: Colors.black87,
+                            width: 8,
+                          )
+                        : null,
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: SizedBox.expand(
                     child: Align(
@@ -58,7 +48,7 @@ class ModuleView extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           height: 0,
-                          color: enabled ? Colors.white : Colors.white.withOpacity(0.2),
+                          color: enabled ? RobotColors.secondaryText : RobotColors.primaryText.withOpacity(0.2),
                           fontSize: 40,
                           fontWeight: FontWeight.w400,
                         ),

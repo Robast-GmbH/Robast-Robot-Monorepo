@@ -53,6 +53,7 @@ class Task {
       subtasks: [
         SubTask.submoduleProcess(
           id: pickupTaskID,
+          name: 'Abholung',
           parentID: taskID,
           requiresTaskID: null,
           targetID: pickupTargetID,
@@ -62,6 +63,7 @@ class Task {
         ),
         SubTask.submoduleProcess(
           id: dropoffTaskID,
+          name: 'Zustellung',
           parentID: taskID,
           requiresTaskID: pickupTaskID,
           targetID: dropoffTargetID,

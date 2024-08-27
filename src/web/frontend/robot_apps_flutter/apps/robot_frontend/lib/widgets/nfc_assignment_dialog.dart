@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 
 enum NFCAssignmentStatus {
@@ -8,16 +9,16 @@ enum NFCAssignmentStatus {
   error,
 }
 
-class NFCWritingDialog extends StatefulWidget {
-  const NFCWritingDialog({required this.userID, super.key});
+class NFCAssignmentDialog extends StatefulWidget {
+  const NFCAssignmentDialog({required this.userID, super.key});
 
   final String userID;
 
   @override
-  State<NFCWritingDialog> createState() => _NFCWritingDialogState();
+  State<NFCAssignmentDialog> createState() => _NFCAssignmentDialogState();
 }
 
-class _NFCWritingDialogState extends State<NFCWritingDialog> {
+class _NFCAssignmentDialogState extends State<NFCAssignmentDialog> {
   NFCAssignmentStatus status = NFCAssignmentStatus.inProgress;
 
   Future<void> readAndAssignNFC() async {
@@ -50,7 +51,10 @@ class _NFCWritingDialogState extends State<NFCWritingDialog> {
         return const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Bitte den NFC-Tag an das Gerät halten'),
+            Text(
+              'Bitte den NFC-Tag an das Gerät halten',
+              style: TextStyle(color: RobotColors.secondaryText),
+            ),
             SizedBox(
               height: 16,
             ),
@@ -58,36 +62,54 @@ class _NFCWritingDialogState extends State<NFCWritingDialog> {
           ],
         );
       case NFCAssignmentStatus.success:
-        return const Text('NFC Tag erfolgreich zugewiesen');
+        return const Text(
+          'NFC Tag erfolgreich zugewiesen',
+          style: TextStyle(color: RobotColors.secondaryText),
+        );
       case NFCAssignmentStatus.error:
-        return const Text('Fehler beim Zuweisen des NFC Tags');
+        return const Text(
+          'Fehler beim Zuweisen des NFC Tags',
+          style: TextStyle(color: RobotColors.secondaryText),
+        );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('NFC Tag zuweisen'),
+      title: const Text(
+        'NFC Tag zuweisen',
+        style: TextStyle(color: RobotColors.secondaryText),
+      ),
       content: buildContent(),
       actions: <Widget>[
         if (status == NFCAssignmentStatus.error)
           TextButton(
             onPressed: readAndAssignNFC,
-            child: const Text('Erneut versuchen'),
+            child: const Text(
+              'Erneut versuchen',
+              style: TextStyle(color: RobotColors.secondaryText),
+            ),
           ),
         if (status == NFCAssignmentStatus.success)
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: const Text('OK'),
+            child: const Text(
+              'OK',
+              style: TextStyle(color: RobotColors.secondaryText),
+            ),
           )
         else
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
-            child: const Text('Abbrechen'),
+            child: const Text(
+              'Abbrechen',
+              style: TextStyle(color: RobotColors.secondaryText),
+            ),
           ),
       ],
     );

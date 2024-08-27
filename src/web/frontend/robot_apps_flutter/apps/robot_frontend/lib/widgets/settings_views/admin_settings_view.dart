@@ -1,0 +1,81 @@
+import 'package:flutter/material.dart';
+import 'package:robot_frontend/pages/config_page.dart';
+import 'package:robot_frontend/pages/modules_setup_page.dart';
+import 'package:robot_frontend/pages/more_settings_page.dart';
+import 'package:robot_frontend/pages/user_management_page.dart';
+import 'package:robot_frontend/widgets/custom_button_view.dart';
+
+class AdminSettingsView extends StatelessWidget {
+  const AdminSettingsView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            children: [
+              Expanded(
+                child: CustomButtonView(
+                  text: 'Modul Setup',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute<ModulesSetupPage>(
+                        builder: (context) => const ModulesSetupPage(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: CustomButtonView(
+                  text: 'Netzwerk Setup',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute<ConfigPage>(
+                        builder: (context) => const ConfigPage(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            children: [
+              Expanded(
+                child: CustomButtonView(
+                  text: 'User Management',
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute<UserManagementPage>(
+                      builder: (context) => const UserManagementPage(),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: CustomButtonView(
+                  text: 'Weitere Einstellungen',
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute<MoreSettingsPage>(
+                      builder: (context) => const MoreSettingsPage(),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
