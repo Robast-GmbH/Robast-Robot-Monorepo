@@ -39,7 +39,7 @@ namespace statemachine
   void EvaluateDriveDirection::exposeDriveDirection()
   {
 
-    RCLCPP_INFO(rclcpp::get_logger("EvaluateDriveDirection"), "path size: %d", _path.poses.size());
+    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "path size: %d", _path.poses.size());
     if (!nav2_util::getCurrentPose(_global_pose, *_tf, _global_frame, _base_frame, 0.2) ||
         !(_path.poses.size() > 0))
     {
@@ -68,8 +68,7 @@ namespace statemachine
     {
       _direction = "standing";
     }
-    // _path = nav_msgs::msg::Path();
-    RCLCPP_INFO(rclcpp::get_logger("EvaluateDriveDirection"), "direction: %s", _direction.c_str());
+    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "direction: %s", _direction.c_str());
     setOutput("direction", _direction);
   }
 
