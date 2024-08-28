@@ -71,9 +71,6 @@ namespace statemachine
     void exposeDriveDirection();
     void callbackPathReceived(const nav_msgs::msg::Path::SharedPtr msg);
     int getCurrentIndex(const geometry_msgs::msg::Pose &current_pose, const nav_msgs::msg::Path &path);
-
-    // if the path is shorter than the prediction horizon, but longer than 5. 5 seems to be a good number to determine if the robot is still moving
-    constexpr int PREDICTION_THRESHOLD_FOR CLOSE_TO_TARGET_SHOULD_BE_CHANGED_REGULARLY_AND_DELETED_IN_THE_END_BEFOR_FINAL_DEPLOY_BUT_IS_CURRENTRLY_A_KINDA_OK_NUMBER = 5;  
   };
 } // namespace statemachine
 #endif
