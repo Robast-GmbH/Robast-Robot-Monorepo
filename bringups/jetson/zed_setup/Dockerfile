@@ -17,8 +17,11 @@ ARG AMENT_LINT_VERSION=0.12.4
 ARG GEOGRAPHIC_INFO_VERSION=1.0.4
 ARG ROBOT_LOCALIZATION_VERSION=3.4.2
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
+# Enable required NVIDIA drivers
+#ENV NVIDIA_DRIVER_CAPABILITIES \
+#  ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}compute,video,utility
 
 # Disable apt-get warnings
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 42D5A192B819C5DA || true && \
@@ -38,7 +41,7 @@ RUN echo "# R${L4T_MAJOR} (release), REVISION: ${L4T_MINOR}" > /etc/nv_tegra_rel
   apt-get install -y --no-install-recommends zstd wget less cmake curl gnupg2 \
   build-essential python3 python3-pip python3-dev python3-setuptools libusb-1.0-0-dev -y && \
   pip install protobuf && \
-  wget -q --no-check-certificate -O ZED_SDK_Linux_JP.run \
+  wget -q -O ZED_SDK_Linux_JP.run \
   https://download.stereolabs.com/zedsdk/${ZED_SDK_MAJOR}.${ZED_SDK_MINOR}/l4t${L4T_MAJOR}.${L4T_MINOR}/jetsons && \
   chmod +x ZED_SDK_Linux_JP.run ; ./ZED_SDK_Linux_JP.run silent skip_tools && \
   rm -rf /usr/local/zed/resources/* && \
@@ -46,7 +49,7 @@ RUN echo "# R${L4T_MAJOR} (release), REVISION: ${L4T_MINOR}" > /etc/nv_tegra_rel
   rm -rf /var/lib/apt/lists/*
 
 # Install the ZED ROS2 Wrapper
-ENV ROS_DISTRO ${ROS2_DIST}
+ENV ROS_DISTRO=${ROS2_DIST}
 
 # Copy the sources in the Docker image
 WORKDIR /root/ros2_ws/src
