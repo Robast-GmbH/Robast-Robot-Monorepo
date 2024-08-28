@@ -12,10 +12,17 @@ services:
     volumes:
       - ./start_scripts/:/start_scripts/:cached
       - ./zed_setup/:/zed_setup/:cached
+      - ./healthchecks/zed_check.sh:/healthchecks/zed_check.sh:cached
     stop_signal: SIGINT
     restart: unless-stopped
     network_mode: "host"
     pull_policy: always
+    healthcheck:
+      test: [ "CMD", "/healthchecks/zed_check.sh" ]
+      interval: 30s
+      timeout: 2s
+      retries: 3
+      start_period: 30s
     command: /bin/sh -c "./start_scripts/jetson_start.sh"
 
   hardware_nodes:
