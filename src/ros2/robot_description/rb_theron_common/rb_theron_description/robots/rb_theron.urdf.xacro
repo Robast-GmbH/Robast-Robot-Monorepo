@@ -118,7 +118,7 @@
 		<origin xyz="0.250 0.0 0.1643" rpy="0 3.1416 3.1416"/>
 	</xacro:sensor_sick_nanoscan3>
 
-	<xacro:sensor_zed2 prefix="$(arg prefix)zed" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="zed2" hq="${hq}">
+	<xacro:sensor_zed2 prefix="$(arg prefix)zed" parent="$(arg prefix)base_link" prefix_topic="zed2">
 		<origin xyz="0.27 0 1.43" rpy="0 0.416 0"/>
   	</xacro:sensor_zed2>
 

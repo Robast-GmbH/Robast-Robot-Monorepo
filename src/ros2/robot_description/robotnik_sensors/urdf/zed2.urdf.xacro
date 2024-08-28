@@ -168,7 +168,7 @@
         />
   </xacro:macro>
 
-  <xacro:macro name="sensor_zed2" params="prefix:=zed2 parent sensor_base_frame robot_name hq *origin model:=zed2  prefix_topic:=zed_node" >
+  <xacro:macro name="sensor_zed2" params="prefix:=zed2 parent *origin model:=zed2 prefix_topic:=zed_node" >
     <xacro:stereolabs_zed2 prefix="${prefix}" parent="${parent}" model="${model}" prefix_topic="${prefix_topic}">
       <xacro:insert_block name="origin" />
     </xacro:stereolabs_zed2>
