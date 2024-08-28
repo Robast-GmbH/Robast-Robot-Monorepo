@@ -56,9 +56,8 @@ namespace statemachine
 
       _direction = utils::DirectionToString(utils::calculateDirection(start_pose, end_pose));
     }
-    else if (_path.poses.size() > 5)
-    // if the path is shorter than the prediction horizon, but longer than 5. 5 seems to be a good number to determine if the robot is still moving
-    {
+    else if (_path.poses.size() > CLOSE_TO_TARGET_SHOULD_BE_CHANGED_REGULARLY_AND_DELETED_IN_THE_END_BEFOR_FINAL_DEPLOY_BUT_IS_CURRENTRLY_A_KINDA_OK_NUMBER)
+    {      
       auto start_pose = _path.poses[0].pose;
       auto end_pose = _path.poses[_path.poses.size() - 1].pose;
 
