@@ -40,7 +40,7 @@ namespace test2
                             move_electric_drawer_topic="move_electric_drawer" 
                             speed="200" 
                             target_position="200" 
-                            stall_guard_enable="0"/>
+                            stall_guard_value="0"/>
                         </BehaviorTree>
                     </root>)";
 

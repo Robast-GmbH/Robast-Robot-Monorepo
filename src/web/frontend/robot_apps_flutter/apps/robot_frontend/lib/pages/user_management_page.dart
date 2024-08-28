@@ -3,6 +3,7 @@ import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
+import 'package:robot_frontend/widgets/rounded_button.dart';
 import 'package:robot_frontend/widgets/user_management_list_tile.dart';
 
 class UserManagementPage extends StatefulWidget {
@@ -33,58 +34,53 @@ class _UserManagementPageState extends State<UserManagementPage> {
           }
           return Center(
             child: Padding(
-              padding: const EdgeInsets.all(64),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   Expanded(
-                    child: ListView(
-                      children: snapshot.data!
-                          .map<Widget>(
-                            (user) => UserManagementListTile(
-                              user: user,
-                              onUserUpdate: () {
-                                setState(() {
-                                  loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
-                                });
-                              },
-                            ),
-                          )
-                          .toList(),
+                    child: ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) => UserManagementListTile(
+                        user: snapshot.data![index],
+                        onUserUpdate: () {
+                          setState(() {
+                            loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
+                          });
+                        },
+                      ),
                     ),
                   ),
                   const SizedBox(
-                    height: 4,
+                    height: 16,
                   ),
-                  GestureDetector(
-                    onTap: () async {
-                      await Provider.of<UserProvider>(context, listen: false).createUser(
-                        newUser: User(
-                          id: '',
-                          nfcID: '',
-                          title: '',
-                          firstName: '',
-                          lastName: '',
-                          station: '',
-                          room: '',
-                          userGroups: [],
-                        ),
-                      );
-                      setState(() {
-                        loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
-                      });
-                    },
-                    child: Card(
-                      color: Colors.white.withOpacity(0.7),
-                      child: const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: RoundedButton(
+                        onPressed: () async {
+                          await Provider.of<UserProvider>(context, listen: false).createUser(
+                            newUser: User(
+                              id: '',
+                              nfcID: '',
+                              title: '',
+                              firstName: '',
+                              lastName: '',
+                              station: '',
+                              room: '',
+                              userGroups: [],
+                            ),
+                          );
+                          setState(() {
+                            loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
+                          });
+                        },
+                        color: Colors.black.withOpacity(0.2),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8),
                           child: Icon(
                             Icons.add,
                             size: 48,
                           ),
-                        ),
-                      ),
-                    ),
+                        ),),
                   ),
                 ],
               ),

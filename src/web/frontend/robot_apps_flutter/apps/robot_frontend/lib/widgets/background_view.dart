@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 
 class BackgroundView extends StatelessWidget {
   const BackgroundView({required this.child, super.key});
@@ -6,13 +7,14 @@ class BackgroundView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF00DB9E), Color(0xFF8F44F2)],
-          ),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [RobotColors.secondaryBackground, RobotColors.primaryBackground],
         ),
-        child: child,);
+      ),
+      child: child,
+    );
   }
 }

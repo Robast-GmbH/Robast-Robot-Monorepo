@@ -20,7 +20,8 @@ services:
     stop_signal: SIGINT
     restart: unless-stopped
     network_mode: "host"
-    command: /bin/sh -c "/start_scripts/jetson_start.sh"
+    pull_policy: always
+    command: /bin/sh -c "./start_scripts/jetson_start.sh"
 
   hardware_nodes:
     image: ghcr.io/robast-gmbh/monorepo/hardware_nodes:release
@@ -34,6 +35,7 @@ services:
     stop_signal: SIGINT
     restart: unless-stopped
     network_mode: "host"
+    pull_policy: always
     command: /bin/sh -c "./start_scripts/hardware_nodes_start.sh"
   
   statemachine:
@@ -47,7 +49,8 @@ services:
     stop_signal: SIGINT
     restart: unless-stopped
     network_mode: "host"
-    command: /bin/sh -c "./start_scripts/statemachine_start.sh" 
+    pull_policy: always
+    command: /bin/sh -c "./start_scripts/statemachine_start.sh"
 
   disinfection_module:
     image: ghcr.io/robast-gmbh/monorepo/nvidia_hardware_nodes:release
@@ -64,4 +67,5 @@ services:
     stop_signal: SIGINT
     restart: unless-stopped
     network_mode: "host"
+    pull_policy: always
     command: /bin/sh -c "/start_scripts/disinfection_publisher_start.sh"

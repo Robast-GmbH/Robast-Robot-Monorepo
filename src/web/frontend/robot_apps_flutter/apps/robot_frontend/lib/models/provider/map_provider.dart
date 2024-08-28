@@ -1,7 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 
 class MapProvider extends ChangeNotifier {
+  Uint8List? mapImageCache;
   Map<String, List<String>> _roomsByStations = {};
 
   Map<String, List<String>> get roomsByStations => _roomsByStations;
@@ -22,5 +25,12 @@ class MapProvider extends ChangeNotifier {
     }
     _roomsByStations = tempRoomsByStations;
     notifyListeners();
+  }
+
+  Future<Uint8List?> getMapImage() async {
+    if (mapImageCache == null) {
+      mapImageCache = await _middlewareApiUtilities.getMapImage();
+    }
+    return mapImageCache;
   }
 }

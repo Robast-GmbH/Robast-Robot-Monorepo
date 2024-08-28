@@ -59,14 +59,14 @@
             "label": "Move electrical drawer x out",
             "detail": "Send topic message to open electrical drawer x. Make sure the Lock was opened before via open lock.",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /electrical_drawer_task communication_interfaces/msg/DrawerTask '{drawer_address: {module_id: ${input:module_id}, drawer_id: 0}, target_position: 250, speed: 200, stall_guard_enable: false}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /electrical_drawer_task communication_interfaces/msg/DrawerTask '{drawer_address: {module_id: ${input:module_id}, drawer_id: 0}, target_position: 250, speed: 200, stall_guard_value: 0}' --once",
             "problemMatcher": []
         },
         {
             "label": "Move electrical drawer x in",
             "detail": "Send topic message to open electrical drawer x",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /electrical_drawer_task communication_interfaces/msg/DrawerTask '{drawer_address: {module_id: ${input:module_id}, drawer_id: 0}, target_position: 0, speed: 200, stall_guard_enable: false}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /electrical_drawer_task communication_interfaces/msg/DrawerTask '{drawer_address: {module_id: ${input:module_id}, drawer_id: 0}, target_position: 0, speed: 200, stall_guard_value: 0}' --once",
             "problemMatcher": []
         },
         {

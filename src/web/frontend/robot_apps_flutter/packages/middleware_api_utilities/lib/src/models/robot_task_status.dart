@@ -1,4 +1,4 @@
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:middleware_api_utilities/src/models/subtask.dart';
 
 class RobotTaskStatus {
   RobotTaskStatus({
@@ -8,11 +8,11 @@ class RobotTaskStatus {
 
   factory RobotTaskStatus.fromJson(Map<String, dynamic> json) {
     return RobotTaskStatus(
-      activeTask: json['active'] == null ? null : Task.fromJson((json['active'] as Map<String, dynamic>)['task'] as Map<String, dynamic>),
-      queuedTasks: (json['queued'] as List).map((e) => Task.fromJson((e as Map<String, dynamic>)['task'] as Map<String, dynamic>)).toList(),
+      activeTask: json['active'] == null ? null : SubTask.fromJson(json['active'] as Map<String, dynamic>),
+      queuedTasks: (json['queued'] as List).map((e) => SubTask.fromJson(e as Map<String, dynamic>)).toList(),
     );
   }
 
-  final Task? activeTask;
-  final List<Task> queuedTasks;
+  final SubTask? activeTask;
+  final List<SubTask> queuedTasks;
 }

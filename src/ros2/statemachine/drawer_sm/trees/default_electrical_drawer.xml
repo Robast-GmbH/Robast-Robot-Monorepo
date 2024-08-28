@@ -42,6 +42,15 @@
     </Sequence>
   </BehaviorTree>
 
+  <BehaviorTree ID="Opening_electrical_drawer">
+    <Sequence>
+      <ElectricDrawerStatusCondition target_value="251" topic="/electrical_drawer_status" use_stallguard="true"/>
+      <PublishDrawerStatus topic_name="/bt_drawer_open" status="true" drawer_address="{drawer}"/>
+      <SubTree ID="LED_Open" _autoremap="true"/>
+      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="100" led_topic="/led_cmd" leds="{leds}"/>
+    </Sequence>
+  </BehaviorTree>
+
   <BehaviorTree ID="default_electrical_drawer_tree">
     <BaseErrorDecorator topic="/robast_error">
       <Sequence>
@@ -52,19 +61,24 @@
           <OpenDrawer drawer_address="{drawer}" drawer_open_topic="/open_drawer"/>
         </Delay>
         <Delay delay_msec="1000">
-          <MoveElectricDrawer drawer_address="{drawer}" move_electric_drawer_topic="/electrical_drawer_task" speed="255" stall_guard_enable="0" target_position="251"/>
+          <MoveElectricDrawer drawer_address="{drawer}" move_electric_drawer_topic="/electrical_drawer_task" speed="255" stall_guard_value="0" target_position="251"/>
         </Delay>
         <SubTree ID="LED_unlocked" _autoremap="true"/>
         <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="500" led_topic="/led_cmd" leds="{leds}"/>
-        <ElectricDrawerStatusCondition target_value="251" topic="/electrical_drawer_status"/>
-        <PublishDrawerStatus topic_name="/bt_drawer_open" status="true" drawer_address="{drawer}"/>
-        <SubTree ID="LED_Open" _autoremap="true"/>
-        <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="100" led_topic="/led_cmd" leds="{leds}"/>
-        <DrawerChangeStateReq drawer_address_topic="/close_drawer" drawer_address="{drawer}"/>
-        <MoveElectricDrawer drawer_address="{drawer}" move_electric_drawer_topic="/electrical_drawer_task" speed="150" stall_guard_enable="0" target_position="0"/>
+        <ReactiveIfThenElse>
+          <Inverter>
+            <BoolTopicCondition target_value="true" topic="/push_to_close_triggered"/>
+          </Inverter>
+          <Sequence>
+            <SubTree ID="Opening_electrical_drawer" _autoremap="true"/>
+            <DrawerChangeStateReq drawer_address_topic="/close_drawer" drawer_address="{drawer}"/>
+            <MoveElectricDrawer drawer_address="{drawer}" move_electric_drawer_topic="/electrical_drawer_task" speed="150" stall_guard_value="0" target_position="0"/>
+          </Sequence>
+          <AlwaysSuccess/>
+        </ReactiveIfThenElse>
         <SubTree ID="LED_Closing" _autoremap="true"/>
         <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="0" led_topic="/led_cmd" leds="{leds}"/>
-        <ElectricDrawerStatusCondition target_value="0" topic="/electrical_drawer_status"/>
+        <ElectricDrawerStatusCondition target_value="0" topic="/electrical_drawer_status" use_stallguard="false"/>
         <Sequence>
           <DrawerStatusCondition target_value="false" topic="/drawer_is_open"/>
           <SubTree ID="LED_Default" _autoremap="true"/>
@@ -80,6 +94,10 @@
     <Decorator ID="BaseErrorDecorator">
       <input_port name="topic" default="/robast_error"/>
     </Decorator>
+    <Condition ID="BoolTopicCondition" editable="true">
+      <input_port name="target_value" default="true">bool</input_port>
+      <input_port name="topic" default="/topic_name"/>
+    </Condition>
     <Action ID="DrawerChangeStateReq">
       <input_port name="drawer_address_topic" default="/open_request"/>
       <output_port name="drawer_address" default="{drawer}"/>
@@ -91,6 +109,7 @@
     <Condition ID="ElectricDrawerStatusCondition">
       <input_port name="target_value" default="0">uint8. wether the value should be true or false</input_port>
       <input_port name="topic" default="/drawer_feedback_status"/>
+      <input_port name="use_stallguard" default="false">bool. wether to use the stallguard</input_port>
     </Condition>
     <Action ID="GetBlackboardEntry">
       <input_port name="key" default="drawer_address">string</input_port>
@@ -110,7 +129,7 @@
       <input_port name="drawer_address" default="{drawer}"/>
       <input_port name="move_electric_drawer_topic" default="/move_electric_drawer"/>
       <input_port name="speed" default="0">uint8</input_port>
-      <input_port name="stall_guard_enable" default="0">uint8</input_port>
+      <input_port name="stall_guard_value" default="0">uint8</input_port>
       <input_port name="target_position" default="0">uint8</input_port>
     </Action>
     <Action ID="OpenDrawer">
@@ -132,6 +151,7 @@
       <input_port name="status" default="false"/>
       <input_port name="drawer_address" default="{drawer}"/>
     </Action>
+    <Control ID="ReactiveIfThenElse" editable="true"/>
   </TreeNodesModel>
 
 </root>

@@ -4,7 +4,7 @@
 namespace drawer_bridge
 {
   // TODO: This enum should be shared with the ESP32 code as well
-  enum LedMode
+  enum class LedMode
   {
     steady_light = 0,
     fade_up = 1,
