@@ -92,26 +92,30 @@ Modules API Endpoints
 """
 
 
-@app.get("/modules", tags=["Modules"])
-def read_modules():
-    return ros_bridge.module_bridge.get_modules()
+@app.get("/submodules", tags=["Modules"])
+def read_submodules():
+    return ros_bridge.module_bridge.get_submodules()
 
 
-@app.get("/is_drawer_open", tags=["Modules"])
-def read_is_drawer_open(module_id: int, drawer_id: int):
+@app.get("/is_submodule_open", tags=["Modules"])
+def read_is_submodule_open(module_id: int, submodule_id: int):
     return {
-        "is_open": ros_bridge.module_bridge.get_drawer_is_open(module_id, drawer_id)
+        "is_open": ros_bridge.module_bridge.get_submodule_is_open(
+            module_id, submodule_id
+        )
     }
 
 
-@app.post("/open_drawer", tags=["Modules"])
-def post_open_drawer(module_id: int, drawer_id: int):
-    return {"success": ros_bridge.module_bridge.open_drawer(module_id, drawer_id)}
+@app.post("/open_submodule", tags=["Modules"])
+def post_open_submodule(module_id: int, submodule_id: int):
+    return {"success": ros_bridge.module_bridge.open_submodule(module_id, submodule_id)}
 
 
-@app.post("/close_drawer", tags=["Modules"])
-def post_close_drawer(module_id: int, drawer_id: int):
-    return {"success": ros_bridge.module_bridge.close_drawer(module_id, drawer_id)}
+@app.post("/close_submodule", tags=["Modules"])
+def post_close_submodule(module_id: int, submodule_id: int):
+    return {
+        "success": ros_bridge.module_bridge.close_submodule(module_id, submodule_id)
+    }
 
 
 """
@@ -126,14 +130,9 @@ def get_nfc_tag():
     return {"nfc_tag": ros_bridge.nfc_bridge.get_nfc_tag()}
 
 
-@app.post("/write_nfc_tag", tags=["NFC"])
-def write_nfc_tag(nfc_tag_id: str):
-    return ros_bridge.nfc_bridge.write_nfc_tag(nfc_tag_id=nfc_tag_id)
-
-
 @app.get("/read_nfc_tag", tags=["NFC"])
-def read_nfc_tag():
-    return {"nfc_tag": ros_bridge.nfc_bridge.read_nfc_tag()}
+def read_nfc_tag(timeout_in_s: int):
+    return ros_bridge.nfc_bridge.read_nfc_tag(timeout_in_s=timeout_in_s)
 
 
 """
@@ -151,3 +150,17 @@ if door_available:
     @app.post("/close_door", tags=["Doors"])
     def post_close_door():
         return {"success": ros_bridge.door_bridge.close_door()}
+
+
+"""
+======================
+Disinfection API Endpoints
+======================
+"""
+
+
+@app.get("/disinfection_triggered", tags=["Disinfection"])
+def get_disinfection_triggered(timeout: int):
+    return ros_bridge.disinfection_module_bridge.wait_for_disinfection_triggered(
+        timeout
+    )

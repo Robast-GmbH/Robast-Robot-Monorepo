@@ -1,11 +1,11 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Response
 from fastapi.middleware.cors import CORSMiddleware
 import requests
 
-from task_assignment_system.task_assignment_system import TaskAssignmentSystem
-from pydantic_models.delivery_request import DeliveryRequest
+
 from user_system.user_system_router import user_system_router
 from module_manager.module_manager_router import module_manager_router
+from task_system.task_system_router import task_system_router
 import configs.url_config as url_config
 from models.url_helper import URLHelper
 
@@ -19,12 +19,11 @@ app.add_middleware(
 )
 app.include_router(user_system_router, prefix="/users")
 app.include_router(module_manager_router, prefix="/modules")
+app.include_router(task_system_router, prefix="/tasks")
 
 
 name_to_ip = url_config.ROBOT_NAME_TO_IP
 fleet_management_address = url_config.FLEET_MANAGEMENT_ADDRESS
-
-task_assigment_system = TaskAssignmentSystem()
 
 get_robot_url = URLHelper.get_robot_url
 
@@ -68,6 +67,16 @@ def read_robot_pos(robot_url: str = Depends(get_robot_url)):
 @app.get("/battery_level", tags=["Robot Status"])
 def read_robot_battery_level(robot_url: str = Depends(get_robot_url)):
     return {"battery_level": 1.0}
+
+
+@app.get("/disinfection_triggered", tags=["Robot Status"])
+def read_disinfection_triggered(
+    robot_url: str = Depends(get_robot_url), timeout: int = 10
+):
+    response = requests.get(
+        f"{robot_url}/disinfection_triggered?time_out={timeout}"
+    ).json()
+    return response
 
 
 """
@@ -142,32 +151,6 @@ def get_close_door(robot_url: str = Depends(get_robot_url)):
 
 """
 ======================
-Tasks API Endpoints
-======================
-"""
-
-
-@app.post("/task_assignment", tags=["Tasks"])
-def post_task_assignment(request: DeliveryRequest):
-    success, message = task_assigment_system.receive_request(request)
-    return {"success": success, "message": message}
-
-
-@app.get("/tasks", tags=["Tasks"])
-def get_tasks():
-    tasks = {}
-    for robot in task_assigment_system.robots.values():
-        tasks[robot.name] = robot.get_robot_tasks()
-    return tasks
-
-
-@app.get("/robot_tasks", tags=["Tasks"])
-def get_robot_tasks(robot_name: str):
-    return task_assigment_system.robots[robot_name].get_robot_tasks()
-
-
-"""
-======================
 RMF API Endpoints
 ======================
 """
@@ -177,6 +160,15 @@ RMF API Endpoints
 def get_building_map():
     response = requests.get(f"{fleet_management_address}/building_map").json()
     return response
+
+
+@app.get("/building_map.png", tags=["RMF"])
+def get_building_map_png():
+    response = requests.get(f"{fleet_management_address}/building_map").json()
+    image_url = response["levels"][0]["images"][0]["data"]
+    index = image_url.find("/", image_url.find("//") + 2)
+    response = requests.get(f"{fleet_management_address}{image_url[index:]}")
+    return Response(content=response.content, media_type="image/png")
 
 
 """
@@ -192,15 +184,9 @@ def get_nfc_tag(robot_url: str = Depends(get_robot_url)):
     return response
 
 
-@app.post("/write_nfc_tag", tags=["NFC"])
-def write_nfc_tag(nfc_tag_id: str, robot_url: str = Depends(get_robot_url)):
-    response = requests.post(
-        f"{robot_url}/write_nfc_tag?nfc_tag_id={nfc_tag_id}"
-    ).json()
-    return response
-
-
 @app.get("/read_nfc_tag", tags=["NFC"])
-def read_nfc_tag(robot_url: str = Depends(get_robot_url)):
-    response = requests.get(f"{robot_url}/read_nfc_tag").json()
+def read_nfc_tag(timeout_in_s: int = 30, robot_url: str = Depends(get_robot_url)):
+    response = requests.get(
+        f"{robot_url}/read_nfc_tag?timeout_in_s={timeout_in_s}"
+    ).json()
     return response

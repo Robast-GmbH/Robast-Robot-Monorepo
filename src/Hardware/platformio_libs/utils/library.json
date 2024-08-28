@@ -1,0 +1,23 @@
+{
+    "name": "utils",
+    "version": "1.0.0",
+    "description": "A library that contains general usefull classes.",
+    "keywords": "utils",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/Robast-GmbH/Monorepo.git"
+    },
+    "authors":
+    [
+      {
+        "name": "Jacob Ritterbach",
+        "email": "j.ritterbach@robast.de",
+        "maintainer": true
+      }
+    ],
+    "license": "MIT",
+    "frameworks": "*",
+    "platforms": "*",
+    "headers": ["queue.hpp", "data_mapper.hpp", "e_drawer_task.hpp", "config_manager.hpp"]
+  }

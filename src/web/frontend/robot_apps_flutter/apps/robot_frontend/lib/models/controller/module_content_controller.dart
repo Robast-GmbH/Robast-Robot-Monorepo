@@ -22,4 +22,10 @@ class ModuleContentController {
     }
     return itemsByChange;
   }
+
+  bool didItemsChange() {
+    final didCreateNonZeroItems = createdItemsByCount.entries.any((entry) => entry.value != 0);
+    final didChangeContainingItemsCounts = contentItemsByChange.entries.any((entry) => entry.value != 0);
+    return (createdItemsByCount.isNotEmpty && didCreateNonZeroItems) || (contentItemsByChange.isNotEmpty && didChangeContainingItemsCounts);
+  }
 }

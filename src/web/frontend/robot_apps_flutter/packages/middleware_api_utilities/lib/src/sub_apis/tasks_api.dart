@@ -1,4 +1,5 @@
 import 'package:middleware_api_utilities/src/models/robot_task_status.dart';
+import 'package:middleware_api_utilities/src/models/task.dart';
 import 'package:middleware_api_utilities/src/services/request_service.dart';
 
 class TasksApi {
@@ -6,37 +7,29 @@ class TasksApi {
   final String prefix;
 
   Future<RobotTaskStatus?> getRobotTasks({required String robotName}) async {
-    final response = await RequestService.tryGet(uri: Uri.parse('$prefix/robot_tasks?robot_name=$robotName'));
+    final response = await RequestService.tryGet(uri: Uri.parse('$prefix/tasks/by_assignee?robot_name=$robotName'));
     if (response != null) {
-      final data = RequestService.responseToMap(response: response);
-      return RobotTaskStatus.fromJson(data);
+      final data = RequestService.responseToList(response: response);
+      Map<String, dynamic> json = {'active': null, 'queued': []};
+      for (final task in data) {
+        for (final subtask in task['subtasks']) {
+          if (subtask['status'] == 'active') {
+            json['active'] = subtask;
+          } else if (subtask['status'] == 'pending') {
+            json['queued'].add(subtask);
+          }
+        }
+      }
+      return RobotTaskStatus.fromJson(json);
     } else {
       return null;
     }
   }
 
-  Future<bool> postTaskRequest({
-    required int requiredDrawerType,
-    required Map<String, int> itemsByChange,
-    required List<String> senderAuthUsers,
-    required List<String> senderAuthUserGroups,
-    required List<String> recipientAuthUsers,
-    required List<String> recipientAuthUserGroups,
-    String? targetID,
-    String? startID,
-  }) async {
+  Future<bool> postTaskRequest({required Task task}) async {
     final response = await RequestService.tryPost(
-      uri: Uri.parse('$prefix/task_assignment'),
-      data: {
-        'required_drawer_type': requiredDrawerType,
-        'items_by_change': itemsByChange,
-        'target_id': targetID,
-        'start_id': startID,
-        'sender_user_ids': senderAuthUsers,
-        'sender_user_groups': senderAuthUserGroups,
-        'recipient_user_ids': recipientAuthUsers,
-        'recipient_user_groups': recipientAuthUserGroups,
-      },
+      uri: Uri.parse('$prefix/tasks/task_assignment'),
+      data: task.toJson(),
     );
     return RequestService.wasRequestSuccessful(response: response);
   }

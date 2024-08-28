@@ -57,12 +57,12 @@ class UsersApi {
     return RequestService.wasRequestSuccessful(response: response);
   }
 
-  Future<bool> createAndWriteUserNFC({
+  Future<bool> readAndAssignUserNFC({
     required String robotName,
     required String userID,
   }) async {
     final response = await RequestService.tryPost(
-      uri: Uri.parse('$prefix/users/create_and_write_user_nfc_id?robot_name=$robotName&user_id=$userID'),
+      uri: Uri.parse('$prefix/users/read_and_assign_user_nfc_id?robot_name=$robotName&user_id=$userID'),
     );
     return RequestService.wasRequestSuccessful(response: response);
   }

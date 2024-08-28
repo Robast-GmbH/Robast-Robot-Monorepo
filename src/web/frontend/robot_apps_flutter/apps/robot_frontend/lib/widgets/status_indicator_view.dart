@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/pages/config_page.dart';
 import 'package:robot_frontend/widgets/developer_button_view.dart';
 
@@ -13,19 +14,19 @@ class StatusIndicatorView extends StatelessWidget {
       children: [
         const Icon(
           Icons.icecream,
-          size: 48,
+          size: 40,
         ),
         const SizedBox(width: 8),
         const Icon(
           Icons.link,
-          size: 48,
+          size: 40,
         ),
         const SizedBox(width: 8),
         const RotatedBox(
           quarterTurns: 1,
           child: Icon(
             Icons.battery_5_bar,
-            size: 48,
+            size: 40,
           ),
         ),
         const SizedBox(width: 8),
@@ -37,14 +38,14 @@ class StatusIndicatorView extends StatelessWidget {
             margin: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color(0xFF00FF00),
+              color: const Color.fromARGB(255, 0, 226, 0),
               border: Border.all(
-                color: Colors.white,
+                color: RobotColors.primaryText,
                 width: 4,
               ),
             ),
-            width: 38,
-            height: 38,
+            width: 30,
+            height: 30,
           ),
         ),
       ],
