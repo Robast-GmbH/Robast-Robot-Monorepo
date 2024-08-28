@@ -69,13 +69,15 @@ namespace utils
 
   Direction calculateDirection(const geometry_msgs::msg::Pose &start_pose, const geometry_msgs::msg::Pose &end_pose)
   {
+    constexpr double DIRECTION_ANGLE_THRESHOLD  = 0.7;
+
     double angle_z = calculateYawDifference(start_pose.orientation, end_pose.orientation);
 
-    if (angle_z > 0.7)
+    if (angle_z > DIRECTION_ANGLE_THRESHOLD)
     {
       return Direction::LEFT;
     }
-    else if (angle_z < -0.7)
+    else if (angle_z < -DIRECTION_ANGLE_THRESHOLD)
     {
       return Direction::RIGHT;
     }
