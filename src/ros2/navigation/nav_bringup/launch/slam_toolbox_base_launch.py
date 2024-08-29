@@ -116,7 +116,7 @@ def generate_launch_description():
         output="screen",
         parameters=[
             configured_params,
-            {"map_file_name": slam_posegraph},
+            #{"map_file_name": slam_posegraph},
             {"use_sim_time": use_sim_time},
             {"map_start_pose": [float(init_x), float(init_y), float(init_yaw)]},
         ],
