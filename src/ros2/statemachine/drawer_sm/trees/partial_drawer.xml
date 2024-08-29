@@ -38,14 +38,18 @@
 
   <BehaviorTree ID="LED_Default">
     <Sequence>
+      <ImportEnvironmentLEDColor red="{red}"
+                                 green="{green}"
+                                 blue="{blue}"
+                                 brightness="{brightness}"/>
       <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
-                          blue="155"
-                          brightness="25"
-                          green="155"
+                          blue="{blue}"
+                          brightness="{brightness}"
+                          green="{green}"
                           lower_bound="0.0"
-                          red="0"
+                          red="{red}"
                           upper_bound="100.0"
                           LEDs_colored="{leds}"/>
     </Sequence>
@@ -104,7 +108,8 @@
   <BehaviorTree ID="Opening_partial_drawer">
     <Sequence>
       <ElectricDrawerStatusCondition target_value="251"
-                                     topic="/electrical_drawer_status"/>
+                                     topic="/electrical_drawer_status"
+                                     use_stallguard="false"/>
       <Delay delay_msec="50">
         <OpenDrawer drawer_address="{drawer}"
                     drawer_open_topic="/open_drawer"/>
@@ -170,7 +175,8 @@
                             led_topic="/led_cmd"
                             leds="{leds}"/>
         <ElectricDrawerStatusCondition target_value="0"
-                                       topic="/electrical_drawer_status"/>
+                                       topic="/electrical_drawer_status"
+                                       use_stallguard="false"/>
         <Sequence>
           <DrawerStatusCondition target_value="false"
                                  topic="/drawer_is_open"/>
@@ -218,12 +224,25 @@
                   default="0">uint8. wether the value should be true or false</input_port>
       <input_port name="topic"
                   default="/drawer_feedback_status"/>
+      <input_port name="use_stallguard"
+                  default="false"/>
     </Condition>
     <Action ID="GetBlackboardEntry">
       <input_port name="key"
                   default="drawer_address">string</input_port>
       <output_port name="value"
                    default="{drawer}"/>
+    </Action>
+    <Action ID="ImportEnvironmentLEDColor"
+            editable="true">
+      <output_port name="red"
+                   default="{red}"/>
+      <output_port name="green"
+                   default="{green}"/>
+      <output_port name="blue"
+                   default="{blue}"/>
+      <output_port name="brightness"
+                   default="{brightness}"/>
     </Action>
     <Action ID="InitLEDVector">
       <input_port name="size"
