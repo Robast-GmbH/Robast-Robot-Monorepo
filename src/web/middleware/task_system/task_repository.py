@@ -104,14 +104,42 @@ class TaskRepository:
             self.read_subtasks_by_task_id(result[0]),
         )
 
-    def read_tasks_by_assignee(self, assignee_name: str) -> list[Task]:
+    def read_tasks_by_assignee(
+        self, assignee_name: str, limit: int, offset: int
+    ) -> list[Task]:
         db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
         cursor.execute(
             """
-            SELECT * FROM tasks WHERE assignee_name = ?
+            SELECT * FROM tasks 
+            WHERE assignee_name = ? 
+            LIMIT ? OFFSET ?
         """,
-            (assignee_name,),
+            (assignee_name, limit, offset),
+        )
+        results = cursor.fetchall()
+        db_connection.close()
+        return [
+            Task.from_database_row(
+                result,
+                self.read_subtasks_by_task_id(result[0]),
+            )
+            for result in results
+        ]
+
+    def read_finished_tasks_by_assignee(
+        self, assignee_name: str, limit: int, offset: int
+    ) -> list[Task]:
+        db_connection = sqlite3.connect(self.__db_path)
+        cursor = db_connection.cursor()
+        cursor.execute(
+            """
+            SELECT * FROM tasks 
+            WHERE assignee_name = ? AND status = 'finished'
+            ORDER BY earliest_start_time DESC
+            LIMIT ? OFFSET ?
+        """,
+            (assignee_name, limit, offset),
         )
         results = cursor.fetchall()
         db_connection.close()
@@ -193,15 +221,15 @@ class TaskRepository:
     def read_subtasks_by_subtask_ids(self, subtask_ids: list[str]) -> list[SubTask]:
         db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
-        cursor.execute(
-            """
-            SELECT * FROM subtasks WHERE id IN ({})
-        """.format(
-                ",".join(["?"] * len(subtask_ids))
-            ),
-            subtask_ids,
-        )
-        results = cursor.fetchall()
+        results = []
+        for subtask_id in subtask_ids:
+            cursor.execute(
+                """
+                SELECT * FROM subtasks WHERE id = ?
+            """,
+                (subtask_id,),
+            )
+            results.append(cursor.fetchone())
         db_connection.close()
         return [SubTask.from_database_row(result) for result in results]
 

@@ -13,6 +13,11 @@ class TaskProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<List<Task>?> fetchTasks({required int limit, required int offset}) async {
+    final tasks = await _middlewareApiUtilities.tasks.getFinishedTasks(robotName: 'rb_theron', limit: limit, offset: offset);
+    return tasks;
+  }
+
   Future<bool> createDeliveryTaskRequest({
     required int requiredSubmoduleType,
     required String pickupTargetID,

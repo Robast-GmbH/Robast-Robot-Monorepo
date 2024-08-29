@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:robot_frontend/pages/cleaning_page.dart';
 import 'package:robot_frontend/pages/config_page.dart';
 import 'package:robot_frontend/pages/screen_settings_page.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';

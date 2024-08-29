@@ -7,6 +7,7 @@ from pydantic_models.task import Task
 from module_manager.module_manager import ModuleManager
 from task_system.task_manager import TaskManager
 from configs.url_config import FLEET_MANAGEMENT_ADDRESS
+from typing import Dict, Any
 import threading
 
 
@@ -37,6 +38,19 @@ class Robot:
         )
         self.__timer = None
         self.__start_task_status_update_timer()
+
+    def get_subtasks(self) -> Dict[str, Any]:
+        subtasks = {}
+        if self.__current_subtask_id:
+            subtasks["active"] = self.__task_manager.read_subtask(
+                self.__current_subtask_id
+            )
+        else:
+            subtasks["active"] = None
+        subtasks["queue"] = self.__task_manager.read_subtasks_by_subtask_ids(
+            self.__subtask_queue
+        )
+        return subtasks
 
     def get_request_cost(self, task: Task) -> float:
         if "required_submodule_type" in task.requirements:

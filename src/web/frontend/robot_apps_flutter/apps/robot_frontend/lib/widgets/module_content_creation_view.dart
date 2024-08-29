@@ -168,6 +168,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
                 textAlign: TextAlign.center,
                 controller: amountController,
                 style: const TextStyle(fontSize: 28, color: RobotColors.secondaryText),
+                keyboardType: TextInputType.numberWithOptions(),
               ),
             ),
           ],

@@ -21,7 +21,7 @@ class Task {
       status: json['status'] as String,
       assigneeName: json['assignee_name'] as String,
       requirements: json['requirements'] as Map<String, dynamic>,
-      subtasks: (json['subtasks'] as List<Map<String, dynamic>>).map(SubTask.fromJson).toList(),
+      subtasks: (json['subtasks'] as List<dynamic>).map((task) => SubTask.fromJson(task as Map<String, dynamic>)).toList(),
       isMonolithic: json['is_monolithic'] as bool,
       earliestStartTime: json['earliest_start_time'] as int,
       priority: json['priority'] as int,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/provider/inactivity_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/models/sidebar_menu_point.dart';
@@ -74,6 +75,14 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   @override
+  deactivate() {
+    Provider.of<InactivityProvider>(context, listen: false).cancelTimer();
+    Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
+    Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
+    super.deactivate();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: BackgroundView(
@@ -120,8 +129,6 @@ class _MenuPageState extends State<MenuPage> {
                                   ),
                                   InkWell(
                                     onTap: () {
-                                      Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
-                                      Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
                                       Navigator.pop(context);
                                     },
                                     child: Padding(

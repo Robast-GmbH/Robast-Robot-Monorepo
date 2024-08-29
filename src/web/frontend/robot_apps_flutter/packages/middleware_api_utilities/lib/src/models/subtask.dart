@@ -1,6 +1,4 @@
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
-import 'package:middleware_api_utilities/src/models/robot_action.dart';
-import 'package:middleware_api_utilities/src/models/submodule_address.dart';
 import 'package:uuid/uuid.dart';
 
 class SubTask {

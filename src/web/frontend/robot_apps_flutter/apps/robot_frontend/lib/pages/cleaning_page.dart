@@ -35,11 +35,12 @@ class _CleaningPageState extends State<CleaningPage> {
 
       if (result.exitCode == 0) {
         disabledTouchscreenTimer = Timer.periodic(Duration(seconds: 1), (timer) {
-          disabledSeconds--;
+          setState(() {
+            disabledSeconds--;
+          });
           if (disabledSeconds == 0) {
             Navigator.pop(context);
           }
-          setState(() {});
         });
         return true;
       } else {
