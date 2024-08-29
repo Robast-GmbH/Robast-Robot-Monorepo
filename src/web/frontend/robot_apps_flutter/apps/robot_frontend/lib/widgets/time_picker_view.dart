@@ -5,7 +5,7 @@ import 'package:robot_frontend/services/time_stamp_formatter.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
 
 class TimePickerView extends StatefulWidget {
-  TimePickerView({
+  const TimePickerView({
     super.key,
     required this.deliveryTimeController,
     this.onTimeSelected,
@@ -14,13 +14,13 @@ class TimePickerView extends StatefulWidget {
   final DeliveryTimeController deliveryTimeController;
   final void Function(DateTime)? onTimeSelected;
   @override
-  _TimePickerWidgetState createState() => _TimePickerWidgetState();
+  State<TimePickerView> createState() => _TimePickerWidgetState();
 }
 
 class _TimePickerWidgetState extends State<TimePickerView> {
   Future<void> _pickDateTime(BuildContext context) async {
     DateTime now = DateTime.now();
-    DateTime threeDaysFromNow = now.add(Duration(days: 3));
+    DateTime threeDaysFromNow = now.add(const Duration(days: 3));
 
     DateTime? selectedDate = await showDatePicker(
       context: context,
@@ -29,7 +29,7 @@ class _TimePickerWidgetState extends State<TimePickerView> {
       lastDate: threeDaysFromNow,
     );
 
-    if (selectedDate != null) {
+    if (selectedDate != null && context.mounted) {
       TimeOfDay? selectedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now(),
@@ -60,21 +60,21 @@ class _TimePickerWidgetState extends State<TimePickerView> {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: <Widget>[
-            Text(
+            const Text(
               'Wann?',
               style: TextStyle(fontSize: 24, color: RobotColors.secondaryText),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Text(
               widget.deliveryTimeController.value != null
                   ? 'Ab ${TimeStampFormatter.format(unixTimeStamp: widget.deliveryTimeController.value!.millisecondsSinceEpoch ~/ 1000)}'
                   : 'Frühestmöglich',
-              style: TextStyle(fontSize: 24, color: RobotColors.secondaryText),
+              style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             IconButton(
               onPressed: () => _pickDateTime(context),
-              icon: Icon(Icons.calendar_today),
+              icon: const Icon(Icons.calendar_today),
             ),
           ],
         ),

@@ -34,7 +34,7 @@ class _CleaningPageState extends State<CleaningPage> {
       ]);
 
       if (result.exitCode == 0) {
-        disabledTouchscreenTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+        disabledTouchscreenTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
           setState(() {
             disabledSeconds--;
           });
@@ -78,10 +78,10 @@ class _CleaningPageState extends State<CleaningPage> {
               if (isTouchscreenDisabled) {
                 return Text(
                   'Touchscreen deaktiviert für $disabledSeconds Sekunden',
-                  style: TextStyle(fontSize: 80, color: RobotColors.primaryText),
+                  style: const TextStyle(fontSize: 80, color: RobotColors.primaryText),
                 );
               } else {
-                return Text(
+                return const Text(
                   'Touchscreen konnte nicht deaktiviert werden',
                   style: TextStyle(fontSize: 80, color: RobotColors.primaryText),
                 );

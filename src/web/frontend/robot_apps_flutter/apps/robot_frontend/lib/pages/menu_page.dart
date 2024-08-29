@@ -108,58 +108,56 @@ class _MenuPageState extends State<MenuPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          child: Stack(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(top: 12),
-                                child: Align(
-                                  child: ClockView(),
-                                ),
+                        Stack(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(top: 12),
+                              child: Align(
+                                child: ClockView(),
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 16),
-                                    child: Text(
-                                      sidebarMenuPoints[selectedMainMenuIndex].title,
-                                      style: const TextStyle(color: RobotColors.primaryText, fontSize: 40, fontWeight: FontWeight.w400),
-                                    ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 16),
+                                  child: Text(
+                                    sidebarMenuPoints[selectedMainMenuIndex].title,
+                                    style: const TextStyle(color: RobotColors.primaryText, fontSize: 40, fontWeight: FontWeight.w400),
                                   ),
-                                  InkWell(
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(bottom: 16),
-                                      child: Container(
-                                        decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(16)),
-                                        child: const Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                'Abmelden',
-                                                style: TextStyle(color: RobotColors.primaryText, fontSize: 32),
-                                              ),
-                                              SizedBox(
-                                                width: 16,
-                                              ),
-                                              Icon(
-                                                Icons.logout,
-                                                size: 40,
-                                              ),
-                                            ],
-                                          ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: Container(
+                                      decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(16)),
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              'Abmelden',
+                                              style: TextStyle(color: RobotColors.primaryText, fontSize: 32),
+                                            ),
+                                            SizedBox(
+                                              width: 16,
+                                            ),
+                                            Icon(
+                                              Icons.logout,
+                                              size: 40,
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: 8),

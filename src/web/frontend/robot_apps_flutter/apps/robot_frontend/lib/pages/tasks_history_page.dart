@@ -17,6 +17,7 @@ class _TasksHistoryPageState extends State<TasksHistoryPage> {
   late Future<List<Task>?> fetchTasks;
   int pageIndex = 0;
 
+  @override
   initState() {
     super.initState();
     fetchTasks = Provider.of<TaskProvider>(context, listen: false).fetchTasks(limit: 10, offset: 0);
@@ -30,7 +31,7 @@ class _TasksHistoryPageState extends State<TasksHistoryPage> {
         future: fetchTasks,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return Center(child: const CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
           final tasks = snapshot.data;
           if (tasks == null) {

@@ -28,7 +28,7 @@ class _ExpandableSubtaskTileState extends State<ExpandableSubtaskTile> {
           child: ExpansionTile(
             title: Text(
               '${widget.subtask.name} bei ${widget.subtask.targetID}',
-              style: TextStyle(fontSize: 32),
+              style: const TextStyle(fontSize: 32),
             ),
             children: [
               buildSubtaskaskInfoTile(title: 'Erstelldatum', subtitle: TimeStampFormatter.format(unixTimeStamp: widget.subtask.earliestStartTime)),
@@ -49,7 +49,7 @@ class _ExpandableSubtaskTileState extends State<ExpandableSubtaskTile> {
     return ListTile(
       title: Text(
         title,
-        style: TextStyle(fontSize: 24),
+        style: const TextStyle(fontSize: 24),
       ),
       subtitle: Text(subtitle),
     );

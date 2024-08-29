@@ -108,7 +108,7 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Row(
                               children: [
                                 Expanded(
@@ -119,7 +119,7 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                                     onChanged: () => setState(() {}),
                                   ),
                                 ),
-                                SizedBox(
+                                const SizedBox(
                                   width: 8,
                                 ),
                                 Expanded(
@@ -129,7 +129,7 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                                 )
                               ],
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Row(
                               children: [
                                 Expanded(
@@ -138,7 +138,7 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                                     onChanged: () => setState(() {}),
                                   ),
                                 ),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 Expanded(
                                   child: UserGroupsSelector(
                                     controller: widget.userGroupsSelectionControllers[index],

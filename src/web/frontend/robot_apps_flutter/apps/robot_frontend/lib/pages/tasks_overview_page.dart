@@ -54,8 +54,8 @@ class _TasksOverviewPageState extends State<TasksOverviewPage> {
                       subtask: activeTask,
                     )
                   else
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
                       child: Text(
                         'Kein Auftrag aktiv',
                         style: TextStyle(color: RobotColors.secondaryText, fontSize: 28),
@@ -69,8 +69,8 @@ class _TasksOverviewPageState extends State<TasksOverviewPage> {
                     ),
                   ),
                   if (queuedTasks.isEmpty)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
                       child: Text(
                         'Keine Aufträge in Warteschlange',
                         style: TextStyle(color: RobotColors.secondaryText, fontSize: 28),
@@ -86,7 +86,7 @@ class _TasksOverviewPageState extends State<TasksOverviewPage> {
                               ExpandableSubtaskTile(
                                 subtask: queuedTasks[index],
                               ),
-                              SizedBox(height: 8),
+                              const SizedBox(height: 8),
                             ],
                           ),
                         ),
@@ -94,7 +94,7 @@ class _TasksOverviewPageState extends State<TasksOverviewPage> {
                     ),
                   InkWell(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute<TasksHistoryPage>(builder: (context) => TasksHistoryPage()));
+                      Navigator.push(context, MaterialPageRoute<TasksHistoryPage>(builder: (context) => const TasksHistoryPage()));
                     },
                     child: const Padding(
                       padding: EdgeInsets.only(left: 8, top: 16),

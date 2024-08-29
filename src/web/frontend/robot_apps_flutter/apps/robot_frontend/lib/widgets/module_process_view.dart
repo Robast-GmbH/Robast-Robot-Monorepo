@@ -167,7 +167,7 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                                 text: 'Fertigstellen',
                                 content: Text(
                                   '(automatisch in ${5 - finishTimerClockIndex} Sekunden)',
-                                  style: TextStyle(color: RobotColors.secondaryText, fontSize: 28),
+                                  style: const TextStyle(color: RobotColors.secondaryText, fontSize: 28),
                                 ),
                                 onPressed: () => onFinish(moduleInProcess),
                               ),

@@ -31,14 +31,14 @@ class TaskDetailsDialog extends StatelessWidget {
               'Status: ${task.status}',
               style: const TextStyle(fontSize: 32, color: RobotColors.primaryText),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
-            Text(
+            const Text(
               'Aktionen',
-              style: const TextStyle(fontSize: 32, color: RobotColors.primaryText),
+              style: TextStyle(fontSize: 32, color: RobotColors.primaryText),
             ),
-            SizedBox(
+            const SizedBox(
               height: 4,
             ),
             Expanded(
@@ -56,14 +56,14 @@ class TaskDetailsDialog extends StatelessWidget {
                             'Typ: ${action.name}',
                             style: const TextStyle(fontSize: 28, color: RobotColors.secondaryText),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 4,
                           ),
                           Text(
                             'Status: ${action.status}',
                             style: const TextStyle(fontSize: 28, color: RobotColors.secondaryText),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 4,
                           ),
                           RoundedContainer(
@@ -72,7 +72,7 @@ class TaskDetailsDialog extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  Text('Parameter:', style: const TextStyle(fontSize: 28, color: RobotColors.secondaryText)),
+                                  const Text('Parameter:', style: TextStyle(fontSize: 28, color: RobotColors.secondaryText)),
                                   Text(
                                     'Modul ${submoduleAddress['module_id']} Submodul ${submoduleAddress['submodule_id']}',
                                     style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),

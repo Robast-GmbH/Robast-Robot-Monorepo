@@ -9,23 +9,23 @@ class StaffHomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return const Row(
       children: [
         Expanded(
           flex: 2,
           child: Column(
             children: [
-              const Expanded(
+              Expanded(
                 child: WelcomeView(),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               Expanded(
                 child: Row(
                   children: [
-                    const Expanded(
+                    Expanded(
                       child: MenuTasksOverview(),
                     ),
-                    const SizedBox(
+                    SizedBox(
                       width: 16,
                     ),
                     Expanded(
@@ -37,8 +37,8 @@ class StaffHomeView extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(width: 16),
-        const Expanded(
+        SizedBox(width: 16),
+        Expanded(
           child: Column(
             children: [
               Expanded(

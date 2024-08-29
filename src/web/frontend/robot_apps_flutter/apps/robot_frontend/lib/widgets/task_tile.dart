@@ -24,21 +24,21 @@ class TaskTile extends StatelessWidget {
                 children: [
                   Text(
                     task.name,
-                    style: TextStyle(fontSize: 32, color: RobotColors.primaryText),
+                    style: const TextStyle(fontSize: 32, color: RobotColors.primaryText),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 8,
                   ),
-                  Text(
+                  const Text(
                     'erstellt am',
                     style: TextStyle(fontSize: 32, color: RobotColors.primaryText),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 8,
                   ),
                   Text(
                     TimeStampFormatter.format(unixTimeStamp: task.earliestStartTime),
-                    style: TextStyle(fontSize: 32, color: RobotColors.primaryText),
+                    style: const TextStyle(fontSize: 32, color: RobotColors.primaryText),
                   )
                 ],
               ),

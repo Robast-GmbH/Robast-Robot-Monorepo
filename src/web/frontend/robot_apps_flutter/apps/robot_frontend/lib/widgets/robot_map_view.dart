@@ -24,7 +24,7 @@ class RobotMapView extends StatelessWidget {
           future: Provider.of<MapProvider>(context, listen: false).getMapImage(),
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done || snapshot.data == null) {
-              return Center(child: const CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
             return Zoom(
               canvasColor: Colors.transparent,
@@ -57,11 +57,11 @@ class RobotMapView extends StatelessWidget {
                           child: Container(
                             width: 80,
                             height: 80,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: RobotColors.accent,
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.pin_drop,
                               color: RobotColors.primaryIcon,
                               size: 40,

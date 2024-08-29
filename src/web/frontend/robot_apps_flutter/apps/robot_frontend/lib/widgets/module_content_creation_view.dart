@@ -72,10 +72,10 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
             amountController.clear();
           });
         },
-        child: RoundedContainer(
+        child: const RoundedContainer(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: const Icon(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            child: Icon(
               Icons.add,
               color: RobotColors.primaryIcon,
               size: 64,
@@ -168,7 +168,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
                 textAlign: TextAlign.center,
                 controller: amountController,
                 style: const TextStyle(fontSize: 28, color: RobotColors.secondaryText),
-                keyboardType: TextInputType.numberWithOptions(),
+                keyboardType: const TextInputType.numberWithOptions(),
               ),
             ),
           ],

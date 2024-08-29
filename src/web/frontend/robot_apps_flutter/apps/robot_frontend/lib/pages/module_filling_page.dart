@@ -59,8 +59,9 @@ class _ModuleFillingPageState extends State<ModuleFillingPage> {
                     itemsByChange: itemsByChange,
                   );
                   if (context.mounted) {
+                    final inactivityProvider = Provider.of<InactivityProvider>(context, listen: false);
                     await Navigator.push(context, MaterialPageRoute<ModuleProcessPage>(builder: (context) => const ModuleProcessPage()));
-                    Provider.of<InactivityProvider>(context, listen: false).resetInactivityTimer();
+                    inactivityProvider.resetInactivityTimer();
                   }
                   moduleProvider.isInSubmoduleProcess = false;
                   if (context.mounted) {

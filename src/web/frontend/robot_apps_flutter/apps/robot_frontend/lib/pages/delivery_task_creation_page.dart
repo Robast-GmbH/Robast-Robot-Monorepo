@@ -109,7 +109,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                         initWithSessionUser: true,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 8,
                     ),
                     Expanded(
@@ -119,7 +119,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
                 Row(
@@ -131,7 +131,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                         label: 'Start',
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 8,
                     ),
                     Expanded(
@@ -163,7 +163,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                         controller: recipientUserController,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 8,
                     ),
                     Expanded(
@@ -173,7 +173,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 8,
                 ),
                 Row(
@@ -185,7 +185,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                         label: 'Ziel',
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 8,
                     ),
                     Expanded(

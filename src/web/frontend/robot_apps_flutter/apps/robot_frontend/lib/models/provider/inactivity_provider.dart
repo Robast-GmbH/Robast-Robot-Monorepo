@@ -4,7 +4,7 @@ import 'package:robot_frontend/constants/robot_colors.dart';
 
 class InactivityProvider with ChangeNotifier {
   Timer? _inactivityTimer;
-  final Duration _timeoutDuration = Duration(seconds: 600);
+  final Duration _timeoutDuration = const Duration(seconds: 600);
   final int _timeoutReactionDurationInS = 10;
   final GlobalKey<NavigatorState> _navigatorKey;
 
@@ -24,8 +24,8 @@ class InactivityProvider with ChangeNotifier {
     final context = _navigatorKey.currentContext!;
 
     bool isBarrierDismissed = true;
-    int _counter = _timeoutReactionDurationInS;
-    Timer? _timer;
+    int counter = _timeoutReactionDurationInS;
+    Timer? timer;
     await showDialog(
       context: _navigatorKey.currentContext!,
       builder: (dialogContext) {
@@ -40,10 +40,9 @@ class InactivityProvider with ChangeNotifier {
               ),
             ),
             content: StatefulBuilder(builder: (context, setState) {
-              if (_timer == null) {
-                _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-                  _counter--;
-                  if (_counter > 0) {
+              timer ??= Timer.periodic(const Duration(seconds: 1), (timer) {
+                  counter--;
+                  if (counter > 0) {
                     setState(() {});
                   } else {
                     timer.cancel();
@@ -51,10 +50,9 @@ class InactivityProvider with ChangeNotifier {
                     Navigator.popUntil(context, (route) => route.isFirst);
                   }
                 });
-              }
               return Text(
-                'Sie waren zu lange inaktiv. Automatische Abmeldung in $_counter Sekunden.',
-                style: TextStyle(
+                'Sie waren zu lange inaktiv. Automatische Abmeldung in $counter Sekunden.',
+                style: const TextStyle(
                   color: RobotColors.secondaryText,
                   fontSize: 24,
                 ),
@@ -94,7 +92,7 @@ class InactivityProvider with ChangeNotifier {
       },
     ).then(
       (value) {
-        _timer?.cancel();
+        timer?.cancel();
         if (isBarrierDismissed) {
           resetInactivityTimer();
         }

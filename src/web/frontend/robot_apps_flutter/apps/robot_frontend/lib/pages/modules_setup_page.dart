@@ -102,7 +102,7 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                                 child: Center(
                                   child: Text(
                                     slotOccupancy[index] ? 'Belegt' : 'Frei',
-                                    style: TextStyle(color: RobotColors.primaryText, fontSize: 28),
+                                    style: const TextStyle(color: RobotColors.primaryText, fontSize: 28),
                                   ),
                                 ),
                               ),
@@ -125,9 +125,9 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Zum Einrichten eines Moduls bitte entsprechende Slots auswählen und Modulinformationen angeben.',
+                    const Text('Zum Einrichten eines Moduls bitte entsprechende Slots auswählen und Modulinformationen angeben.',
                         style: TextStyle(color: RobotColors.primaryText, fontSize: 32)),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     TextField(
@@ -137,7 +137,7 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                         hintText: 'Modul ID',
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 8,
                     ),
                     Row(
@@ -181,16 +181,16 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                                 await Provider.of<ModuleProvider>(context, listen: false).fetchSubmodules();
                               }
                             },
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: const Text(
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
                                 'Erstellen',
                                 style: TextStyle(fontSize: 28, color: RobotColors.primaryText),
                               ),
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 8,
                         ),
                         Expanded(
@@ -205,9 +205,9 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                               }
                               selectedSlots.fillRange(0, selectedSlots.length, false);
                             },
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text('Zurücksetzen', style: const TextStyle(fontSize: 28, color: RobotColors.primaryText)),
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text('Zurücksetzen', style: TextStyle(fontSize: 28, color: RobotColors.primaryText)),
                             ),
                           ),
                         ),
