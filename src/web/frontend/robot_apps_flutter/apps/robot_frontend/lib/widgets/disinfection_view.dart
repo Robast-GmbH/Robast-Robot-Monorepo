@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 
 class DisinfectionView extends StatefulWidget {
@@ -32,7 +33,7 @@ class _DisinfectionViewState extends State<DisinfectionView> {
         child: Center(
           child: Text(
             'Bitte Hände desinfizieren',
-            style: TextStyle(fontSize: 80),
+            style: TextStyle(fontSize: 80, color: RobotColors.primaryText),
           ),
         ),
       ),

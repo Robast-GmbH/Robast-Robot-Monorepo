@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 
 class BrightnessSlider extends StatefulWidget {
   const BrightnessSlider({super.key});
@@ -61,10 +62,13 @@ class _BrightnessSliderState extends State<BrightnessSlider> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               const Text(
-                'Adjust Brightness:',
-                style: TextStyle(fontSize: 24),
+                'Helligkeit anpassen:',
+                style: TextStyle(fontSize: 24, color: RobotColors.primaryText),
               ),
               Slider(
+                thumbColor: RobotColors.accent,
+                activeColor: RobotColors.accent,
+                inactiveColor: RobotColors.secondaryBackground,
                 value: _brightness,
                 divisions: 5,
                 label: _brightness.toStringAsFixed(1),
@@ -72,8 +76,8 @@ class _BrightnessSliderState extends State<BrightnessSlider> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Current Brightness: ${_brightness.toStringAsFixed(1)}',
-                style: const TextStyle(fontSize: 20),
+                'Aktuelle Helligkeit: ${(_brightness * 100).toInt()}%',
+                style: const TextStyle(fontSize: 20, color: RobotColors.primaryText),
               ),
             ],
           );

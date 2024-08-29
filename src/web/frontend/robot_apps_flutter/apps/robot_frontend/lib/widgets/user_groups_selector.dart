@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
+import 'package:robot_frontend/widgets/rounded_container.dart';
 
 class UserGroupsSelector extends StatefulWidget {
   const UserGroupsSelector({required this.controller, this.onChanged, super.key});
@@ -13,8 +15,7 @@ class _UserGroupsSelectorState extends State<UserGroupsSelector> {
   @override
   Widget build(BuildContext context) {
     final controller = widget.controller;
-    return Card(
-      color: Colors.white.withOpacity(0.4),
+    return RoundedContainer(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
         child: Row(
@@ -22,9 +23,7 @@ class _UserGroupsSelectorState extends State<UserGroupsSelector> {
             const Text(
               'Autorisierte Gruppen',
               textAlign: TextAlign.end,
-              style: TextStyle(
-                fontSize: 24,
-              ),
+              style: TextStyle(fontSize: 24, color: RobotColors.secondaryText),
             ),
             const SizedBox(
               width: 16,
@@ -80,12 +79,14 @@ class _UserGroupsSelectorState extends State<UserGroupsSelector> {
       child: Row(
         children: [
           Checkbox(
+            activeColor: RobotColors.accent,
+            checkColor: RobotColors.secondaryIcon,
             value: value,
             onChanged: (newValue) => onChanged(newValue: newValue ?? false),
           ),
           Text(
             label,
-            style: const TextStyle(color: Colors.white70, fontSize: 24),
+            style: const TextStyle(color: RobotColors.secondaryText, fontSize: 24),
           ),
         ],
       ),
