@@ -17,6 +17,7 @@ class FleetProvider extends ChangeNotifier {
 
   Future<void> initMiddlewarAPI({required String prefix}) async {
     _middlewareApi = MiddlewareApiUtilities();
+    _middlewareApi.setPrefix(prefix: prefix);
   }
 
   List<String> getIDsOfModules({required String robotName}) {

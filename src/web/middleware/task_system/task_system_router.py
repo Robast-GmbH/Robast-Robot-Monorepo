@@ -16,9 +16,23 @@ def post_task_assignment(request: Task):
 
 
 @task_system_router.get("/by_assignee", tags=["Tasks"])
-def get_robot_tasks(robot_name: str):
-    robot_tasks = task_manager.read_tasks_by_assignee(robot_name)
+def get_tasks_by_assignee(robot_name: str, limit: int = 100, offset: int = 0):
+    robot_tasks = task_manager.read_tasks_by_assignee(robot_name, limit, offset)
     return [task.to_json() for task in robot_tasks]
+
+
+@task_system_router.get("/finished_by_assignee", tags=["Tasks"])
+def get_finished_tasks_by_assignee(robot_name: str, limit: int = 100, offset: int = 0):
+    robot_tasks = task_manager.read_finished_tasks_by_assignee(
+        robot_name, limit, offset
+    )
+    return [task.to_json() for task in robot_tasks]
+
+
+@task_system_router.get("/robot_tasks", tags=["Tasks"])
+def get_robot_tasks(robot_name: str):
+    robot_tasks = task_assignment_system.get_robot_tasks(robot_name)
+    return robot_tasks
 
 
 @task_system_router.post("/create_task", tags=["Tasks"])

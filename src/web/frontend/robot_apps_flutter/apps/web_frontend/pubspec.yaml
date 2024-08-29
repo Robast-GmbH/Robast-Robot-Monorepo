@@ -15,7 +15,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   http: ^1.2.1
-  intl: ^0.18.1
+  intl: ^0.19.0
   middleware_api_utilities: ^0.1.0+1
   provider: ^6.1.2
   shared_data_models: ^0.1.0+1

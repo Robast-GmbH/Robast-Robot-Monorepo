@@ -13,8 +13,17 @@ class TaskManager:
     def read_task(self, task_id) -> Task | None:
         return self.task_repository.read_task(task_id)
 
-    def read_tasks_by_assignee(self, assignee_name) -> list[Task]:
-        return self.task_repository.read_tasks_by_assignee(assignee_name)
+    def read_tasks_by_assignee(
+        self, assignee_name: str, limit: int, offset: int
+    ) -> list[Task]:
+        return self.task_repository.read_tasks_by_assignee(assignee_name, limit, offset)
+
+    def read_finished_tasks_by_assignee(
+        self, assignee_name: str, limit: int, offset: int
+    ) -> list[Task]:
+        return self.task_repository.read_finished_tasks_by_assignee(
+            assignee_name, limit, offset
+        )
 
     def read_all_tasks(self) -> list[Task]:
         return self.task_repository.read_tasks()

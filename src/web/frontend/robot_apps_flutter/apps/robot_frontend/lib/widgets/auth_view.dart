@@ -100,7 +100,7 @@ class _AuthViewState extends State<AuthView> {
             future: tryStartUserSessionFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done || snapshot.data!) {
-                return Container(width: 48, height: 48, child: const CircularProgressIndicator());
+                return const SizedBox(width: 48, height: 48, child: CircularProgressIndicator());
               } else {
                 return InkWell(
                   onTap: () {

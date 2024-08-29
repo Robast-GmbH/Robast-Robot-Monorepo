@@ -60,7 +60,10 @@ class _LocationSelectorState extends State<LocationSelector> {
               child: CustomDropdownButton(
                 value: controller.room,
                 hint: 'Raum auswählen',
-                onChanged: (value) => setState(() => controller.setRoom(value ?? '')),
+                onChanged: (value) {
+                  setState(() => controller.setRoom(value ?? ''));
+                  widget.onChanged?.call();
+                },
                 items: controller.station?.isEmpty ?? true ? [] : Provider.of<MapProvider>(context).roomsByStations[controller.station]!.toList(),
               ),
             ),

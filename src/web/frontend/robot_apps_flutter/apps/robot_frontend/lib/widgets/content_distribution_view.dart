@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/controller/delivery_time_controller.dart';
 import 'package:robot_frontend/models/controller/location_selection_controller.dart';
 import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
 import 'package:robot_frontend/models/controller/user_selection_controller.dart';
@@ -10,6 +11,7 @@ import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/widgets/custom_elevated_button.dart';
 import 'package:robot_frontend/widgets/location_selector.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
+import 'package:robot_frontend/widgets/time_picker_view.dart';
 import 'package:robot_frontend/widgets/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/user_selector.dart';
 
@@ -19,18 +21,21 @@ class ContentDistributionView extends StatefulWidget {
     required this.userSelectionControllers,
     required this.userGroupsSelectionControllers,
     required this.locationSelectionControllers,
+    required this.deliveryTimeControllers,
     super.key,
   }) : assert(
           preselectedSubmodules.length == userSelectionControllers.length &&
               preselectedSubmodules.length == locationSelectionControllers.length &&
-              preselectedSubmodules.length == userGroupsSelectionControllers.length,
-          'preselectedSubmodules, userSelectionControllers, userGroupsSelectionControllers and locationSelectionControllers must have the same length',
+              preselectedSubmodules.length == userGroupsSelectionControllers.length &&
+              preselectedSubmodules.length == deliveryTimeControllers.length,
+          'preselectedSubmodules, userSelectionControllers, userGroupsSelectionControllers, locationSelectionControllers and deliveryTimeControllers must have the same length',
         );
 
   final List<SubmoduleAddress> preselectedSubmodules;
   final List<UserSelectionController> userSelectionControllers;
   final List<UserGroupsSelectionController> userGroupsSelectionControllers;
   final List<LocationSelectionController> locationSelectionControllers;
+  final List<DeliveryTimeController> deliveryTimeControllers;
 
   @override
   State<ContentDistributionView> createState() => _ContentDistributionViewState();
@@ -103,7 +108,7 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                                 ),
                               ),
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Row(
                               children: [
                                 Expanded(
@@ -114,9 +119,17 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                                     onChanged: () => setState(() {}),
                                   ),
                                 ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                Expanded(
+                                  child: TimePickerView(
+                                    deliveryTimeController: widget.deliveryTimeControllers[index],
+                                  ),
+                                )
                               ],
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Row(
                               children: [
                                 Expanded(
@@ -125,7 +138,7 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                                     onChanged: () => setState(() {}),
                                   ),
                                 ),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 Expanded(
                                   child: UserGroupsSelector(
                                     controller: widget.userGroupsSelectionControllers[index],
@@ -165,6 +178,7 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                         user: user,
                         userGroups: userGroups,
                         submodule: submodule,
+                        earliestStartTime: widget.deliveryTimeControllers[i].timeAsSecondsSinceEpoch(),
                       );
                     }
                     if (context.mounted) {

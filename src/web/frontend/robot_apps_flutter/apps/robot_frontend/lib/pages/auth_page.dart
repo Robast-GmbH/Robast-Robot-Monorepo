@@ -40,6 +40,7 @@ class _AuthPageState extends State<AuthPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BackgroundView(
+        inactivityTimerEnabled: false,
         child: !authCompleted
             ? SizedBox.expand(
                 child: Center(

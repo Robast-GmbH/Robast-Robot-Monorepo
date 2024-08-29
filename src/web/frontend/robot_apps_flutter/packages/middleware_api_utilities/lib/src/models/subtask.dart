@@ -1,6 +1,4 @@
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
-import 'package:middleware_api_utilities/src/models/robot_action.dart';
-import 'package:middleware_api_utilities/src/models/submodule_address.dart';
 import 'package:uuid/uuid.dart';
 
 class SubTask {
@@ -45,6 +43,7 @@ class SubTask {
     required List<String> requiredUserIDs,
     required List<String> requiredUserGroups,
     required Map<String, int> itemsByChange,
+    required int earliestStartTime,
   }) {
     return SubTask(
       id: id,
@@ -56,7 +55,7 @@ class SubTask {
       parentID: parentID,
       targetID: targetID,
       priority: 0,
-      earliestStartTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      earliestStartTime: earliestStartTime,
       requirements: {
         'required_user_ids': requiredUserIDs,
         'required_user_groups': requiredUserGroups,
@@ -83,6 +82,7 @@ class SubTask {
     required Map<String, int> itemsByChange,
     required SubmoduleAddress submoduleAddress,
     required String assigneeName,
+    required int earliestStartTime,
   }) {
     final completeSubmoduleAddress = {'submodule_address': submoduleAddress.toJson()};
     completeSubmoduleAddress['submodule_address']!['robot_name'] = assigneeName;
@@ -96,7 +96,7 @@ class SubTask {
       parentID: parentID,
       targetID: targetID,
       priority: 0,
-      earliestStartTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      earliestStartTime: earliestStartTime,
       requirements: {
         'required_user_ids': requiredUserIDs,
         'required_user_groups': requiredUserGroups,

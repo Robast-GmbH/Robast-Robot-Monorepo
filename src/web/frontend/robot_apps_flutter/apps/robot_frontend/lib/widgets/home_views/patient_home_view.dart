@@ -23,11 +23,11 @@ class PatientHomeView extends StatelessWidget {
                   onPressed: () {},
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Expanded(
                 child: Row(
                   children: [
-                    Expanded(child: WeatherView()),
+                    const Expanded(child: WeatherView()),
                     const SizedBox(width: 16),
                     Expanded(
                       child: CustomButtonView(
@@ -80,7 +80,7 @@ class PatientHomeView extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 16),
-        Expanded(
+        const Expanded(
           child: DeliveryPlanView(),
         ),
       ],
