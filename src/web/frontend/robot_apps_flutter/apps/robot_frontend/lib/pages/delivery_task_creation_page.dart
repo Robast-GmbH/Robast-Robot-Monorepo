@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/controller/delivery_time_controller.dart';
 import 'package:robot_frontend/models/controller/location_selection_controller.dart';
 import 'package:robot_frontend/models/controller/module_content_controller.dart';
 import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
@@ -11,6 +12,7 @@ import 'package:robot_frontend/widgets/location_selector.dart';
 import 'package:robot_frontend/widgets/module_content_creation_view.dart';
 import 'package:robot_frontend/widgets/rounded_button.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
+import 'package:robot_frontend/widgets/time_picker_view.dart';
 import 'package:robot_frontend/widgets/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/user_selector.dart';
 
@@ -32,6 +34,8 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
   final recipientUserController = UserSelectionController();
   final senderUserGroupsSelectionController = UserGroupsSelectionController();
   final recipientUserGroupsSelectionController = UserGroupsSelectionController();
+  final senderTimeController = DeliveryTimeController();
+  final recipientTimeController = DeliveryTimeController();
 
   @override
   Widget build(BuildContext context) {
@@ -118,9 +122,29 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                 SizedBox(
                   height: 8,
                 ),
-                LocationSelector(
-                  controller: startController,
-                  label: 'Start',
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: LocationSelector(
+                        controller: startController,
+                        label: 'Start',
+                      ),
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Expanded(
+                      child: TimePickerView(
+                        deliveryTimeController: senderTimeController,
+                        onTimeSelected: (dateTime) {
+                          setState(() {
+                            recipientTimeController.value = dateTime;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
                 const Padding(
                   padding: EdgeInsets.only(
@@ -152,9 +176,29 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                 SizedBox(
                   height: 8,
                 ),
-                LocationSelector(
-                  controller: targetController,
-                  label: 'Ziel',
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: LocationSelector(
+                        controller: targetController,
+                        label: 'Ziel',
+                      ),
+                    ),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Expanded(
+                      child: TimePickerView(
+                        deliveryTimeController: recipientTimeController,
+                        onTimeSelected: (datetime) {
+                          if (senderTimeController.value != null && datetime.isBefore(senderTimeController.value!)) {
+                            recipientTimeController.value = senderTimeController.value;
+                          }
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -168,11 +212,13 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                 await Provider.of<TaskProvider>(context, listen: false).createDeliveryTaskRequest(
                   requiredSubmoduleType: requiredSubmoduleType,
                   pickupTargetID: startController.room!,
+                  pickupEarliestStartTime: senderTimeController.timeAsSecondsSinceEpoch(),
                   senderUserIDs: [
                     if (senderUserController.selectedUser != null) senderUserController.selectedUser!.id,
                   ],
                   senderUserGroups: senderUserGroupsSelectionController.selectionAsStringList(),
                   dropoffTargetID: targetController.room!,
+                  dropoffEarliestStartTime: recipientTimeController.timeAsSecondsSinceEpoch(),
                   recipientUserIDs: [
                     if (recipientUserController.selectedUser != null) recipientUserController.selectedUser!.id,
                   ],

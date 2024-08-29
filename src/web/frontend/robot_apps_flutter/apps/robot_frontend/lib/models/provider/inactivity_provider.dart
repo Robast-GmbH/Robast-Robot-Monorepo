@@ -4,7 +4,7 @@ import 'package:robot_frontend/constants/robot_colors.dart';
 
 class InactivityProvider with ChangeNotifier {
   Timer? _inactivityTimer;
-  final Duration _timeoutDuration = Duration(seconds: 60);
+  final Duration _timeoutDuration = Duration(seconds: 600);
   final int _timeoutReactionDurationInS = 10;
   final GlobalKey<NavigatorState> _navigatorKey;
 

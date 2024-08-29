@@ -1,3 +1,4 @@
+import time
 from pydantic_models.sub_task import SubTask
 from pydantic_models.submodule_address import SubmoduleAddress
 from task_system.models.node import Node
@@ -194,8 +195,12 @@ class Robot:
         self.__current_subtask_id = None
 
     def __start_next_task(self) -> None:
+        timeStamp = int(time.time())
+        self.__optimize_task_queue()
         next_subtask = self.__task_manager.read_subtask(self.__subtask_queue[0])
         if not next_subtask:
+            return
+        if next_subtask.earliest_start_time > timeStamp:
             return
         if not self.__handle_subtask_requirements(next_subtask):
             return
@@ -220,12 +225,14 @@ class Robot:
         )
         self.__subtask_queue.clear()
 
-        eligible_tasks, non_eligible_tasks = self.__partition_tasks_by_eligibility(
+        startable_tasks, non_startable_tasks = self.__partition_tasks_by_startability(
             queued_subtasks
+        )
+        eligible_tasks, non_eligible_tasks = self.__partition_tasks_by_eligibility(
+            startable_tasks
         )
 
         start = self.__determine_start_node()
-
         while len(eligible_tasks) > 0:
             closest_tasks = self.__find_closest_tasks(eligible_tasks, start)
             eligible_tasks = [
@@ -240,9 +247,25 @@ class Robot:
 
             start = self.__nav_graph.get_node_by_id(closest_tasks[0].target_id)
 
+        self.__subtask_queue.extend([subtask.id for subtask in non_startable_tasks])
+
+    def __partition_tasks_by_startability(
+        self, queued_subtasks: list[SubTask]
+    ) -> tuple[list[SubTask], list[SubTask]]:
+        startable_tasks = [
+            task
+            for task in queued_subtasks
+            if task.earliest_start_time <= int(time.time())
+        ]
+        non_startable_tasks = [
+            task for task in queued_subtasks if task not in startable_tasks
+        ]
+        return startable_tasks, non_startable_tasks
+
     def __partition_tasks_by_eligibility(
         self, queued_subtasks: list[SubTask]
     ) -> tuple[list[SubTask], list[SubTask]]:
+
         eligible_tasks = [
             task
             for task in queued_subtasks

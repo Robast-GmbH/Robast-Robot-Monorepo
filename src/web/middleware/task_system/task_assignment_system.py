@@ -6,6 +6,7 @@ from configs.url_config import ROBOT_NAME_TO_IP
 
 from threading import Timer
 from typing import Tuple, Any
+import time
 import json
 
 
@@ -82,6 +83,11 @@ class TaskAssignmentSystem:
 
     def __trigger_task_assignment(self) -> None:
         unassigned_tasks = self.__task_repository.read_unassigned_tasks()
+        unassigned_tasks = [
+            task
+            for task in unassigned_tasks
+            if task.earliest_start_time <= int(time.time())
+        ]
         if len(unassigned_tasks) > 0:
             unassigned_task = unassigned_tasks[0]
 
