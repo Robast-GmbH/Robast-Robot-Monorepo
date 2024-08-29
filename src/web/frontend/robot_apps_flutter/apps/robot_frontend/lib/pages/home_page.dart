@@ -53,6 +53,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     });
     return Scaffold(
       body: BackgroundView(
+        inactivityTimerEnabled: false,
         child: Column(
           children: [
             const Row(

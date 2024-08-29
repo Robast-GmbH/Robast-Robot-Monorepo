@@ -31,7 +31,7 @@ class MoreSettingsPage extends StatelessWidget {
                       },
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 16,
                   ),
                   Expanded(
@@ -50,7 +50,7 @@ class MoreSettingsPage extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               width: 16,
             ),
             Expanded(
@@ -62,7 +62,7 @@ class MoreSettingsPage extends StatelessWidget {
                       onPressed: () {},
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 16,
                   ),
                   Expanded(

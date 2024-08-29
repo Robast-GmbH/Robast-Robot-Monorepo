@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/controller/delivery_time_controller.dart';
 import 'package:robot_frontend/models/controller/location_selection_controller.dart';
 import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
 import 'package:robot_frontend/models/controller/user_selection_controller.dart';
@@ -29,6 +29,7 @@ class _ContentDistributionTaskCreationPageState extends State<ContentDistributio
   final userSelectionControllers = <UserSelectionController>[];
   final userGroupsSelectionControllers = <UserGroupsSelectionController>[];
   final locationSelectionControllers = <LocationSelectionController>[];
+  final deliveryTimeControllers = <DeliveryTimeController>[];
 
   Future<void> initPage() async {
     final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
@@ -50,6 +51,7 @@ class _ContentDistributionTaskCreationPageState extends State<ContentDistributio
     userSelectionControllers.add(UserSelectionController());
     userGroupsSelectionControllers.add(UserGroupsSelectionController());
     locationSelectionControllers.add(LocationSelectionController());
+    deliveryTimeControllers.add(DeliveryTimeController());
   }
 
   void onFreeing(SubmoduleAddress submoduleAddress) {
@@ -58,6 +60,7 @@ class _ContentDistributionTaskCreationPageState extends State<ContentDistributio
     userSelectionControllers.removeAt(index);
     userGroupsSelectionControllers.removeAt(index);
     locationSelectionControllers.removeAt(index);
+    deliveryTimeControllers.removeAt(index);
   }
 
   @override
@@ -138,6 +141,7 @@ class _ContentDistributionTaskCreationPageState extends State<ContentDistributio
                   userSelectionControllers: userSelectionControllers,
                   userGroupsSelectionControllers: userGroupsSelectionControllers,
                   locationSelectionControllers: locationSelectionControllers,
+                  deliveryTimeControllers: deliveryTimeControllers,
                 ),
               if (currentStep != CreationSteps.assignTargets)
                 Align(
