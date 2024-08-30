@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/controller/module_content_controller.dart';
+import 'package:robot_frontend/widgets/rounded_container.dart';
 
 class ModuleContentCreationView extends StatefulWidget {
   const ModuleContentCreationView({
@@ -29,11 +31,13 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
           padding: const EdgeInsets.only(
             left: 8,
           ),
-          child: Text(widget.label, style: const TextStyle(fontSize: 28)),
+          child: Text(
+            widget.label,
+            style: const TextStyle(fontSize: 28, color: RobotColors.primaryText),
+          ),
         ),
         Expanded(
-          child: Card(
-            color: Colors.white.withOpacity(0.4),
+          child: RoundedContainer(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               child: Column(
@@ -59,86 +63,93 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
 
   Padding buildItemsByChangeCreationButton() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 32),
-      child: Card(
-        color: Colors.white.withOpacity(0.7),
-        child: IconButton(
-          color: Colors.white,
-          iconSize: 64,
-          onPressed: () {
-            setState(() {
-              widget.moduleContentController.createdItemsByCount[textController.text] = int.tryParse(amountController.text) ?? 0;
-              textController.clear();
-              amountController.clear();
-            });
-          },
-          icon: const Icon(Icons.add),
+      padding: const EdgeInsets.only(bottom: 32, top: 8),
+      child: InkWell(
+        onTap: () {
+          setState(() {
+            widget.moduleContentController.createdItemsByCount[textController.text] = int.tryParse(amountController.text) ?? 0;
+            textController.clear();
+            amountController.clear();
+          });
+        },
+        child: const RoundedContainer(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            child: Icon(
+              Icons.add,
+              color: RobotColors.primaryIcon,
+              size: 64,
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Card buildContentListTile(MapEntry<String, int> entry) {
+  Widget buildContentListTile(MapEntry<String, int> entry) {
     final controller = widget.moduleContentController;
-    return Card(
-      color: Colors.white.withOpacity(0.5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: buildListTileText(entry.key),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              children: [
-                IconButton(
-                  iconSize: 32,
-                  onPressed: () {
-                    if (controller.contentItemsByChange.containsKey(entry.key)) {
-                      setState(() {
-                        controller.contentItemsByChange[entry.key] = controller.contentItemsByChange[entry.key]! - 1;
-                      });
-                    } else {
-                      setState(() {
-                        controller.contentItemsByChange[entry.key] = -1;
-                      });
-                    }
-                  },
-                  icon: const Icon(Icons.remove),
-                ),
-                buildListTileText(
-                  (entry.value + (controller.contentItemsByChange.containsKey(entry.key) ? controller.contentItemsByChange[entry.key]! : 0)).toString(),
-                ),
-                IconButton(
-                  iconSize: 32,
-                  onPressed: () {
-                    if (controller.contentItemsByChange.containsKey(entry.key)) {
-                      setState(() {
-                        controller.contentItemsByChange[entry.key] = controller.contentItemsByChange[entry.key]! + 1;
-                      });
-                    } else {
-                      setState(() {
-                        controller.contentItemsByChange[entry.key] = 1;
-                      });
-                    }
-                  },
-                  icon: const Icon(Icons.add),
-                ),
-              ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: RoundedContainer(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: buildListTileText(entry.key),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  IconButton(
+                    iconSize: 32,
+                    onPressed: () {
+                      if (controller.contentItemsByChange.containsKey(entry.key)) {
+                        setState(() {
+                          controller.contentItemsByChange[entry.key] = controller.contentItemsByChange[entry.key]! - 1;
+                        });
+                      } else {
+                        setState(() {
+                          controller.contentItemsByChange[entry.key] = -1;
+                        });
+                      }
+                    },
+                    icon: const Icon(Icons.remove),
+                    color: RobotColors.secondaryIcon,
+                  ),
+                  buildListTileText(
+                    (entry.value + (controller.contentItemsByChange.containsKey(entry.key) ? controller.contentItemsByChange[entry.key]! : 0)).toString(),
+                  ),
+                  IconButton(
+                    iconSize: 32,
+                    onPressed: () {
+                      if (controller.contentItemsByChange.containsKey(entry.key)) {
+                        setState(() {
+                          controller.contentItemsByChange[entry.key] = controller.contentItemsByChange[entry.key]! + 1;
+                        });
+                      } else {
+                        setState(() {
+                          controller.contentItemsByChange[entry.key] = 1;
+                        });
+                      }
+                    },
+                    icon: const Icon(Icons.add),
+                    color: RobotColors.secondaryIcon,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Card buildItemsByChangeCreationView() {
-    return Card(
-      color: Colors.white.withOpacity(0.5),
+  RoundedContainer buildItemsByChangeCreationView() {
+    return RoundedContainer(
       child: Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -146,7 +157,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
               flex: 8,
               child: TextField(
                 controller: textController,
-                style: const TextStyle(fontSize: 24),
+                style: const TextStyle(fontSize: 28, color: RobotColors.secondaryText),
               ),
             ),
             const SizedBox(
@@ -156,7 +167,8 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
               child: TextField(
                 textAlign: TextAlign.center,
                 controller: amountController,
-                style: const TextStyle(fontSize: 24),
+                style: const TextStyle(fontSize: 28, color: RobotColors.secondaryText),
+                keyboardType: const TextInputType.numberWithOptions(),
               ),
             ),
           ],
@@ -168,7 +180,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
   Text buildListTileText(String text) {
     return Text(
       text,
-      style: const TextStyle(fontSize: 24),
+      style: const TextStyle(fontSize: 28, color: RobotColors.secondaryText),
     );
   }
 }

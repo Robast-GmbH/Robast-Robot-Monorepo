@@ -4,7 +4,7 @@
 #include "led/led_strip.hpp"
 
 // VERY IMPORTANT: Set the hardware version of the drawer controller pcb here (currently 3 and 4 are supported):
-#define HARDWARE_VERSION 3
+#define HARDWARE_VERSION 4
 #if HARDWARE_VERSION == 3
 #include "can_toolbox/can_controller_mcp2515.hpp"
 #include "gpio/gpio_wrapper_pca9554.hpp"
@@ -20,13 +20,16 @@
 #endif
 
 // These are the very basic top level configurations for the drawer controller you need to set.
-constexpr bool IS_ELECTRICAL_DRAWER = true;
-constexpr uint32_t MODULE_ID = 2;
+constexpr bool MODULE_CONTAINS_A_DRAWER = false;
+constexpr bool IS_ELECTRICAL_DRAWER = false;
+constexpr uint32_t MODULE_ID = 0;
 constexpr uint8_t LOCK_ID = 0;
-constexpr bool USE_ENCODER = true;
+constexpr bool USE_ENCODER = false;
 constexpr bool IS_SHAFT_DIRECTION_INVERTED = false;
 constexpr switch_lib::Switch::SwitchType ENDSTOP_SWITCH_TYPE = switch_lib::Switch::normally_open;
-constexpr uint8_t NUM_OF_LEDS = 18;   // 18 LEDs at the old drawer and 21 LEDs at the new drawer
+// LED CONFIGS
+constexpr uint8_t NUM_OF_LEDS = 128;   // 18 LEDs at the old drawer and 21 LEDs at the new drawer
+constexpr bool USE_COLOR_FADE = false;
 
 std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
 
@@ -59,7 +62,21 @@ stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
  *    - process_can_msgs_task_loop() is responsible for processing the CAN messages from the queue
  **********************************************************************************************************************/
 
-void receive_can_msg_task_loop(void* pvParameters)
+void add_can_msg_to_queue(std::optional<robast_can_msgs::CanMessage>& received_message)
+{
+  if (xSemaphoreTake(can_queue_mutex, pdMS_TO_TICKS(500)) == pdTRUE)
+  {
+    debug_println("[Main]: Received CAN message and adding it to the queue.");
+    can_msg_queue->enqueue(received_message.value());
+    xSemaphoreGive(can_queue_mutex);
+  }
+  else
+  {
+    Serial.println("[Main]: Error: Could not take the mutex. This should not occur.");
+  }
+}
+
+void receive_can_msg_task_loop_hw_v3(void)
 {
   uint8_t minimal_loop_time_in_ms = MINIMAL_LOOP_TIME_IN_MS;
   uint8_t num_of_led_changes = 0;
@@ -71,16 +88,7 @@ void receive_can_msg_task_loop(void* pvParameters)
     std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
     if (received_message.has_value())
     {
-      if (xSemaphoreTake(can_queue_mutex, pdMS_TO_TICKS(500)) == pdTRUE)
-      {
-        debug_println("[Main]: Received CAN message and adding it to the queue.");
-        can_msg_queue->enqueue(received_message.value());
-        xSemaphoreGive(can_queue_mutex);
-      }
-      else
-      {
-        Serial.println("[Main]: Error: Could not take the mutex. This should not occur.");
-      }
+      add_can_msg_to_queue(received_message);
 
       if (received_message.value().get_id() == robast_can_msgs::can_id::LED_HEADER)
       {
@@ -109,6 +117,30 @@ void receive_can_msg_task_loop(void* pvParameters)
       minimal_loop_time_in_ms = MINIMAL_LOOP_TIME_IN_MS;
     }
   }
+}
+
+void receive_can_msg_task_loop_hw_v4(void)
+{
+  for (;;)
+  {
+    std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
+    if (received_message.has_value())
+    {
+      add_can_msg_to_queue(received_message);
+    }
+  }
+}
+
+void receive_can_msg_task_loop(void* pvParameters)
+{
+#if HARDWARE_VERSION == 3
+  // Hardware Version 3 needs a different task loop with extra task yielding because it uses SPI CAN Controller
+  receive_can_msg_task_loop_hw_v3();
+#elif HARDWARE_VERSION == 4
+  // Hardware Version 4 uses TWAI CAN Controller and does not need extra task yielding because it uses xQueueReceive
+  // which has a task yielding wait
+  receive_can_msg_task_loop_hw_v4();
+#endif
 }
 
 void process_can_msgs_task_loop(void* pvParameters)
@@ -175,7 +207,10 @@ void process_can_msgs_task_loop(void* pvParameters)
 
     led_strip->handle_led_control();
 
-    i_drawer->update_state();
+    if (MODULE_CONTAINS_A_DRAWER)
+    {
+      i_drawer->update_state();
+    }
 
     std::optional<robast_can_msgs::CanMessage> to_be_sent_message = i_drawer->can_out();
 
@@ -215,7 +250,11 @@ void setup()
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   can_message_converter = std::make_unique<utils::CanMessageConverter>();
 
-  led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>>();
+  led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>>(USE_COLOR_FADE);
+
+  // Very important to initialize this before the can_controller is created
+  can_queue_mutex = xSemaphoreCreateMutex();
+  can_msg_queue = std::make_unique<utils::Queue<robast_can_msgs::CanMessage>>();
 
 #if HARDWARE_VERSION == 3
   can_controller = std::make_unique<can_toolbox::CanController<peripherals::pinout::SPI_MISO,
@@ -228,9 +267,6 @@ void setup()
   can_controller = std::make_unique<can_toolbox::CanController>(
     MODULE_ID, can_db, peripherals::pinout::TWAI_TX_PIN, peripherals::pinout::TWAI_RX_PIN);
 #endif
-
-  can_queue_mutex = xSemaphoreCreateMutex();
-  can_msg_queue = std::make_unique<utils::Queue<robast_can_msgs::CanMessage>>();
 
   drawer_lock = std::make_shared<lock::ElectricalDrawerLock>(gpio_wrapper,
                                                              gpio_defines::pin_id::LOCK_1_OPEN_CONTROL,
@@ -272,7 +308,8 @@ void setup()
     i_drawer = std::make_shared<drawer::ManualDrawer>(MODULE_ID, LOCK_ID, can_db, endstop_switch, drawer_lock);
   }
 
-  debug_println("[Main]: Finished setup()!");
+  // Initialize CAN Controller right before can task receive loop is started, otherwise rx_queue might overflow
+  can_controller->initialize_can_controller();
 
   xTaskCreatePinnedToCore(receive_can_msg_task_loop, /* Task function. */
                           "Task1",                   /* name of task. */
@@ -291,6 +328,8 @@ void setup()
                           1,                          /* priority of the task */
                           &Task2,                     /* Task handle to keep track of created task */
                           1);                         /* pin task to core 1 */
+
+  debug_println("[Main]: Finished setup()!");
 }
 
 void loop()

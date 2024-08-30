@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/map_provider.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/home_page.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
+import 'package:robot_frontend/widgets/rounded_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ConfigPage extends StatefulWidget {
@@ -83,9 +85,11 @@ class _ConfigPageState extends State<ConfigPage> {
                         Padding(
                           padding: const EdgeInsets.all(8),
                           child: TextFormField(
+                            style: const TextStyle(color: RobotColors.secondaryText, fontSize: 26),
                             initialValue: snapshot.data!.getString('robotBackendAddress') ?? '',
                             decoration: const InputDecoration(
-                              labelText: 'Enter the address of the robot backend',
+                              labelText: 'Roboter Backend Adresse',
+                              labelStyle: TextStyle(color: RobotColors.primaryText, fontSize: 32),
                               hintText: 'http://ip:port',
                             ),
                             validator: (value) {
@@ -103,9 +107,11 @@ class _ConfigPageState extends State<ConfigPage> {
                         Padding(
                           padding: const EdgeInsets.all(8),
                           child: TextFormField(
+                            style: const TextStyle(color: RobotColors.secondaryText, fontSize: 26),
                             initialValue: snapshot.data!.getString('middlewareAddress') ?? '',
                             decoration: const InputDecoration(
-                              labelText: 'Enter the address of the middleware',
+                              labelText: 'Middleware Adresse',
+                              labelStyle: TextStyle(color: RobotColors.primaryText, fontSize: 32),
                               hintText: 'http://ip:port',
                             ),
                             validator: (value) {
@@ -122,7 +128,7 @@ class _ConfigPageState extends State<ConfigPage> {
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8),
-                          child: ElevatedButton(
+                          child: RoundedButton(
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 _formKey.currentState!.save();
@@ -136,7 +142,10 @@ class _ConfigPageState extends State<ConfigPage> {
                             },
                             child: const Padding(
                               padding: EdgeInsets.symmetric(vertical: 8, horizontal: 32),
-                              child: Text('Submit'),
+                              child: Text(
+                                'Bestätigen',
+                                style: TextStyle(color: RobotColors.primaryText, fontSize: 32),
+                              ),
                             ),
                           ),
                         ),

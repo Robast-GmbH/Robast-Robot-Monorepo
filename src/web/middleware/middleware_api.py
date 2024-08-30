@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Response
 from fastapi.middleware.cors import CORSMiddleware
 import requests
 
@@ -160,6 +160,15 @@ RMF API Endpoints
 def get_building_map():
     response = requests.get(f"{fleet_management_address}/building_map").json()
     return response
+
+
+@app.get("/building_map.png", tags=["RMF"])
+def get_building_map_png():
+    response = requests.get(f"{fleet_management_address}/building_map").json()
+    image_url = response["levels"][0]["images"][0]["data"]
+    index = image_url.find("/", image_url.find("//") + 2)
+    response = requests.get(f"{fleet_management_address}{image_url[index:]}")
+    return Response(content=response.content, media_type="image/png")
 
 
 """

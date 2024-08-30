@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/data/svgs.dart';
 
 class DrivingView extends StatefulWidget {
@@ -85,12 +86,12 @@ class _DrivingViewState extends State<DrivingView> {
                                       SvgPicture.string(
                                         logo,
                                         width: double.infinity,
-                                        color: Colors.white,
+                                        color: RobotColors.primaryIcon,
                                       ),
                                     SvgPicture.string(
                                       logoBlink,
                                       width: double.infinity,
-                                      color: Colors.white,
+                                      color: RobotColors.primaryIcon,
                                     ),
                                   ],
                                 )
@@ -98,7 +99,7 @@ class _DrivingViewState extends State<DrivingView> {
                                 SvgPicture.string(
                                   logoHappy,
                                   width: double.infinity,
-                                  color: Colors.white,
+                                  color: RobotColors.primaryIcon,
                                 ),
                             ],
                           ),
@@ -106,63 +107,15 @@ class _DrivingViewState extends State<DrivingView> {
                       ),
                     ),
                     const SizedBox(height: 64),
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        ShaderMask(
-                          blendMode: BlendMode.srcOut,
-                          child: const Text(
-                            'Bitte berühren',
-                            style: TextStyle(
-                              letterSpacing: 1.5,
-                              color: Color(0xFF755FE3),
-                              fontSize: 72,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                          shaderCallback: (bounds) => const LinearGradient(colors: [Colors.white], stops: [0.0]).createShader(bounds),
+                    Container(
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(64), color: RobotColors.primaryText),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 92),
+                        child: Text(
+                          'Bitte berühren',
+                          style: TextStyle(color: RobotColors.primaryBackground, fontSize: 66),
                         ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.horizontal(left: Radius.circular(64)),
-                              ),
-                              width: 96,
-                              height: 85,
-                            ),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Text(
-                                  'Bitte berühren',
-                                  style: TextStyle(
-                                    letterSpacing: 1.9,
-                                    color: Colors.transparent,
-                                    fontSize: 58,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                ),
-                                Container(
-                                  color: Colors.white,
-                                  width: 480,
-                                  height: 2,
-                                ),
-                              ],
-                            ),
-                            Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.horizontal(right: Radius.circular(64)),
-                              ),
-                              width: 96,
-                              height: 85,
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),

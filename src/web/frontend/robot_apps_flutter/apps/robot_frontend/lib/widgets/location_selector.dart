@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/controller/location_selection_controller.dart';
 import 'package:robot_frontend/models/provider/map_provider.dart';
+import 'package:robot_frontend/widgets/custom_dropdown_button.dart';
+import 'package:robot_frontend/widgets/rounded_container.dart';
 
 class LocationSelector extends StatefulWidget {
   const LocationSelector({
@@ -23,8 +26,7 @@ class _LocationSelectorState extends State<LocationSelector> {
   @override
   Widget build(BuildContext context) {
     final controller = widget.controller;
-    return Card(
-      color: Colors.white.withOpacity(0.4),
+    return RoundedContainer(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         child: Row(
@@ -32,20 +34,14 @@ class _LocationSelectorState extends State<LocationSelector> {
             Text(
               widget.label,
               textAlign: TextAlign.end,
-              style: const TextStyle(
-                fontSize: 24,
-              ),
+              style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),
             ),
             const SizedBox(
               width: 16,
             ),
             Expanded(
-              child: DropdownButton<String>(
-                isExpanded: true,
-                hint: const Text(
-                  'Station auswählen',
-                  style: TextStyle(fontSize: 24),
-                ),
+              child: CustomDropdownButton(
+                hint: 'Station auswählen',
                 value: controller.station,
                 onChanged: (value) {
                   if (controller.station == value) return;
@@ -54,53 +50,21 @@ class _LocationSelectorState extends State<LocationSelector> {
                   });
                   widget.onChanged?.call();
                 },
-                items: Provider.of<MapProvider>(context)
-                    .roomsByStations
-                    .keys
-                    .map(
-                      (availableStation) => DropdownMenuItem<String>(
-                        value: availableStation,
-                        alignment: Alignment.center,
-                        child: Text(
-                          availableStation,
-                          style: const TextStyle(fontSize: 24),
-                        ),
-                      ),
-                    )
-                    .toList(),
+                items: Provider.of<MapProvider>(context).roomsByStations.keys.toList(),
               ),
             ),
             const SizedBox(
               width: 16,
             ),
             Expanded(
-              child: DropdownButton<String>(
-                isExpanded: true,
+              child: CustomDropdownButton(
                 value: controller.room,
-                hint: const Text(
-                  'Raum auswählen',
-                  style: TextStyle(fontSize: 24),
-                ),
-                disabledHint: const Text(
-                  '',
-                  style: TextStyle(fontSize: 24),
-                ),
-                onChanged: (value) => setState(() => controller.setRoom(value ?? '')),
-                items: controller.station?.isEmpty ?? true
-                    ? []
-                    : Provider.of<MapProvider>(context)
-                        .roomsByStations[controller.station]!
-                        .map(
-                          (availableRoom) => DropdownMenuItem<String>(
-                            value: availableRoom,
-                            alignment: Alignment.center,
-                            child: Text(
-                              availableRoom,
-                              style: const TextStyle(fontSize: 24),
-                            ),
-                          ),
-                        )
-                        .toList(),
+                hint: 'Raum auswählen',
+                onChanged: (value) {
+                  setState(() => controller.setRoom(value ?? ''));
+                  widget.onChanged?.call();
+                },
+                items: controller.station?.isEmpty ?? true ? [] : Provider.of<MapProvider>(context).roomsByStations[controller.station]!.toList(),
               ),
             ),
           ],

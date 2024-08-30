@@ -7,12 +7,14 @@ class CustomScaffold extends StatelessWidget {
     super.key,
     this.child = const SizedBox(),
     this.showBackButton = true,
+    this.inactivityTimerEnabled = true,
     this.onBackButtonPressed,
     this.title = '',
   });
 
   final Widget child;
   final bool showBackButton;
+  final bool inactivityTimerEnabled;
   final VoidCallback? onBackButtonPressed;
   final String title;
 
@@ -20,6 +22,7 @@ class CustomScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BackgroundView(
+        inactivityTimerEnabled: inactivityTimerEnabled,
         child: TitledView(
           title: title,
           showBackButton: showBackButton,

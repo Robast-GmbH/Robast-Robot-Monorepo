@@ -1,6 +1,4 @@
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
-import 'package:middleware_api_utilities/src/models/action.dart';
-import 'package:middleware_api_utilities/src/models/submodule_address.dart';
 import 'package:uuid/uuid.dart';
 
 class SubTask {
@@ -32,22 +30,24 @@ class SubTask {
       priority: json['priority'] as int,
       earliestStartTime: json['earliest_start_time'] as int,
       requirements: json['requirements'] as Map<String, dynamic>,
-      action: Action.fromJson(json['action'] as Map<String, dynamic>),
+      action: RobotAction.fromJson(json['action'] as Map<String, dynamic>),
     );
   }
 
   factory SubTask.submoduleProcess({
     required String id,
+    required String name,
     required String parentID,
     required String? requiresTaskID,
     required String targetID,
     required List<String> requiredUserIDs,
     required List<String> requiredUserGroups,
     required Map<String, int> itemsByChange,
+    required int earliestStartTime,
   }) {
     return SubTask(
       id: id,
-      name: 'submodule_process',
+      name: name,
       status: 'pending',
       assigneeName: '',
       requiresTaskID: requiresTaskID,
@@ -55,12 +55,12 @@ class SubTask {
       parentID: parentID,
       targetID: targetID,
       priority: 0,
-      earliestStartTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      earliestStartTime: earliestStartTime,
       requirements: {
         'required_user_ids': requiredUserIDs,
         'required_user_groups': requiredUserGroups,
       },
-      action: Action(
+      action: RobotAction(
         id: const Uuid().v4(),
         name: 'submodule_process',
         status: 'pending',
@@ -82,12 +82,13 @@ class SubTask {
     required Map<String, int> itemsByChange,
     required SubmoduleAddress submoduleAddress,
     required String assigneeName,
+    required int earliestStartTime,
   }) {
     final completeSubmoduleAddress = {'submodule_address': submoduleAddress.toJson()};
     completeSubmoduleAddress['submodule_address']!['robot_name'] = assigneeName;
     return SubTask(
       id: id,
-      name: 'submodule_process',
+      name: 'Zustellung',
       status: 'pending',
       assigneeName: assigneeName,
       requiresTaskID: requiresTaskID,
@@ -95,13 +96,13 @@ class SubTask {
       parentID: parentID,
       targetID: targetID,
       priority: 0,
-      earliestStartTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      earliestStartTime: earliestStartTime,
       requirements: {
         'required_user_ids': requiredUserIDs,
         'required_user_groups': requiredUserGroups,
         ...completeSubmoduleAddress,
       },
-      action: Action(
+      action: RobotAction(
         id: const Uuid().v4(),
         name: 'submodule_process',
         status: 'pending',
@@ -125,7 +126,7 @@ class SubTask {
   final int priority;
   final int earliestStartTime;
   final Map<String, dynamic> requirements;
-  final Action action;
+  final RobotAction action;
 
   Map<String, dynamic> toJson() {
     return {

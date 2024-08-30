@@ -95,9 +95,8 @@ class _ConfigPageState extends State<ConfigPage> {
                                 _formKey.currentState!.save();
                                 await snapshot.data!.setString('middlewareAddress', middlewareAddress);
                               }
-                              if (!widget.autoClose) {
-                                await finishConfiguration();
-                              }
+
+                              await finishConfiguration();
                             },
                             child: const Padding(
                               padding: EdgeInsets.symmetric(vertical: 8, horizontal: 32),

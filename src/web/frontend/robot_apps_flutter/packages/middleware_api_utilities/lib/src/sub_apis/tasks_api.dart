@@ -7,10 +7,26 @@ class TasksApi {
   final String prefix;
 
   Future<RobotTaskStatus?> getRobotTasks({required String robotName}) async {
-    final response = await RequestService.tryGet(uri: Uri.parse('$prefix/robot_tasks?robot_name=$robotName'));
+    final response = await RequestService.tryGet(uri: Uri.parse('$prefix/tasks/robot_tasks?robot_name=$robotName'));
     if (response != null) {
       final data = RequestService.responseToMap(response: response);
-      return RobotTaskStatus.fromJson(data);
+
+      return RobotTaskStatus.fromJson(data['tasks']);
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<Task>?> getFinishedTasks({required String robotName, required int limit, required int offset}) async {
+    final response = await RequestService.tryGet(uri: Uri.parse('$prefix/tasks/finished_by_assignee?robot_name=$robotName&limit=$limit&offset=$offset'));
+    if (response != null) {
+      final data = RequestService.responseToList(response: response);
+      final tasks = <Task>[];
+      for (final taskData in data) {
+        final task = Task.fromJson(taskData as Map<String, dynamic>);
+        tasks.add(task);
+      }
+      return tasks;
     } else {
       return null;
     }
