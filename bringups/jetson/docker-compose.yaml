@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   zed_camera:
     image: ghcr.io/robast-gmbh/monorepo/zed_camera:release431
