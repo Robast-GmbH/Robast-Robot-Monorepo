@@ -1,0 +1,23 @@
+{
+    "name": "can_toolbox",
+    "version": "1.0.0",
+    "description": "A library that contains classes to help with CAN communication on the microcontroller.",
+    "keywords": "can",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/Robast-GmbH/Monorepo.git"
+    },
+    "authors":
+    [
+      {
+        "name": "Jacob Ritterbach",
+        "email": "j.ritterbach@robast.de",
+        "maintainer": true
+      }
+    ],
+    "license": "MIT",
+    "frameworks": "*",
+    "platforms": "*",
+    "headers": ["can_controller.hpp", "can_controller_mcp2515.hpp", "can_msg_queue.hpp", "can_utils.hpp"]
+  }

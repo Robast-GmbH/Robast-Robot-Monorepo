@@ -50,22 +50,22 @@ class TaskCreationMenuPage extends StatelessWidget {
                 children: [
                   Expanded(
                     child: CustomButtonView(
-                      text: 'Zielort anfahren',
+                      text: 'Inhalte verteilen',
                       onPressed: () => Navigator.push(
                         context,
-                        MaterialPageRoute<PatrolTaskCreationPage>(
-                          builder: (context) => const PatrolTaskCreationPage(),
+                        MaterialPageRoute<ContentDistributionTaskCreationPage>(
+                          builder: (context) => const ContentDistributionTaskCreationPage(),
                         ),
                       ),
                     ),
                   ),
                   Expanded(
                     child: CustomButtonView(
-                      text: 'Inhalte verteilen',
+                      text: 'Zielort anfahren',
                       onPressed: () => Navigator.push(
                         context,
-                        MaterialPageRoute<ContentDistributionTaskCreationPage>(
-                          builder: (context) => const ContentDistributionTaskCreationPage(),
+                        MaterialPageRoute<PatrolTaskCreationPage>(
+                          builder: (context) => const PatrolTaskCreationPage(),
                         ),
                       ),
                     ),

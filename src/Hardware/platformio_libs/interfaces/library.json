@@ -1,0 +1,23 @@
+{
+    "name": "interfaces",
+    "version": "1.0.0",
+    "description": "A library that contains all interfaces.",
+    "keywords": "interfaces",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/Robast-GmbH/Monorepo.git"
+    },
+    "authors":
+    [
+      {
+        "name": "Jacob Ritterbach",
+        "email": "j.ritterbach@robast.de",
+        "maintainer": true
+      }
+    ],
+    "license": "MIT",
+    "frameworks": "*",
+    "platforms": "*",
+    "headers": ["i_drawer.hpp", "i_gpio_wrapper.hpp"]
+  }

@@ -10,12 +10,20 @@ services:
       - ROS_DOMAIN_ID=0
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
-      - ./start_scripts/:/start_scripts/:cached
-      - ./zed_setup/:/zed_setup/:cached
-    command: /bin/sh -c "./start_scripts/jetson_start.sh"
+      - ./start_scripts/:/start_scripts/:ro
+      - ./zed_setup/:/zed_setup/:ro
+      - ./healthchecks/zed_check.sh:/healthchecks/zed_check.sh:ro
     stop_signal: SIGINT
     restart: unless-stopped
     network_mode: "host"
+    pull_policy: always
+    healthcheck:
+      test: [ "CMD", "/healthchecks/zed_check.sh" ]
+      interval: 30s
+      timeout: 2s
+      retries: 3
+      start_period: 30s
+    command: /bin/sh -c "/start_scripts/ping_and_wait.sh && /start_scripts/jetson_start.sh"
 
   hardware_nodes:
     image: ghcr.io/robast-gmbh/monorepo/hardware_nodes:release
@@ -23,13 +31,17 @@ services:
       - ROS_DOMAIN_ID=23
       - UID=1000
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - RED=${RED:0}
+      - GREEN=${GREEN:-255}
+      - BLUE=${BLUE:-255}
+      - BRIGHTNESS=${BRIGHTNESS:-20}
     volumes:
-      - ./start_scripts/:/start_scripts/:cached
-      - /dev/shm:/dev/shm
-    command: /bin/sh -c "./start_scripts/hardware_nodes_start.sh"
+      - ./start_scripts/:/start_scripts/:ro
     stop_signal: SIGINT
     restart: unless-stopped
     network_mode: "host"
+    pull_policy: always
+    command: /bin/sh -c "/start_scripts/ping_and_wait.sh && /start_scripts/hardware_nodes_start.sh"
   
   statemachine:
     image: ghcr.io/robast-gmbh/monorepo/statemachine:release
@@ -37,12 +49,24 @@ services:
       - ROS_DOMAIN_ID=23
       - UID=1000
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - RED=${RED:0}
+      - GREEN=${GREEN:-255}
+      - BLUE=${BLUE:-255}
+      - BRIGHTNESS=${BRIGHTNESS:-20}
     volumes:
-      - ./start_scripts/:/start_scripts/:cached
-    command: /bin/sh -c "./start_scripts/statemachine_start.sh"
+      - ./start_scripts/:/start_scripts/:ro
+      - ./healthchecks/statemachine_check.sh:/healthchecks/statemachine_check.sh:ro
     stop_signal: SIGINT
     restart: unless-stopped
     network_mode: "host"
+    pull_policy: always
+    healthcheck:
+      test: [ "CMD", "/healthchecks/statemachine_check.sh" ]
+      interval: 30s
+      timeout: 2s
+      retries: 3
+      start_period: 30s
+    command: /bin/sh -c "/start_scripts/ping_and_wait.sh && /start_scripts/statemachine_start.sh"
 
   disinfection_module:
     image: ghcr.io/robast-gmbh/monorepo/nvidia_hardware_nodes:release
@@ -50,13 +74,14 @@ services:
       - ROS_DOMAIN_ID=23
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
-      - ./start_scripts/:/start_scripts/:cached
-      - /proc/device-tree/compatible:/proc/device-tree/compatible:cashed
-      - /proc/device-tree/chosen:/proc/device-tree/chosen:cashed
+      - ./start_scripts/:/start_scripts/:ro
+      - /proc/device-tree/compatible:/proc/device-tree/compatible
+      - /proc/device-tree/chosen:/proc/device-tree/chosen
     devices:
       - "/dev/gpiochip0:/dev/gpiochip0"
-    command: /bin/sh -c "/start_scripts/disinfection_publisher_start.sh"
     privileged: true
     stop_signal: SIGINT
     restart: unless-stopped
     network_mode: "host"
+    pull_policy: always
+    command: /bin/sh -c "/start_scripts/ping_and_wait.sh && /start_scripts/disinfection_publisher_start.sh"

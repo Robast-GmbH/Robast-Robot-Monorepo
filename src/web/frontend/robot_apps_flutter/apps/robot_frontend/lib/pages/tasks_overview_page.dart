@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
+import 'package:robot_frontend/pages/tasks_history_page.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
-import 'package:robot_frontend/widgets/expandable_task_tile.dart';
+import 'package:robot_frontend/widgets/expandable_subtask_tile.dart';
 
 class TasksOverviewPage extends StatefulWidget {
   const TasksOverviewPage({super.key});
@@ -38,33 +40,80 @@ class _TasksOverviewPageState extends State<TasksOverviewPage> {
               final activeTask = Provider.of<TaskProvider>(context, listen: false).activeTask;
               final queuedTasks = Provider.of<TaskProvider>(context, listen: false).queuedTasks;
               return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Padding(
                     padding: EdgeInsets.only(left: 8),
                     child: Text(
                       'Aktiv',
-                      style: TextStyle(fontSize: 24),
+                      style: TextStyle(fontSize: 40, color: RobotColors.primaryText),
                     ),
                   ),
                   if (activeTask != null)
-                    ExpandableTaskTile(
-                      task: activeTask,
+                    ExpandableSubtaskTile(
+                      subtask: activeTask,
+                    )
+                  else
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'Kein Auftrag aktiv',
+                        style: TextStyle(color: RobotColors.secondaryText, fontSize: 28),
+                      ),
                     ),
                   const Padding(
                     padding: EdgeInsets.only(left: 8, top: 16),
                     child: Text(
                       'In Warteschlange',
-                      style: TextStyle(fontSize: 24),
+                      style: TextStyle(fontSize: 40, color: RobotColors.primaryText),
                     ),
                   ),
-                  Expanded(
-                    child: ListView(
-                      children: List.generate(
-                        queuedTasks.length,
-                        (index) => ExpandableTaskTile(
-                          task: queuedTasks[index],
+                  if (queuedTasks.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'Keine Aufträge in Warteschlange',
+                        style: TextStyle(color: RobotColors.secondaryText, fontSize: 28),
+                      ),
+                    )
+                  else
+                    Expanded(
+                      child: ListView(
+                        children: List.generate(
+                          queuedTasks.length,
+                          (index) => Column(
+                            children: [
+                              ExpandableSubtaskTile(
+                                subtask: queuedTasks[index],
+                              ),
+                              const SizedBox(height: 8),
+                            ],
+                          ),
                         ),
+                      ),
+                    ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute<TasksHistoryPage>(builder: (context) => const TasksHistoryPage()));
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.only(left: 8, top: 16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Vergangene Aufträge',
+                            style: TextStyle(fontSize: 40, color: RobotColors.primaryText),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Icon(
+                            Icons.arrow_forward,
+                            size: 40,
+                            color: RobotColors.primaryIcon,
+                          )
+                        ],
                       ),
                     ),
                   ),

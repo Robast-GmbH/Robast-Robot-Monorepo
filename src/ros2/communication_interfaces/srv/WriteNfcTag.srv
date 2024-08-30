@@ -1,6 +1,0 @@
-# request
-string nfc_tag_id
----
-# response
-bool success
-

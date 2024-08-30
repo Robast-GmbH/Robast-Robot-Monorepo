@@ -40,14 +40,15 @@ class _AuthPageState extends State<AuthPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BackgroundView(
+        inactivityTimerEnabled: false,
         child: !authCompleted
             ? SizedBox.expand(
                 child: Center(
                   child: AuthView(
                     requiredUserIDs: const [],
                     requiredUserGroups: const ['PATIENT', 'STAFF', 'ADMIN'],
-                    onAuthCompleted: (wasAuthSuccessful) {
-                      if (wasAuthSuccessful) {
+                    onAuthCompleted: ({required bool wasSuccessful}) {
+                      if (wasSuccessful) {
                         authCompleted = true;
                         setState(() {});
                       }

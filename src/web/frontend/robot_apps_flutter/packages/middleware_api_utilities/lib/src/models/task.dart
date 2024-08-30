@@ -1,4 +1,5 @@
-import 'package:middleware_api_utilities/src/models/subtask.dart';
+import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:uuid/uuid.dart';
 
 class Task {
   Task({
@@ -20,7 +21,7 @@ class Task {
       status: json['status'] as String,
       assigneeName: json['assignee_name'] as String,
       requirements: json['requirements'] as Map<String, dynamic>,
-      subtasks: (json['subtasks'] as List<Map<String, dynamic>>).map(SubTask.fromJson).toList(),
+      subtasks: (json['subtasks'] as List<dynamic>).map((task) => SubTask.fromJson(task as Map<String, dynamic>)).toList(),
       isMonolithic: json['is_monolithic'] as bool,
       earliestStartTime: json['earliest_start_time'] as int,
       priority: json['priority'] as int,
@@ -28,49 +29,88 @@ class Task {
   }
 
   factory Task.delivery({
-    required String id,
-    required int requiredDrawerType,
-    required String pickupTaskID,
+    required int requiredSubmoduleType,
     required String pickupTargetID,
+    required int pickupEarliestStartTime,
     required Map<String, int> pickupItemsByChange,
     required List<String> senderUserIDs,
     required List<String> senderUserGroups,
-    required String dropoffTaskID,
     required String dropoffTargetID,
+    required int dropoffEarliestStartTime,
     required Map<String, int> dropoffItemsByChange,
     required List<String> recipientUserIDs,
     required List<String> recipientUserGroups,
   }) {
+    final taskID = const Uuid().v4();
+    final pickupTaskID = const Uuid().v4();
+    final dropoffTaskID = const Uuid().v4();
     return Task(
-      id: id,
+      id: taskID,
       name: 'delivery',
       status: 'unassigned',
       assigneeName: '',
       requirements: {
-        'required_drawer_type': requiredDrawerType,
+        'required_submodule_type': requiredSubmoduleType,
       },
       subtasks: [
-        SubTask.drawerProcess(
-          id: pickupTaskID,
-          parentID: id,
-          requiresTaskID: null,
-          targetID: pickupTargetID,
-          requiredUserIDs: senderUserIDs,
-          requiredUserGroups: senderUserGroups,
-          itemsByChange: pickupItemsByChange,
-        ),
-        SubTask.drawerProcess(
-          id: dropoffTaskID,
-          parentID: id,
-          requiresTaskID: pickupTaskID,
-          targetID: dropoffTargetID,
-          requiredUserIDs: recipientUserIDs,
-          requiredUserGroups: recipientUserGroups,
-          itemsByChange: dropoffItemsByChange,
-        ),
+        SubTask.submoduleProcess(
+            id: pickupTaskID,
+            name: 'Abholung',
+            parentID: taskID,
+            requiresTaskID: null,
+            targetID: pickupTargetID,
+            requiredUserIDs: senderUserIDs,
+            requiredUserGroups: senderUserGroups,
+            itemsByChange: pickupItemsByChange,
+            earliestStartTime: pickupEarliestStartTime),
+        SubTask.submoduleProcess(
+            id: dropoffTaskID,
+            name: 'Zustellung',
+            parentID: taskID,
+            requiresTaskID: pickupTaskID,
+            targetID: dropoffTargetID,
+            requiredUserIDs: recipientUserIDs,
+            requiredUserGroups: recipientUserGroups,
+            itemsByChange: dropoffItemsByChange,
+            earliestStartTime: dropoffEarliestStartTime),
       ],
       isMonolithic: false,
-      earliestStartTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      earliestStartTime: pickupEarliestStartTime,
+      priority: 0,
+    );
+  }
+
+  factory Task.dropoff({
+    required String robotName,
+    required String targetID,
+    required Map<String, int> itemsByChange,
+    required List<String> recipientUserIDs,
+    required List<String> recipientUserGroups,
+    required SubmoduleAddress submoduleAddress,
+    required int earliestStartTime,
+  }) {
+    final taskID = const Uuid().v4();
+    return Task(
+      id: taskID,
+      name: 'dropoff',
+      status: 'pending',
+      assigneeName: robotName,
+      requirements: {},
+      subtasks: [
+        SubTask.assignedSubmoduleProcess(
+            id: const Uuid().v4(),
+            parentID: taskID,
+            requiresTaskID: null,
+            targetID: targetID,
+            requiredUserIDs: recipientUserIDs,
+            requiredUserGroups: recipientUserGroups,
+            itemsByChange: itemsByChange,
+            submoduleAddress: submoduleAddress,
+            assigneeName: robotName,
+            earliestStartTime: earliestStartTime),
+      ],
+      isMonolithic: false,
+      earliestStartTime: earliestStartTime,
       priority: 0,
     );
   }

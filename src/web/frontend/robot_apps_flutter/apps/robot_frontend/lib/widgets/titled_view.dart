@@ -21,6 +21,7 @@ class TitledView extends StatelessWidget {
       children: [
         StatusBar(
           title: title,
+          showBackButton: showBackButton,
           onBackButtonPressed: onBackButtonPressed ??
               () {
                 Navigator.of(context).pop();

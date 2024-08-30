@@ -12,6 +12,7 @@
   <depend>communication_interfaces</depend>
   <depend>std_msgs</depend>
   <depend>can</depend>
+  <depend>module_config</depend>
   <depend>can_msgs</depend>
   <depend>error_utils</depend>
   <test_depend>ament_lint_auto</test_depend>

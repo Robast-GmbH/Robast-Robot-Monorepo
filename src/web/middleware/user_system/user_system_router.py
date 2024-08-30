@@ -74,19 +74,19 @@ def delete_user(request: DeleteUserRequest):
     return {"message": "User deleted successfully", "status": "success"}
 
 
-@user_system_router.post("/create_and_write_user_nfc_id", tags=["Users"])
-def create_and_write_user_nfc_id(robot_name: str, user_id: str):
+@user_system_router.post("/read_and_assign_user_nfc_id", tags=["Users"])
+def read_and_assign_user_nfc_id(robot_name: str, user_id: str):
     user = user_repository.get_user(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     else:
-        new_nfc_id = str(uuid.uuid4())
-        user_repository.update_user(user_id=user_id, nfc_id=new_nfc_id)
         robot_url = URLHelper.get_robot_url(robot_name)
-        response = requests.post(
-            f"{robot_url}/write_nfc_tag?nfc_tag_id={new_nfc_id}"
-        ).json()
-        return response
+        response = requests.get(f"{robot_url}/read_nfc_tag?timeout_in_s=30").json()
+        if response["status"] == "success":
+            user_repository.update_user(
+                user_id=user_id, nfc_id=response["nfc_tag"]["data"]
+            )
+        return {"status": response["status"]}
 
 
 @user_system_router.get("/session", tags=["Auth"])

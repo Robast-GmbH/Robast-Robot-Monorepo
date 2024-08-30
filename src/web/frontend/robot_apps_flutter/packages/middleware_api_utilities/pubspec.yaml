@@ -8,6 +8,7 @@ environment:
 
 dependencies:
   http: ^1.2.1
+  meta: ^1.15.0
   shared_data_models:
     path: ../shared_data_models
   uuid: ^4.4.2
