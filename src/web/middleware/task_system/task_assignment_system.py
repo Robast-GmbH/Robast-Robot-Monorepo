@@ -5,7 +5,8 @@ from task_system.task_repository import TaskRepository
 from configs.url_config import ROBOT_NAME_TO_IP
 
 from threading import Timer
-from typing import Tuple
+from typing import Tuple, Any
+import time
 import json
 
 
@@ -23,6 +24,11 @@ class TaskAssignmentSystem:
         self.__robots = self.__init_robots()
         self.__task_assignment_trigger_timer = None
         self.__start_task_assignment_trigger_timer()
+
+    def get_robot_tasks(self, robot_name: str) -> dict[str, Any]:
+        if robot_name not in self.__robots:
+            return {"status": "failure", "message": "Robot not found."}
+        return {"status": "success", "tasks": self.__robots[robot_name].get_subtasks()}
 
     def receive_task(
         self,
@@ -77,6 +83,11 @@ class TaskAssignmentSystem:
 
     def __trigger_task_assignment(self) -> None:
         unassigned_tasks = self.__task_repository.read_unassigned_tasks()
+        unassigned_tasks = [
+            task
+            for task in unassigned_tasks
+            if task.earliest_start_time <= int(time.time())
+        ]
         if len(unassigned_tasks) > 0:
             unassigned_task = unassigned_tasks[0]
 

@@ -49,7 +49,7 @@ class ModuleDetailsDialog extends StatelessWidget {
                             'Variante: ${submodule.variant.toString().split('.').last}',
                             style: const TextStyle(color: RobotColors.secondaryText, fontSize: 28),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 4,
                           ),
                           RoundedContainer(
@@ -58,21 +58,21 @@ class ModuleDetailsDialog extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Text(
+                                const Text(
                                   'Inhalte',
-                                  style: const TextStyle(color: RobotColors.secondaryText, fontSize: 28),
+                                  style: TextStyle(color: RobotColors.secondaryText, fontSize: 28),
                                 ),
                                 if (submodule.itemsByCount.isNotEmpty)
                                   ...submodule.itemsByCount.entries
                                       .map((entry) => Text(
                                             '${entry.key}: ${entry.value}',
-                                            style: TextStyle(color: RobotColors.secondaryText, fontSize: 24),
+                                            style: const TextStyle(color: RobotColors.secondaryText, fontSize: 24),
                                           ))
-                                      .toList()
+                                      
                                 else
-                                  Text(
+                                  const Text(
                                     'leer',
-                                    style: const TextStyle(color: RobotColors.secondaryText, fontSize: 24),
+                                    style: TextStyle(color: RobotColors.secondaryText, fontSize: 24),
                                   ),
                               ],
                             ),

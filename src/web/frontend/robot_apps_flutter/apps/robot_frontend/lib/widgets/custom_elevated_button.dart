@@ -17,10 +17,10 @@ class CustomElevatedButton extends StatelessWidget {
         ),
         onPressed: enabled ? onPressed : null,
         child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: Text(
             label ?? '',
-            style: TextStyle(fontSize: 40, color: RobotColors.primaryText),
+            style: const TextStyle(fontSize: 40, color: RobotColors.primaryText),
           ),
         ),
       ),

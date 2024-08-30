@@ -112,7 +112,8 @@ class _SidebarState extends State<Sidebar> {
   Widget buildMenuButton({required Widget icon, required String title, required VoidCallback onPressed, required bool isSelected, required bool isExpanded}) {
     return Column(
       children: [
-        InkWell(
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
           onTap: onPressed,
           child: Container(
             decoration: BoxDecoration(
