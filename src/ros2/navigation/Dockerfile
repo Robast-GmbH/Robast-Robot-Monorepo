@@ -117,6 +117,8 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
+COPY --from=build /ws/src/navigation/nav_bringup/config_simulation/nav_params/diff__tr0_4__res0_05.json /workspace/src/navigation/nav_bringup/config_simulation/nav_params/diff__tr0_4__res0_05.json
+COPY --from=build /ws/src/navigation/nav_bringup/behavior_trees/humble/ /workspace/src/navigation/nav_bringup/behavior_trees/humble/
 
 RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y \
