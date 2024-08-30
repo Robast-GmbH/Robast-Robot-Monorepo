@@ -3,19 +3,21 @@
 ARG ROS_BUILD_DISTRO=humble
 FROM ros:${ROS_BUILD_DISTRO}-ros-base
 
-WORKDIR /monorepo
 COPY . /monorepo/src
+WORKDIR /monorepo
+
+RUN rm -rf  /monorepo/src/ros2/moveit \
+            /monorepo/src/ros2/perception \
+            /monorepo/src/ros2/simulation \
+            /monorepo/src/ros2/test_and_debug \
+            /monorepo/src/ros2/robot_description \
+            /monorepo/src/ros2/simple_fleetmanagement
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
     apt-get upgrade -yq && \
-    apt-get install -yq bash-completion build-essential curl git gnupg2 gosu locales lsb-release sudo tzdata vim wget && \
+    apt-get install -yq bash-completion build-essential curl git vim && \
     rm -rf /var/lib/apt/lists/*
-RUN echo "Set disable_coredump false" >> /etc/sudo.conf
-RUN useradd --create-home --home-dir /home/ubuntu --shell /bin/bash --user-group --groups adm,sudo ubuntu && \
-    echo ubuntu:ubuntu | chpasswd && \
-    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER=ubuntu
 ARG DEBIAN_FRONTEND=
 
 

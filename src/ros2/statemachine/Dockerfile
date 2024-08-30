@@ -1,4 +1,6 @@
-FROM ros:humble-ros-base-jammy as devel
+ARG ROS_BUILD_DISTRO=humble
+FROM ros:humble-ros-base as devel
+ARG ROS_BUILD_DISTRO
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
@@ -46,8 +48,12 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 
 ############################## Build ##################################
 FROM ghcr.io/robast-gmbh/monorepo/building-docker:${ROS_BUILD_DISTRO} as build
+ARG ROS_BUILD_DISTRO
 COPY --from=devel / /
 COPY . /ws/src/statemachine
+
+WORKDIR /tmp
+RUN git clone -b 4.5.x https://github.com/BehaviorTree/BehaviorTree.CPP.git
 
 WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/; mkdir /robast; mkdir -p /robast/src/BT; \
@@ -71,7 +77,8 @@ RUN rosdep update && \
 
 
 ############################## Release ##################################
-FROM ros:humble-ros-base-jammy as release
+FROM ros:${ROS_BUILD_DISTRO}-ros-base as release
+ARG ROS_BUILD_DISTRO
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
