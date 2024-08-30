@@ -31,6 +31,10 @@ services:
       - ROS_DOMAIN_ID=23
       - UID=1000
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - RED=${RED:0}
+      - GREEN=${GREEN:-255}
+      - BLUE=${BLUE:-255}
+      - BRIGHTNESS=${BRIGHTNESS:-20}
     volumes:
       - ./start_scripts/:/start_scripts/:ro
     stop_signal: SIGINT
@@ -45,6 +49,10 @@ services:
       - ROS_DOMAIN_ID=23
       - UID=1000
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - RED=${RED:0}
+      - GREEN=${GREEN:-255}
+      - BLUE=${BLUE:-255}
+      - BRIGHTNESS=${BRIGHTNESS:-20}
     volumes:
       - ./start_scripts/:/start_scripts/:ro
       - ./healthchecks/statemachine_check.sh:/healthchecks/statemachine_check.sh:ro
