@@ -32,7 +32,23 @@ ENV TZ=Europe/Berlin
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \ 
   apt-get update && \
-  apt-get install --yes lsb-release wget less udev sudo build-essential cmake python3 python3-dev python3-pip python3-wheel git jq libpq-dev zstd usbutils && \    
+  apt-get install -y \
+  build-essential \
+  cmake \
+  git \
+  less \
+  libpq-dev \
+  lsb-release \
+  python3 \ 
+  python3-dev \
+  python3-pip \
+  python3-wheel \
+  sudo \
+  udev \
+  usbutils && \    
+  wget \
+  jq \
+  zstd \
   rm -rf /var/lib/apt/lists/*
 
 # Install the ZED SDK
