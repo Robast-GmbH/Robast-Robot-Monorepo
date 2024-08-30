@@ -135,6 +135,21 @@ ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 RUN apt-get update \
   && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
 
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -q && \
+apt-get upgrade -yq && \
+apt-get install -yq wget curl git build-essential vim sudo lsb-release locales bash-completion tzdata gosu gnupg2 && \
+rm -rf /var/lib/apt/lists/*
+RUN echo "Set disable_coredump false" >> /etc/sudo.conf
+RUN useradd --create-home --home-dir /home/ubuntu --shell /bin/bash --user-group --groups adm,sudo ubuntu && \
+echo ubuntu:ubuntu | chpasswd && \
+echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+ENV USER=ubuntu
+ARG DEBIAN_FRONTEND=
+
+USER ubuntu
+  
 ENV is_simulation=False
 ENV config_directory=config
 ENV robot_name=rb_theron
