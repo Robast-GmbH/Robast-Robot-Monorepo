@@ -1,0 +1,45 @@
+name: Create Docker Image building_docker
+
+#trigger workflow every day at 00:00
+on:
+  push:
+    branches:
+        - main
+    paths:
+        - src/ros2/
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      Ros-Distro: humble
+      Project-Name: building-docker
+
+    steps:
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 2
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: configures Docker Buildx to create a builder instance for running the image build.
+      uses: docker/setup-buildx-action@v1 
+    
+    - name: Build ${{ env.Project-Name }} dev docker
+      uses: docker/build-push-action@v2
+      with:
+        context: bringups/debugging_docker/
+        platforms: linux/amd64,linux/arm64/v8
+        push: true
+        file: bringups/debugging_docker/Dockerfile
+        tags: |
+              ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:${{ env.Ros-Distro }}
+        cache-from: type=gha
+        cache-to: type=gha

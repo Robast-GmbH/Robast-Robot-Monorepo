@@ -82,21 +82,15 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 WORKDIR /workspace
 
 ############################## Build ##################################
-FROM ros:${ROS_BUILD_DISTRO}-ros-base-jammy as build
+FROM ghcr.io/robast-gmbh/monorepo/building-docker:${ROS_BUILD_DISTRO} as build
 ARG ROS_BUILD_DISTRO
-ARG GIT_TOKEN
-ARG GIT_BRANCH=main
 COPY --from=devel / /
 COPY . /ws/src/navigation
-RUN apt-get update && apt-get install -y git
-
-WORKDIR /tmp
-RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
-
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
-  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
+RUN mkdir -p /ws/src/ros2/; mkdir /robast; \
+  mv /monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
+  && mv /monorepo/src/ros2/dds_configs /robast/dds_configs
 
 
 RUN rosdep update && \
