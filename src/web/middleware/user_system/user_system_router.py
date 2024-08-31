@@ -6,6 +6,7 @@ from user_system.user_repository import UserRepository
 from pydantic_models.user_request_models import (
     CreateUserRequest,
     DeleteUserRequest,
+    LoginRequest,
     UpdateUserRequest,
 )
 from pydantic_models.user import User
@@ -35,6 +36,7 @@ def update_user(request: UpdateUserRequest):
     user = user_repository.update_user(
         user_id=request.id,
         nfc_id=request.nfc_id,
+        mail=request.mail,
         title=request.title,
         first_name=request.first_name,
         last_name=request.last_name,
@@ -52,6 +54,8 @@ def update_user(request: UpdateUserRequest):
 @user_system_router.post("/create_user", tags=["Users"], response_model=User)
 def create_user(request: CreateUserRequest):
     user = user_repository.create_user(
+        nfc_id=request.nfc_id,
+        mail=request.mail,
         title=request.title,
         first_name=request.first_name,
         last_name=request.last_name,
@@ -92,7 +96,7 @@ def read_and_assign_user_nfc_id(robot_name: str, user_id: str):
 @user_system_router.get("/session", tags=["Auth"])
 def get_session(robot_name: str):
     session = auth_session_manager.get_session(robot_name)
-    return {"user": session, "status": "success" if session else "failed"}
+    return {"user": session, "status": "success" if session else "failure"}
 
 
 @user_system_router.post("/try_start_session", tags=["Auth"])
@@ -109,3 +113,20 @@ def post_try_start_session(
 def post_end_session(robot_name: str):
     auth_session_manager.end_session(robot_name)
     return {"message": "Session ended successfully", "status": "success"}
+
+
+@user_system_router.post("/login", tags=["Auth"])
+def post_login(request: LoginRequest):
+    user = user_repository.login_user(request.mail, request.password)
+    return {
+        "status": "success" if user else "failure",
+        "user": user,
+    }
+
+
+@user_system_router.post("/change_password", tags=["Auth"])
+def post_change_password(user_id: str, old_password: str, new_password: str):
+    was_successful = user_repository.update_user_password(
+        user_id=user_id, old_password=old_password, new_password=new_password
+    )
+    return {"status": "success" if was_successful else "failure"}

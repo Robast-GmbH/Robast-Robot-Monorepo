@@ -5,6 +5,10 @@ import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 
 class FleetProvider extends ChangeNotifier {
+  FleetProvider({required String prefix}) {
+    initMiddlewarAPI(prefix: prefix);
+  }
+
   List<Robot> robots = [];
   Map<String, List<Submodule>> modules = {};
   Map<String, RobotTaskStatus?> tasks = {};
@@ -13,11 +17,11 @@ class FleetProvider extends ChangeNotifier {
   Timer? _moduleUpdateTimer;
   Timer? _isRobotNavigationBlockedUpdateTimer;
 
-  late MiddlewareApiUtilities _middlewareApi;
+  final MiddlewareApiUtilities _middlewareApi = MiddlewareApiUtilities();
 
-  Future<void> initMiddlewarAPI({required String prefix}) async {
-    _middlewareApi = MiddlewareApiUtilities();
+  void initMiddlewarAPI({required String prefix}) {
     _middlewareApi.setPrefix(prefix: prefix);
+    _middlewareApi.testConnection(url: prefix);
   }
 
   List<String> getIDsOfModules({required String robotName}) {

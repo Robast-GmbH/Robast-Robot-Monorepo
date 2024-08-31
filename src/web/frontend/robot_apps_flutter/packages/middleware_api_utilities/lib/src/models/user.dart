@@ -2,6 +2,7 @@ class User {
   User({
     required this.id,
     required this.nfcID,
+    required this.mail,
     required this.title,
     required this.firstName,
     required this.lastName,
@@ -14,6 +15,7 @@ class User {
     return User(
       id: json['id'] as String,
       nfcID: json['nfc_id'] as String,
+      mail: json['mail'] as String,
       title: json['title'] as String,
       firstName: json['first_name'] as String,
       lastName: json['last_name'] as String,
@@ -25,6 +27,7 @@ class User {
 
   final String id;
   final String nfcID;
+  final String mail;
   final String title;
   final String firstName;
   final String lastName;
@@ -36,6 +39,7 @@ class User {
     return {
       'id': id,
       'nfc_id': nfcID,
+      'mail': mail,
       'title': title,
       'first_name': firstName,
       'last_name': lastName,

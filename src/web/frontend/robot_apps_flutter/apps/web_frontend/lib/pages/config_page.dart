@@ -22,7 +22,7 @@ class _ConfigPageState extends State<ConfigPage> {
   late Future<SharedPreferences> loadSharedPreferences;
 
   Future<void> finishConfiguration() async {
-    await Provider.of<FleetProvider>(context, listen: false).initMiddlewarAPI(prefix: middlewareAddress);
+    Provider.of<FleetProvider>(context, listen: false).initMiddlewarAPI(prefix: middlewareAddress);
     if (mounted) {
       await Navigator.pushReplacement(
         context,
@@ -43,7 +43,13 @@ class _ConfigPageState extends State<ConfigPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Row(
+          children: [
+            Icon(Icons.settings),
+            SizedBox(width: 8),
+            const Text('Netzwerkeinstellungen'),
+          ],
+        ),
       ),
       body: Row(
         children: [
@@ -63,10 +69,9 @@ class _ConfigPageState extends State<ConfigPage> {
                   return Form(
                     key: _formKey,
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Padding(
-                          padding: const EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(16),
                           child: TextFormField(
                             initialValue: sharedPreferences.getString('middlewareAddress') ?? '',
                             decoration: const InputDecoration(
@@ -100,7 +105,7 @@ class _ConfigPageState extends State<ConfigPage> {
                             },
                             child: const Padding(
                               padding: EdgeInsets.symmetric(vertical: 8, horizontal: 32),
-                              child: Text('Submit'),
+                              child: Text('Bestätigen'),
                             ),
                           ),
                         ),

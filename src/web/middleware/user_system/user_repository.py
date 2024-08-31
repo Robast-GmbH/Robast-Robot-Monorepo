@@ -1,3 +1,4 @@
+import datetime
 import sqlite3
 import uuid
 from pydantic_models.user import User
@@ -29,14 +30,43 @@ class UserRepository:
             self.__db_path = db_path
             self.__create_table()
 
-    def auth_user(self, user_id: str) -> bool:
-        user = self.get_user(user_id)
-        if user:
-            return True
-        return False
+    def login_user(self, email: str, password: str) -> User | None:
+        db_connection = sqlite3.connect(self.__db_path)
+        cursor = db_connection.cursor()
+        cursor.execute("SELECT * FROM users WHERE mail = ?", (email,))
+        row = cursor.fetchone()
+        db_connection.close()
+        if row:
+            (
+                user_id,
+                nfc_id,
+                mail,
+                title,
+                first_name,
+                last_name,
+                station,
+                room,
+                user_groups_str,
+                user_password,
+            ) = row
+            if user_password == password:
+                return User(
+                    id=user_id,
+                    nfc_id=nfc_id,
+                    mail=mail,
+                    title=title,
+                    first_name=first_name,
+                    last_name=last_name,
+                    station=station,
+                    room=room,
+                    user_groups=user_groups_str.split(","),
+                )
+        return None
 
     def create_user(
         self,
+        nfc_id: str,
+        mail: str,
         title: str,
         first_name: str,
         last_name: str,
@@ -45,23 +75,25 @@ class UserRepository:
         user_groups: list[str],
     ) -> User | None:
         user_id = str(uuid.uuid4())
-        nfc_id = str(uuid.uuid4())
         user_groups_str = ",".join(user_groups)
+        password = f"{first_name}-{last_name}-{datetime.datetime.now().year}"
         db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
         cursor.execute(
             """
-            INSERT INTO users (user_id, nfc_id, title, first_name, last_name, station, room, user_groups) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users (user_id, nfc_id, mail, title, first_name, last_name, station, room, user_groups, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
             (
                 user_id,
                 nfc_id,
+                mail,
                 title,
                 first_name,
                 last_name,
                 station,
                 room,
                 user_groups_str,
+                password,
             ),
         )
         db_connection.commit()
@@ -79,18 +111,21 @@ class UserRepository:
             (
                 user_id,
                 nfc_id,
+                mail,
                 title,
                 first_name,
                 last_name,
                 station,
                 room,
                 user_groups_str,
+                _,
             ) = row
             user_groups = user_groups_str.split(",")
             users.append(
                 User(
                     id=user_id,
                     nfc_id=nfc_id,
+                    mail=mail,
                     title=title,
                     first_name=first_name,
                     last_name=last_name,
@@ -111,17 +146,20 @@ class UserRepository:
             (
                 user_id,
                 nfc_id,
+                mail,
                 title,
                 first_name,
                 last_name,
                 station,
                 room,
                 user_groups_str,
+                _,
             ) = row
             user_groups = user_groups_str.split(",")
             return User(
                 id=user_id,
                 nfc_id=nfc_id,
+                mail=mail,
                 title=title,
                 first_name=first_name,
                 last_name=last_name,
@@ -141,17 +179,20 @@ class UserRepository:
             (
                 user_id,
                 nfc_id,
+                mail,
                 title,
                 first_name,
                 last_name,
                 station,
                 room,
                 user_groups_str,
+                _,
             ) = row
             user_groups = user_groups_str.split(",")
             return User(
                 id=user_id,
                 nfc_id=nfc_id,
+                mail=mail,
                 title=title,
                 first_name=first_name,
                 last_name=last_name,
@@ -165,6 +206,7 @@ class UserRepository:
         self,
         user_id: str,
         nfc_id: str | None = None,
+        mail: str | None = None,
         title: str | None = None,
         first_name: str | None = None,
         last_name: str | None = None,
@@ -175,6 +217,7 @@ class UserRepository:
         if not any(
             [
                 nfc_id,
+                mail,
                 title is not None,
                 first_name,
                 last_name,
@@ -191,6 +234,10 @@ class UserRepository:
         if nfc_id:
             query += "nfc_id = ?, "
             params.append(nfc_id)
+
+        if mail:
+            query += "mail = ?, "
+            params.append(mail)
 
         if title is not None:
             query += "title = ?, "
@@ -228,6 +275,26 @@ class UserRepository:
         db_connection.close()
         return self.get_user(user_id)
 
+    def update_user_password(
+        self, user_id: str, old_password: str, new_password: str
+    ) -> bool:
+        try:
+            db_connection = sqlite3.connect(self.__db_path)
+            cursor = db_connection.cursor()
+            cursor.execute(
+                "UPDATE users SET password = ? WHERE user_id = ? AND password = ?",
+                (new_password, user_id, old_password),
+            )
+            if cursor.rowcount > 0:
+                db_connection.commit()
+                return True
+            else:
+                return False
+        except sqlite3.Error:
+            return False
+        finally:
+            db_connection.close()
+
     def delete_user(self, user_id: str) -> bool:
         db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
@@ -244,13 +311,15 @@ class UserRepository:
             """
             CREATE TABLE IF NOT EXISTS users (
                 user_id TEXT PRIMARY KEY,
-                nfc_id TEXT,
+                nfc_id TEXT,   
+                mail TEXT,
                 title TEXT,
                 first_name TEXT,
                 last_name TEXT,
                 station TEXT,
                 room TEXT,
-                user_groups TEXT
+                user_groups TEXT,
+                password TEXT
             )
         """
         )
