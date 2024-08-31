@@ -3,10 +3,28 @@ services:
     image: ghcr.io/robast-gmbh/monorepo/navigation:release-humble
     environment:
       - ROS_DOMAIN_ID=23
+      - init_x=0.0
+      - init_y=0.0
+      - init_z=0.0
+      - init_yaw=0.0
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
-      - ./start_scripts/:/start_scripts/:cached
-    command: /bin/sh -c "/start_scripts/ping_and_wait.sh && /start_scripts/nav_start.sh"
+      - ./start_scripts/:/start_scripts/:ro
     stop_signal: SIGINT
     restart: unless-stopped
     pull_policy: always
     network_mode: "host"
+    command: /bin/sh -c "/start_scripts/ping_and_wait.sh && /start_scripts/nav_start.sh"
+
+  robot_backend:
+    image: ghcr.io/robast-gmbh/monorepo/robot_backend:release-humble
+    environment:
+      - ROS_DOMAIN_ID=23
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    volumes:
+      - ./start_scripts/:/start_scripts/:ro
+    stop_signal: SIGINT
+    restart: unless-stopped
+    pull_policy: always
+    network_mode: "host"
+    command: /bin/sh -c "/start_scripts/ping_and_wait.sh && /start_scripts/backend_start.sh"
