@@ -65,6 +65,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
                           onDelete: () => setState(() {
                             loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
                           }),
+                          onUpdate: () => setState(() {
+                            loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
+                          }),
                         ))
                     .toList(),
               );

@@ -26,7 +26,7 @@ class UserProvider extends ChangeNotifier {
 
   Future<bool> updateUser({required User updatedUser}) async {
     final result = await _middlewareApi.users.updateUser(updatedUser: updatedUser);
-    if (result != null) {
+    if (result != null && result.id == user?.id) {
       user = result;
       notifyListeners();
     }

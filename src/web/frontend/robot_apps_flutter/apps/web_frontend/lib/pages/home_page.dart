@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:web_frontend/models/provider/map_provider.dart';
 import 'package:web_frontend/models/provider/user_provider.dart';
 import 'package:web_frontend/pages/config_page.dart';
 import 'package:web_frontend/pages/fleet_management_page.dart';
 import 'package:web_frontend/pages/user_management_page.dart';
 import 'package:web_frontend/pages/user_settings_page.dart';
+import 'package:web_frontend/widgets/logout_confirmation_dialog.dart';
 import 'package:web_frontend/widgets/rounded_button.dart';
 
 class HomePage extends StatelessWidget {
@@ -12,9 +14,16 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<MapProvider>(context, listen: false).fetchBuildingMap();
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              showDialog(context: context, builder: (context) => const LogoutConfirmationDialog());
+            },
+            icon: Icon(Icons.logout)),
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.home),
             SizedBox(
@@ -28,8 +37,11 @@ class HomePage extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute<UserSettingsPage>(
-                  builder: (context) => UserSettingsPage(),
+                MaterialPageRoute<bool?>(
+                  builder: (context) => UserSettingsPage(
+                    user: Provider.of<UserProvider>(context, listen: false).user!,
+                    isAdminView: false,
+                  ),
                 ),
               );
             },

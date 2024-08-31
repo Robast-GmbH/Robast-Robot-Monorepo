@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:web_frontend/models/provider/fleet_provider.dart';
+import 'package:web_frontend/models/provider/map_provider.dart';
 import 'package:web_frontend/models/provider/user_provider.dart';
 import 'package:web_frontend/pages/login_page.dart';
 
@@ -15,6 +16,9 @@ void main() {
         ),
         ChangeNotifierProvider(
           create: (_) => UserProvider(prefix: middlewarePrefix),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => MapProvider(prefix: middlewarePrefix),
         ),
       ],
       child: const WebFrontend(),
