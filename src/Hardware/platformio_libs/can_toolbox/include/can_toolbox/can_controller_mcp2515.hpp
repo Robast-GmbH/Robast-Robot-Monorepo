@@ -16,7 +16,7 @@ namespace can_toolbox
   template <gpio_num_t spi_miso, gpio_num_t spi_mosi, gpio_num_t spi_clk, gpio_num_t spi_cs, gpio_num_t mcp2515_int_pin>
   class CanController
   {
-   public:
+  public:
     CanController(const uint32_t module_id,
                   const std::shared_ptr<robast_can_msgs::CanDb> can_db,
                   const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
@@ -30,15 +30,15 @@ namespace can_toolbox
 
     bool is_message_available();
 
-   private:
+  private:
     const uint32_t _module_id;
     const std::shared_ptr<robast_can_msgs::CanDb> _can_db;
     const std::shared_ptr<interfaces::IGpioWrapper> _gpio_wrapper;
     const uint8_t _oe_txb0104_pin_id;
 
-    static constexpr uint32_t _CAN_BIT_RATE = 250_000;
+    static constexpr uint32_t _CAN_BIT_RATE = 250 * 1000;
 
-    static constexpr uint32_t _QUARTZ_FREQUENCY = 8_000_000;   // 8 MHz
+    static constexpr uint32_t _QUARTZ_FREQUENCY = 8 * 1000 * 1000; // 8 MHz
 
     static constexpr uint16_t _RECEIVE_BUFFER_SIZE = 150;
 
@@ -59,18 +59,15 @@ namespace can_toolbox
 
   template <gpio_num_t spi_miso, gpio_num_t spi_mosi, gpio_num_t spi_clk, gpio_num_t spi_cs, gpio_num_t mcp2515_int_pin>
   std::unique_ptr<ACAN2515> CanController<spi_miso, spi_mosi, spi_clk, spi_cs, mcp2515_int_pin>::_acan_2515 =
-    std::make_unique<ACAN2515>(spi_cs, SPI, mcp2515_int_pin);
+      std::make_unique<ACAN2515>(spi_cs, SPI, mcp2515_int_pin);
 
   template <gpio_num_t spi_miso, gpio_num_t spi_mosi, gpio_num_t spi_clk, gpio_num_t spi_cs, gpio_num_t mcp2515_int_pin>
   CanController<spi_miso, spi_mosi, spi_clk, spi_cs, mcp2515_int_pin>::CanController(
-    const uint32_t module_id,
-    const std::shared_ptr<robast_can_msgs::CanDb> can_db,
-    const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
-    const uint8_t oe_txb0104_pin_id)
-      : _module_id{module_id}, _can_db{can_db}, _gpio_wrapper{gpio_wrapper}, _oe_txb0104_pin_id{oe_txb0104_pin_id}
-  {
-    initialize_can_controller();
-  };
+      const uint32_t module_id,
+      const std::shared_ptr<robast_can_msgs::CanDb> can_db,
+      const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
+      const uint8_t oe_txb0104_pin_id)
+      : _module_id{module_id}, _can_db{can_db}, _gpio_wrapper{gpio_wrapper}, _oe_txb0104_pin_id{oe_txb0104_pin_id} {};
 
   template <gpio_num_t spi_miso, gpio_num_t spi_mosi, gpio_num_t spi_clk, gpio_num_t spi_cs, gpio_num_t mcp2515_int_pin>
   void CanController<spi_miso, spi_mosi, spi_clk, spi_cs, mcp2515_int_pin>::initialize_can_controller(void)
@@ -98,7 +95,7 @@ namespace can_toolbox
       debug_println_with_base(errorCode2515, HEX);
     }
 
-    pinMode(mcp2515_int_pin, INPUT);   // Configuring pin for /INT input
+    pinMode(mcp2515_int_pin, INPUT); // Configuring pin for /INT input
   }
 
   template <gpio_num_t spi_miso, gpio_num_t spi_mosi, gpio_num_t spi_clk, gpio_num_t spi_cs, gpio_num_t mcp2515_int_pin>
@@ -126,9 +123,9 @@ namespace can_toolbox
       can_message = robast_can_msgs::decode_can_message(_rx_msg_id, frame.data, _rx_msg_dlc, _can_db->can_messages);
 
       if (can_message.has_value() && can_message.value()
-                                         .get_can_signals()
-                                         .at(robast_can_msgs::can_signal::id::drawer_unlock::MODULE_ID)
-                                         .get_data() == _module_id)
+                                             .get_can_signals()
+                                             .at(robast_can_msgs::can_signal::id::drawer_unlock::MODULE_ID)
+                                             .get_data() == _module_id)
       {
         return can_message;
       }
@@ -151,12 +148,12 @@ namespace can_toolbox
 
   template <gpio_num_t spi_miso, gpio_num_t spi_mosi, gpio_num_t spi_clk, gpio_num_t spi_cs, gpio_num_t mcp2515_int_pin>
   void CanController<spi_miso, spi_mosi, spi_clk, spi_cs, mcp2515_int_pin>::send_can_message(
-    robast_can_msgs::CanMessage can_msg)
+      robast_can_msgs::CanMessage can_msg)
   {
     try
     {
       robast_can_msgs::CanFrame can_frame =
-        robast_can_msgs::encode_can_message_into_can_frame(can_msg, _can_db->can_messages);
+          robast_can_msgs::encode_can_message_into_can_frame(can_msg, _can_db->can_messages);
 
       CANMessage mcp2515_frame;
       mcp2515_frame.id = can_frame.get_id();
@@ -189,6 +186,6 @@ namespace can_toolbox
     return _acan_2515->available();
   }
 
-}   // namespace can_toolbox
+} // namespace can_toolbox
 
-#endif   // CAN_TOOLBOX_CAN_CONTROLLER_MCP2515_HPP
+#endif // CAN_TOOLBOX_CAN_CONTROLLER_MCP2515_HPP
