@@ -29,6 +29,7 @@ RUN apt-get update && apt-get install -y \
   cmake \
   gdb \
   git \
+  iputils-ping \
   pylint \ 
   python3-argcomplete \
   python3-colcon-common-extensions \

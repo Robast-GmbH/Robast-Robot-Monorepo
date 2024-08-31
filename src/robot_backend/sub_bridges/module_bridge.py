@@ -11,7 +11,7 @@ class ModuleBridge(BaseBridge):
     def __init__(self, ros: Ros) -> None:
         super().__init__(ros)
         Submodule.load_submodules(
-            "/workspace/src/robot_backend/configs/module_config.yaml"
+            "/release/src/robot_backend/configs/module_config.yaml"
         )
         self.__drawer_open_subscriber = self.start_subscriber(
             "/bt_drawer_open",
