@@ -1,9 +1,6 @@
 ARG ROS_BUILD_DISTRO=humble
-
-FROM ghcr.io/robast-gmbh/monorepo/building-docker:${ROS_BUILD_DISTRO} as build
+FROM ghcr.io/robast-gmbh/monorepo/building-docker:${ROS_BUILD_DISTRO} AS build
 ARG ROS_BUILD_DISTRO
-
-
 
 FROM ros:${ROS_BUILD_DISTRO}-ros-core
 ARG ROS_BUILD_DISTRO
@@ -17,7 +14,7 @@ RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
   echo robast:robast | chpasswd && \
   echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER robast
+ENV USER=robast
 ARG DEBIAN_FRONTEND=
 
 ENV PATH=/opt/ros/${ROS_BUILD_DISTRO}/bin:$PATH
