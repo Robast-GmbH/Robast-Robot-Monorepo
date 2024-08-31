@@ -1,4 +1,10 @@
 ARG ROS_BUILD_DISTRO=humble
+
+FROM ghcr.io/robast-gmbh/monorepo/building-docker:${ROS_BUILD_DISTRO} as build
+ARG ROS_BUILD_DISTRO
+
+
+
 FROM ros:${ROS_BUILD_DISTRO}-ros-core
 ARG ROS_BUILD_DISTRO
 
@@ -42,6 +48,18 @@ RUN apt-get update && apt-get install -y \
   ros-${ROS_BUILD_DISTRO}-rosbridge-server \
   && rm -rf /var/lib/apt/lists/*
 
+#TODO @TAlscher: this is just temporary to get this docker do be deployable
+WORKDIR /release
+COPY --from=build /monorepo/src/ros2/communication_interfaces /release/src/ros2/communication_interfaces
+COPY --from=build /monorepo/src/ros2/dds_configs /dds_configs
+COPY --from=build /monorepo/src/robot_backend /release/src/robot_backend
+
+RUN pip install -r src/robot_backend/requirements.txt && \
+  rosdep update && \
+  rosdep install --from-paths /release/src --ignore-src -r -y && \
+  . /opt/ros/${ROS_DISTRO}/setup.sh && \
+  colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+
 WORKDIR /workspace
 USER robast
 
@@ -49,4 +67,4 @@ RUN echo "source /usr/share/bash-completion/completions/git" >> /home/${USER}/.b
   && echo "if [ -f /opt/ros/${ROS_BUILD_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_BUILD_DISTRO}/setup.bash; fi" >> /home/${USER}/.bashrc \
   && echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/${USER}/.bashrc
 
-ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
+ENV CYCLONEDDS_URI=/dds_configs/cyclone_DDS_config.xml
