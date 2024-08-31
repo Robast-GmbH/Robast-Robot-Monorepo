@@ -43,12 +43,8 @@ class _RobotMapViewState extends State<RobotMapView> {
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done || snapshot.data == null) {
               return const Center(child: CircularProgressIndicator());
-            if (snapshot.connectionState != ConnectionState.done || snapshot.data == null) {
-              return const Center(child: CircularProgressIndicator());
             }
             return Zoom(
-              canvasColor: Colors.transparent,
-              backgroundColor: Colors.transparent,
               canvasColor: Colors.transparent,
               backgroundColor: Colors.transparent,
               initTotalZoomOut: true,
@@ -114,7 +110,6 @@ class _RobotMapViewState extends State<RobotMapView> {
                               color: RobotColors.accent,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
                             child: const Icon(
                               Icons.pin_drop,
                               color: RobotColors.primaryIcon,
