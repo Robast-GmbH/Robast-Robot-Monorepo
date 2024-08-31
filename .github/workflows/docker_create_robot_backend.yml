@@ -1,4 +1,4 @@
-name: Create Docker Image Disinfection Module
+name: Create Docker Image Robot Backend
 #trigger workflow every day at 00:00
 on:
   workflow_dispatch:
