@@ -1,4 +1,5 @@
 #include <chrono>
+#include <filesystem>
 #include <fstream>
 #include <functional>
 #include <memory>
@@ -42,21 +43,27 @@ class SaveMapPose : public rclcpp::Node
       double roll, pitch, yaw;
       tf2::Matrix3x3(q).getRPY(roll, pitch, yaw);
 
-      YAML::Node config = YAML::LoadFile("/workspace/last_pose.yaml");
+      YAML::Node config;
+      std::string file_path = "/workspace/last_pose.yaml";
+
+      // Check if the file exists
+      if (std::filesystem::exists(file_path))
+      {
+        config = YAML::LoadFile(file_path);
+      }
+      else
+      {
+        config = YAML::Node();
+      }
+
       config["map_pose"]["position"]["x"] = global_pose.pose.position.x;
       config["map_pose"]["position"]["y"] = global_pose.pose.position.y;
       config["map_pose"]["position"]["z"] = global_pose.pose.position.z;
-      config["map_pose"]["orientation"]["x"] = global_pose.pose.orientation.x;
-      config["map_pose"]["orientation"]["y"] = global_pose.pose.orientation.y;
-      config["map_pose"]["orientation"]["z"] = global_pose.pose.orientation.z;
-      config["map_pose"]["orientation"]["w"] = global_pose.pose.orientation.w;
-      config["map_pose"]["orientation"]["yaw"] = yaw;   // Save yaw instead of quaternion
+      config["map_pose"]["orientation"]["yaw"] = yaw;
 
-      std::ofstream fout("/workspace/last_pose.yaml");
+      std::ofstream fout(file_path);
       fout << config;
     }
-
-    // save_map_pose
   }
   std::shared_ptr<tf2_ros::Buffer> _tf;
   std::shared_ptr<tf2_ros::TransformListener> _transform_listener;
