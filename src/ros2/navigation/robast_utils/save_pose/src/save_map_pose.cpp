@@ -20,7 +20,7 @@ class SaveMapPose : public rclcpp::Node
     _tf = std::make_shared<tf2_ros::Buffer>(this->get_clock());
     _tf->setUsingDedicatedThread(true);
     _transform_listener = std::make_shared<tf2_ros::TransformListener>(*_tf, this, false);
-    _timer = this->create_wall_timer(5s, std::bind(&SaveMapPose::timer_callback, this));
+    _timer = this->create_wall_timer(1s, std::bind(&SaveMapPose::timer_callback, this));
   }
 
  private:
