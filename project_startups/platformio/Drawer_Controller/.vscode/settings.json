@@ -1,5 +1,4 @@
 {
-    "editor.defaultFormatter": "LaurentTreguier.uncrustify",
     "files.associations": {
         "*.repos": "yaml",
         "*.world": "xml",
