@@ -1,14 +1,6 @@
-name: Create Docker Image Statemachine
-
+name: Create Docker Image Robot Backend
 #trigger workflow every day at 00:00
 on:
-  schedule:
-    - cron: '0 0 07 */2 *'
-  push:
-    branches:
-        - main
-    paths:
-        - src/ros2/statemachine/Dockerfile
   workflow_dispatch:
 
 
@@ -17,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       Ros-Distro: humble
-      Project-Name: statemachine
+      Project-Name: robot_backend
 
     steps:
     - name: Checkout repository and submodules
@@ -35,21 +27,11 @@ jobs:
     - name: configures Docker Buildx to create a builder instance for running the image build.
       uses: docker/setup-buildx-action@v2 
     
-    - name: Build ${{ env.Project-Name }} devel docker
-      uses: docker/build-push-action@v4
-      with:
-        context: src/ros2/${{ env.Project-Name }}/
-        target: devel
-        push: true
-        file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
-
     - name: Build ${{ env.Project-Name }} release docker
       uses: docker/build-push-action@v4
       with:
         context: src/ros2/${{ env.Project-Name }}/
-        target: release
-        platforms: linux/amd64,linux/arm64/v8
+        platforms: linux/amd64
         push: true
-        file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release
+        file: src/${{ env.Project-Name }}/Dockerfile
+        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release-${{ env.Ros-Distro }}

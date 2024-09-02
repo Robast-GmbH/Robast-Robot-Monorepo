@@ -3,6 +3,10 @@
       main_tree_to_execute="BehaviorTree">
   <BehaviorTree ID="BehaviorTree">
     <Sequence>
+      <ImportEnvironmentLEDColor red="{red}"
+                                 green="{green}"
+                                 blue="{blue}"
+                                 brightness="{brightness}"/>
       <GetBlackboardEntry key="drawer_address"
                           value="{drawer}"/>
       <KeepRunningUntilFailure>
@@ -42,11 +46,11 @@
             <InitLEDVector size="128"
                            led_vector="{leds}"/>
             <PartialColorizeLED LEDs="{leds}"
-                                blue="155"
-                                brightness="25"
-                                green="155"
+                                blue="{blue}"
+                                brightness="{brightness}"
+                                green="{green}"
                                 lower_bound="0.0"
-                                red="0"
+                                red="{red}"
                                 upper_bound="100.0"
                                 LEDs_colored="{leds}"/>
             <IfThenElse>
@@ -89,11 +93,11 @@
                 <AlwaysSuccess/>
                 <Sequence>
                   <PartialColorizeLED LEDs="{leds}"
-                                      blue="155"
-                                      brightness="25"
-                                      green="155"
+                                      blue="{blue}"
+                                      brightness="{brightness}"
+                                      green="{green}"
                                       lower_bound="0.0"
-                                      red="0"
+                                      red="{red}"
                                       upper_bound="100.0"
                                       LEDs_colored="{leds}"/>
                   <PartialColorizeLED LEDs="{leds}"
@@ -110,11 +114,11 @@
                                       leds="{leds}"/>
                   <Delay delay_msec="800">
                     <PartialColorizeLED LEDs="{leds}"
-                                        blue="155"
-                                        brightness="25"
-                                        green="155"
+                                        blue="{blue}"
+                                        brightness="{brightness}"
+                                        green="{green}"
                                         lower_bound="0.0"
-                                        red="0"
+                                        red="{red}"
                                         upper_bound="100.0"
                                         LEDs_colored="{leds}"/>
                   </Delay>
@@ -128,11 +132,11 @@
                 </Sequence>
                 <Sequence>
                   <PartialColorizeLED LEDs="{leds}"
-                                      blue="0"
-                                      brightness="0"
-                                      green="0"
-                                      lower_bound="0"
-                                      red="0"
+                                      blue="{blue}"
+                                      brightness="{brightness}"
+                                      green="{green}"
+                                      lower_bound="0.0"
+                                      red="{red}"
                                       upper_bound="100.0"
                                       LEDs_colored="{leds}"/>
                   <PartialColorizeLED LEDs="{leds}"
@@ -156,11 +160,11 @@
                                       led_topic="/led_cmd"
                                       leds="{leds}"/>
                   <PartialColorizeLED LEDs="{leds}"
-                                      blue="155"
-                                      brightness="25"
-                                      green="155"
+                                      blue="{blue}"
+                                      brightness="{brightness}"
+                                      green="{green}"
                                       lower_bound="0.0"
-                                      red="0"
+                                      red="{red}"
                                       upper_bound="100.0"
                                       LEDs_colored="{leds}"/>
                   <Delay delay_msec="800">
@@ -218,6 +222,17 @@
                   default="drawer_address">string</input_port>
       <output_port name="value"
                    default="{drawer}"/>
+    </Action>
+    <Action ID="ImportEnvironmentLEDColor"
+            editable="true">
+      <output_port name="red"
+                   default="{red}"/>
+      <output_port name="green"
+                   default="{green}"/>
+      <output_port name="blue"
+                   default="{blue}"/>
+      <output_port name="brightness"
+                   default="{brightness}"/>
     </Action>
     <Action ID="InitLEDVector">
       <input_port name="size"

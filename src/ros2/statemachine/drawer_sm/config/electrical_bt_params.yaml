@@ -16,6 +16,7 @@ electrical_drawer_tree_initiator:
       - publish_drawer_status_action_bt_node
       - bool_topic_condition_node
       - reactive_if_then_else_node
+      - import_environment_led_color_action_bt_node
     bt_path: "/workspace/install/drawer_sm/trees/trees/default_electrical_drawer.xml"
     trigger_topic: "trigger_electric_drawer_tree"
     main_tree: "default_electrical_drawer_tree"
