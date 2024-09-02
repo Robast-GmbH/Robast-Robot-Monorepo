@@ -14,3 +14,5 @@ trap "kill -9 -$rosbridge_pgid" EXIT
 
 # Start the Python script
 python3 src/robot_backend/main.py
+
+# while sleep 1000; do :; done
