@@ -9,11 +9,11 @@ import 'package:robot_frontend/models/controller/user_selection_controller.dart'
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/widgets/custom_elevated_button.dart';
-import 'package:robot_frontend/widgets/location_selector.dart';
+import 'package:robot_frontend/widgets/selectors/location_selector.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
-import 'package:robot_frontend/widgets/time_picker_view.dart';
-import 'package:robot_frontend/widgets/user_groups_selector.dart';
-import 'package:robot_frontend/widgets/user_selector.dart';
+import 'package:robot_frontend/widgets/selectors/time_selector.dart';
+import 'package:robot_frontend/widgets/selectors/user_groups_selector.dart';
+import 'package:robot_frontend/widgets/selectors/user_selector.dart';
 
 class ContentDistributionView extends StatefulWidget {
   const ContentDistributionView({
@@ -123,7 +123,7 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                                   width: 8,
                                 ),
                                 Expanded(
-                                  child: TimePickerView(
+                                  child: TimeSelector(
                                     deliveryTimeController: widget.deliveryTimeControllers[index],
                                   ),
                                 )

@@ -9,6 +9,10 @@ class MapProvider extends ChangeNotifier {
     _middlewareApi.setPrefix(prefix: prefix);
   }
 
+  void initMiddlewarAPI({required String prefix}) {
+    _middlewareApi.setPrefix(prefix: prefix);
+  }
+
   late MiddlewareApiUtilities _middlewareApi;
 
   Uint8List? mapImageCache;

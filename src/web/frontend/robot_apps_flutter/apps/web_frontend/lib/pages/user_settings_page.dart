@@ -31,8 +31,8 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
     firstNameController.text = widget.user.firstName;
     lastNameController.text = widget.user.lastName;
     mailController.text = widget.user.mail;
-    station = widget.user.station;
-    room = widget.user.room;
+    station = widget.user.station.isEmpty ? null : widget.user.station;
+    room = widget.user.room.isEmpty ? null : widget.user.room;
   }
 
   @override
@@ -74,8 +74,7 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
         padding: const EdgeInsets.all(16),
         child: Form(
           key: formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: ListView(
             children: [
               CustomTextField(
                 label: 'Vorname',

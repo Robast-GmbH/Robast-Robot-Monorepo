@@ -8,13 +8,13 @@ import 'package:robot_frontend/models/controller/user_groups_selection_controlle
 import 'package:robot_frontend/models/controller/user_selection_controller.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
-import 'package:robot_frontend/widgets/location_selector.dart';
+import 'package:robot_frontend/widgets/selectors/location_selector.dart';
 import 'package:robot_frontend/widgets/module_content_creation_view.dart';
 import 'package:robot_frontend/widgets/rounded_button.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
-import 'package:robot_frontend/widgets/time_picker_view.dart';
-import 'package:robot_frontend/widgets/user_groups_selector.dart';
-import 'package:robot_frontend/widgets/user_selector.dart';
+import 'package:robot_frontend/widgets/selectors/time_selector.dart';
+import 'package:robot_frontend/widgets/selectors/user_groups_selector.dart';
+import 'package:robot_frontend/widgets/selectors/user_selector.dart';
 
 class DeliveryTaskCreationPage extends StatefulWidget {
   const DeliveryTaskCreationPage({super.key});
@@ -135,7 +135,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                       width: 8,
                     ),
                     Expanded(
-                      child: TimePickerView(
+                      child: TimeSelector(
                         deliveryTimeController: senderTimeController,
                         onTimeSelected: (dateTime) {
                           setState(() {
@@ -189,7 +189,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                       width: 8,
                     ),
                     Expanded(
-                      child: TimePickerView(
+                      child: TimeSelector(
                         deliveryTimeController: recipientTimeController,
                         onTimeSelected: (datetime) {
                           if (senderTimeController.value != null && datetime.isBefore(senderTimeController.value!)) {

@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_frontend/constants/web_colors.dart';
 import 'package:web_frontend/models/provider/fleet_provider.dart';
+import 'package:web_frontend/models/provider/map_provider.dart';
+import 'package:web_frontend/models/provider/task_provider.dart';
+import 'package:web_frontend/models/provider/user_provider.dart';
 import 'package:web_frontend/pages/fleet_management_page.dart';
+import 'package:web_frontend/pages/home_page.dart';
 
 class ConfigPage extends StatefulWidget {
   const ConfigPage({
@@ -23,14 +28,13 @@ class _ConfigPageState extends State<ConfigPage> {
 
   Future<void> finishConfiguration() async {
     Provider.of<FleetProvider>(context, listen: false).initMiddlewarAPI(prefix: middlewareAddress);
-    if (mounted) {
-      await Navigator.pushReplacement(
-        context,
-        MaterialPageRoute<FleetManagementPage>(
-          builder: (context) => const FleetManagementPage(),
-        ),
-      );
-    }
+    Provider.of<TaskProvider>(context, listen: false).initMiddlewarAPI(prefix: middlewareAddress);
+    Provider.of<MapProvider>(context, listen: false).initMiddlewarAPI(prefix: middlewareAddress);
+    Provider.of<UserProvider>(context, listen: false).initMiddlewarAPI(prefix: middlewareAddress);
+
+    Navigator.pop(
+      context,
+    );
   }
 
   @override
@@ -73,6 +77,7 @@ class _ConfigPageState extends State<ConfigPage> {
                         Padding(
                           padding: const EdgeInsets.all(16),
                           child: TextFormField(
+                            style: TextStyle(color: WebColors.secondaryText),
                             initialValue: sharedPreferences.getString('middlewareAddress') ?? '',
                             decoration: const InputDecoration(
                               labelText: 'Middleware IP',
@@ -99,9 +104,8 @@ class _ConfigPageState extends State<ConfigPage> {
                               if (_formKey.currentState!.validate()) {
                                 _formKey.currentState!.save();
                                 await snapshot.data!.setString('middlewareAddress', middlewareAddress);
+                                await finishConfiguration();
                               }
-
-                              await finishConfiguration();
                             },
                             child: const Padding(
                               padding: EdgeInsets.symmetric(vertical: 8, horizontal: 32),

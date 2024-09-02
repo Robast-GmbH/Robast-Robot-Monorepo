@@ -5,10 +5,10 @@ import 'package:robot_frontend/models/controller/user_groups_selection_controlle
 import 'package:robot_frontend/models/controller/user_selection_controller.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
-import 'package:robot_frontend/widgets/location_selector.dart';
+import 'package:robot_frontend/widgets/selectors/location_selector.dart';
 import 'package:robot_frontend/widgets/module_content_creation_view.dart';
-import 'package:robot_frontend/widgets/user_groups_selector.dart';
-import 'package:robot_frontend/widgets/user_selector.dart';
+import 'package:robot_frontend/widgets/selectors/user_groups_selector.dart';
+import 'package:robot_frontend/widgets/selectors/user_selector.dart';
 
 class PickupTaskCreationPage extends StatefulWidget {
   const PickupTaskCreationPage({super.key});

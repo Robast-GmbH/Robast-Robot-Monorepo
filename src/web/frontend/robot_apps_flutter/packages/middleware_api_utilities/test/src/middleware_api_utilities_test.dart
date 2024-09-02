@@ -18,6 +18,7 @@ void main() {
 
     const userID = '';
     const nfcID = '';
+    const mail = 'test@test.de';
     const title = 'Prof. Dr. med.';
     const firstName = 'Max';
     const lastName = 'Mustermann';
@@ -27,6 +28,7 @@ void main() {
     final testUser = User(
       id: userID,
       nfcID: nfcID,
+      mail: mail,
       title: title,
       firstName: firstName,
       lastName: lastName,
@@ -34,6 +36,7 @@ void main() {
       room: room,
       userGroups: userGroups,
     );
+    const updatedMail = 'update@test.de';
     const updatedTitle = 'Dr. med.';
     const updatedFirstName = 'Maximilian';
     const updatedLastName = 'Musterfrau';
@@ -178,6 +181,7 @@ void main() {
       final updatedUser = User(
         id: creationResult!.id,
         nfcID: creationResult.nfcID,
+        mail: updatedMail,
         title: updatedTitle,
         firstName: updatedFirstName,
         lastName: updatedLastName,

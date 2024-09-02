@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/pages/config_page.dart';
 import 'package:robot_frontend/widgets/developer_button_view.dart';
-import 'package:robot_frontend/widgets/robot_lost_indicator.dart';
 
 class StatusIndicatorView extends StatelessWidget {
   const StatusIndicatorView({super.key});

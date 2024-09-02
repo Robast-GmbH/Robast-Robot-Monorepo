@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:web_frontend/models/provider/user_provider.dart';
-import 'package:web_frontend/pages/fleet_management_page.dart';
 import 'package:web_frontend/pages/home_page.dart';
 import 'package:web_frontend/validators.dart';
 import 'package:web_frontend/widgets/custom_text_field.dart';
