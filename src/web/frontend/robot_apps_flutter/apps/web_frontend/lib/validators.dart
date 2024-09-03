@@ -1,4 +1,3 @@
-
 class Validators {
   static String? mailValidator(String? value) {
     if (value == null || value.isEmpty) {

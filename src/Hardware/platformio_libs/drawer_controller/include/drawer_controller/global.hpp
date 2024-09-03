@@ -8,6 +8,7 @@
 #include "drawer/manual_drawer.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "led/led_strip.hpp"
+#include "module_id/module_id.hpp"
 #include "motor/motor_monitor_config.hpp"
 #include "switch/switch.hpp"
 #include "utils/can_message_converter.hpp"
@@ -48,4 +49,4 @@ std::unique_ptr<utils::ConfigManager> config_manager;
 // shared resource, so we need a mutex for this
 std::unique_ptr<utils::Queue<robast_can_msgs::CanMessage>> can_msg_queue;
 
-#endif // DRAWER_CONTROLLER_GLOBAL_HPP
+#endif   // DRAWER_CONTROLLER_GLOBAL_HPP
