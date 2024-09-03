@@ -76,7 +76,7 @@ class ModulesOverview extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Modul $moduleID',
+                                  'Modul ${moduleIDsBySubmodules[moduleID]!.first.position}',
                                   style: const TextStyle(
                                     fontSize: 24,
                                     color: WebColors.secondaryText,

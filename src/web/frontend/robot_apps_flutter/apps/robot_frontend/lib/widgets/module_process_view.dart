@@ -108,30 +108,30 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                           children: [
                             if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.opening) ...[
                               HintView(
-                                text: modules[moduleInProcess.address.moduleID - 1].variant == SubmoduleVariant.electric
+                                text: moduleInProcess.variant == SubmoduleVariant.electric || moduleInProcess.variant == SubmoduleVariant.partial
                                     ? 'Gewählte Schublade öffnet sich'
                                     : 'Bitte gewählte Schublade öffnen',
-                                moduleLabel: 'Modul ${moduleInProcess.address.moduleID}',
+                                moduleLabel: 'Modul ${moduleInProcess.position}',
                               ),
                             ],
                             if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.open) ...[
                               GestureDetector(
                                 onTap: () {
-                                  if (moduleInProcess.variant == SubmoduleVariant.electric) {
+                                  if (moduleInProcess.variant == SubmoduleVariant.electric || moduleInProcess.variant == SubmoduleVariant.partial) {
                                     Provider.of<ModuleProvider>(context, listen: false).closeSubmodule(moduleInProcess);
                                   }
                                 },
                                 child: HintView(
                                   text:
-                                      '${moduleInProcess.moduleProcess.itemsByChangeToString()}${moduleInProcess.variant == SubmoduleVariant.electric ? ' Zum Schließen tippen.' : ''}',
-                                  moduleLabel: 'Modul ${moduleInProcess.address.moduleID}',
+                                      '${moduleInProcess.moduleProcess.itemsByChangeToString()}${moduleInProcess.variant == SubmoduleVariant.electric || moduleInProcess.variant == SubmoduleVariant.partial ? ' Zum Schließen tippen.' : ''}',
+                                  moduleLabel: 'Modul ${moduleInProcess.position}',
                                 ),
                               ),
                             ],
                             if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.closing) ...[
                               HintView(
                                 text: 'Schublade schließt sich, bitte warten',
-                                moduleLabel: 'Modul ${moduleInProcess.address.moduleID}',
+                                moduleLabel: 'Modul ${moduleInProcess.position}',
                               ),
                             ],
                           ],

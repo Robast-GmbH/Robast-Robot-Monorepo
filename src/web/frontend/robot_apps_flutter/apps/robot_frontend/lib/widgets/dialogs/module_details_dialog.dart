@@ -12,10 +12,12 @@ class ModuleDetailsDialog extends StatelessWidget {
   final int moduleID;
   @override
   Widget build(BuildContext context) {
+    final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
+    final modulePosition = moduleProvider.submodules.firstWhere((module) => module.address.moduleID == moduleID).position;
     return AlertDialog(
       backgroundColor: RobotColors.primaryBackground,
       title: Text(
-        'Modul $moduleID',
+        'Modul $modulePosition',
         style: const TextStyle(fontSize: 40, color: RobotColors.primaryText),
       ),
       content: ConstrainedBox(
@@ -49,7 +51,7 @@ class ModuleDetailsDialog extends StatelessWidget {
                                     style: const TextStyle(color: RobotColors.secondaryText, fontSize: 28),
                                   ),
                                   Text(
-                                    'Größe: ${SubmoduleTypes.values[submodule.size - 1].toString().split('.').last}',
+                                    'Größe: ${submodule.variant == SubmoduleVariant.partial ? '1/8' : SubmoduleTypes.values[submodule.size - 1].toString().split('.').last}',
                                     style: const TextStyle(color: RobotColors.secondaryText, fontSize: 28),
                                   ),
                                   Text(

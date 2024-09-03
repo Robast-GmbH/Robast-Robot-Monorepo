@@ -38,6 +38,7 @@ class FleetProvider extends ChangeNotifier {
     for (final robot in robots) {
       if (robot.name.isNotEmpty) {
         final robotModules = await _middlewareApi.modules.getSubmodules(robotName: robot.name);
+        robotModules.sort((a, b) => a.position.compareTo(b.position));
         updatedModules[robot.name] = robotModules;
       }
     }

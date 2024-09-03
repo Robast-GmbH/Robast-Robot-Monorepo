@@ -76,79 +76,82 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                 return ListView(
                   children: List.generate(widget.preselectedSubmodules.length, (index) {
                     final submodule = selectedSubmodules[index];
-                    return RoundedContainer(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8, bottom: 4),
-                              child: Text(
-                                'Modul ${submodule.address.moduleID} Submodul ${submodule.address.submoduleID}',
-                                style: const TextStyle(fontSize: 32, color: RobotColors.primaryText),
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: RoundedContainer(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8, bottom: 4),
+                                child: Text(
+                                  'Modul ${submodule.position} Submodul ${submodule.address.submoduleID}',
+                                  style: const TextStyle(fontSize: 32, color: RobotColors.primaryText),
+                                ),
                               ),
-                            ),
-                            RoundedContainer(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                child: Row(
-                                  children: [
-                                    const Text(
-                                      'Inhalte',
-                                      style: TextStyle(fontSize: 24, color: RobotColors.secondaryText),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        submodule.contentToString(),
-                                        textAlign: TextAlign.end,
-                                        style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),
+                              RoundedContainer(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                  child: Row(
+                                    children: [
+                                      const Text(
+                                        'Inhalte',
+                                        style: TextStyle(fontSize: 24, color: RobotColors.secondaryText),
                                       ),
-                                    ),
-                                  ],
+                                      Expanded(
+                                        child: Text(
+                                          submodule.contentToString(),
+                                          textAlign: TextAlign.end,
+                                          style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: LocationSelector(
-                                    controller: widget.locationSelectionControllers[index],
-                                    label: 'Zielort',
-                                    onChanged: () => setState(() {}),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: LocationSelector(
+                                      controller: widget.locationSelectionControllers[index],
+                                      label: 'Zielort',
+                                      onChanged: () => setState(() {}),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  width: 8,
-                                ),
-                                Expanded(
-                                  child: TimeSelector(
-                                    deliveryTimeController: widget.deliveryTimeControllers[index],
+                                  const SizedBox(
+                                    width: 8,
                                   ),
-                                )
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: UserSelector(
-                                    controller: widget.userSelectionControllers[index],
-                                    onChanged: () => setState(() {}),
+                                  Expanded(
+                                    child: TimeSelector(
+                                      deliveryTimeController: widget.deliveryTimeControllers[index],
+                                    ),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: UserSelector(
+                                      controller: widget.userSelectionControllers[index],
+                                      onChanged: () => setState(() {}),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: UserGroupsSelector(
-                                    controller: widget.userGroupsSelectionControllers[index],
-                                    onChanged: () => setState(() {}),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: UserGroupsSelector(
+                                      controller: widget.userGroupsSelectionControllers[index],
+                                      onChanged: () => setState(() {}),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );

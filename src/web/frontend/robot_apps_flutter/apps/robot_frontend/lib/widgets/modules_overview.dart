@@ -40,7 +40,7 @@ class ModulesOverview extends StatelessWidget {
                     initiallyExpanded: true,
                     shape: const Border(),
                     title: Text(
-                      'Modul $moduleID',
+                      'Modul ${moduleIDsBySubmodules[moduleID]!.first.position}',
                       style: const TextStyle(fontSize: 32),
                     ),
                     children: moduleIDsBySubmodules[moduleID]!.map((submodule) {

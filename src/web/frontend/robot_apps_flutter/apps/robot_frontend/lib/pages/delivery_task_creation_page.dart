@@ -80,6 +80,10 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                       child: Row(
                         children: [
                           Expanded(
+                            child: buildRequiredSubmoduleTypeButton(type: 5, text: 'Partial'),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
                             child: buildRequiredSubmoduleTypeButton(type: 1, text: 'Small'),
                           ),
                           const SizedBox(width: 16),
