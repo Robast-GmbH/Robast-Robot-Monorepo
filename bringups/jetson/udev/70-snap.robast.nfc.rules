@@ -1,0 +1,7 @@
+SUBSYSTEMS=="usb", ACTION=="add", ATTRS{idVendor}=="09d8",ATTRS{idProduct}=="0420", MODE="666", SYMLINK+="robast/robast_nfc"
+#######################################################################################################################################
+# Todo: if we have a second device this has to be adjusted to differentiate the devices,
+# a better way could be to adjust the reader firmware to give them a unique idProduct.    
+# SUBSYSTEMS=="usb", ACTION=="add", ATTRS{idVendor}=="09d8", ATTRS{idProduct}=="0420", MODE="666", KERNELS=="1-6.1", SYMLINK+="robast/robast_nfc_1"
+# SUBSYSTEMS=="usb", ACTION=="add", ATTRS{idVendor}=="09d8", ATTRS{idProduct}=="0420", MODE="666", KERNELS=="1-5.3", SYMLINK+="robast/robast_nfc_2"
+#######################################################################################################################################
