@@ -1,0 +1,23 @@
+{
+  "name": "module_id",
+  "version": "1.0.0",
+  "description": "A library that contains all defines that are used to set the module id.",
+  "keywords": "module_id",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/Robast-GmbH/Monorepo.git"
+  },
+  "authors":
+  [
+    {
+      "name": "Jacob Ritterbach",
+      "email": "j.ritterbach@robast.de",
+      "maintainer": true
+    }
+  ],
+  "license": "MIT",
+  "frameworks": "*",
+  "platforms": "*",
+  "headers": ["module_id.hpp"]
+}

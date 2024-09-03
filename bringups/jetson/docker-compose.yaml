@@ -1,14 +1,17 @@
-version: '3.9'
-
 services:
   zed_camera:
-    image: ghcr.io/robast-gmbh/monorepo/zed_camera:release
+    image: ghcr.io/robast-gmbh/monorepo/zed_camera:release431
     build: 
       context: ./zed_setup
-      dockerfile: Dockerfile.Zed
+      dockerfile: Dockerfile
+    runtime: nvidia
+    privileged: true
+    ipc: host
+    pid: host
     environment:
-      - ROS_DOMAIN_ID=0
+      - ROS_DOMAIN_ID=23
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - NVIDIA_DRIVER_CAPABILITIES=all
     volumes:
       - ./start_scripts/:/start_scripts/:ro
       - ./zed_setup/:/zed_setup/:ro
@@ -31,10 +34,12 @@ services:
       - ROS_DOMAIN_ID=23
       - UID=1000
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-      - RED=${RED:0}
+      - RED=${RED:-0}
       - GREEN=${GREEN:-255}
       - BLUE=${BLUE:-255}
       - BRIGHTNESS=${BRIGHTNESS:-20}
+    devices:
+      - "/dev/robast/robast_nfc:/dev/robast/robast_nfc"
     volumes:
       - ./start_scripts/:/start_scripts/:ro
     stop_signal: SIGINT
@@ -49,7 +54,7 @@ services:
       - ROS_DOMAIN_ID=23
       - UID=1000
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-      - RED=${RED:0}
+      - RED=${RED:-0}
       - GREEN=${GREEN:-255}
       - BLUE=${BLUE:-255}
       - BRIGHTNESS=${BRIGHTNESS:-20}

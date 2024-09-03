@@ -30,6 +30,7 @@ class StatusIndicatorView extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
+        //RobotLostIndicator(),
         DeveloperButtonView(
           onPressed: () {
             Navigator.push(context, MaterialPageRoute<ConfigPage>(builder: (context) => const ConfigPage()));

@@ -3,6 +3,7 @@ import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
+import 'package:robot_frontend/widgets/dialogs/user_creation_dialog.dart';
 import 'package:robot_frontend/widgets/rounded_button.dart';
 import 'package:robot_frontend/widgets/user_management_list_tile.dart';
 
@@ -56,31 +57,45 @@ class _UserManagementPageState extends State<UserManagementPage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: RoundedButton(
-                        onPressed: () async {
-                          await Provider.of<UserProvider>(context, listen: false).createUser(
+                      onPressed: () async {
+                        final userProvider = Provider.of<UserProvider>(context, listen: false);
+                        final firstNameController = TextEditingController();
+                        final lastNameController = TextEditingController();
+                        final shouldCreateUser = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => UserCreationDialog(
+                            firstNameController: firstNameController,
+                            lastNameController: lastNameController,
+                          ),
+                        );
+                        if (shouldCreateUser ?? false) {
+                          await userProvider.createUser(
                             newUser: User(
                               id: '',
                               nfcID: '',
+                              mail: '',
                               title: '',
-                              firstName: '',
-                              lastName: '',
+                              firstName: firstNameController.text,
+                              lastName: lastNameController.text,
                               station: '',
                               room: '',
                               userGroups: [],
                             ),
                           );
                           setState(() {
-                            loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
+                            loadUsers = userProvider.getUsers();
                           });
-                        },
-                        color: Colors.black.withOpacity(0.2),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Icon(
-                            Icons.add,
-                            size: 48,
-                          ),
-                        ),),
+                        }
+                      },
+                      color: Colors.black.withOpacity(0.2),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: Icon(
+                          Icons.add,
+                          size: 48,
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),

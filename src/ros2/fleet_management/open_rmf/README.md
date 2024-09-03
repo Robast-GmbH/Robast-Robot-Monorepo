@@ -24,7 +24,7 @@ To run the fleet_management:
 - Start RMF API-Server in fleet_management container
     - `cd ../rmf-web-workspace/rmf-web`
     - `pnpm install`
-    - `cd packages/dashboard`
+    - `cd packages/api-server`
     - `pnpm start`
 - Start open_rmf nodes in fleet_management container
     - `colcon build --symlink-install`

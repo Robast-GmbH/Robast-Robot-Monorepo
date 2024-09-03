@@ -99,4 +99,33 @@ class UsersApi {
     );
     return RequestService.wasRequestSuccessful(response: response);
   }
+
+  Future<User?> loginUser({
+    required String mail,
+    required String password,
+  }) async {
+    final response = await RequestService.tryPost(
+      uri: Uri.parse('$prefix/users/login'),
+      data: {
+        'mail': mail,
+        'password': password,
+      },
+    );
+    if (response != null) {
+      final data = RequestService.responseToMap(response: response);
+      if (data['user'] != null) {
+        return User.fromJson(data['user'] as Map<String, dynamic>);
+      }
+      return null;
+    }
+    return null;
+  }
+
+  Future<bool> changePassword({required String userID, required String oldPassword, required String newPassword}) async {
+    final response = await RequestService.tryPost(
+      uri: Uri.parse('$prefix/users/change_password?user_id=$userID&old_password=$oldPassword&new_password=$newPassword'),
+      data: {},
+    );
+    return RequestService.wasRequestSuccessful(response: response);
+  }
 }

@@ -8,4 +8,9 @@ class Pose {
   final double x;
   final double y;
   final double yaw;
+
+  @override
+  String toString() {
+    return 'Pose(x: $x, y: $y, yaw: $yaw)';
+  }
 }

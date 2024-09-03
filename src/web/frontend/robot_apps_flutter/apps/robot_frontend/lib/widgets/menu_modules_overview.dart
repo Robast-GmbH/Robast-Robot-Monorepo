@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
-import 'package:robot_frontend/widgets/module_details_dialog.dart';
+import 'package:robot_frontend/widgets/dialogs/module_details_dialog.dart';
 import 'package:robot_frontend/widgets/rounded_button.dart';
 
 class MenuModulesOverview extends StatelessWidget {
@@ -64,7 +64,6 @@ class MenuModulesOverview extends StatelessWidget {
                               context: context,
                               builder: (context) => ModuleDetailsDialog(
                                 moduleID: moduleID,
-                                submodules: moduleIDsBySubmodules[moduleID]!,
                               ),
                             );
                           },
@@ -73,7 +72,7 @@ class MenuModulesOverview extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Modul $moduleID',
+                                'Modul ${moduleIDsBySubmodules[moduleID]!.first.position}',
                                 style: const TextStyle(
                                   fontSize: 32,
                                   color: RobotColors.secondaryText,
