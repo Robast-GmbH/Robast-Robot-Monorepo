@@ -9,6 +9,7 @@ import 'package:robot_frontend/models/controller/user_selection_controller.dart'
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/widgets/custom_elevated_button.dart';
+import 'package:robot_frontend/widgets/dialogs/nfc_missing_dialog.dart';
 import 'package:robot_frontend/widgets/selectors/location_selector.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
 import 'package:robot_frontend/widgets/selectors/time_selector.dart';
@@ -164,6 +165,20 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                 child: CustomElevatedButton(
                   enabled: validateContentToTargetAssignments(),
                   onPressed: () async {
+                    final usersWithMissingNfc = widget.userSelectionControllers
+                        .map((controller) => controller.selectedUser)
+                        .where((user) => user != null && user.nfcID.isEmpty)
+                        .toList();
+                    if (usersWithMissingNfc.isNotEmpty) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => NfcMissingDialog(
+                          identifiers: usersWithMissingNfc.map((user) => '${user!.firstName} ${user.lastName}').toList(),
+                        ),
+                      );
+                      return;
+                    }
+
                     final submodules = Provider.of<ModuleProvider>(context, listen: false).submodules;
                     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
                     for (var i = 0; i < widget.preselectedSubmodules.length; i++) {

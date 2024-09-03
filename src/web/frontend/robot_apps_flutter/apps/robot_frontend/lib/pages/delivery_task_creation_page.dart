@@ -8,6 +8,7 @@ import 'package:robot_frontend/models/controller/user_groups_selection_controlle
 import 'package:robot_frontend/models/controller/user_selection_controller.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
+import 'package:robot_frontend/widgets/dialogs/nfc_missing_dialog.dart';
 import 'package:robot_frontend/widgets/selectors/location_selector.dart';
 import 'package:robot_frontend/widgets/module_content_creation_view.dart';
 import 'package:robot_frontend/widgets/rounded_button.dart';
@@ -36,6 +37,14 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
   final recipientUserGroupsSelectionController = UserGroupsSelectionController();
   final senderTimeController = DeliveryTimeController();
   final recipientTimeController = DeliveryTimeController();
+
+  bool validateInputs() {
+    return moduleContentController.didItemsChange() &&
+        startController.room != null &&
+        targetController.room != null &&
+        (senderUserController.selectedUser != null || senderUserGroupsSelectionController.selectionAsStringList().isNotEmpty) &&
+        (recipientUserController.selectedUser != null || recipientUserGroupsSelectionController.selectionAsStringList().isNotEmpty);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -209,24 +218,66 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
               padding: const EdgeInsets.symmetric(horizontal: 4),
               color: Colors.black.withOpacity(0.2),
               onPressed: () async {
-                await Provider.of<TaskProvider>(context, listen: false).createDeliveryTaskRequest(
-                  requiredSubmoduleType: requiredSubmoduleType,
-                  pickupTargetID: startController.room!,
-                  pickupEarliestStartTime: senderTimeController.timeAsSecondsSinceEpoch(),
-                  senderUserIDs: [
-                    if (senderUserController.selectedUser != null) senderUserController.selectedUser!.id,
-                  ],
-                  senderUserGroups: senderUserGroupsSelectionController.selectionAsStringList(),
-                  dropoffTargetID: targetController.room!,
-                  dropoffEarliestStartTime: recipientTimeController.timeAsSecondsSinceEpoch(),
-                  recipientUserIDs: [
-                    if (recipientUserController.selectedUser != null) recipientUserController.selectedUser!.id,
-                  ],
-                  recipientUserGroups: recipientUserGroupsSelectionController.selectionAsStringList(),
-                  itemsByChange: moduleContentController.createItemsByChange(),
-                );
-                if (context.mounted) {
-                  Navigator.of(context).pop();
+                if ((senderUserController.selectedUser?.nfcID.isEmpty ?? false) || (recipientUserController.selectedUser?.nfcID.isEmpty ?? false)) {
+                  final identifiers = <String>[];
+                  if (senderUserController.selectedUser?.nfcID.isEmpty ?? false) {
+                    identifiers.add('Sender');
+                  }
+                  if (recipientUserController.selectedUser?.nfcID.isEmpty ?? false) {
+                    identifiers.add('Empfänger');
+                  }
+                  showDialog(
+                    context: context,
+                    builder: (context) => NfcMissingDialog(
+                      identifiers: identifiers,
+                    ),
+                  );
+                  return;
+                }
+
+                if (validateInputs()) {
+                  await Provider.of<TaskProvider>(context, listen: false).createDeliveryTaskRequest(
+                    requiredSubmoduleType: requiredSubmoduleType,
+                    pickupTargetID: startController.room!,
+                    pickupEarliestStartTime: senderTimeController.timeAsSecondsSinceEpoch(),
+                    senderUserIDs: [
+                      if (senderUserController.selectedUser != null) senderUserController.selectedUser!.id,
+                    ],
+                    senderUserGroups: senderUserGroupsSelectionController.selectionAsStringList(),
+                    dropoffTargetID: targetController.room!,
+                    dropoffEarliestStartTime: recipientTimeController.timeAsSecondsSinceEpoch(),
+                    recipientUserIDs: [
+                      if (recipientUserController.selectedUser != null) recipientUserController.selectedUser!.id,
+                    ],
+                    recipientUserGroups: recipientUserGroupsSelectionController.selectionAsStringList(),
+                    itemsByChange: moduleContentController.createItemsByChange(),
+                  );
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                  }
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      backgroundColor: RobotColors.secondaryBackground,
+                      title: const Text(
+                        'Ungültige Eingaben',
+                        style: TextStyle(color: RobotColors.primaryText, fontSize: 28),
+                      ),
+                      content: const Text(
+                        'Bitte überprüfen Sie ihre Eingaben.',
+                        style: TextStyle(color: RobotColors.secondaryText, fontSize: 24),
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('OK', style: TextStyle(color: RobotColors.secondaryText, fontSize: 24)),
+                        ),
+                      ],
+                    ),
+                  );
                 }
               },
               child: const Padding(
