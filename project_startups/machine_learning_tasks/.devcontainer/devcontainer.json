@@ -13,6 +13,8 @@
 		"--network=host"
 	],
 	"remoteEnv": {
+		"is_simulation": "False",
+		"robot_name": "rb_theron",
 		"RMW_IMPLEMENTATION": "rmw_cyclonedds_cpp",
 		"ROS_DOMAIN_ID": "23"
 	},

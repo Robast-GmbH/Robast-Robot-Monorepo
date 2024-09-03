@@ -134,4 +134,43 @@ class RobotApiUtilities {
       return false;
     }
   }
+
+  Future<bool> getIsRobotLost() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(
+        Uri.parse('$prefix/robot_lost'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        return data['data'] as bool;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> setInitialRobotPoint({required Pose pose}) async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.post(
+        Uri.parse('$prefix/set_initial_point?x=${pose.x}&y=${pose.y}&z=${pose.yaw}'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
 }

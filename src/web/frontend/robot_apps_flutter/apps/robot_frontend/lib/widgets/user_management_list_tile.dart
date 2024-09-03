@@ -6,9 +6,9 @@ import 'package:robot_frontend/models/controller/location_selection_controller.d
 import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
 import 'package:robot_frontend/models/controller/user_name_controller.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
-import 'package:robot_frontend/widgets/location_selector.dart';
-import 'package:robot_frontend/widgets/nfc_assignment_dialog.dart';
-import 'package:robot_frontend/widgets/user_groups_selector.dart';
+import 'package:robot_frontend/widgets/selectors/location_selector.dart';
+import 'package:robot_frontend/widgets/dialogs/nfc_assignment_dialog.dart';
+import 'package:robot_frontend/widgets/selectors/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/user_name_editor.dart';
 
 class UserManagementListTile extends StatefulWidget {
@@ -82,6 +82,7 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                       updatedUser: User(
                         id: widget.user.id,
                         nfcID: widget.user.nfcID,
+                        mail: widget.user.mail,
                         title: userNameController.title,
                         firstName: userNameController.firstName,
                         lastName: userNameController.lastName,

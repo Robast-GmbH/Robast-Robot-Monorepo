@@ -4,8 +4,8 @@ import 'package:robot_frontend/models/controller/delivery_time_controller.dart';
 import 'package:robot_frontend/services/time_stamp_formatter.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
 
-class TimePickerView extends StatefulWidget {
-  const TimePickerView({
+class TimeSelector extends StatefulWidget {
+  const TimeSelector({
     super.key,
     required this.deliveryTimeController,
     this.onTimeSelected,
@@ -14,10 +14,10 @@ class TimePickerView extends StatefulWidget {
   final DeliveryTimeController deliveryTimeController;
   final void Function(DateTime)? onTimeSelected;
   @override
-  State<TimePickerView> createState() => _TimePickerWidgetState();
+  State<TimeSelector> createState() => _TimePickerWidgetState();
 }
 
-class _TimePickerWidgetState extends State<TimePickerView> {
+class _TimePickerWidgetState extends State<TimeSelector> {
   Future<void> _pickDateTime(BuildContext context) async {
     DateTime now = DateTime.now();
     DateTime threeDaysFromNow = now.add(const Duration(days: 3));

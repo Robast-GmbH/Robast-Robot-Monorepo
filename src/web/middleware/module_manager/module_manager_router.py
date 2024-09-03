@@ -12,7 +12,7 @@ module_process_manager = ModuleProcessManager()
 
 
 def create_status_response(status: bool):
-    return {"status": "success" if status else "failed"}
+    return {"status": "success" if status else "failure"}
 
 
 @module_manager_router.get("", tags=["Modules"])

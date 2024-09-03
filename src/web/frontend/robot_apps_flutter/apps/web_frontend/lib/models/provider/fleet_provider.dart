@@ -5,6 +5,10 @@ import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 
 class FleetProvider extends ChangeNotifier {
+  FleetProvider({required String prefix}) {
+    initMiddlewarAPI(prefix: prefix);
+  }
+
   List<Robot> robots = [];
   Map<String, List<Submodule>> modules = {};
   Map<String, RobotTaskStatus?> tasks = {};
@@ -13,15 +17,10 @@ class FleetProvider extends ChangeNotifier {
   Timer? _moduleUpdateTimer;
   Timer? _isRobotNavigationBlockedUpdateTimer;
 
-  late MiddlewareApiUtilities _middlewareApi;
+  final MiddlewareApiUtilities _middlewareApi = MiddlewareApiUtilities();
 
-  Future<void> initMiddlewarAPI({required String prefix}) async {
-    _middlewareApi = MiddlewareApiUtilities();
+  void initMiddlewarAPI({required String prefix}) {
     _middlewareApi.setPrefix(prefix: prefix);
-  }
-
-  List<String> getIDsOfModules({required String robotName}) {
-    return modules[robotName]?.map((e) => '${e.address.moduleID}_${e.address.submoduleID}').toList() ?? [];
   }
 
   Future<void> updateProviderData() async {
@@ -39,6 +38,7 @@ class FleetProvider extends ChangeNotifier {
     for (final robot in robots) {
       if (robot.name.isNotEmpty) {
         final robotModules = await _middlewareApi.modules.getSubmodules(robotName: robot.name);
+        robotModules.sort((a, b) => a.position.compareTo(b.position));
         updatedModules[robot.name] = robotModules;
       }
     }
@@ -60,7 +60,7 @@ class FleetProvider extends ChangeNotifier {
 
   void startPeriodicRobotUpdate() {
     updateRobots();
-    _robotUpdateTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
+    _robotUpdateTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       debugPrint('Update Robots');
       await updateRobots();
     });
@@ -68,18 +68,9 @@ class FleetProvider extends ChangeNotifier {
 
   void startPeriodicModuleUpdate() {
     updateModules();
-    _moduleUpdateTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
+    _moduleUpdateTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       debugPrint('Update Modules');
       await updateModules();
-    });
-  }
-
-  void startPeriodicIsNavigationBlockedUpdate() {
-    _isRobotNavigationBlockedUpdateTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
-      for (final robot in robots) {
-        isNavigationBlocked = await _middlewareApi.isNavigationBlocked(robotName: robot.name);
-      }
-      notifyListeners();
     });
   }
 
@@ -91,37 +82,5 @@ class FleetProvider extends ChangeNotifier {
 
   void stopPeriodicModuleUpdate() {
     _moduleUpdateTimer?.cancel();
-  }
-
-  Future<void> openSubmodule({
-    required String robotName,
-    required int moduleID,
-    required int submoduleID,
-  }) async {
-    await _middlewareApi.modules.openSubmodule(
-      robotName: robotName,
-      submoduleAddress: SubmoduleAddress(moduleID: moduleID, submoduleID: submoduleID),
-    );
-    await updateModules();
-  }
-
-  Future<void> closeSubmodule({
-    required String robotName,
-    required int moduleID,
-    required int submoduleID,
-  }) async {
-    await _middlewareApi.modules.closeSubmodule(
-      robotName: robotName,
-      submoduleAddress: SubmoduleAddress(moduleID: moduleID, submoduleID: submoduleID),
-    );
-    await updateModules();
-  }
-
-  Future<void> stopRobot({required String robotName}) async {
-    await _middlewareApi.stopRobot(robotName: robotName);
-  }
-
-  Future<void> resumeRobot({required String robotName}) async {
-    await _middlewareApi.resumeRobot(robotName: robotName);
   }
 }
