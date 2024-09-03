@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:web_frontend/models/provider/user_provider.dart';
+import 'package:web_frontend/pages/change_password_page.dart';
 import 'package:web_frontend/pages/home_page.dart';
 import 'package:web_frontend/validators.dart';
 import 'package:web_frontend/widgets/custom_text_field.dart';
@@ -72,7 +73,16 @@ class LoginPage extends StatelessWidget {
                       isLoading = false;
                       setState(() {});
                       if (wasSuccessful) {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const HomePage()));
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => Validators.passwordValidator(passwordController.text) == null
+                                ? const HomePage()
+                                : ChangePasswordPage(
+                                    forceChange: true,
+                                    initialInput: passwordController.text,
+                                  ),
+                          ),
+                        );
                       } else {
                         showLoginFailed = !wasSuccessful;
                         setState(() {});
