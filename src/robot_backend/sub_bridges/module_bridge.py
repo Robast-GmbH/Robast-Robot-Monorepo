@@ -61,17 +61,26 @@ class ModuleBridge(BaseBridge):
             module_id=module_id,
         ):
             self.__electric_drawer_tree_publisher.publish(
-                {"module_id": module_id, "drawer_id": submodule_id}
+                {
+                    "module_id": self.__remove_bits_8_to_15_and_get_24bit(module_id),
+                    "drawer_id": submodule_id,
+                }
             )
         elif self.__is_module_type(
             module_prefix=self.PARTIAL_DRAWER_MODULE_ID_PREFIX, module_id=module_id
         ):
             self.__partial_drawer_tree_publisher.publish(
-                {"module_id": module_id, "drawer_id": submodule_id}
+                {
+                    "module_id": self.__remove_bits_8_to_15_and_get_24bit(module_id),
+                    "drawer_id": submodule_id,
+                }
             )
         else:
             self.__drawer_tree_publisher.publish(
-                {"module_id": module_id, "drawer_id": submodule_id}
+                {
+                    "module_id": self.__remove_bits_8_to_15_and_get_24bit(module_id),
+                    "drawer_id": submodule_id,
+                }
             )
         return True
 
@@ -79,6 +88,7 @@ class ModuleBridge(BaseBridge):
         if not self.__validate_module_id(module_id):
             print("Invalid module id")
             return False
+
         if self.__is_module_type(
             module_prefix=self.ELECTRIC_DRAWER_MODULE_ID_PREFIX,
             module_id=module_id,
@@ -86,7 +96,10 @@ class ModuleBridge(BaseBridge):
             module_prefix=self.PARTIAL_DRAWER_MODULE_ID_PREFIX, module_id=module_id
         ):
             self.__close_drawer_publisher.publish(
-                {"module_id": module_id, "drawer_id": submodule_id}
+                {
+                    "module_id": self.__remove_bits_8_to_15_and_get_24bit(module_id),
+                    "drawer_id": submodule_id,
+                }
             )
             return True
         else:
@@ -95,6 +108,7 @@ class ModuleBridge(BaseBridge):
 
     def get_submodule_is_open(self, module_id: int, submodule_id: int) -> bool:
         try:
+            module_id = self.__remove_bits_8_to_15_and_get_24bit(module_id)
             return self.context[f"{str(module_id)}_{str(submodule_id)}"]["is_open"]
         except KeyError:
             return False
@@ -123,3 +137,13 @@ class ModuleBridge(BaseBridge):
         first_8_bits = (module_id >> 24) & 0xFF
 
         return first_8_bits in valid_prefixes
+
+    def __remove_bits_8_to_15_and_get_24bit(self, value):
+        # Mask to remove bits 8 to 15
+        lower_bits = value & 0xFF  # Keep bits 0 to 7
+        upper_bits = (value >> 16) & 0xFFFF  # Keep bits 16 and above
+
+        # Combine lower bits and shifted upper bits
+        result = (upper_bits << 8) | lower_bits
+
+        return result
