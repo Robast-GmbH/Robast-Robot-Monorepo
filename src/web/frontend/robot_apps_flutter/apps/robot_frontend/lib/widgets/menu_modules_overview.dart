@@ -64,7 +64,6 @@ class MenuModulesOverview extends StatelessWidget {
                               context: context,
                               builder: (context) => ModuleDetailsDialog(
                                 moduleID: moduleID,
-                                submodules: moduleIDsBySubmodules[moduleID]!,
                               ),
                             );
                           },

@@ -6,8 +6,6 @@ import 'package:web_frontend/models/provider/fleet_provider.dart';
 import 'package:web_frontend/models/provider/map_provider.dart';
 import 'package:web_frontend/models/provider/task_provider.dart';
 import 'package:web_frontend/models/provider/user_provider.dart';
-import 'package:web_frontend/pages/fleet_management_page.dart';
-import 'package:web_frontend/pages/home_page.dart';
 
 class ConfigPage extends StatefulWidget {
   const ConfigPage({

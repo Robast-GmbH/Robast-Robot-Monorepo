@@ -12,8 +12,7 @@ class ModuleProvider extends ChangeNotifier {
 
   Future<void> startSubmodulesUpdateTimer({VoidCallback? onModuleProcess}) async {
     _submodulesUpdateTimer?.cancel();
-    final submodules = await _middlewareApiUtilities.modules.getSubmodules(robotName: 'rb_theron');
-    _setSubmodules(submodules);
+    await fetchSubmodules();
 
     _submodulesUpdateTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
       await fetchSubmodules();
