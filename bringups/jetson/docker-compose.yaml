@@ -38,6 +38,8 @@ services:
       - GREEN=${GREEN:-255}
       - BLUE=${BLUE:-255}
       - BRIGHTNESS=${BRIGHTNESS:-20}
+    devices:
+      - "/dev/robast/robast_nfc:/dev/robast/robast_nfc"
     volumes:
       - ./start_scripts/:/start_scripts/:ro
     stop_signal: SIGINT
