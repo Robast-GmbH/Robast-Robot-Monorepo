@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
-import 'package:robot_frontend/widgets/module_details_dialog.dart';
+import 'package:robot_frontend/widgets/dialogs/module_details_dialog.dart';
 import 'package:robot_frontend/widgets/rounded_button.dart';
 
 class MenuModulesOverview extends StatelessWidget {

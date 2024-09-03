@@ -5,7 +5,7 @@ import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/pages/tasks_overview_page.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
 import 'package:robot_frontend/widgets/rounded_button.dart';
-import 'package:robot_frontend/widgets/task_details_dialog.dart';
+import 'package:robot_frontend/widgets/dialogs/task_details_dialog.dart';
 
 class MenuTasksOverview extends StatefulWidget {
   const MenuTasksOverview({super.key});
