@@ -15,7 +15,7 @@
                                     topic="/robot/battery_estimator/data"
                                     battery_level="{battery}"/>
           <Sequence>
-            <InitLEDVector size="128"
+            <InitLEDVector size="119"
                            led_vector="{leds}"/>
             <PartialColorizeLED LEDs="{leds}"
                                 blue="255"
@@ -43,7 +43,7 @@
             </IfThenElse>
           </Sequence>
           <Sequence>
-            <InitLEDVector size="128"
+            <InitLEDVector size="119"
                            led_vector="{leds}"/>
             <PartialColorizeLED LEDs="{leds}"
                                 blue="{blue}"
@@ -106,7 +106,7 @@
                                       green="80"
                                       lower_bound="48.0"
                                       red="255"
-                                      upper_bound="80.0"
+                                      upper_bound="77.0"
                                       LEDs_colored="{leds}"/>
                   <LEDPublisherAction drawer_address="{drawer}"
                                       fading_time_ms="100"
@@ -145,13 +145,13 @@
                                       green="80"
                                       lower_bound="0.0"
                                       red="255"
-                                      upper_bound="28.0"
+                                      upper_bound="27.0"
                                       LEDs_colored="{leds}"/>
                   <PartialColorizeLED LEDs="{leds}"
                                       blue="0"
                                       brightness="255"
                                       green="80"
-                                      lower_bound="95.0"
+                                      lower_bound="98.0"
                                       red="255"
                                       upper_bound="100.0"
                                       LEDs_colored="{leds}"/>
