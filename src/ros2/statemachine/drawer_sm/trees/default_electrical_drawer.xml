@@ -3,7 +3,7 @@
       main_tree_to_execute="default_electrical_drawer_tree">
   <BehaviorTree ID="LED_Close">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="155"
@@ -18,7 +18,7 @@
 
   <BehaviorTree ID="LED_Closing">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="155"
@@ -37,7 +37,7 @@
                                  green="{green}"
                                  blue="{blue}"
                                  brightness="{brightness}"/>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="{blue}"
@@ -52,7 +52,7 @@
 
   <BehaviorTree ID="LED_Open">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="128"
@@ -67,7 +67,7 @@
 
   <BehaviorTree ID="LED_Start">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="105"
@@ -82,7 +82,7 @@
 
   <BehaviorTree ID="LED_unlocked">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="105"
