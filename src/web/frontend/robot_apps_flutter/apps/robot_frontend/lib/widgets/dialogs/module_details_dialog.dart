@@ -13,7 +13,7 @@ class ModuleDetailsDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
-    final modulePosition = moduleProvider.submodules.firstWhere((module) => module.address.moduleID == moduleID).position;
+    final modulePosition = moduleProvider.modules.indexWhere((module) => module.any((submodule) => submodule.address.moduleID == moduleID)) + 1;
     return AlertDialog(
       backgroundColor: RobotColors.primaryBackground,
       title: Text(

@@ -87,7 +87,7 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                               Padding(
                                 padding: const EdgeInsets.only(left: 8, bottom: 4),
                                 child: Text(
-                                  'Modul ${submodule.position} Submodul ${submodule.address.submoduleID}',
+                                  'Modul ${Provider.of<ModuleProvider>(context, listen: false).getSubmodulePosition(submodule)} Submodul ${submodule.address.submoduleID}',
                                   style: const TextStyle(fontSize: 32, color: RobotColors.primaryText),
                                 ),
                               ),

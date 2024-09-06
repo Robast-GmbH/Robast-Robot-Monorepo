@@ -12,7 +12,7 @@ task_assignment_system = TaskAssignmentSystem()
 @task_system_router.post("/task_assignment", tags=["Tasks"])
 def post_task_assignment(request: Task):
     success, message = task_assignment_system.receive_task(request)
-    return {"success": success, "message": message}
+    return {"status": "success" if success else "failure", "message": message}
 
 
 @task_system_router.get("/by_assignee", tags=["Tasks"])

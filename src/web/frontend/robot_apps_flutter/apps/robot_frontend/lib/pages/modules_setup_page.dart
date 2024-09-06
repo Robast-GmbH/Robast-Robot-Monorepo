@@ -226,7 +226,7 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                               isElectric = false;
                               isPartial = false;
 
-                              await moduleProvider.fetchSubmodules();
+                              await moduleProvider.fetchModules();
                             },
                             child: const Padding(
                               padding: EdgeInsets.all(8.0),

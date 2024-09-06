@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:provider/provider.dart';
 import 'package:web_frontend/constants/web_colors.dart';
+import 'package:web_frontend/models/provider/fleet_provider.dart';
 import 'package:web_frontend/widgets/rounded_container.dart';
 
 class ModuleDetailsDialog extends StatelessWidget {
-  const ModuleDetailsDialog({required this.moduleID, required this.submodules, super.key});
+  const ModuleDetailsDialog({required this.moduleID, required this.position, required this.submodules, super.key});
 
   final int moduleID;
+  final int position;
   final List<Submodule> submodules;
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        'Modul ${submodules.first.position}',
+        'Modul $position',
         style: const TextStyle(fontSize: 24, color: WebColors.primaryText),
       ),
       content: SingleChildScrollView(
