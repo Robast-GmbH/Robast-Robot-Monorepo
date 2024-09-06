@@ -162,9 +162,9 @@ class ModuleManager:
             return True
         return False
 
-    def __is_module_type(self, module_type: int, module_ID: int):
+    def __is_module_type(self, module_type: int, module_id: int):
         extracted_module_type = (
-            module_ID >> self.MODULE_UNIQUE_ID_LENGTH
+            module_id >> self.MODULE_UNIQUE_ID_LENGTH
         ) & self.MODULE_TYPE_BIT_MASK
         return extracted_module_type == module_type
 
