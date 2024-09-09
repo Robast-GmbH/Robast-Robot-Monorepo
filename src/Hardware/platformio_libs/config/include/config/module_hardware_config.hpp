@@ -55,12 +55,12 @@ namespace config
     uint8_t NUM_OF_LEDS_DRAWER = 0;
     uint8_t NUM_OF_LEDS_BASE = 0;
 
-    if (version == "Cura")
+    if constexpr (std::strcmp(version, version::CURA) == 0)
     {
       NUM_OF_LEDS_DRAWER = 21;
       NUM_OF_LEDS_BASE = 119;
     }
-    else if (version == "Rosah")
+    else if constexpr (std::strcmp(version, version::ROSAH) == 0)
     {
       NUM_OF_LEDS_DRAWER = 18;
       NUM_OF_LEDS_BASE = 120;
@@ -69,42 +69,25 @@ namespace config
     // Handle the different module prefixes
     switch (module_prefix)
     {
-      case module_id::ModulePrefix::BASE_LED_CONTROLLER:
-        return ModuleHardwareConfig(MODULE_DOES_NOT_CONTAIN_A_DRAWER,
-                                    IS_MANUAL_DRAWER,
-                                    USE_NO_ENCODER,
-                                    NUM_OF_LEDS_BASE,
-                                    module_id::ModulePrefix::BASE_LED_CONTROLLER);
-      case module_id::ModulePrefix::MANUAL_DRAWER_10x40:
-        return ModuleHardwareConfig(MODULE_CONTAINS_A_DRAWER,
-                                    IS_MANUAL_DRAWER,
-                                    USE_NO_ENCODER,
-                                    NUM_OF_LEDS_DRAWER,
-                                    module_id::ModulePrefix::MANUAL_DRAWER_10x40);
-      case module_id::ModulePrefix::MANUAL_DRAWER_20x40:
-        return ModuleHardwareConfig(MODULE_CONTAINS_A_DRAWER,
-                                    IS_MANUAL_DRAWER,
-                                    USE_NO_ENCODER,
-                                    NUM_OF_LEDS_DRAWER,
-                                    module_id::ModulePrefix::MANUAL_DRAWER_20x40);
-      case module_id::ModulePrefix::MANUAL_DRAWER_30x40:
-        return ModuleHardwareConfig(MODULE_CONTAINS_A_DRAWER,
-                                    IS_MANUAL_DRAWER,
-                                    USE_NO_ENCODER,
-                                    NUM_OF_LEDS_DRAWER,
-                                    module_id::ModulePrefix::MANUAL_DRAWER_30x40);
-      case module_id::ModulePrefix::E_DRAWER_10x40:
-        return ModuleHardwareConfig(MODULE_CONTAINS_A_DRAWER,
-                                    IS_ELECTRICAL_DRAWER,
-                                    USE_ENCODER,
-                                    NUM_OF_LEDS_DRAWER,
-                                    module_id::ModulePrefix::E_DRAWER_10x40);
-      case module_id::ModulePrefix::PARTIAL_DRAWER_10x40x8:
-        return ModuleHardwareConfig(MODULE_CONTAINS_A_DRAWER,
-                                    IS_ELECTRICAL_DRAWER,
-                                    USE_ENCODER,
-                                    NUM_OF_LEDS_DRAWER,
-                                    module_id::ModulePrefix::PARTIAL_DRAWER_10x40x8);
+      using enum module_id::ModulePrefix;
+      case BASE_LED_CONTROLLER:
+        return ModuleHardwareConfig(
+          MODULE_DOES_NOT_CONTAIN_A_DRAWER, IS_MANUAL_DRAWER, USE_NO_ENCODER, NUM_OF_LEDS_BASE, BASE_LED_CONTROLLER);
+      case MANUAL_DRAWER_10x40:
+        return ModuleHardwareConfig(
+          MODULE_CONTAINS_A_DRAWER, IS_MANUAL_DRAWER, USE_NO_ENCODER, NUM_OF_LEDS_DRAWER, MANUAL_DRAWER_10x40);
+      case MANUAL_DRAWER_20x40:
+        return ModuleHardwareConfig(
+          MODULE_CONTAINS_A_DRAWER, IS_MANUAL_DRAWER, USE_NO_ENCODER, NUM_OF_LEDS_DRAWER, MANUAL_DRAWER_20x40);
+      case MANUAL_DRAWER_30x40:
+        return ModuleHardwareConfig(
+          MODULE_CONTAINS_A_DRAWER, IS_MANUAL_DRAWER, USE_NO_ENCODER, NUM_OF_LEDS_DRAWER, MANUAL_DRAWER_30x40);
+      case E_DRAWER_10x40:
+        return ModuleHardwareConfig(
+          MODULE_CONTAINS_A_DRAWER, IS_ELECTRICAL_DRAWER, USE_ENCODER, NUM_OF_LEDS_DRAWER, E_DRAWER_10x40);
+      case PARTIAL_DRAWER_10x40x8:
+        return ModuleHardwareConfig(
+          MODULE_CONTAINS_A_DRAWER, IS_ELECTRICAL_DRAWER, USE_ENCODER, NUM_OF_LEDS_DRAWER, PARTIAL_DRAWER_10x40x8);
     }
   };
 
