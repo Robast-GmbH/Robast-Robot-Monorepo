@@ -20,7 +20,7 @@
 #endif
 
 // These are the very basic top level configurations for the drawer controller you need to set.
-constexpr config::UserConfig USER_CONFIG{.module_version = config::CURA_VERSION,
+constexpr config::UserConfig USER_CONFIG{.module_version = config::version::CURA,
                                          .module_prefix = module_id::ModulePrefix::E_DRAWER_10x40,
                                          .unique_module_id = 1,
                                          .lock_id = 1,

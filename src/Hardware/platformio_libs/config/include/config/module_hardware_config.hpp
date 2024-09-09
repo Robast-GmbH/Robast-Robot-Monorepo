@@ -8,6 +8,12 @@
 
 namespace config
 {
+  namespace version
+  {
+    constexpr const char ROSAH[] = "Rosah";
+    constexpr const char CURA[] = "Cura";
+  }   // namespace version
+
   struct ModuleHardwareConfig
   {
     bool module_contains_a_drawer;
@@ -38,15 +44,12 @@ namespace config
   constexpr bool USE_ENCODER = true;
   constexpr bool USE_NO_ENCODER = false;
 
-  constexpr const char ROSAH_VERSION[] = "Rosah";
-  constexpr const char CURA_VERSION[] = "Cura";
-
   template <const char* version>
   constexpr ModuleHardwareConfig get_module_hardware_config(module_id::ModulePrefix module_prefix)
   {
     // Check if the version is supported at compile-time
     constexpr bool is_supported_version =
-      (std::strcmp(version, ROSAH_VERSION) == 0) || (std::strcmp(version, CURA_VERSION) == 0);
+      (std::strcmp(version, version::ROSAH) == 0) || (std::strcmp(version, version::CURA) == 0);
     static_assert(is_supported_version, "Unsupported module hardware version at compile-time.");
 
     uint8_t NUM_OF_LEDS_DRAWER = 0;
