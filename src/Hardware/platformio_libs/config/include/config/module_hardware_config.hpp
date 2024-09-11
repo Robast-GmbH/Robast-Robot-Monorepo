@@ -63,7 +63,7 @@ namespace config
     else if constexpr (std::strcmp(version, version::ROSAH) == 0)
     {
       NUM_OF_LEDS_DRAWER = 18;
-      NUM_OF_LEDS_BASE = 120;
+      NUM_OF_LEDS_BASE = 128;
     }
 
     // Handle the different module prefixes
