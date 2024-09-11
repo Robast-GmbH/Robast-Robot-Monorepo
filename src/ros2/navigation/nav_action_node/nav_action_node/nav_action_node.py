@@ -1,10 +1,11 @@
 import rclpy
 from rclpy.action import ActionClient
 from rclpy.node import Node
+from action_msgs.msg import GoalStatus
 
 from nav2_msgs.action import NavigateToPose
 from geometry_msgs.msg import Pose, PoseStamped
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, String
 from builtin_interfaces.msg import Duration
 
 import os
@@ -31,6 +32,9 @@ class NavigateToPoseActionClient(Node):
         )
         self.__is_navigating_publisher = self.create_publisher(
             Bool, "is_navigating", 10
+        )
+        self.__status_publisher = self.create_publisher( 
+            String, "goal_status", 10
         )
 
         timer_period_in_seconds = 1.0
@@ -80,8 +84,18 @@ class NavigateToPoseActionClient(Node):
         self._get_result_future.add_done_callback(self.__get_result_callback)
 
     def __get_result_callback(self, future):
-        result = future.result().result
-        self.get_logger().info("Result: {0}".format(result))
+        status = future.result().status
+
+        if status == GoalStatus.STATUS_SUCCEEDED:  
+            self.get_logger().info("Goal succeeded!")
+            self.__status_publisher.publish(String(data="SUCCEEDED"))
+        elif status == GoalStatus.STATUS_CANCELED:  
+            self.get_logger().info("Goal was canceled")
+            self.__status_publisher.publish(String(data="CANCELED"))
+        elif status == GoalStatus.STATUS_ABORTED:  
+            self.get_logger().info("Goal failed or was aborted")
+            self.__status_publisher.publish(String(data="ABORTED"))
+    
         self.__is_navigating_publisher.publish(Bool(data=False))
 
     def __feedback_callback(self, feedback_msg):
