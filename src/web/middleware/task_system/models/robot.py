@@ -218,7 +218,6 @@ class Robot:
     def __enqueue_task(self, task: Task) -> None:
         with self.__subtask_queue_lock:
             self.__subtask_queue.extend([subtask.id for subtask in task.subtasks])
-            print(self.__subtask_queue)
             self.__optimize_task_queue()
 
     def __optimize_task_queue(self) -> None:
