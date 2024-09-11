@@ -3,6 +3,8 @@ class SubmoduleTypeController {
 
   int valueAsInt() {
     switch (value) {
+      case 'partial':
+        return 5;
       case 'small':
         return 1;
       case 'medium':

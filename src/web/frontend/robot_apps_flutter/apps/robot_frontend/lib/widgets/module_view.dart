@@ -33,7 +33,7 @@ class ModuleView extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     color: enabled ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.05),
-                    border: isReserved
+                    border: isReserved && enabled
                         ? Border.all(
                             color: Colors.black87,
                             width: 8,

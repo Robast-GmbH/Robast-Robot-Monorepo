@@ -33,7 +33,7 @@ class _SubmoduleTypeSelectorState extends State<SubmoduleTypeSelector> {
             ),
             CustomDropdownButton(
                 value: widget.controller.value,
-                items: ['small', 'medium', 'large'],
+                items: ['partial', 'small', 'medium', 'large'],
                 onChanged: (value) {
                   setState(() {
                     widget.controller.value = value;

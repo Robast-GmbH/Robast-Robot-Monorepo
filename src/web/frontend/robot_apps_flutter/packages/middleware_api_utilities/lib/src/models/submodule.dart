@@ -1,6 +1,6 @@
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 
-enum SubmoduleVariant { manual, electric }
+enum SubmoduleVariant { manual, electric, partial }
 
 class Submodule {
   Submodule({

@@ -10,6 +10,7 @@ import 'package:web_frontend/models/controller/user_selection_controller.dart';
 import 'package:web_frontend/models/provider/task_provider.dart';
 import 'package:web_frontend/widgets/invalid_inputs_dialog.dart';
 import 'package:web_frontend/widgets/module_content_creation_view.dart';
+import 'package:web_frontend/widgets/nfc_missing_dialog.dart';
 import 'package:web_frontend/widgets/selectors/location_selector.dart';
 import 'package:web_frontend/widgets/selectors/submodule_type_selector.dart';
 import 'package:web_frontend/widgets/selectors/time_selector.dart';
@@ -144,6 +145,22 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
               ),
               ElevatedButton(
                 onPressed: () async {
+                  if ((senderUserController.selectedUser?.nfcID.isEmpty ?? false) || (recipientUserController.selectedUser?.nfcID.isEmpty ?? false)) {
+                    final identifiers = <String>[];
+                    if (senderUserController.selectedUser?.nfcID.isEmpty ?? false) {
+                      identifiers.add('Sender');
+                    }
+                    if (recipientUserController.selectedUser?.nfcID.isEmpty ?? false) {
+                      identifiers.add('Empfänger');
+                    }
+                    showDialog(
+                        context: context,
+                        builder: (
+                          context,
+                        ) =>
+                            NfcMissingDialog(identifiers: identifiers));
+                    return;
+                  }
                   if (validateInputs()) {
                     await Provider.of<TaskProvider>(context, listen: false).createDeliveryTaskRequest(
                       requiredSubmoduleType: submoduleTypeController.valueAsInt(),

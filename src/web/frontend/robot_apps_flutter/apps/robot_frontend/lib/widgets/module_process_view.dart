@@ -41,7 +41,7 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
     }
     final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
     await moduleProvider.finishSubmoduleProcess(moduleInProcess);
-    await moduleProvider.fetchSubmodules();
+    await moduleProvider.fetchModules();
     finishedTimer?.cancel();
     if (mounted) {
       Navigator.pop(context);
@@ -62,16 +62,18 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
           child: Selector<ModuleProvider, List<Submodule>>(
             selector: (_, provider) => provider.submodules,
             builder: (context, modules, child) {
+              final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
               if (modules.isEmpty || modules.every((module) => module.moduleProcess.status == ModuleProcessStatus.idle)) {
                 return const Center(child: CircularProgressIndicator());
               }
-              final moduleInProcess = Provider.of<ModuleProvider>(context).submodules.firstWhere(
-                    (element) => element.moduleProcess.status != ModuleProcessStatus.idle,
-                  );
+              final moduleInProcess = moduleProvider.submodules.firstWhere(
+                (element) => element.moduleProcess.status != ModuleProcessStatus.idle,
+              );
+              final position = moduleProvider.modules.indexWhere((submodules) => submodules.contains(moduleInProcess)) + 1;
               if (isDisinfected && moduleInProcess.moduleProcess.status == ModuleProcessStatus.waitingForOpening && !openingTriggered) {
                 openingTriggered = true;
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Provider.of<ModuleProvider>(context, listen: false).openSubmodule(moduleInProcess);
+                  moduleProvider.openSubmodule(moduleInProcess);
                 });
                 return const Center(child: CircularProgressIndicator());
               }
@@ -82,7 +84,7 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                   requiredUserGroups: moduleInProcess.reservedForGroups,
                   onAuthCompleted: ({required bool wasSuccessful}) {
                     if (wasSuccessful) {
-                      Provider.of<ModuleProvider>(context, listen: false).fetchSubmodules();
+                      moduleProvider.fetchModules();
                     }
                   },
                 );
@@ -108,30 +110,30 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                           children: [
                             if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.opening) ...[
                               HintView(
-                                text: modules[moduleInProcess.address.moduleID - 1].variant == SubmoduleVariant.electric
+                                text: moduleInProcess.variant == SubmoduleVariant.electric || moduleInProcess.variant == SubmoduleVariant.partial
                                     ? 'Gewählte Schublade öffnet sich'
                                     : 'Bitte gewählte Schublade öffnen',
-                                moduleLabel: 'Modul ${moduleInProcess.address.moduleID}',
+                                moduleLabel: 'Modul $position',
                               ),
                             ],
                             if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.open) ...[
                               GestureDetector(
                                 onTap: () {
-                                  if (moduleInProcess.variant == SubmoduleVariant.electric) {
-                                    Provider.of<ModuleProvider>(context, listen: false).closeSubmodule(moduleInProcess);
+                                  if (moduleInProcess.variant == SubmoduleVariant.electric || moduleInProcess.variant == SubmoduleVariant.partial) {
+                                    moduleProvider.closeSubmodule(moduleInProcess);
                                   }
                                 },
                                 child: HintView(
                                   text:
-                                      '${moduleInProcess.moduleProcess.itemsByChangeToString()}${moduleInProcess.variant == SubmoduleVariant.electric ? ' Zum Schließen tippen.' : ''}',
-                                  moduleLabel: 'Modul ${moduleInProcess.address.moduleID}',
+                                      '${moduleInProcess.moduleProcess.itemsByChangeToString()}${moduleInProcess.variant == SubmoduleVariant.electric || moduleInProcess.variant == SubmoduleVariant.partial ? ' Zum Schließen tippen.' : ''}',
+                                  moduleLabel: 'Modul $position',
                                 ),
                               ),
                             ],
                             if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.closing) ...[
                               HintView(
                                 text: 'Schublade schließt sich, bitte warten',
-                                moduleLabel: 'Modul ${moduleInProcess.address.moduleID}',
+                                moduleLabel: 'Modul $position',
                               ),
                             ],
                           ],
@@ -179,7 +181,7 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                               child: CustomButtonView(
                                 text: 'Erneut öffnen',
                                 onPressed: () async {
-                                  await Provider.of<ModuleProvider>(context, listen: false).openSubmodule(moduleInProcess);
+                                  await moduleProvider.openSubmodule(moduleInProcess);
                                   finishedTimer?.cancel();
                                   waitingForFinish = false;
                                   finishTimerClockIndex = 0;

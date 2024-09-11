@@ -1,44 +1,63 @@
 from sub_bridges.base_bridge import BaseBridge
-from models.submodule import Submodule, TYPE_ELECTRIC_DRAWER
 from roslibpy import Ros
-from typing import Dict, List, Any
-
-DRAWER_STATUS_MSG = "communication_interfaces/msg/DrawerStatus"
-DRAWER_ADDRESS_MSG = "communication_interfaces/msg/DrawerAddress"
 
 
 class ModuleBridge(BaseBridge):
+    DRAWER_STATUS_MSG = "communication_interfaces/msg/DrawerStatus"
+    DRAWER_ADDRESS_MSG = "communication_interfaces/msg/DrawerAddress"
+
+    MODULE_UNIQUE_ID_LENGTH = 16
+    MODULE_TYPES = {
+        "MANUAL_DRAWER_10x40": 0b00010001,
+        "MANUAL_DRAWER_20x40": 0b00010010,
+        "MANUAL_DRAWER_30x40": 0b00010011,
+        "E_DRAWER_10x40": 0b00010100,
+        "PARTIAL_DRAWER_10x40x8": 0b00010101,
+        "DINNER_TRAYS": 0b00010110,
+        "SURGERY_TOOLS": 0b00010111,
+    }
+
     def __init__(self, ros: Ros) -> None:
         super().__init__(ros)
-        Submodule.load_submodules(
-            "/workspace/src/robot_backend/configs/module_config.yaml"
-        )
         self.__drawer_open_subscriber = self.start_subscriber(
             "/bt_drawer_open",
-            DRAWER_STATUS_MSG,
+            ModuleBridge.DRAWER_STATUS_MSG,
             on_msg_callback=self.__on_submodule_is_open_msg_callback,
         )
         self.__drawer_tree_publisher = self.start_publisher(
             "/trigger_drawer_tree",
-            DRAWER_ADDRESS_MSG,
+            ModuleBridge.DRAWER_ADDRESS_MSG,
         )
         self.__electric_drawer_tree_publisher = self.start_publisher(
             "/trigger_electric_drawer_tree",
-            DRAWER_ADDRESS_MSG,
+            ModuleBridge.DRAWER_ADDRESS_MSG,
+        )
+        self.__partial_drawer_tree_publisher = self.start_publisher(
+            "/trigger_partial_drawer_tree",
+            ModuleBridge.DRAWER_ADDRESS_MSG,
         )
         self.__close_drawer_publisher = self.start_publisher(
             "/close_drawer",
-            DRAWER_ADDRESS_MSG,
+            ModuleBridge.DRAWER_ADDRESS_MSG,
         )
 
     def open_submodule(self, module_id: int, submodule_id: int) -> bool:
-        submodule = Submodule.get_submodule(module_id, submodule_id)
-        if submodule is None:
-            print("Module not found")
+        if not self.__validate_module_id(module_id):
+            print("Invalid module id")
             return False
 
-        if submodule.get_type() == TYPE_ELECTRIC_DRAWER:
+        if self.__is_module_type(
+            module_type=ModuleBridge.MODULE_TYPES["E_DRAWER_10x40"],
+            module_id=module_id,
+        ):
             self.__electric_drawer_tree_publisher.publish(
+                {"module_id": module_id, "drawer_id": submodule_id}
+            )
+        elif self.__is_module_type(
+            module_type=ModuleBridge.MODULE_TYPES["PARTIAL_DRAWER_10x40x8"],
+            module_id=module_id,
+        ):
+            self.__partial_drawer_tree_publisher.publish(
                 {"module_id": module_id, "drawer_id": submodule_id}
             )
         else:
@@ -48,11 +67,16 @@ class ModuleBridge(BaseBridge):
         return True
 
     def close_submodule(self, module_id: int, submodule_id: int) -> bool:
-        submodule = Submodule.get_submodule(module_id, submodule_id)
-        if submodule is None:
-            print("Submodule not found")
+        if not self.__validate_module_id(module_id):
+            print("Invalid module id")
             return False
-        if submodule.get_type() == TYPE_ELECTRIC_DRAWER:
+        if self.__is_module_type(
+            module_type=ModuleBridge.MODULE_TYPES["E_DRAWER_10x40"],
+            module_id=module_id,
+        ) or self.__is_module_type(
+            module_type=ModuleBridge.MODULE_TYPES["PARTIAL_DRAWER_10x40x8"],
+            module_id=module_id,
+        ):
             self.__close_drawer_publisher.publish(
                 {"module_id": module_id, "drawer_id": submodule_id}
             )
@@ -61,18 +85,22 @@ class ModuleBridge(BaseBridge):
             print("Tried closing a manual drawer.")
             return False
 
-    def get_submodules(self) -> List[Dict[str, Any]]:
-        return Submodule.submodules_as_json()
-
     def get_submodule_is_open(self, module_id: int, submodule_id: int) -> bool:
-        submodule = Submodule.get_submodule(module_id, submodule_id)
-        if submodule is None:
+        try:
+            return self.context[f"{str(module_id)}_{str(submodule_id)}"]["is_open"]
+        except KeyError:
             return False
-        return submodule.get_is_open()
 
     def __on_submodule_is_open_msg_callback(self, msg: dict) -> None:
         module_id = msg["drawer_address"]["module_id"]
         submodule_id = msg["drawer_address"]["drawer_id"]
         is_open = msg["drawer_is_open"]
+        self.context[f"{str(module_id)}_{str(submodule_id)}"] = {"is_open": is_open}
 
-        Submodule.get_submodule(module_id, submodule_id).set_is_open(is_open)
+    def __is_module_type(self, module_type: int, module_id: int) -> bool:
+        return module_id >> ModuleBridge.MODULE_UNIQUE_ID_LENGTH == module_type
+
+    def __validate_module_id(self, module_id: int) -> bool:
+        return (
+            module_id >> ModuleBridge.MODULE_UNIQUE_ID_LENGTH
+        ) in ModuleBridge.MODULE_TYPES.values()

@@ -18,6 +18,7 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
   final List<bool> selectedSlots = List.generate(8, (index) => false);
   final controller = TextEditingController();
   bool isElectric = false;
+  bool isPartial = false;
 
   void updateSlots(List<Submodule> submodules) {
     slotOccupancy.fillRange(0, slotOccupancy.length, false);
@@ -62,7 +63,13 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
               padding: const EdgeInsets.only(top: 28, bottom: 28),
               child: Selector<ModuleProvider, List<Submodule>>(
                 selector: (_, provider) => provider.submodules,
-                builder: (context, modules, child) {
+                builder: (context, submodules, child) {
+                  final modules = <Submodule>[];
+                  for (final submodule in submodules) {
+                    if (!modules.any((module) => module.address.moduleID == submodule.address.moduleID)) {
+                      modules.add(submodule);
+                    }
+                  }
                   updateSlots(modules);
                   return Column(
                     children: List.generate(
@@ -149,11 +156,34 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                           onChanged: (value) {
                             setState(() {
                               isElectric = value ?? false;
+                              isPartial = false;
                             });
                           },
                         ),
                         const Text(
                           'Ist elektrisch',
+                          style: TextStyle(color: RobotColors.primaryText),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    Row(
+                      children: [
+                        Checkbox(
+                          activeColor: RobotColors.accent,
+                          checkColor: RobotColors.secondaryText,
+                          value: isPartial,
+                          onChanged: (value) {
+                            setState(() {
+                              isPartial = value ?? false;
+                              isElectric = false;
+                            });
+                          },
+                        ),
+                        const Text(
+                          'Ist partiell',
                           style: TextStyle(color: RobotColors.primaryText),
                         ),
                       ],
@@ -165,21 +195,38 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                           child: RoundedButton(
                             onPressed: () async {
                               if (selectedSlots.every((slot) => !slot)) return;
-                              await Provider.of<ModuleProvider>(context, listen: false).createSubmodule(
-                                robotName: 'rb_theron',
-                                submoduleAddress: SubmoduleAddress(
-                                  moduleID: int.tryParse(controller.text) ?? 0,
-                                  submoduleID: 0,
-                                ),
-                                position: selectedSlots.indexWhere((slot) => slot) + 1,
-                                size: selectedSlots.where((slot) => slot).length,
-                                variant: isElectric ? 'electric' : 'manual',
-                              );
+                              final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
+                              if (isPartial) {
+                                for (int submoduleID = 1; submoduleID <= 8; submoduleID++) {
+                                  await moduleProvider.createSubmodule(
+                                    robotName: 'rb_theron',
+                                    submoduleAddress: SubmoduleAddress(
+                                      moduleID: int.tryParse(controller.text) ?? 0,
+                                      submoduleID: submoduleID,
+                                    ),
+                                    position: selectedSlots.indexWhere((slot) => slot) + 1,
+                                    size: selectedSlots.where((slot) => slot).length,
+                                    variant: 'partial',
+                                  );
+                                }
+                              } else {
+                                await moduleProvider.createSubmodule(
+                                  robotName: 'rb_theron',
+                                  submoduleAddress: SubmoduleAddress(
+                                    moduleID: int.tryParse(controller.text) ?? 0,
+                                    submoduleID: 1,
+                                  ),
+                                  position: selectedSlots.indexWhere((slot) => slot) + 1,
+                                  size: selectedSlots.where((slot) => slot).length,
+                                  variant: isElectric ? 'electric' : 'manual',
+                                );
+                              }
+
                               selectedSlots.fillRange(0, selectedSlots.length, false);
                               isElectric = false;
-                              if (context.mounted) {
-                                await Provider.of<ModuleProvider>(context, listen: false).fetchSubmodules();
-                              }
+                              isPartial = false;
+
+                              await moduleProvider.fetchModules();
                             },
                             child: const Padding(
                               padding: EdgeInsets.all(8.0),
