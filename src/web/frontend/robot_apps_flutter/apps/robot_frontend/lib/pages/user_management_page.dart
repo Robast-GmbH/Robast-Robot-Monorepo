@@ -72,8 +72,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
                           await userProvider.createUser(
                             newUser: User(
                               id: '',
-                              nfcID: '',
-                              mail: '',
+                              nfcID: null,
+                              mail: null,
                               title: '',
                               firstName: firstNameController.text,
                               lastName: lastNameController.text,
