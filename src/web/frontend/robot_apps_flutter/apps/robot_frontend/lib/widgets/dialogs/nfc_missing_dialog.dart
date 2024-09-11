@@ -16,8 +16,8 @@ class NfcMissingDialog extends StatelessWidget {
       ),
       content: Text(
         identifiers.length != 1
-            ? '${identifiers.sublist(0, identifiers.length - 1).join(', ')} und ${identifiers.last} haben keine NFC-ID. Bitte wenden Sie sich für die Zuweisung einer NFC-ID an einen Admin.'
-            : 'Der ${identifiers.first} hat keine NFC-ID. Bitte wenden Sie sich für die Zuweisung einer NFC-ID an einen Admin.',
+            ? '${identifiers.sublist(0, identifiers.length - 1).join(', ')} und ${identifiers.last} haben keine eingerichtete Authentifizierung. Bitte wenden Sie sich für die Einrichtung an einen Admin.'
+            : 'Der ${identifiers.first} hat keine eingerichtete Authentifizierung. Bitte wenden Sie sich für die Einrichtung an einen Admin.',
         style: const TextStyle(color: RobotColors.secondaryText, fontSize: 24),
       ),
       actions: [
