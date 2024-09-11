@@ -20,11 +20,10 @@ namespace bt_plugins
       const char *value = std::getenv(varName);
       if (value)
       {
-        std::istringstream iss(value);
-        uint8_t intValue;
-        if (iss >> intValue)
+        int intValue = std::stoi(value);
+        if (intValue >= 0 && intValue <= 255)
         {
-          return intValue;
+          return static_cast<uint8_t>(intValue);
         }
       }
       return defaultValue;
