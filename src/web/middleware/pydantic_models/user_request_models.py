@@ -3,8 +3,8 @@ from typing import Optional
 
 
 class CreateUserRequest(BaseModel):
-    mail: str = ""
-    nfc_id: str = ""
+    mail: str | None = None
+    nfc_id: str | None = None
     title: str
     first_name: str
     last_name: str

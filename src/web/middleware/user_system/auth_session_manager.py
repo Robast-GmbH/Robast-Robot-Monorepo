@@ -1,5 +1,5 @@
 from user_system.user_repository import UserRepository
-from pydantic_models.user import User
+from db_models.user import User
 from models.periodic_timer import PeriodicTimer
 from configs.url_config import ROBOT_NAME_TO_IP, ROBOT_API_PORT
 import requests
