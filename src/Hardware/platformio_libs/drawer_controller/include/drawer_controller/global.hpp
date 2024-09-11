@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include "config/module_hardware_config.hpp"
+#include "config/user_config.hpp"
 #include "debug/debug.hpp"
 #include "drawer/electrical_drawer.hpp"
 #include "drawer/manual_drawer.hpp"
