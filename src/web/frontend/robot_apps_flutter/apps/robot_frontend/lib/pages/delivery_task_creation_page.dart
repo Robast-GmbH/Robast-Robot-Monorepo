@@ -225,10 +225,10 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                 if (!(senderUserController.selectedUser?.hasNfcID() ?? true) || !(recipientUserController.selectedUser?.hasNfcID() ?? true)) {
                   final identifiers = <String>[];
                   if (!(senderUserController.selectedUser?.hasNfcID() ?? true)) {
-                    identifiers.add('Sender');
+                    identifiers.add('${senderUserController.selectedUser!.firstName} ${senderUserController.selectedUser!.lastName}');
                   }
                   if (!(recipientUserController.selectedUser?.hasNfcID() ?? true)) {
-                    identifiers.add('Empfänger');
+                    identifiers.add('${recipientUserController.selectedUser!.firstName} ${recipientUserController.selectedUser!.lastName}');
                   }
                   showDialog(
                     context: context,
