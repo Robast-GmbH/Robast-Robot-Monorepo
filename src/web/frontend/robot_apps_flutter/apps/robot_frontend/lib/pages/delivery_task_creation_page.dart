@@ -222,13 +222,13 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
               padding: const EdgeInsets.symmetric(horizontal: 4),
               color: Colors.black.withOpacity(0.2),
               onPressed: () async {
-                if ((senderUserController.selectedUser?.nfcID.isEmpty ?? false) || (recipientUserController.selectedUser?.nfcID.isEmpty ?? false)) {
+                if (!(senderUserController.selectedUser?.hasNfcID() ?? true) || !(recipientUserController.selectedUser?.hasNfcID() ?? true)) {
                   final identifiers = <String>[];
-                  if (senderUserController.selectedUser?.nfcID.isEmpty ?? false) {
-                    identifiers.add('Sender');
+                  if (!(senderUserController.selectedUser?.hasNfcID() ?? true)) {
+                    identifiers.add('${senderUserController.selectedUser!.firstName} ${senderUserController.selectedUser!.lastName}');
                   }
-                  if (recipientUserController.selectedUser?.nfcID.isEmpty ?? false) {
-                    identifiers.add('Empfänger');
+                  if (!(recipientUserController.selectedUser?.hasNfcID() ?? true)) {
+                    identifiers.add('${recipientUserController.selectedUser!.firstName} ${recipientUserController.selectedUser!.lastName}');
                   }
                   showDialog(
                     context: context,

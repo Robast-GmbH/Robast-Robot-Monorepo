@@ -1,6 +1,6 @@
 from task_system.task_repository import TaskRepository
-from pydantic_models.task import Task
-from pydantic_models.sub_task import SubTask
+from pydantic_models.task_request import Task
+from db_models.subtask import Subtask
 
 
 class TaskManager:
@@ -28,13 +28,13 @@ class TaskManager:
     def read_all_tasks(self) -> list[Task]:
         return self.task_repository.read_tasks()
 
-    def read_subtask(self, subtask_id: str) -> SubTask | None:
+    def read_subtask(self, subtask_id: str) -> Subtask | None:
         return self.task_repository.read_subtask(subtask_id)
 
-    def read_subtasks_by_task_id(self, task_id) -> list[SubTask]:
+    def read_subtasks_by_task_id(self, task_id) -> list[Subtask]:
         return self.task_repository.read_subtasks_by_task_id(task_id)
 
-    def read_subtasks_by_subtask_ids(self, subtask_ids: list[str]) -> list[SubTask]:
+    def read_subtasks_by_subtask_ids(self, subtask_ids: list[str]) -> list[Subtask]:
         return self.task_repository.read_subtasks_by_subtask_ids(subtask_ids)
 
     def update_task(self, task) -> bool:

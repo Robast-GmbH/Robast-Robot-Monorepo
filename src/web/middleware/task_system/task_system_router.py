@@ -1,8 +1,9 @@
 from fastapi import APIRouter
 
+from pydantic_models.task_request import TaskRequest
 from task_system.task_assignment_system import TaskAssignmentSystem
 from task_system.task_manager import TaskManager
-from pydantic_models.task import Task
+from pydantic_models.task_request import TaskRequest
 
 task_system_router = APIRouter()
 task_manager = TaskManager()
@@ -10,7 +11,7 @@ task_assignment_system = TaskAssignmentSystem()
 
 
 @task_system_router.post("/task_assignment", tags=["Tasks"])
-def post_task_assignment(request: Task):
+def post_task_assignment(request: TaskRequest):
     success, message = task_assignment_system.receive_task(request)
     return {"status": "success" if success else "failure", "message": message}
 
@@ -36,7 +37,7 @@ def get_robot_tasks(robot_name: str):
 
 
 @task_system_router.post("/create_task", tags=["Tasks"])
-def create_task(task: Task):
+def create_task(task: TaskRequest):
     task_manager.create_task(task)
     return task
 
@@ -48,7 +49,8 @@ def get_task(task_id: str):
 
 @task_system_router.get("/tasks", tags=["Tasks"])
 def get_tasks():
-    return task_manager.read_all_tasks()
+    tasks = task_manager.read_all_tasks()
+    return [task.to_json() for task in tasks]
 
 
 @task_system_router.get("/subtasks", tags=["Tasks"])
@@ -58,7 +60,7 @@ def get_subtasks(task_id: str):
 
 
 @task_system_router.put("/update_task", tags=["Tasks"])
-def update_task(task: Task):
+def update_task(task: TaskRequest):
     return task_manager.update_task(task)
 
 
