@@ -170,7 +170,7 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                   onPressed: () async {
                     final usersWithMissingNfc = widget.userSelectionControllers
                         .map((controller) => controller.selectedUser)
-                        .where((user) => user != null && user.nfcID.isEmpty)
+                        .where((user) => user != null && (user.nfcID?.isEmpty ?? true))
                         .toList();
                     if (usersWithMissingNfc.isNotEmpty) {
                       showDialog(

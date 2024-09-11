@@ -30,7 +30,7 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
     super.initState();
     firstNameController.text = widget.user.firstName;
     lastNameController.text = widget.user.lastName;
-    mailController.text = widget.user.mail;
+    mailController.text = widget.user.mail ?? '';
     station = widget.user.station.isEmpty ? null : widget.user.station;
     room = widget.user.room.isEmpty ? null : widget.user.room;
   }

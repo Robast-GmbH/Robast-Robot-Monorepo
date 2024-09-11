@@ -145,12 +145,12 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  if ((senderUserController.selectedUser?.nfcID.isEmpty ?? false) || (recipientUserController.selectedUser?.nfcID.isEmpty ?? false)) {
+                  if (!(senderUserController.selectedUser?.hasNfcID() ?? true) || (!(recipientUserController.selectedUser?.hasNfcID() ?? true))) {
                     final identifiers = <String>[];
-                    if (senderUserController.selectedUser?.nfcID.isEmpty ?? false) {
+                    if (!(senderUserController.selectedUser?.hasNfcID() ?? true)) {
                       identifiers.add('Sender');
                     }
-                    if (recipientUserController.selectedUser?.nfcID.isEmpty ?? false) {
+                    if (!(recipientUserController.selectedUser?.hasNfcID() ?? true)) {
                       identifiers.add('Empfänger');
                     }
                     showDialog(
