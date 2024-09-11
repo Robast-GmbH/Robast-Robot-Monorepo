@@ -37,7 +37,7 @@ class Submodule(Base):
     reserved_for_ids = Column(JSON)
     reserved_for_groups = Column(JSON)
 
-    def update_data(self, submodule: "Submodule"):
+    def update_data(self, submodule: "Submodule") -> None:
         self.robot_name = submodule.robot_name
         self.module_id = submodule.module_id
         self.submodule_id = submodule.submodule_id

@@ -18,7 +18,7 @@ class SubtaskRequest(BaseModel):
     requirements: dict[str, Any]
     action: Action
 
-    def to_db_subtask(self):
+    def to_db_subtask(self) -> Subtask:
         return Subtask(
             id=self.id,
             name=self.name,

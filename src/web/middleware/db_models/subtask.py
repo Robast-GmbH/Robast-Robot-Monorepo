@@ -26,7 +26,7 @@ class Subtask(Base):
 
     parent = relationship("Task", back_populates="subtasks")
 
-    def to_json(self):
+    def to_json(self) -> Dict[str, Any]:
         return {
             "id": self.id,
             "name": self.name,
@@ -59,7 +59,7 @@ class Subtask(Base):
                 action["parameters"]["submodule_address"] = submodule_address_json
             action = action["subaction"]
 
-    def to_robot_task_request(self) -> dict[str, Any]:
+    def to_robot_task_request(self) -> Dict[str, Any]:
         return {
             "type": "robot_task_request",
             "robot": self.assignee_name,
@@ -77,7 +77,7 @@ class Subtask(Base):
             },
         }
 
-    def __create_task_phase(self) -> dict[str, Any]:
+    def __create_task_phase(self) -> Dict[str, Any]:
         return {"activity": self.__create_task_sequence()}
 
     def __create_task_sequence(self) -> dict[str, Any]:
@@ -88,7 +88,7 @@ class Subtask(Base):
             },
         }
 
-    def __create_activity(self) -> dict[str, Any]:
+    def __create_activity(self) -> Dict[str, Any]:
         return {
             "category": "pickup",
             "description": {
