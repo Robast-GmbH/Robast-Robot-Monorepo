@@ -29,3 +29,16 @@ services:
     pull_policy: always
     network_mode: "host"
     command: /bin/sh -c "/start_scripts/ping_and_wait.sh && /start_scripts/backend_start.sh"
+
+  middleware:
+    image: ghcr.io/robast-gmbh/monorepo/middleware:profi
+    environment:
+      - ROS_DOMAIN_ID=23
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    volumes:
+      - ./start_scripts/:/start_scripts/:ro
+    stop_signal: SIGINT
+    restart: unless-stopped
+    pull_policy: always
+    network_mode: "host"
+    command: /bin/sh -c "/start_scripts/ping_and_wait.sh && /start_scripts/middleware_start.sh"
