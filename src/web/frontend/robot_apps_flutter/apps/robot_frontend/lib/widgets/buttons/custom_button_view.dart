@@ -19,18 +19,11 @@ class CustomButtonView extends StatelessWidget {
   final Widget? header;
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: onPressed,
       child: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-            colors: [
-              Colors.black.withOpacity(0.2),
-              Colors.black.withOpacity(0.2),
-            ],
-          ),
+          color: Colors.black.withOpacity(0.3),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Padding(
@@ -49,7 +42,7 @@ class CustomButtonView extends StatelessWidget {
                         children: [
                           if (header != null) ...[
                             header!
-                          ] else ...[
+                          ] else if (text != null) ...[
                             Text(
                               text ?? '',
                               textAlign: TextAlign.center,
@@ -61,7 +54,7 @@ class CustomButtonView extends StatelessWidget {
                               ),
                             ),
                           ],
-                          const SizedBox(height: 4),
+                          if (header != null || text != null) const SizedBox(height: 4),
                           Expanded(child: content),
                         ],
                       ),

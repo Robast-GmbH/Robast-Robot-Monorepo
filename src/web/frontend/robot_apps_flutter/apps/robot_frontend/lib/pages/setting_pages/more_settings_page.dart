@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:robot_frontend/pages/cleaning_page.dart';
-import 'package:robot_frontend/pages/screen_settings_page.dart';
-import 'package:robot_frontend/widgets/custom_button_view.dart';
+import 'package:robot_frontend/pages/setting_pages/cleaning_page.dart';
+import 'package:robot_frontend/pages/setting_pages/screen_settings_page.dart';
+import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 
 class MoreSettingsPage extends StatelessWidget {
@@ -58,7 +58,7 @@ class MoreSettingsPage extends StatelessWidget {
                 children: [
                   Expanded(
                     child: CustomButtonView(
-                      text: 'Platzhalter',
+                      text: 'Farbschema',
                       onPressed: () {},
                     ),
                   ),
@@ -67,7 +67,7 @@ class MoreSettingsPage extends StatelessWidget {
                   ),
                   Expanded(
                     child: CustomButtonView(
-                      text: 'Platzhalter',
+                      text: 'Spracheinstellungen',
                       onPressed: () {},
                     ),
                   ),

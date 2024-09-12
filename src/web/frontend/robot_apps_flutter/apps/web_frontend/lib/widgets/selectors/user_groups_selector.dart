@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:web_frontend/constants/web_colors.dart';
 
 import 'package:web_frontend/models/controller/user_groups_selection_controller.dart';
@@ -30,38 +31,27 @@ class _UserGroupsSelectorState extends State<UserGroupsSelector> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: [
-                  buildUserGroupSelector(
-                    label: 'Patient',
-                    value: controller.isPatient,
-                    onChanged: ({required bool newValue}) {
-                      setState(() => controller.isPatient = newValue);
-                      widget.onChanged?.call();
-                    },
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  buildUserGroupSelector(
-                    label: 'Angestellte/r',
-                    value: controller.isStaff,
-                    onChanged: ({required bool newValue}) {
-                      setState(() => controller.isStaff = newValue);
-                      widget.onChanged?.call();
-                    },
-                  ),
-                  const SizedBox(
-                    width: 8,
-                  ),
-                  buildUserGroupSelector(
-                    label: 'Admin',
-                    value: controller.isAdmin,
-                    onChanged: ({required bool newValue}) {
-                      setState(() => controller.isAdmin = newValue);
-                      widget.onChanged?.call();
-                    },
-                  ),
-                ],
+                children: User.userGroupsByDisplayName.entries.map(
+                  (entry) {
+                    return Row(
+                      children: [
+                        buildUserGroupSelector(
+                          label: entry.value,
+                          value: controller.userGroups.contains(entry.key),
+                          onChanged: ({required bool newValue}) {
+                            if (newValue) {
+                              controller.userGroups.add(entry.key);
+                            } else {
+                              controller.userGroups.remove(entry.key);
+                            }
+                            setState(() {});
+                            widget.onChanged?.call();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ).toList(),
               ),
             ),
           ],

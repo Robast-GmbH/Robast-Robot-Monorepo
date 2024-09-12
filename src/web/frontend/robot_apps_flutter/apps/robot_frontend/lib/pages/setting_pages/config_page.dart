@@ -10,7 +10,7 @@ import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/home_page.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
-import 'package:robot_frontend/widgets/rounded_button.dart';
+import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ConfigPage extends StatefulWidget {
@@ -57,6 +57,7 @@ class _ConfigPageState extends State<ConfigPage> {
   Widget build(BuildContext context) {
     return CustomScaffold(
       showBackButton: !widget.autoClose,
+      inactivityTimerEnabled: false,
       child: Row(
         children: [
           const Expanded(child: SizedBox()),

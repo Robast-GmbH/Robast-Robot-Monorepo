@@ -47,6 +47,8 @@ class Submodule {
   final List<String> reservedForGroups;
   final ModuleProcess moduleProcess;
 
+  static final sizesByDisplayName = {1: 'Small', 2: 'Medium', 3: 'Large', 5: 'Partial'};
+
   // Method to convert a Submodule instance to a JSON object
   Map<String, dynamic> toJson() {
     return {

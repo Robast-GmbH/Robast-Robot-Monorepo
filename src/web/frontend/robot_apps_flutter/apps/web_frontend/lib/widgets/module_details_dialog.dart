@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
-import 'package:provider/provider.dart';
 import 'package:web_frontend/constants/web_colors.dart';
-import 'package:web_frontend/models/provider/fleet_provider.dart';
 import 'package:web_frontend/widgets/rounded_container.dart';
 
 class ModuleDetailsDialog extends StatelessWidget {
@@ -43,7 +41,7 @@ class ModuleDetailsDialog extends StatelessWidget {
                           style: const TextStyle(color: WebColors.secondaryText, fontSize: 18),
                         ),
                         Text(
-                          'Größe: ${submodule.variant == SubmoduleVariant.partial ? '1/8' : SubmoduleTypes.values[submodule.size - 1].toString().split('.').last}',
+                          'Größe: ${submodule.variant == SubmoduleVariant.partial ? '1/8' : Submodule.sizesByDisplayName[submodule.size]!}',
                           style: const TextStyle(color: WebColors.secondaryText, fontSize: 18),
                         ),
                         Text(

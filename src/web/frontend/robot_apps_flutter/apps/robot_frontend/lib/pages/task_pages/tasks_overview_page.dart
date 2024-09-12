@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
-import 'package:robot_frontend/pages/tasks_history_page.dart';
+import 'package:robot_frontend/pages/task_pages/tasks_history_page.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/expandable_subtask_tile.dart';
 

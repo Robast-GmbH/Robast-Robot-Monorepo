@@ -36,7 +36,7 @@ class _ReservationViewState extends State<ReservationView> {
       await moduleProvider.fetchModules();
       isUpdatingReservationStatus = false;
       widget.onReservation(submodule.address);
-      if (!reservationSuccessful && context.mounted) {
+      if (!reservationSuccessful && mounted) {
         await showDialog<AlertDialog>(
           context: context,
           builder: (context) {
@@ -62,7 +62,7 @@ class _ReservationViewState extends State<ReservationView> {
       await moduleProvider.fetchModules();
       isUpdatingReservationStatus = false;
       widget.onFreeing(submodule.address);
-      if (!freeingSuccessful && context.mounted) {
+      if (!freeingSuccessful && mounted) {
         await showDialog<AlertDialog>(
           context: context,
           builder: (context) {

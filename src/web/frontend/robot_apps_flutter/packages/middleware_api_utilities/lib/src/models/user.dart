@@ -25,6 +25,12 @@ class User {
     );
   }
 
+  static final userGroupsByDisplayName = {'PATIENT': 'Patient:in', 'STAFF': 'Angestellte:r', 'ADMIN': 'Admin'};
+
+  static List<String> availableUserGroups() {
+    return userGroupsByDisplayName.keys.toList();
+  }
+
   final String id;
   final String? nfcID;
   final String? mail;

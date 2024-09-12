@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:robot_frontend/pages/config_page.dart';
-import 'package:robot_frontend/pages/modules_setup_page.dart';
-import 'package:robot_frontend/pages/more_settings_page.dart';
-import 'package:robot_frontend/pages/user_management_page.dart';
-import 'package:robot_frontend/widgets/custom_button_view.dart';
+import 'package:robot_frontend/pages/setting_pages/config_page.dart';
+import 'package:robot_frontend/pages/module_pages/modules_setup_page.dart';
+import 'package:robot_frontend/pages/setting_pages/more_settings_page.dart';
+import 'package:robot_frontend/pages/setting_pages/user_management_page.dart';
+import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
 
 class AdminSettingsView extends StatelessWidget {
   const AdminSettingsView({super.key});

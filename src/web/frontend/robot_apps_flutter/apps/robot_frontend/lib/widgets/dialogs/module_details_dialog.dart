@@ -3,7 +3,7 @@ import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
-import 'package:robot_frontend/pages/module_filling_page.dart';
+import 'package:robot_frontend/pages/module_pages/module_filling_page.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
 
 class ModuleDetailsDialog extends StatelessWidget {
@@ -51,7 +51,7 @@ class ModuleDetailsDialog extends StatelessWidget {
                                     style: const TextStyle(color: RobotColors.secondaryText, fontSize: 28),
                                   ),
                                   Text(
-                                    'Größe: ${submodule.variant == SubmoduleVariant.partial ? '1/8' : SubmoduleTypes.values[submodule.size - 1].toString().split('.').last}',
+                                    'Größe: ${submodule.variant == SubmoduleVariant.partial ? '1/8' : Submodule.sizesByDisplayName[submodule.size]!}',
                                     style: const TextStyle(color: RobotColors.secondaryText, fontSize: 28),
                                   ),
                                   Text(

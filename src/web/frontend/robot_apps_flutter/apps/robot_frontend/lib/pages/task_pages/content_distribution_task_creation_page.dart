@@ -9,7 +9,7 @@ import 'package:robot_frontend/models/enums/creation_steps.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/content_distribution_view.dart';
-import 'package:robot_frontend/widgets/custom_elevated_button.dart';
+import 'package:robot_frontend/widgets/buttons/custom_elevated_button.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/modules_overview.dart';
 import 'package:robot_frontend/widgets/reservation_view.dart';

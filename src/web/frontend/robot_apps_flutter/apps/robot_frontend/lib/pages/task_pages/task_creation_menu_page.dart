@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:robot_frontend/pages/content_distribution_task_creation_page.dart';
-import 'package:robot_frontend/pages/delivery_task_creation_page.dart';
-import 'package:robot_frontend/pages/patrol_task_creation_page.dart';
-import 'package:robot_frontend/pages/pickup_task_creation_page.dart';
-import 'package:robot_frontend/widgets/custom_button_view.dart';
+import 'package:robot_frontend/pages/task_pages/content_distribution_task_creation_page.dart';
+import 'package:robot_frontend/pages/task_pages/delivery_task_creation_page.dart';
+import 'package:robot_frontend/pages/task_pages/patrol_task_creation_page.dart';
+import 'package:robot_frontend/pages/task_pages/pickup_task_creation_page.dart';
+import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 
 class TaskCreationMenuPage extends StatelessWidget {

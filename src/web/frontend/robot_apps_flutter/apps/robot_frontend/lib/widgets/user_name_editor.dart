@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/controller/user_name_controller.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
-import 'package:robot_frontend/widgets/custom_dropdown_button.dart';
+import 'package:robot_frontend/widgets/buttons/custom_dropdown_button.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
 
 class UserNameEditor extends StatefulWidget {

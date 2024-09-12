@@ -3,7 +3,7 @@ import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
-import 'package:robot_frontend/pages/module_filling_page.dart';
+import 'package:robot_frontend/pages/module_pages/module_filling_page.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
 
 class ModulesOverview extends StatelessWidget {

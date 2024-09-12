@@ -33,10 +33,7 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
       ..firstName = widget.user.firstName
       ..lastName = widget.user.lastName;
 
-    userGroupsSelectionController
-      ..isPatient = widget.user.userGroups.contains('PATIENT')
-      ..isStaff = widget.user.userGroups.contains('STAFF')
-      ..isAdmin = widget.user.userGroups.contains('ADMIN');
+    userGroupsSelectionController.userGroups.addAll(widget.user.userGroups);
 
     locationSelectionController
       ..setStation(widget.user.station == '' ? null : widget.user.station)
@@ -77,7 +74,7 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                   iconSize: 32,
                   color: RobotColors.primaryIcon,
                   onPressed: () {
-                    final userGroups = userGroupsSelectionController.selectionAsStringList();
+                    final userGroups = userGroupsSelectionController.userGroups;
                     Provider.of<UserProvider>(context, listen: false).updateUser(
                       updatedUser: User(
                         id: widget.user.id,

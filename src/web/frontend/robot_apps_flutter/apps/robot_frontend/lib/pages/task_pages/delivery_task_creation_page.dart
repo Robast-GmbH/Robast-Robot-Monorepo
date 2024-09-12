@@ -4,6 +4,7 @@ import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/controller/delivery_time_controller.dart';
 import 'package:robot_frontend/models/controller/location_selection_controller.dart';
 import 'package:robot_frontend/models/controller/module_content_controller.dart';
+import 'package:robot_frontend/models/controller/submodule_size_controller.dart';
 import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
 import 'package:robot_frontend/models/controller/user_selection_controller.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
@@ -11,8 +12,9 @@ import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/dialogs/nfc_missing_dialog.dart';
 import 'package:robot_frontend/widgets/selectors/location_selector.dart';
 import 'package:robot_frontend/widgets/module_content_creation_view.dart';
-import 'package:robot_frontend/widgets/rounded_button.dart';
+import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
+import 'package:robot_frontend/widgets/selectors/submodule_size_selector.dart';
 import 'package:robot_frontend/widgets/selectors/time_selector.dart';
 import 'package:robot_frontend/widgets/selectors/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/selectors/user_selector.dart';
@@ -26,7 +28,7 @@ class DeliveryTaskCreationPage extends StatefulWidget {
 
 class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
   final moduleContentController = ModuleContentController();
-  int requiredSubmoduleType = 1;
+  final submoduleSizeController = SubmoduleSizeController();
 
   final startController = LocationSelectionController();
   final targetController = LocationSelectionController();
@@ -42,8 +44,8 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
     return moduleContentController.didItemsChange() &&
         startController.room != null &&
         targetController.room != null &&
-        (senderUserController.selectedUser != null || senderUserGroupsSelectionController.selectionAsStringList().isNotEmpty) &&
-        (recipientUserController.selectedUser != null || recipientUserGroupsSelectionController.selectionAsStringList().isNotEmpty);
+        (senderUserController.selectedUser != null || senderUserGroupsSelectionController.userGroups.isNotEmpty) &&
+        (recipientUserController.selectedUser != null || recipientUserGroupsSelectionController.userGroups.isNotEmpty);
   }
 
   @override
@@ -75,28 +77,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                     const SizedBox(
                       width: 16,
                     ),
-                    Expanded(
-                      flex: 2,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: buildRequiredSubmoduleTypeButton(type: 5, text: 'Partial'),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: buildRequiredSubmoduleTypeButton(type: 1, text: 'Small'),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: buildRequiredSubmoduleTypeButton(type: 2, text: 'Medium'),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: buildRequiredSubmoduleTypeButton(type: 3, text: 'Large'),
-                          ),
-                        ],
-                      ),
-                    ),
+                    Expanded(flex: 2, child: SubmoduleSizeSelector(controller: submoduleSizeController)),
                   ],
                 ),
               ),
@@ -241,19 +222,19 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
 
                 if (validateInputs()) {
                   await Provider.of<TaskProvider>(context, listen: false).createDeliveryTaskRequest(
-                    requiredSubmoduleType: requiredSubmoduleType,
+                    requiredSubmoduleType: submoduleSizeController.size,
                     pickupTargetID: startController.room!,
                     pickupEarliestStartTime: senderTimeController.timeAsSecondsSinceEpoch(),
                     senderUserIDs: [
                       if (senderUserController.selectedUser != null) senderUserController.selectedUser!.id,
                     ],
-                    senderUserGroups: senderUserGroupsSelectionController.selectionAsStringList(),
+                    senderUserGroups: senderUserGroupsSelectionController.userGroups,
                     dropoffTargetID: targetController.room!,
                     dropoffEarliestStartTime: recipientTimeController.timeAsSecondsSinceEpoch(),
                     recipientUserIDs: [
                       if (recipientUserController.selectedUser != null) recipientUserController.selectedUser!.id,
                     ],
-                    recipientUserGroups: recipientUserGroupsSelectionController.selectionAsStringList(),
+                    recipientUserGroups: recipientUserGroupsSelectionController.userGroups,
                     itemsByChange: moduleContentController.createItemsByChange(),
                   );
                   if (context.mounted) {
@@ -293,32 +274,6 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  GestureDetector buildRequiredSubmoduleTypeButton({required int type, required String text}) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          requiredSubmoduleType = type;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: requiredSubmoduleType == type ? RobotColors.accent : Colors.black.withOpacity(0.1),
-          border: Border.all(color: Colors.white.withOpacity(0.4)),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 24,
-            color: RobotColors.secondaryText,
-          ),
         ),
       ),
     );

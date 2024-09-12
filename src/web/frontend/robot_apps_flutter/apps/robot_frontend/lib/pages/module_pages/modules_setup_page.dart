@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
-import 'package:robot_frontend/widgets/rounded_button.dart';
+import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
 
 class ModulesSetupPage extends StatefulWidget {
   const ModulesSetupPage({super.key});

@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/widgets/auth_view.dart';
-import 'package:robot_frontend/widgets/custom_button_view.dart';
+import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
 import 'package:robot_frontend/widgets/disinfection_view.dart';
 import 'package:robot_frontend/widgets/hint_view.dart';
 

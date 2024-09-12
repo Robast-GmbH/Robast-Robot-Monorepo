@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/dialogs/user_creation_dialog.dart';
-import 'package:robot_frontend/widgets/rounded_button.dart';
+import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
 import 'package:robot_frontend/widgets/user_management_list_tile.dart';
 
 class UserManagementPage extends StatefulWidget {

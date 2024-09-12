@@ -42,8 +42,8 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
         submoduleTypeController.value != null &&
         startController.room != null &&
         targetController.room != null &&
-        (senderUserController.selectedUser != null || senderUserGroupsSelectionController.selectionAsStringList().isNotEmpty) &&
-        (recipientUserController.selectedUser != null || recipientUserGroupsSelectionController.selectionAsStringList().isNotEmpty);
+        (senderUserController.selectedUser != null || senderUserGroupsSelectionController.userGroups.isNotEmpty) &&
+        (recipientUserController.selectedUser != null || recipientUserGroupsSelectionController.userGroups.isNotEmpty);
   }
 
   @override
@@ -169,13 +169,13 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                       senderUserIDs: [
                         if (senderUserController.selectedUser != null) senderUserController.selectedUser!.id,
                       ],
-                      senderUserGroups: senderUserGroupsSelectionController.selectionAsStringList(),
+                      senderUserGroups: senderUserGroupsSelectionController.userGroups,
                       dropoffTargetID: targetController.room!,
                       dropoffEarliestStartTime: recipientTimeController.timeAsSecondsSinceEpoch(),
                       recipientUserIDs: [
                         if (recipientUserController.selectedUser != null) recipientUserController.selectedUser!.id,
                       ],
-                      recipientUserGroups: recipientUserGroupsSelectionController.selectionAsStringList(),
+                      recipientUserGroups: recipientUserGroupsSelectionController.userGroups,
                       itemsByChange: moduleContentController.createItemsByChange(),
                     );
                     if (context.mounted) {
