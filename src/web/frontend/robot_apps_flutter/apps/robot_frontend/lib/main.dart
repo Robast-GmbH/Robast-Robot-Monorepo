@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/inactivity_provider.dart';
@@ -9,7 +10,7 @@ import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
-import 'package:robot_frontend/pages/config_page.dart';
+import 'package:robot_frontend/pages/setting_pages/config_page.dart';
 
 class CustomScrollBehavior extends MaterialScrollBehavior {
   // Override behavior methods and getters like dragDevices
@@ -21,6 +22,7 @@ class CustomScrollBehavior extends MaterialScrollBehavior {
 }
 
 void main() {
+  MediaKit.ensureInitialized();
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   runApp(
     MultiProvider(

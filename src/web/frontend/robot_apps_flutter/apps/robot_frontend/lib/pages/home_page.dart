@@ -4,7 +4,7 @@ import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/pages/auth_page.dart';
-import 'package:robot_frontend/pages/module_process_page.dart';
+import 'package:robot_frontend/pages/module_pages/module_process_page.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
 
 import 'package:robot_frontend/widgets/driving_view.dart';

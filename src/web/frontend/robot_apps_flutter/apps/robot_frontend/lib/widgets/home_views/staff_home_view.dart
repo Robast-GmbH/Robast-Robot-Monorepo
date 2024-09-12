@@ -42,7 +42,9 @@ class StaffHomeView extends StatelessWidget {
           child: Column(
             children: [
               Expanded(
-                child: MenuModulesOverview(),
+                child: MenuModulesOverview(
+                  isDemo: true,
+                ),
               ),
             ],
           ),
