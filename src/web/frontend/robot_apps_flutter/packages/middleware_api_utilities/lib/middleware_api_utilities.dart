@@ -7,7 +7,6 @@ export 'src/models/module_process.dart';
 export 'src/models/robot_task_status.dart';
 export 'src/models/submodule.dart';
 export 'src/models/submodule_address.dart';
-export 'src/models/submodule_types.dart';
 export 'src/models/robot_action.dart';
 export 'src/models/subtask.dart';
 export 'src/models/task.dart';
