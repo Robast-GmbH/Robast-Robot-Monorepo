@@ -15,7 +15,7 @@ class Sidebar extends StatefulWidget {
 }
 
 class _SidebarState extends State<Sidebar> {
-  int selectedMainMenuIndex = 0;
+  int selectedMainMenuIndex = 1;
 
   bool isSidebarExpanded = false;
   @override

@@ -41,7 +41,7 @@ class ModuleProcess {
     } else if (dropoffString.isNotEmpty) {
       return 'Bitte $dropoffString.';
     } else {
-      return 'Es gibt nichts zu tun.';
+      return 'Bitte entnehmen Sie Ihre Lieferung.';
     }
   }
 

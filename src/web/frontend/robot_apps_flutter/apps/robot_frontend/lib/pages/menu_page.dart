@@ -7,6 +7,7 @@ import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/models/sidebar_menu_point.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
+import 'package:robot_frontend/widgets/caire_ai_card_view.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
 import 'package:robot_frontend/widgets/home_views/patient_home_view.dart';
 import 'package:robot_frontend/widgets/home_views/staff_home_view.dart';
@@ -27,7 +28,7 @@ class MenuPage extends StatefulWidget {
 
 class _MenuPageState extends State<MenuPage> {
   late final Future<User?> loadCurrentUserFuture;
-  int selectedMainMenuIndex = 0;
+  int selectedMainMenuIndex = 1;
 
   final sidebarMenuPoints = [
     SidebarMenuPoint(
@@ -37,6 +38,15 @@ class _MenuPageState extends State<MenuPage> {
         'ADMIN': StaffHomeView.new,
         'STAFF': StaffHomeView.new,
         'PATIENT': PatientHomeView.new,
+      },
+    ),
+    SidebarMenuPoint(
+      title: 'caire.ai',
+      icon: Icons.favorite,
+      userGroupWidgets: {
+        'ADMIN': CaireAiCardView.new,
+        'STAFF': CaireAiCardView.new,
+        'PATIENT': CaireAiCardView.new,
       },
     ),
     SidebarMenuPoint(
@@ -68,10 +78,15 @@ class _MenuPageState extends State<MenuPage> {
     ),
   ];
 
+  Future<User?> loadCurrentUser() async {
+    await Provider.of<UserProvider>(context, listen: false).setUserSession(robotName: 'rb_theron', userID: 'a1f26ade-d83a-414a-aaae-62366e0c083c');
+    return Provider.of<UserProvider>(context, listen: false).getUserSession(robotName: 'rb_theron');
+  }
+
   @override
   void initState() {
     super.initState();
-    loadCurrentUserFuture = Provider.of<UserProvider>(context, listen: false).getUserSession(robotName: 'rb_theron');
+    loadCurrentUserFuture = loadCurrentUser();
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:robot_frontend/constants/robot_colors.dart';
 
 class VideoView extends StatefulWidget {
   const VideoView({super.key});
@@ -10,22 +11,18 @@ class VideoView extends StatefulWidget {
 }
 
 class _VideoViewState extends State<VideoView> {
-  // Create a [Player] to control playback.
   late final player = Player(configuration: const PlayerConfiguration(muted: true));
-  // Create a [VideoController] to handle video output from [Player].
   late final controller = VideoController(player);
-  bool startedPlaying = false;
+  bool videoAvailable = true;
   @override
   void initState() {
     super.initState();
-    // Play a [Media] or [Playlist].
-    player.open(Media('asset:///assets/robast_video.mp4'));
+    try {
+      player.open(Media('asset:///assets/robast_video.mp4'));
+    } catch (e) {
+      videoAvailable = false;
+    }
     player.setPlaylistMode(PlaylistMode.loop);
-    // controller.notifier.addListener(() {
-    //   if (controller.notifier.value. == VideoControllerState.playing) {
-    //     startedPlaying = true;
-    //   }
-    // });
   }
 
   @override
@@ -36,8 +33,12 @@ class _VideoViewState extends State<VideoView> {
 
   @override
   Widget build(BuildContext context) {
-    return Video(
-      controller: controller,
-    );
+    if (videoAvailable)
+      return Video(
+        controller: controller,
+      );
+    else {
+      return Center(child: Icon(Icons.personal_video, size: 100, color: RobotColors.primaryIcon));
+    }
   }
 }

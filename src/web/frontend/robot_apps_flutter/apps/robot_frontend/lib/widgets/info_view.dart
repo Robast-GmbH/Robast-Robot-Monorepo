@@ -49,6 +49,7 @@ class InfoView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       child: Image.asset(
                         'assets/team.jpeg',
+                        errorBuilder: (context, error, stackTrace) => Icon(Icons.group, size: 100, color: RobotColors.primaryText),
                         fit: BoxFit.fitWidth,
                         width: double.infinity,
                       ),

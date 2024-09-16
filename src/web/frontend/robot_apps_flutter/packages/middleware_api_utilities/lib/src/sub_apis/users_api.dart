@@ -67,6 +67,13 @@ class UsersApi {
     return RequestService.wasRequestSuccessful(response: response);
   }
 
+  Future<bool> setUserSession({required String robotName, required String userID}) async {
+    final response = await RequestService.tryPost(
+      uri: Uri.parse('$prefix/users/set_session?robot_name=$robotName&user_id=$userID'),
+    );
+    return RequestService.wasRequestSuccessful(response: response);
+  }
+
   Future<User?> getUserSession({required String robotName}) async {
     final response = await RequestService.tryGet(uri: Uri.parse('$prefix/users/session?robot_name=$robotName'));
     if (response != null) {

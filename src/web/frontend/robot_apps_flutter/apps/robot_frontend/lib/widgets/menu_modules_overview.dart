@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/provider/inactivity_provider.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
+import 'package:robot_frontend/pages/module_pages/module_process_page.dart';
 import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
 import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
 import 'package:robot_frontend/widgets/dialogs/module_details_dialog.dart';
@@ -21,14 +23,14 @@ class MenuModulesOverview extends StatelessWidget {
         isLoaded = true;
       }
     }
-    String moduleStatus = isLoaded ? 'beladen, ' : 'leer, ';
-    if (reservedCount == submodules.length) {
-      moduleStatus += 'reserviert';
-    } else if (reservedCount > 0) {
-      moduleStatus += 'teilweise frei';
-    } else {
-      moduleStatus += 'frei';
-    }
+    String moduleStatus = isLoaded ? 'beladen' : 'leer';
+    // if (reservedCount == submodules.length) {
+    //   moduleStatus += 'reserviert';
+    // } else if (reservedCount > 0) {
+    //   moduleStatus += 'teilweise frei';
+    // } else {
+    //   moduleStatus += 'frei';
+    // }
     return moduleStatus;
   }
 
@@ -51,12 +53,25 @@ class MenuModulesOverview extends StatelessWidget {
                     Expanded(
                       child: RoundedButton(
                         onPressed: () async {
-                          showDialog(
-                            context: context,
-                            builder: (context) => ModuleDetailsDialog(
-                              moduleID: modules[index].first.address.moduleID,
-                            ),
+                          final moduleProvider = Provider.of<ModuleProvider>(context, listen: false)..isInSubmoduleProcess = true;
+                          await moduleProvider.startSubmoduleProcess(
+                            submoduleAddress: modules[index].first.address,
+                            processName: 'fill',
+                            itemsByChange: {},
                           );
+                          if (context.mounted) {
+                            final inactivityProvider = Provider.of<InactivityProvider>(context, listen: false);
+                            await Navigator.push(context, MaterialPageRoute<ModuleProcessPage>(builder: (context) => const ModuleProcessPage()));
+                            inactivityProvider.resetInactivityTimer();
+                          }
+                          moduleProvider.isInSubmoduleProcess = false;
+
+                          // showDialog(
+                          //   context: context,
+                          //   builder: (context) => ModuleDetailsDialog(
+                          //     moduleID: modules[index].first.address.moduleID,
+                          //   ),
+                          // );
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

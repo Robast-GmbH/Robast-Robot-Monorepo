@@ -22,6 +22,7 @@ class CustomScrollBehavior extends MaterialScrollBehavior {
 }
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
   runApp(
