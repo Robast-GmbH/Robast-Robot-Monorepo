@@ -6,40 +6,40 @@ TEST_CASE("ModulePrefix values are correctly calculated", "[ModulePrefix]")
 {
   using namespace module_id;
 
-  REQUIRE(
-    static_cast<uint32_t>(ModulePrefix::MANUAL_DRAWER_10x40) ==
-    (module_type::TRANSPORTATION << (bit_length::MODULE_UNIQUE_ID_BIT_LENGTH + bit_length::SUBMODULE_TYPE_BIT_LENGTH) |
-     submodule_type::transportation::MANUAL_DRAWER_10x40 << bit_length::MODULE_UNIQUE_ID_BIT_LENGTH));
+  REQUIRE(static_cast<uint32_t>(ModulePrefix::MANUAL_DRAWER_10x40) ==
+          (module_category::TRANSPORTATION
+             << (bit_length::MODULE_UNIQUE_ID_BIT_LENGTH + bit_length::SUBMODULE_TYPE_BIT_LENGTH) |
+           module_type::transportation::MANUAL_DRAWER_10x40 << bit_length::MODULE_UNIQUE_ID_BIT_LENGTH));
 
-  REQUIRE(
-    static_cast<uint32_t>(ModulePrefix::MANUAL_DRAWER_20x40) ==
-    (module_type::TRANSPORTATION << (bit_length::MODULE_UNIQUE_ID_BIT_LENGTH + bit_length::SUBMODULE_TYPE_BIT_LENGTH) |
-     submodule_type::transportation::MANUAL_DRAWER_20x40 << bit_length::MODULE_UNIQUE_ID_BIT_LENGTH));
+  REQUIRE(static_cast<uint32_t>(ModulePrefix::MANUAL_DRAWER_20x40) ==
+          (module_category::TRANSPORTATION
+             << (bit_length::MODULE_UNIQUE_ID_BIT_LENGTH + bit_length::SUBMODULE_TYPE_BIT_LENGTH) |
+           module_type::transportation::MANUAL_DRAWER_20x40 << bit_length::MODULE_UNIQUE_ID_BIT_LENGTH));
 
-  REQUIRE(
-    static_cast<uint32_t>(ModulePrefix::MANUAL_DRAWER_30x40) ==
-    (module_type::TRANSPORTATION << (bit_length::MODULE_UNIQUE_ID_BIT_LENGTH + bit_length::SUBMODULE_TYPE_BIT_LENGTH) |
-     submodule_type::transportation::MANUAL_DRAWER_30x40 << bit_length::MODULE_UNIQUE_ID_BIT_LENGTH));
+  REQUIRE(static_cast<uint32_t>(ModulePrefix::MANUAL_DRAWER_30x40) ==
+          (module_category::TRANSPORTATION
+             << (bit_length::MODULE_UNIQUE_ID_BIT_LENGTH + bit_length::SUBMODULE_TYPE_BIT_LENGTH) |
+           module_type::transportation::MANUAL_DRAWER_30x40 << bit_length::MODULE_UNIQUE_ID_BIT_LENGTH));
 
-  REQUIRE(
-    static_cast<uint32_t>(ModulePrefix::E_DRAWER_10x40) ==
-    (module_type::TRANSPORTATION << (bit_length::MODULE_UNIQUE_ID_BIT_LENGTH + bit_length::SUBMODULE_TYPE_BIT_LENGTH) |
-     submodule_type::transportation::E_DRAWER_10x40 << bit_length::MODULE_UNIQUE_ID_BIT_LENGTH));
+  REQUIRE(static_cast<uint32_t>(ModulePrefix::E_DRAWER_10x40) ==
+          (module_category::TRANSPORTATION
+             << (bit_length::MODULE_UNIQUE_ID_BIT_LENGTH + bit_length::SUBMODULE_TYPE_BIT_LENGTH) |
+           module_type::transportation::E_DRAWER_10x40 << bit_length::MODULE_UNIQUE_ID_BIT_LENGTH));
 
-  REQUIRE(
-    static_cast<uint32_t>(ModulePrefix::PARTIAL_DRAWER_10x40x8) ==
-    (module_type::TRANSPORTATION << (bit_length::MODULE_UNIQUE_ID_BIT_LENGTH + bit_length::SUBMODULE_TYPE_BIT_LENGTH) |
-     submodule_type::transportation::PARTIAL_DRAWER_10x40x8 << bit_length::MODULE_UNIQUE_ID_BIT_LENGTH));
+  REQUIRE(static_cast<uint32_t>(ModulePrefix::PARTIAL_DRAWER_10x40x8) ==
+          (module_category::TRANSPORTATION
+             << (bit_length::MODULE_UNIQUE_ID_BIT_LENGTH + bit_length::SUBMODULE_TYPE_BIT_LENGTH) |
+           module_type::transportation::PARTIAL_DRAWER_10x40x8 << bit_length::MODULE_UNIQUE_ID_BIT_LENGTH));
 
-  REQUIRE(
-    static_cast<uint32_t>(ModulePrefix::DINNER_TRAYS) ==
-    (module_type::TRANSPORTATION << (bit_length::MODULE_UNIQUE_ID_BIT_LENGTH + bit_length::SUBMODULE_TYPE_BIT_LENGTH) |
-     submodule_type::transportation::DINNER_TRAYS << bit_length::MODULE_UNIQUE_ID_BIT_LENGTH));
+  REQUIRE(static_cast<uint32_t>(ModulePrefix::DINNER_TRAYS) ==
+          (module_category::TRANSPORTATION
+             << (bit_length::MODULE_UNIQUE_ID_BIT_LENGTH + bit_length::SUBMODULE_TYPE_BIT_LENGTH) |
+           module_type::transportation::DINNER_TRAYS << bit_length::MODULE_UNIQUE_ID_BIT_LENGTH));
 
-  REQUIRE(
-    static_cast<uint32_t>(ModulePrefix::SURGERY_TOOLS) ==
-    (module_type::TRANSPORTATION << (bit_length::MODULE_UNIQUE_ID_BIT_LENGTH + bit_length::SUBMODULE_TYPE_BIT_LENGTH) |
-     submodule_type::transportation::SURGERY_TOOLS << bit_length::MODULE_UNIQUE_ID_BIT_LENGTH));
+  REQUIRE(static_cast<uint32_t>(ModulePrefix::SURGERY_TOOLS) ==
+          (module_category::TRANSPORTATION
+             << (bit_length::MODULE_UNIQUE_ID_BIT_LENGTH + bit_length::SUBMODULE_TYPE_BIT_LENGTH) |
+           module_type::transportation::SURGERY_TOOLS << bit_length::MODULE_UNIQUE_ID_BIT_LENGTH));
 }
 
 TEST_CASE("generate_module_id function works correctly", "[generate_module_id]")
