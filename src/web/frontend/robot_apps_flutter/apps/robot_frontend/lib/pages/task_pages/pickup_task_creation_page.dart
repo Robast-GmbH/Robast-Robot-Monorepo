@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:robot_frontend/models/controller/location_selection_controller.dart';
-import 'package:robot_frontend/models/controller/module_content_controller.dart';
-import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
-import 'package:robot_frontend/models/controller/user_selection_controller.dart';
 import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/selectors/location_selector.dart';
 import 'package:robot_frontend/widgets/module_content_creation_view.dart';
 import 'package:robot_frontend/widgets/selectors/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/selectors/user_selector.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class PickupTaskCreationPage extends StatefulWidget {
   const PickupTaskCreationPage({super.key});

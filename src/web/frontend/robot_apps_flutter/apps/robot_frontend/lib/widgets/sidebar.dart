@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/sidebar_menu_point.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class Sidebar extends StatefulWidget {
   const Sidebar({required this.sidebarMenuPoints, required this.onMenuPointSelected, this.user, super.key});
@@ -15,7 +15,7 @@ class Sidebar extends StatefulWidget {
 }
 
 class _SidebarState extends State<Sidebar> {
-  int selectedMainMenuIndex = 1;
+  int selectedMainMenuIndex = 0;
 
   bool isSidebarExpanded = false;
   @override

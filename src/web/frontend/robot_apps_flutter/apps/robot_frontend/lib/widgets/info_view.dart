@@ -7,6 +7,8 @@ import 'package:robot_frontend/widgets/video_view.dart';
 class InfoView extends StatelessWidget {
   const InfoView({super.key});
 
+  final videoPath = 'assets/robast_video.mp4';
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -49,7 +51,7 @@ class InfoView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       child: Image.asset(
                         'assets/team.jpeg',
-                        errorBuilder: (context, error, stackTrace) => Icon(Icons.group, size: 100, color: RobotColors.primaryText),
+                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.group, size: 100, color: RobotColors.primaryText),
                         fit: BoxFit.fitWidth,
                         width: double.infinity,
                       ),
@@ -67,7 +69,12 @@ class InfoView extends StatelessWidget {
               Expanded(
                 child: CustomButtonView(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute<VideoPage>(builder: (context) => const VideoPage()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute<VideoPage>(
+                            builder: (context) => VideoPage(
+                                  path: videoPath,
+                                )));
                   },
                   content: GestureDetector(
                     behavior: HitTestBehavior.opaque,
@@ -75,7 +82,11 @@ class InfoView extends StatelessWidget {
                         absorbing: true,
                         child: Stack(
                           children: [
-                            ClipRRect(borderRadius: BorderRadius.circular(8), child: const VideoView()),
+                            ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: VideoView(
+                                  path: videoPath,
+                                )),
                             const Align(
                                 alignment: Alignment.bottomRight,
                                 child: Padding(
@@ -85,7 +96,12 @@ class InfoView extends StatelessWidget {
                           ],
                         )),
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute<VideoPage>(builder: (context) => const VideoPage()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute<VideoPage>(
+                              builder: (context) => VideoPage(
+                                    path: videoPath,
+                                  )));
                     },
                   ),
                 ),

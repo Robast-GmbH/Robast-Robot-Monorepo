@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/dialogs/user_creation_dialog.dart';
 import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
 import 'package:robot_frontend/widgets/user_management_list_tile.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class UserManagementPage extends StatefulWidget {
   const UserManagementPage({super.key});

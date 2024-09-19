@@ -80,8 +80,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   if (context.mounted) {
                     await Navigator.push(
                       context,
-                      MaterialPageRoute<MenuPage>(
-                        builder: (context) => const MenuPage(),
+                      MaterialPageRoute<AuthPage>(
+                        builder: (context) => const AuthPage(),
                       ),
                     );
                   }

@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/models/controller/delivery_time_controller.dart';
-import 'package:robot_frontend/models/controller/location_selection_controller.dart';
-import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
-import 'package:robot_frontend/models/controller/user_selection_controller.dart';
 import 'package:robot_frontend/models/enums/creation_steps.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
@@ -13,6 +8,7 @@ import 'package:robot_frontend/widgets/buttons/custom_elevated_button.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/modules_overview.dart';
 import 'package:robot_frontend/widgets/reservation_view.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class ContentDistributionTaskCreationPage extends StatefulWidget {
   const ContentDistributionTaskCreationPage({super.key});

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
@@ -9,6 +8,7 @@ import 'package:robot_frontend/pages/menu_page.dart';
 import 'package:robot_frontend/widgets/auth_view.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/disinfection_view.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});

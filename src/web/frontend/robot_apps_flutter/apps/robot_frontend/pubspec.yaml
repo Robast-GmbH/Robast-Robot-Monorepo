@@ -20,7 +20,6 @@ dependencies:
   robot_api_utilities: ^0.1.0+1
   shared_data_models: ^0.1.0+1
   shared_preferences: ^2.2.3
-  shared_widgets: ^0.1.0+1
   uuid: ^4.4.2
   media_kit: ^1.1.11 # Primary package.
   media_kit_video: ^1.2.5 # For video rendering.

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
-import 'package:robot_frontend/models/provider/inactivity_provider.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
-import 'package:robot_frontend/pages/module_pages/module_process_page.dart';
 import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
 import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
 import 'package:robot_frontend/widgets/dialogs/module_details_dialog.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class MenuModulesOverview extends StatelessWidget {
   const MenuModulesOverview({super.key});
@@ -53,39 +51,26 @@ class MenuModulesOverview extends StatelessWidget {
                     Expanded(
                       child: RoundedButton(
                         onPressed: () async {
-                          final moduleProvider = Provider.of<ModuleProvider>(context, listen: false)..isInSubmoduleProcess = true;
-                          await moduleProvider.startSubmoduleProcess(
-                            submoduleAddress: modules[index].first.address,
-                            processName: 'fill',
-                            itemsByChange: {},
+                          showDialog(
+                            context: context,
+                            builder: (context) => ModuleDetailsDialog(
+                              moduleID: modules[index].first.address.moduleID,
+                            ),
                           );
-                          if (context.mounted) {
-                            final inactivityProvider = Provider.of<InactivityProvider>(context, listen: false);
-                            await Navigator.push(context, MaterialPageRoute<ModuleProcessPage>(builder: (context) => const ModuleProcessPage()));
-                            inactivityProvider.resetInactivityTimer();
-                          }
-                          moduleProvider.isInSubmoduleProcess = false;
-
-                          // showDialog(
-                          //   context: context,
-                          //   builder: (context) => ModuleDetailsDialog(
-                          //     moduleID: modules[index].first.address.moduleID,
-                          //   ),
-                          // );
                         },
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               'Modul ${index + 1}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 32,
                                 color: RobotColors.secondaryText,
                               ),
                             ),
                             Text(
                               getModuleStatus(modules[index]),
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 24,
                                 color: RobotColors.secondaryText,
                               ),

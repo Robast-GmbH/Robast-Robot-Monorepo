@@ -56,7 +56,7 @@ class _CaireAiPageState extends State<CaireAiPage> {
         },
         onContextMenuActionItemClicked: (contextMenuItemClicked) async {
           var id = contextMenuItemClicked.id;
-          print("onContextMenuActionItemClicked: " + id.toString() + " " + contextMenuItemClicked.title);
+          print("onContextMenuActionItemClicked: $id ${contextMenuItemClicked.title}");
         });
 
     pullToRefreshController = kIsWeb || ![TargetPlatform.iOS, TargetPlatform.android].contains(defaultTargetPlatform)
@@ -144,7 +144,7 @@ class _CaireAiPageState extends State<CaireAiPage> {
                         }
                         setState(() {
                           this.progress = progress / 100;
-                          urlController.text = this.url;
+                          urlController.text = url;
                         });
                       },
                       onUpdateVisitedHistory: (controller, url, isReload) {

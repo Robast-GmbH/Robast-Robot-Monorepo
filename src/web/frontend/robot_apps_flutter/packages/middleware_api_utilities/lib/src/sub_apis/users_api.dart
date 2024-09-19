@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:middleware_api_utilities/src/models/user.dart';
 import 'package:middleware_api_utilities/src/services/request_service.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class UsersApi {
   UsersApi({required this.prefix});

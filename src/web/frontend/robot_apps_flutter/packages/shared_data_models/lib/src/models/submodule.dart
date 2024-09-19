@@ -1,4 +1,6 @@
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:shared_data_models/src/models/module_process.dart';
+import 'package:shared_data_models/src/models/submodule_address.dart';
+import 'package:shared_data_models/src/models/user.dart';
 
 enum SubmoduleVariant { manual, electric, partial }
 
@@ -16,7 +18,6 @@ class Submodule {
     required this.moduleProcess,
   });
 
-  // Factory method to create a Submodule instance from a JSON object
   factory Submodule.fromJson(Map<String, dynamic> json) {
     final submoduleAddress = json['address'] as Map<String, dynamic>;
     return Submodule(
@@ -47,9 +48,13 @@ class Submodule {
   final List<String> reservedForGroups;
   final ModuleProcess moduleProcess;
 
-  static final sizesByDisplayName = {1: 'Small', 2: 'Medium', 3: 'Large', 5: 'Partial'};
+  static final sizesByDisplayName = {
+    5: 'Partial',
+    1: 'Small',
+    2: 'Medium',
+    3: 'Large',
+  };
 
-  // Method to convert a Submodule instance to a JSON object
   Map<String, dynamic> toJson() {
     return {
       'address': {

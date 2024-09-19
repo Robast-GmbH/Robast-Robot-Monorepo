@@ -1,8 +1,7 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:shared_data_models/shared_data_models.dart';
-import 'package:shared_widgets/src/models/transformation.dart';
+import 'package:shared_data_models/src/models/transformation.dart';
 
 class MapController {
   MapController({required this.mapPath});
@@ -11,7 +10,6 @@ class MapController {
   final int mapWidth = 2689;
   final double _scale = 0.0155;
   final String mapPath;
-  final poses = <Offset>[];
   final yaws = <double>[];
   final _rmfPoses = [
     Pose(x: 9.2936, y: -7.6929),

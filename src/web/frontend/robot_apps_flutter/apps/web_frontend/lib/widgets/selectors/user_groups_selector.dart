@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 import 'package:web_frontend/constants/web_colors.dart';
-
-import 'package:web_frontend/models/controller/user_groups_selection_controller.dart';
 import 'package:web_frontend/widgets/rounded_container.dart';
 
 class UserGroupsSelector extends StatefulWidget {

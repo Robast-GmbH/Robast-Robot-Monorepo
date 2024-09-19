@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
-import 'package:robot_frontend/models/controller/delivery_time_controller.dart';
-import 'package:robot_frontend/models/controller/location_selection_controller.dart';
-import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
-import 'package:robot_frontend/models/controller/user_selection_controller.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/widgets/buttons/custom_elevated_button.dart';
@@ -15,6 +10,7 @@ import 'package:robot_frontend/widgets/rounded_container.dart';
 import 'package:robot_frontend/widgets/selectors/time_selector.dart';
 import 'package:robot_frontend/widgets/selectors/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/selectors/user_selector.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class ContentDistributionView extends StatefulWidget {
   const ContentDistributionView({

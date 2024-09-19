@@ -4,8 +4,8 @@ import 'package:media_kit_video/media_kit_video.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 
 class VideoView extends StatefulWidget {
-  const VideoView({super.key});
-
+  const VideoView({required this.path, super.key});
+  final String path;
   @override
   State<VideoView> createState() => _VideoViewState();
 }
@@ -18,7 +18,7 @@ class _VideoViewState extends State<VideoView> {
   void initState() {
     super.initState();
     try {
-      player.open(Media('asset:///assets/robast_video.mp4'));
+      player.open(Media('asset:///${widget.path}'));
     } catch (e) {
       videoAvailable = false;
     }
@@ -33,12 +33,12 @@ class _VideoViewState extends State<VideoView> {
 
   @override
   Widget build(BuildContext context) {
-    if (videoAvailable)
+    if (videoAvailable) {
       return Video(
         controller: controller,
       );
-    else {
-      return Center(child: Icon(Icons.personal_video, size: 100, color: RobotColors.primaryIcon));
+    } else {
+      return const Center(child: Icon(Icons.personal_video, size: 100, color: RobotColors.primaryIcon));
     }
   }
 }

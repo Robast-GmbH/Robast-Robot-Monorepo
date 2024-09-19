@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 import 'package:web_frontend/constants/web_colors.dart';
-import 'package:web_frontend/models/controller/location_selection_controller.dart';
 import 'package:web_frontend/models/provider/map_provider.dart';
 import 'package:web_frontend/widgets/custom_dropdown_button.dart';
 import 'package:web_frontend/widgets/rounded_container.dart';

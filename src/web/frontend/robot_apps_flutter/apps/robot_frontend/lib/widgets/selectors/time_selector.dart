@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
-import 'package:robot_frontend/models/controller/delivery_time_controller.dart';
 import 'package:robot_frontend/services/time_stamp_formatter.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class TimeSelector extends StatefulWidget {
   const TimeSelector({

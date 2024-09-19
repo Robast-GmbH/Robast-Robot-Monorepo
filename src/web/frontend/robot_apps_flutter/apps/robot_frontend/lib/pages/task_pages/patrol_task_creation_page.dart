@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:robot_frontend/models/controller/location_selection_controller.dart';
 import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/selectors/location_selector.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class PatrolTaskCreationPage extends StatefulWidget {
   const PatrolTaskCreationPage({super.key});

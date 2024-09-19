@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:middleware_api_utilities/src/sub_apis/modules_api.dart';
-import 'package:middleware_api_utilities/src/sub_apis/nfc_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/users_api.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 import 'package:test/test.dart';
 
 void main() {

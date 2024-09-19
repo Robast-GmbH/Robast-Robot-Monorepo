@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
-import 'package:robot_frontend/models/controller/delivery_time_controller.dart';
-import 'package:robot_frontend/models/controller/location_selection_controller.dart';
-import 'package:robot_frontend/models/controller/module_content_controller.dart';
-import 'package:robot_frontend/models/controller/submodule_size_controller.dart';
-import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
-import 'package:robot_frontend/models/controller/user_selection_controller.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/dialogs/nfc_missing_dialog.dart';
@@ -18,6 +12,7 @@ import 'package:robot_frontend/widgets/selectors/submodule_size_selector.dart';
 import 'package:robot_frontend/widgets/selectors/time_selector.dart';
 import 'package:robot_frontend/widgets/selectors/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/selectors/user_selector.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class DeliveryTaskCreationPage extends StatefulWidget {
   const DeliveryTaskCreationPage({super.key});
@@ -66,7 +61,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
             ),
             RoundedContainer(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.only(left: 16, right: 8, top: 8, bottom: 8),
                 child: Row(
                   children: [
                     const Text(
@@ -101,6 +96,11 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                       child: UserSelector(
                         controller: senderUserController,
                         initWithSessionUser: true,
+                        onChanged: () {
+                          startController.setStation(senderUserController.selectedUser?.station);
+                          startController.setRoom(senderUserController.selectedUser?.room);
+                          setState(() {});
+                        },
                       ),
                     ),
                     const SizedBox(
@@ -155,6 +155,11 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                     Expanded(
                       child: UserSelector(
                         controller: recipientUserController,
+                        onChanged: () {
+                          targetController.setStation(recipientUserController.selectedUser?.station);
+                          targetController.setRoom(recipientUserController.selectedUser?.room);
+                          setState(() {});
+                        },
                       ),
                     ),
                     const SizedBox(

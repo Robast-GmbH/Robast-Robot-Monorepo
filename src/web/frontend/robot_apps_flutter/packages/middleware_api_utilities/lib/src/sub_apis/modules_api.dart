@@ -1,6 +1,5 @@
-import 'package:middleware_api_utilities/src/models/submodule.dart';
-import 'package:middleware_api_utilities/src/models/submodule_address.dart';
 import 'package:middleware_api_utilities/src/services/request_service.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class ModulesApi {
   ModulesApi({required this.prefix});

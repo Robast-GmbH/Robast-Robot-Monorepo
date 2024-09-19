@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class ModuleProvider extends ChangeNotifier {
   List<List<Submodule>> _modules = [];

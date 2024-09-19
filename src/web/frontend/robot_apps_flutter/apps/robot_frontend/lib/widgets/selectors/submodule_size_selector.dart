@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
-import 'package:robot_frontend/models/controller/submodule_size_controller.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class SubmoduleSizeSelector extends StatefulWidget {
   const SubmoduleSizeSelector({required this.controller, super.key});
@@ -15,16 +14,18 @@ class _SubmoduleSizeSelectorState extends State<SubmoduleSizeSelector> {
   Widget build(BuildContext context) {
     return Row(
       children: Submodule.sizesByDisplayName.entries.map((entry) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: SubmoduleSizeButton(
-              onPressed: () {
-                setState(() {
-                  widget.controller.size = entry.key;
-                });
-              },
-              text: entry.value,
-              isSelected: widget.controller.size == entry.key),
+        return Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: SubmoduleSizeButton(
+                onPressed: () {
+                  setState(() {
+                    widget.controller.size = entry.key;
+                  });
+                },
+                text: entry.value,
+                isSelected: widget.controller.size == entry.key),
+          ),
         );
       }).toList(),
     );

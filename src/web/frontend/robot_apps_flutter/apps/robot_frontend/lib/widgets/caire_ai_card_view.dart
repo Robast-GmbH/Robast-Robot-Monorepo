@@ -13,7 +13,9 @@ class CaireAiCardView extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomButtonView(
       onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => CaireAiPage()));
+        if (kIsWeb) {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const CaireAiPage()));
+        }
       },
       content: Center(
         child: Column(
@@ -45,7 +47,7 @@ class CaireAiCardView extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 48,
             ),
             const Text('Hier drücken für caire.ai',

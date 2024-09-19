@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
-import 'package:robot_frontend/models/controller/location_selection_controller.dart';
-import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
-import 'package:robot_frontend/models/controller/user_name_controller.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/selectors/location_selector.dart';
 import 'package:robot_frontend/widgets/dialogs/nfc_assignment_dialog.dart';
 import 'package:robot_frontend/widgets/selectors/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/user_name_editor.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class UserManagementListTile extends StatefulWidget {
   const UserManagementListTile({required this.user, required this.onUserUpdate, super.key});
