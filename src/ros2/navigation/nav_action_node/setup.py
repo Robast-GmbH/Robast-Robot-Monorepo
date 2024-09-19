@@ -19,7 +19,6 @@ setup(
     license="TODO: License declaration",
     tests_require=["pytest"],
     entry_points={
-        "console_scripts": ["nav_action_node=nav_action_node.nav_action_node:main",
-                            "sector_check_node=nav_action_node.sector_check_node:main"],
+        "console_scripts": ["nav_action_node=nav_action_node.nav_action_node:main"],
     },
 )
