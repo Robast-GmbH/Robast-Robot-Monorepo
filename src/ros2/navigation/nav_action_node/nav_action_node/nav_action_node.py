@@ -1,14 +1,15 @@
 import rclpy
 import math
 import tf2_ros
+
 from tf_transformations import euler_from_quaternion
 from rclpy.action import ActionClient
 from rclpy.node import Node
 from action_msgs.msg import GoalStatus
-
+from visualization_msgs.msg import Marker
 from nav2_msgs.action import NavigateToPose
 from nav_msgs.msg import OccupancyGrid
-from geometry_msgs.msg import Pose, PoseStamped, Twist
+from geometry_msgs.msg import Pose, PoseStamped, Twist, Point
 from std_msgs.msg import Bool, String
 from builtin_interfaces.msg import Duration
 
@@ -22,56 +23,47 @@ class NavigateToPoseActionClient(Node):
 
         self.declare_parameter('sector_angle', math.pi / 4)
         self.declare_parameter('sector_radius', 0.7)
-        self.declare_parameter('free_space_threshold', 80.0)
+        self.declare_parameter('free_space_threshold', 50.0)
+        self.declare_parameter('cmd_vel_topic', '')
+        self.declare_parameter('robot_base_frame_param', '')
+
+        self.__sector_angle = self.get_parameter('sector_angle').get_parameter_value().double_value
+        self.__sector_radius = self.get_parameter('sector_radius').get_parameter_value().double_value
+        self.__free_space_threshold = self.get_parameter('free_space_threshold').get_parameter_value().double_value
+        self.__cmd_vel_topic = self.get_parameter('cmd_vel_topic').get_parameter_value().string_value
+        self.__robot_base_frame = self.get_parameter('robot_base_frame_param').get_parameter_value().string_value
+
+        timer_period_in_seconds = 1.0
+        self.__timer = self.create_timer(timer_period_in_seconds, self.__timer_callback)
+        self.__remaining_time = Duration()
+        self.__goal_handle = None
+        self.__local_costmap_data = None
+        self.__check_sector_flag = False
+        self.__rotation_speed = 0.5
+        self.__tf_buffer = tf2_ros.Buffer()
+        self.__tf_listener = tf2_ros.TransformListener(self.__tf_buffer, self)
 
         self.__behavior_tree = "/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_w_recovery_and_replanning_only_if_path_becomes_invalid.xml"
         if not os.path.isfile(self.__behavior_tree):
             raise FileNotFoundError(f"No such file: '{self.__behavior_tree}'")
 
         self.__action_client = ActionClient(self, NavigateToPose, "navigate_to_pose")
-        self.__goal_subscriber = self.create_subscription(
-            Pose, "set_goal_pose", self.__send_goal, 10
-        )
-        self.__cancel_goal_subscriber = self.create_subscription(
-            Bool, "cancel_goal", self.__cancel_goal, 10
-        )
-        self.__remaining_time_publisher = self.create_publisher(
-            Duration, "navigation_remaining_time", 10
-        )
-        self.__is_navigating_publisher = self.create_publisher(
-            Bool, "is_navigating", 10
-        )
-        self.__status_publisher = self.create_publisher( 
-            String, "goal_status", 10
-        )
-        self.__local_costmap_subscriber = self.create_subscription(
-            OccupancyGrid, "/local_costmap/costmap", self.__local_costmap_callback, 10
-        )
-        self.__cmd_vel_publisher = self.create_publisher(
-            Twist, 'diff_drive_base_controller/cmd_vel_unstamped', 1
-        )
-
-        timer_period_in_seconds = 1.0
-
-        self.__timer = self.create_timer(timer_period_in_seconds, self.__timer_callback)
-        self.__remaining_time = Duration()
-        self.__goal_handle = None
-        self.__sector_angle = self.get_parameter('sector_angle').get_parameter_value().double_value
-        self.__sector_radius = self.get_parameter('sector_radius').get_parameter_value().double_value
-        self.__free_space_threshold = self.get_parameter('free_space_threshold').get_parameter_value().double_value 
-        self.__rotation_speed = 0.5
-        self.__tf_buffer = tf2_ros.Buffer()
-        self.__tf_listener = tf2_ros.TransformListener(self.__tf_buffer, self)
-
-        self.__local_costmap_data = None
-        self.__is_rotating = False
-        self.__rotation_timer = None  # To handle continuous checking during rotation
+        self.__goal_subscriber = self.create_subscription(Pose, "set_goal_pose", self.__send_goal, 10)
+        self.__cancel_goal_subscriber = self.create_subscription(Bool, "cancel_goal", self.__cancel_goal, 10)
+        self.__remaining_time_publisher = self.create_publisher(Duration, "navigation_remaining_time", 10)
+        self.__is_navigating_publisher = self.create_publisher(Bool, "is_navigating", 10)
+        self.__status_publisher = self.create_publisher( String, "goal_status", 10)
+        self.__local_costmap_subscriber = self.create_subscription(OccupancyGrid, "/local_costmap/costmap", self.__local_costmap_callback, 10)
+        self.__cmd_vel_publisher = self.create_publisher(Twist, self.__cmd_vel_topic, 1)
+        self.__marker_for_visualisation_publisher = self.create_publisher(Marker, 'sector_marker', 10)
 
     def __timer_callback(self):
         self.__remaining_time_publisher.publish(self.__remaining_time)
     
     def __local_costmap_callback(self, msg: OccupancyGrid):
         self.__local_costmap_data = msg
+        if self.__check_sector_flag:
+            self.__check_free_space_and_publish_success()
 
     def __send_goal(self, goal_pose: Pose):
         self.get_logger().info("Goal received")
@@ -114,9 +106,8 @@ class NavigateToPoseActionClient(Node):
     def __get_result_callback(self, future):
         status = future.result().status
 
-        if status == GoalStatus.STATUS_SUCCEEDED:  
-            self.__status_publisher.publish(String(data="SUCCEEDED"))
-            #self.__check_free_space_and_publish_success()
+        if status == GoalStatus.STATUS_SUCCEEDED:
+            self.__check_sector_flag = True
         elif status == GoalStatus.STATUS_CANCELED:  
             self.get_logger().info("Goal was canceled")
             self.__status_publisher.publish(String(data="CANCELED"))
@@ -137,87 +128,89 @@ class NavigateToPoseActionClient(Node):
         self.__remaining_time = feedback.estimated_time_remaining
 
     def __check_free_space_and_publish_success(self):
-        if self.__local_costmap_data is not None:
-            transform = self.__tf_buffer.lookup_transform('map', 'base_link', rclpy.time.Time())
-            self.__robot_x = transform.transform.translation.x
-            self.__robot_y = transform.transform.translation.y
+        try:
+            transform = self.__tf_buffer.lookup_transform('map', self.__robot_base_frame, rclpy.time.Time())
+            robot_x = transform.transform.translation.x
+            robot_y = transform.transform.translation.y
             quaternion = (
                 transform.transform.rotation.x,
                 transform.transform.rotation.y,
                 transform.transform.rotation.z,
                 transform.transform.rotation.w
             )
-            _, _, self.__yaw = euler_from_quaternion(quaternion)
-            success = self.__check_sector()
-            if success:
-                self.get_logger().info("Free space sufficient. Goal SUCCEEDED!")
-                self.__stop_robot()
-                self.__status_publisher.publish(String(data="SUCCEEDED"))
-            else:
-                self.get_logger().info("Rotating to find sufficient free space. . .")
-                self.__rotate_robot()
+            _, _, yaw = euler_from_quaternion(quaternion) 
+        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+            self.get_logger().warn('Could not get robot pose from tf')
+            return
 
-    def __check_sector(self):
-    
         free_cells = 0
         total_cells_in_sector = 0
+
         resolution = self.__local_costmap_data.info.resolution
         width = self.__local_costmap_data.info.width
         height = self.__local_costmap_data.info.height
 
-        # Check each cell in the costmap
+        # For Visualisation
+        marker = Marker()
+        marker.header.frame_id = "map"
+        marker.type = Marker.LINE_STRIP
+        marker.action = Marker.ADD
+        marker.scale.x = 0.1  
+        marker.color.a = 1.0
+        marker.color.r = 1.0  
+        marker.lifetime = Duration(sec=1)  
+
         for i in range(height):
             for j in range(width):
                 cell_x = self.__local_costmap_data.info.origin.position.x + j * resolution
                 cell_y = self.__local_costmap_data.info.origin.position.y + i * resolution
-                dx = cell_x - self.__robot_x
-                dy = cell_y -self.__robot_y
+
+                dx = cell_x - robot_x
+                dy = cell_y - robot_y
                 distance = math.sqrt(dx * dx + dy * dy)
                 angle = math.atan2(dy, dx)
-                relative_angle = angle - self.__yaw
+                relative_angle = angle - yaw
 
                 if distance <= self.__sector_radius and abs(relative_angle) <= self.__sector_angle / 2:
                     total_cells_in_sector += 1
                     index = i * width + j
-                    if self.__local_costmap_data.data[index] >= 0 and self.__local_costmap_data.data[index] <= 70:
+                    if self.__local_costmap_data.data[index] >= 0 and self.__local_costmap_data.data[index] <= 50:
                         free_cells += 1
+                    # For Visualisation
+                    point = Point()
+                    point.x = cell_x
+                    point.y = cell_y
+                    point.z = 0.0
+                    marker.points.append(point)
 
+        self.__marker_for_visualisation_publisher.publish(marker)
+
+        free_space_percentage = 0.0
         if total_cells_in_sector > 0:
             free_space_percentage = (free_cells / total_cells_in_sector) * 100.0
-        else:
-            free_space_percentage = 0.0
 
-        return free_space_percentage >= self.__free_space_threshold
+        self.get_logger().info(f"Free space in sector: {free_space_percentage:.2f}%")
+
+        if free_space_percentage < self.__free_space_threshold:
+            self.get_logger().info(f"Free space below threshold ({self.__free_space_threshold}%), rotating robot...")
+            self.__rotate_robot()
+        else:
+            self.get_logger().info("Free space above threshold, goal succeeded!")
+            self.__stop_robot()
+            self.__status_publisher.publish(String(data="SUCCEEDED"))
+            self.__check_sector_flag = False
+    
     
     def __rotate_robot(self):
         twist = Twist()
         twist.angular.z = self.__rotation_speed
         self.__cmd_vel_publisher.publish(twist)
 
-        # Recheck free space every 1 second while rotating
-        if self.__rotation_timer is None:
-            self.__rotation_timer = self.create_timer(1.0, self.__check_free_space_during_rotation)
-
-    def __check_free_space_during_rotation(self):
-        """Recheck sector while robot is rotating."""
-        if self.__check_sector():
-            self.get_logger().info("Free space found during rotation. Stopping robot...")
-            self.__stop_robot()
-            self.__status_publisher.publish(String(data="SUCCEEDED"))
-        else:
-            self.get_logger().info("Still rotating to find sufficient free space...")
-
     def __stop_robot(self):
         twist = Twist()
         twist.angular.z = 0.0 
         self.__cmd_vel_publisher.publish(twist)
 
-        # Cancel the timer if it's running
-        if self.__rotation_timer is not None:
-            self.__rotation_timer.cancel()
-            self.__rotation_timer = None
-
-        self.get_logger().info("Rotation stopped")
 
 def main(args=None):
     rclpy.init(args=args)
