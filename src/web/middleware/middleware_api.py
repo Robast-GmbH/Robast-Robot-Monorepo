@@ -100,9 +100,9 @@ def post_cancel_goal(robot_url: str = Depends(get_robot_url)):
     return response
 
 
-@app.get("/is_navigating", tags=["Navigation"])
+@app.get("/is_navigation_completed", tags=["Navigation"])
 def read_is_navigating(robot_url: str = Depends(get_robot_url)):
-    response = requests.get(f"{robot_url}/is_navigating").json()
+    response = requests.get(f"{robot_url}/is_navigation_completed").json()
     return response
 
 
@@ -127,6 +127,12 @@ def post_unblock_nav(robot_url: str = Depends(get_robot_url)):
 @app.get("/is_navigation_blocked", tags=["Navigation"])
 def read_is_nav_blocked(robot_url: str = Depends(get_robot_url)):
     response = requests.get(f"{robot_url}/is_navigation_blocked").json()
+    return response
+
+
+@app.get("/requires_replan", tags=["Navigation"])
+def read_requires_replan(robot_url: str = Depends(get_robot_url)):
+    response = requests.get(f"{robot_url}/requires_replan").json()
     return response
 
 

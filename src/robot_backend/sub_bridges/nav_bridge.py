@@ -15,8 +15,8 @@ class NavBridge(BaseBridge):
             "builtin_interfaces/msg/Duration",
         )
         self.start_subscriber(
-            "/is_navigating",
-            "std_msgs/msg/Bool",
+            "/goal_status",
+            "std_msgs/msg/String",
         )
 
         self.__goal_pose_publisher = self.start_publisher(
@@ -39,6 +39,65 @@ class NavBridge(BaseBridge):
         self.__is_nav_blocked = False
         self.__goal_pose = None
 
+    def navigate_to_goal_pose(self, goal_pose: tuple[float, float, float]) -> bool:
+        self.__goal_pose = goal_pose
+        if not self.__is_nav_blocked:
+            self.__clear_goal_status()
+            goal_msg = Message(
+                {
+                    "position": {
+                        "x": goal_pose[0],
+                        "y": goal_pose[1],
+                        "z": 0.0,
+                    },
+                    "orientation": self.__get_quaternion_from_euler(goal_pose[2]),
+                }
+            )
+            self.__goal_pose_publisher.publish(goal_msg)
+        return True
+
+    def cancel_navigate_to_goal_pose(self) -> bool:
+        self.__cancel_goal_publisher.publish(Message({"data": True}))
+        return True
+
+    def get_remaining_nav_time(self) -> int:
+        try:
+            return self.context["/navigation_remaining_time"]["sec"]
+        except KeyError:
+            return 0
+
+    def get_is_nav_blocked(self) -> bool:
+        return self.__is_nav_blocked
+
+    def block_nav(self) -> bool:
+        self.__is_nav_blocked = True
+        self.cancel_navigate_to_goal_pose()
+        return True
+
+    def unblock_nav(self) -> bool:
+        self.__is_nav_blocked = False
+        if self.__goal_pose is not None:
+            self.navigate_to_goal_pose(self.__goal_pose)
+        return True
+
+    def requires_replan(self) -> bool:
+        if self.__is_nav_blocked:
+            return False
+        try:
+            if "/goal_status" in self.context and self.context["/goal_status"]:
+                return self.context["/goal_status"]["data"] == "ABORTED"
+            return False
+        except KeyError:
+            return False
+
+    def is_navigation_completed(self) -> bool:
+        try:
+            if "/goal_status" in self.context and self.context["/goal_status"]:
+                return self.context["/goal_status"]["data"] == "SUCCEEDED"
+            return False
+        except KeyError:
+            return False
+
     def __get_quaternion_from_euler(self, yaw: float) -> dict[str, float]:
         """
         Convert an Euler angle to a quaternion.
@@ -58,53 +117,5 @@ class NavBridge(BaseBridge):
 
         return {"x": qx, "y": qy, "z": qz, "w": qw}
 
-    def navigate_to_goal_pose(self, goal_pose: tuple[float, float, float]) -> bool:
-        self.__goal_pose = goal_pose
-        if not self.__is_nav_blocked:
-            self.context["/is_navigating"] = {"data": True}
-            goal_msg = Message(
-                {
-                    "position": {
-                        "x": goal_pose[0],
-                        "y": goal_pose[1],
-                        "z": 0.0,
-                    },
-                    "orientation": self.__get_quaternion_from_euler(goal_pose[2]),
-                }
-            )
-            self.__goal_pose_publisher.publish(goal_msg)
-        return True
-
-    def cancel_navigate_to_goal_pose(self) -> bool:
-        self.__cancel_goal_publisher.publish(Message({"data": True}))
-        return True
-
-    def is_navigating(self) -> bool:
-        # Return True if nav_is_blocked so rmf won't evaluate the current rmf nav goal as reached
-        if self.__is_nav_blocked:
-            return True
-        try:
-            return self.context["/is_navigating"]["data"]
-        except KeyError:
-            return False
-
-    def get_remaining_nav_time(self) -> int:
-        try:
-            return self.context["/navigation_remaining_time"]["sec"]
-        except KeyError:
-            return 0
-
-    def get_is_nav_blocked(self) -> bool:
-        return self.__is_nav_blocked
-
-    def block_nav(self) -> bool:
-        self.__is_nav_blocked = True
-        self.cancel_navigate_to_goal_pose()
-        return True
-
-    def unblock_nav(self) -> bool:
-        self.__is_nav_blocked = False
-        if self.__goal_pose is not None:
-            self.context["/is_navigating"]["data"] = True
-            self.navigate_to_goal_pose(self.__goal_pose)
-        return True
+    def __clear_goal_status(self) -> None:
+        self.context["/goal_status"] = None

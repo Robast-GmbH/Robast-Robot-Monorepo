@@ -65,9 +65,9 @@ def post_cancel_goal():
     return {"success": ros_bridge.nav_bridge.cancel_navigate_to_goal_pose()}
 
 
-@app.get("/is_navigating", tags=["Navigation"])
+@app.get("/is_navigation_completed", tags=["Navigation"])
 def read_is_navigating():
-    return {"is_navigating": ros_bridge.nav_bridge.is_navigating()}
+    return {"is_navigation_completed": ros_bridge.nav_bridge.is_navigation_completed()}
 
 
 @app.get("/remaining_nav_time", tags=["Navigation"])
@@ -88,6 +88,11 @@ def post_unblock_nav():
 @app.get("/is_navigation_blocked", tags=["Navigation"])
 def read_is_nav_blocked():
     return {"is_nav_blocked": ros_bridge.nav_bridge.get_is_nav_blocked()}
+
+
+@app.get("/requires_replan", tags=["Navigation"])
+def read_requires_replan():
+    return {"requires_replan": ros_bridge.nav_bridge.requires_replan()}
 
 
 @app.post("/set_initial_point", tags=["Navigation"])
