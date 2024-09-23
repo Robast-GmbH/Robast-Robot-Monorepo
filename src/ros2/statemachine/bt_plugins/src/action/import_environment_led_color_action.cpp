@@ -30,10 +30,10 @@ namespace bt_plugins
     };
 
     // Get the values from the environment variables
-    uint8_t red = getEnvAsUInt("RED", 0);
-    uint8_t green = getEnvAsUInt("GREEN", 0);
-    uint8_t blue = getEnvAsUInt("BLUE", 0);
-    uint8_t brightness = getEnvAsUInt("BRIGHTNESS", 0);
+    const uint8_t red = getEnvAsUInt("RED", 0);
+    const uint8_t green = getEnvAsUInt("GREEN", 0);
+    const uint8_t blue = getEnvAsUInt("BLUE", 0);
+    const uint8_t brightness = getEnvAsUInt("BRIGHTNESS", 0);
 
     setOutput("blue", blue);
     setOutput("red", red);
