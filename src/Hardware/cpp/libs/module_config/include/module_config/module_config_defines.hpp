@@ -91,7 +91,7 @@ namespace module_config
   struct ModuleSetting<drawer::MOVING_IN_DECELERATION_DISTANCE>
   {
     using type = uint8_t;
-    static constexpr type default_value = 50;
+    static constexpr type default_value = 30;
   };
 
   template <>
