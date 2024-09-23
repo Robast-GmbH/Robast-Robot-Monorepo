@@ -14,8 +14,8 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'] as String,
-      nfcID: json['nfc_id'] as String,
-      mail: json['mail'] as String,
+      nfcID: json['nfc_id'] as String?,
+      mail: json['mail'] as String?,
       title: json['title'] as String,
       firstName: json['first_name'] as String,
       lastName: json['last_name'] as String,
@@ -26,8 +26,8 @@ class User {
   }
 
   final String id;
-  final String nfcID;
-  final String mail;
+  final String? nfcID;
+  final String? mail;
   final String title;
   final String firstName;
   final String lastName;
@@ -47,5 +47,9 @@ class User {
       'room': room,
       'user_groups': userGroups,
     };
+  }
+
+  bool hasNfcID() {
+    return nfcID != null && nfcID!.isNotEmpty;
   }
 }

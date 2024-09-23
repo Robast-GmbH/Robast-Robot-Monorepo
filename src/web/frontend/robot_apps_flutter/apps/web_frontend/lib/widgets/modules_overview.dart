@@ -53,8 +53,9 @@ class ModulesOverview extends StatelessWidget {
 
             return ListView(
               children: [
-                ...moduleIDsBySubmodules.keys.map(
-                  (moduleID) => Container(
+                ...List.generate(moduleIDsBySubmodules.keys.length, (index) {
+                  final moduleID = moduleIDsBySubmodules.keys.elementAt(index);
+                  return Container(
                     height: moduleIDsBySubmodules[moduleID]!.first.size * 100,
                     width: double.infinity,
                     child: Column(
@@ -67,6 +68,7 @@ class ModulesOverview extends StatelessWidget {
                                 context: context,
                                 builder: (context) => ModuleDetailsDialog(
                                   moduleID: moduleID,
+                                  position: index + 1,
                                   submodules: moduleIDsBySubmodules[moduleID]!,
                                 ),
                               );
@@ -76,7 +78,7 @@ class ModulesOverview extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  'Modul ${moduleIDsBySubmodules[moduleID]!.first.position}',
+                                  'Modul ${index + 1}',
                                   style: const TextStyle(
                                     fontSize: 24,
                                     color: WebColors.secondaryText,
@@ -92,8 +94,8 @@ class ModulesOverview extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ),
-                ),
+                  );
+                }),
                 const SizedBox(height: 16),
               ],
             );

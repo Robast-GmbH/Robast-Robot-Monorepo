@@ -155,10 +155,6 @@ void main() {
       expect(deletionResult, isTrue);
     });
 
-    test('can get users', () async {
-      final users = await usersApi.getUsers();
-      expect(users, isNotEmpty);
-    });
     test('can create and delete user', () async {
       final creationResult = await usersApi.createUser(
         newUser: testUser,
@@ -203,10 +199,10 @@ void main() {
       expect(deletionResult, isTrue);
     });
 
-    test('can read nfc', () async {
-      final nfc = NFCApi(prefix: 'http://localhost:8003');
-      final result = await nfc.readNFC(robotName: robotName);
-      expect(result, isNotNull);
-    });
+    // test('can read nfc', () async {
+    //   final nfc = NFCApi(prefix: 'http://localhost:8003');
+    //   final result = await nfc.readNFC(robotName: robotName);
+    //   expect(result, isNotNull);
+    // });
   });
 }

@@ -33,7 +33,7 @@ class _ReservationViewState extends State<ReservationView> {
         userIDs: [widget.currentUser.id],
         userGroups: widget.currentUser.userGroups,
       );
-      await moduleProvider.fetchSubmodules();
+      await moduleProvider.fetchModules();
       isUpdatingReservationStatus = false;
       widget.onReservation(submodule.address);
       if (!reservationSuccessful && context.mounted) {
@@ -59,7 +59,7 @@ class _ReservationViewState extends State<ReservationView> {
       final freeingSuccessful = await moduleProvider.freeSubmodule(
         submoduleAddress: submodule.address,
       );
-      await moduleProvider.fetchSubmodules();
+      await moduleProvider.fetchModules();
       isUpdatingReservationStatus = false;
       widget.onFreeing(submodule.address);
       if (!freeingSuccessful && context.mounted) {
@@ -84,18 +84,10 @@ class _ReservationViewState extends State<ReservationView> {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<ModuleProvider, List<Submodule>>(
-      selector: (context, provider) => provider.submodules,
-      builder: (context, submodules, child) {
-        final moduleIDsBySubmodules = <int, List<Submodule>>{};
-        for (final submodule in submodules) {
-          final moduleID = submodule.address.moduleID;
-          if (!moduleIDsBySubmodules.containsKey(moduleID)) {
-            moduleIDsBySubmodules[moduleID] = [];
-          }
-          moduleIDsBySubmodules[moduleID]!.add(submodule);
-        }
-        if (submodules.isNotEmpty) {
+    return Selector<ModuleProvider, List<List<Submodule>>>(
+      selector: (context, provider) => provider.modules,
+      builder: (context, modules, child) {
+        if (modules.isNotEmpty) {
           return Row(
             children: [
               const Expanded(child: SizedBox()),
@@ -103,16 +95,17 @@ class _ReservationViewState extends State<ReservationView> {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 32, bottom: 64),
                   child: Column(
-                    children: moduleIDsBySubmodules.keys.map(
-                      (moduleID) {
+                    children: List.generate(
+                      modules.length,
+                      (index) {
                         return Expanded(
-                          flex: moduleIDsBySubmodules[moduleID]!.first.size,
+                          flex: modules[index].first.size,
                           child: Stack(
                             alignment: Alignment.center,
                             fit: StackFit.expand,
                             children: [
                               Row(
-                                children: moduleIDsBySubmodules[moduleID]!
+                                children: modules[index]
                                     .map(
                                       (submodule) => ModuleView(
                                         module: submodule,
@@ -123,18 +116,20 @@ class _ReservationViewState extends State<ReservationView> {
                                     )
                                     .toList(),
                               ),
-                              Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  'Modul ${moduleIDsBySubmodules[moduleID]!.first.position}',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    height: 0,
-                                    color: moduleIDsBySubmodules[moduleID]!.any((submodule) => submodule.reservedForTask.isEmpty)
-                                        ? RobotColors.secondaryText
-                                        : RobotColors.primaryText.withOpacity(0.2),
-                                    fontSize: 40,
-                                    fontWeight: FontWeight.w400,
+                              IgnorePointer(
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'Modul ${index + 1}',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      height: 0,
+                                      color: modules[index].any((submodule) => submodule.reservedForTask.isEmpty)
+                                          ? RobotColors.secondaryText
+                                          : RobotColors.primaryText.withOpacity(0.2),
+                                      fontSize: 40,
+                                      fontWeight: FontWeight.w400,
+                                    ),
                                   ),
                                 ),
                               ),

@@ -27,7 +27,7 @@ class UserListTile extends StatelessWidget {
         }
       },
       title: Text('${user.firstName} ${user.lastName}'),
-      subtitle: Text(user.mail.isEmpty ? 'Keine E-Mail angegeben' : user.mail),
+      subtitle: Text((user.mail?.isEmpty ?? true) ? 'Keine E-Mail angegeben' : user.mail!),
       trailing: IconButton(
           onPressed: () async {
             final userProvider = Provider.of<UserProvider>(context, listen: false);
