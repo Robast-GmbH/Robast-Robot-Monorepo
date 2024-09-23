@@ -20,6 +20,12 @@ class Submodule(Base):
         "DINNER_TRAYS": 0b00010110,
         "SURGERY_TOOLS": 0b00010111,
     }
+    MODULE_SIZES_BY_TYPES = {
+        1: ["MANUAL_DRAWER_10x40", "E_DRAWER_10x40"],
+        2: ["MANUAL_DRAWER_20x40"],
+        3: ["MANUAL_DRAWER_30x40"],
+        5: ["PARTIAL_DRAWER_10x40x8"],
+    }
 
     __tablename__ = "submodules"
 
@@ -83,19 +89,8 @@ class Submodule(Base):
         return extracted_module_type == module_type
 
     def is_size(self, size: int) -> bool:
-        module_types = self.__size_to_module_types(size)
+        module_types = Submodule.MODULE_SIZES_BY_TYPES.get(size, [])
         for module_type in module_types:
             if self.is_module_type(Submodule.MODULE_TYPES[module_type]):
                 return True
         return False
-
-    def __size_to_module_types(self, size: int) -> list[str]:
-        if size == 1:
-            return ["MANUAL_DRAWER_10x40", "E_DRAWER_10x40"]
-        elif size == 2:
-            return ["MANUAL_DRAWER_20x40"]
-        elif size == 3:
-            return ["MANUAL_DRAWER_30x40"]
-        elif size == 5:
-            return ["PARTIAL_DRAWER_10x40x8"]
-        return []

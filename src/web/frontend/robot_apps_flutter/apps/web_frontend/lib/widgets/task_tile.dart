@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 import 'package:web_frontend/constants/web_colors.dart';
 import 'package:web_frontend/services/time_stamp_formatter.dart';
 import 'package:web_frontend/widgets/expandable_subtask_tile.dart';

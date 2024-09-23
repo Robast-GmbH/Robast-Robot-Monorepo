@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
-import 'package:robot_frontend/models/controller/user_selection_controller.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class UserSelector extends StatefulWidget {
   const UserSelector({
@@ -33,6 +32,7 @@ class _UserSelectorState extends State<UserSelector> {
       if (userSession != null) {
         widget.controller.selectedUser = users.firstWhere((element) => userSession.id == element.id);
       }
+      widget.onChanged?.call();
     }
     return users;
   }

@@ -30,6 +30,13 @@ class AuthSessionManager:
             for key in ROBOT_NAME_TO_IP:
                 self.__sessions[key] = None
 
+    def set_session(self, robot_name: str, user_id: str) -> bool:
+        user = self.__user_repository.get_user(user_id)
+        if user:
+            self.__sessions[robot_name] = user
+            return True
+        return False
+
     def try_start_session(
         self,
         robot_name: str,

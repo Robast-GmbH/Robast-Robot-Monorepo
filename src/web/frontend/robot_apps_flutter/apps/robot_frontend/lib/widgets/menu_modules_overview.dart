@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
-import 'package:robot_frontend/widgets/custom_button_view.dart';
+import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
+import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
 import 'package:robot_frontend/widgets/dialogs/module_details_dialog.dart';
-import 'package:robot_frontend/widgets/rounded_button.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class MenuModulesOverview extends StatelessWidget {
   const MenuModulesOverview({super.key});
@@ -21,14 +21,14 @@ class MenuModulesOverview extends StatelessWidget {
         isLoaded = true;
       }
     }
-    String moduleStatus = isLoaded ? 'beladen, ' : 'leer, ';
-    if (reservedCount == submodules.length) {
-      moduleStatus += 'reserviert';
-    } else if (reservedCount > 0) {
-      moduleStatus += 'teilweise frei';
-    } else {
-      moduleStatus += 'frei';
-    }
+    String moduleStatus = isLoaded ? 'beladen' : 'leer';
+    // if (reservedCount == submodules.length) {
+    //   moduleStatus += 'reserviert';
+    // } else if (reservedCount > 0) {
+    //   moduleStatus += 'teilweise frei';
+    // } else {
+    //   moduleStatus += 'frei';
+    // }
     return moduleStatus;
   }
 
@@ -50,7 +50,7 @@ class MenuModulesOverview extends StatelessWidget {
                     const SizedBox(height: 16),
                     Expanded(
                       child: RoundedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           showDialog(
                             context: context,
                             builder: (context) => ModuleDetailsDialog(
@@ -58,7 +58,6 @@ class MenuModulesOverview extends StatelessWidget {
                             ),
                           );
                         },
-                        color: Colors.black.withOpacity(0.1),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -71,7 +70,10 @@ class MenuModulesOverview extends StatelessWidget {
                             ),
                             Text(
                               getModuleStatus(modules[index]),
-                              style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),
+                              style: const TextStyle(
+                                fontSize: 24,
+                                color: RobotColors.secondaryText,
+                              ),
                             ),
                           ],
                         ),

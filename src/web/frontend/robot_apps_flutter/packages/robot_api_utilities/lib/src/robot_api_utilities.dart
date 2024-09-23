@@ -27,24 +27,6 @@ class RobotApiUtilities {
     }
   }
 
-  Future<List<SubmoduleModule>?> getSubmodules() async {
-    final modules = <SubmoduleModule>[];
-    try {
-      final response = await http.get(Uri.parse('$prefix/submodules'));
-      if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body) as List<dynamic>;
-        for (final module in jsonData) {
-          modules.add(
-            SubmoduleModule.fromJson(data: module as Map<String, dynamic>),
-          );
-        }
-      }
-      return modules;
-    } catch (e) {
-      return null;
-    }
-  }
-
   Future<bool> openSubmodule({
     required int moduleID,
     required int submoduleID,

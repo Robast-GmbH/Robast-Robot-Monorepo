@@ -1,3 +1,5 @@
+import 'package:shared_data_models/shared_data_models.dart';
+
 class Validators {
   static String? mailValidator(String? value) {
     if (value == null || value.isEmpty) {
@@ -68,7 +70,7 @@ class Validators {
     } else if (!regExp.hasMatch(value)) {
       return 'Die Eingabe muss eine durch Kommas getrennte Liste von Wörtern sein';
     } else {
-      final availableGroups = ['PATIENT', 'STAFF', 'ADMIN'];
+      final availableGroups = User.availableUserGroups();
       for (final group in value.split(',')) {
         if (!availableGroups.contains(group)) {
           return 'Bitte geben Sie nur gültige Nutzergruppen an';
