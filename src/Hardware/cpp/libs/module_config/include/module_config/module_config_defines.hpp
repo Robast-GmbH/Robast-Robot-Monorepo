@@ -113,7 +113,7 @@ namespace module_config
   struct ModuleSetting<drawer::MOVING_OUT_FINAL_SPEED>
   {
     using type = uint32_t;
-    static constexpr type default_value = 500;
+    static constexpr type default_value = 5000;
   };
 
   template <>
