@@ -32,6 +32,11 @@ namespace drawer
     _moving_out_deceleration_distance = deceleration_distance;
   }
 
+  void ElectricalDrawerConfig::set_drawer_moving_out_final_speed(const uint64_t final_speed)
+  {
+    _moving_out_final_speed = final_speed;
+  }
+
   void ElectricalDrawerConfig::set_drawer_push_in_auto_close_speed(const uint8_t auto_close_speed)
   {
     _push_in_auto_close_speed = auto_close_speed;
@@ -95,6 +100,11 @@ namespace drawer
   uint8_t ElectricalDrawerConfig::get_drawer_moving_out_deceleration_distance() const
   {
     return _moving_out_deceleration_distance;
+  }
+
+  uint64_t ElectricalDrawerConfig::get_drawer_moving_out_final_speed() const
+  {
+    return _moving_out_final_speed;
   }
 
   uint8_t ElectricalDrawerConfig::get_drawer_push_in_auto_close_speed() const

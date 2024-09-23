@@ -19,7 +19,7 @@ class UserResponse(BaseModel):
 
 class AuthResponse(BaseModel):
     status: str
-    user: UserResponse
+    user: UserResponse | None
 
     class Config:
         from_attributes = True

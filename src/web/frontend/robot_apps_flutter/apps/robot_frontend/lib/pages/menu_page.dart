@@ -1,5 +1,5 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/inactivity_provider.dart';
@@ -7,6 +7,7 @@ import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/models/sidebar_menu_point.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
+import 'package:robot_frontend/widgets/caire_ai_card_view.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
 import 'package:robot_frontend/widgets/home_views/patient_home_view.dart';
 import 'package:robot_frontend/widgets/home_views/staff_home_view.dart';
@@ -17,6 +18,7 @@ import 'package:robot_frontend/widgets/settings_views/admin_settings_view.dart';
 import 'package:robot_frontend/widgets/settings_views/patient_settings_view.dart';
 import 'package:robot_frontend/widgets/settings_views/staff_settings_view.dart';
 import 'package:robot_frontend/widgets/sidebar.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -39,6 +41,16 @@ class _MenuPageState extends State<MenuPage> {
         'PATIENT': PatientHomeView.new,
       },
     ),
+    if (kIsWeb)
+      SidebarMenuPoint(
+        title: 'caire.ai',
+        icon: Icons.favorite,
+        userGroupWidgets: {
+          'ADMIN': CaireAiCardView.new,
+          'STAFF': CaireAiCardView.new,
+          'PATIENT': CaireAiCardView.new,
+        },
+      ),
     SidebarMenuPoint(
       title: 'Karte',
       icon: Icons.map,
@@ -68,10 +80,15 @@ class _MenuPageState extends State<MenuPage> {
     ),
   ];
 
+  Future<User?> loadCurrentUser() async {
+    // await Provider.of<UserProvider>(context, listen: false).setUserSession(robotName: 'rb_theron', userID: 'a1f26ade-d83a-414a-aaae-62366e0c083c');
+    return Provider.of<UserProvider>(context, listen: false).getUserSession(robotName: 'rb_theron');
+  }
+
   @override
   void initState() {
     super.initState();
-    loadCurrentUserFuture = Provider.of<UserProvider>(context, listen: false).getUserSession(robotName: 'rb_theron');
+    loadCurrentUserFuture = loadCurrentUser();
   }
 
   @override

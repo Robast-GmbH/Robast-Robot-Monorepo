@@ -6,7 +6,6 @@ import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/map_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:shared_data_models/shared_data_models.dart';
-import 'package:shared_widgets/shared_widgets.dart';
 import 'package:zoom_widget/zoom_widget.dart';
 
 class RobotMapView extends StatefulWidget {

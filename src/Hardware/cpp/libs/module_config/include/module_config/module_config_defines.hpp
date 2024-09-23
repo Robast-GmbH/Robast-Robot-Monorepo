@@ -25,13 +25,14 @@ namespace module_config
     constexpr uint8_t MOVING_IN_DECELERATION_DISTANCE = 4;
     constexpr uint8_t MOVING_IN_FINAL_HOMING_DISTANCE = 5;
     constexpr uint8_t MOVING_OUT_DECELERATION_DISTANCE = 6;
-    constexpr uint8_t PUSH_IN_AUTO_CLOSE_SPEED = 7;
-    constexpr uint8_t PUSH_IN_AUTO_CLOSE_TMC_STALL_GUARD_VALUE = 8;
-    constexpr uint8_t PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS = 9;
-    constexpr uint8_t STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS = 10;
-    constexpr uint8_t USE_TMC_STALL_GUARD = 11;
-    constexpr uint8_t USE_MOTOR_MONITOR_STALL_GUARD = 12;
-    constexpr uint8_t DRAWER_DEFAULT_ACCELERATION = 13;
+    constexpr uint8_t MOVING_OUT_FINAL_SPEED = 7;
+    constexpr uint8_t PUSH_IN_AUTO_CLOSE_SPEED = 8;
+    constexpr uint8_t PUSH_IN_AUTO_CLOSE_TMC_STALL_GUARD_VALUE = 9;
+    constexpr uint8_t PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS = 10;
+    constexpr uint8_t STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS = 11;
+    constexpr uint8_t USE_TMC_STALL_GUARD = 12;
+    constexpr uint8_t USE_MOTOR_MONITOR_STALL_GUARD = 13;
+    constexpr uint8_t DRAWER_DEFAULT_ACCELERATION = 14;
   } // namespace drawer
 
   namespace encoder
@@ -77,7 +78,7 @@ namespace module_config
   struct ModuleSetting<drawer::HOMING_SPEED>
   {
     using type = uint32_t;
-    static constexpr type default_value = 500;
+    static constexpr type default_value = 1500;
   };
 
   template <>
@@ -91,7 +92,7 @@ namespace module_config
   struct ModuleSetting<drawer::MOVING_IN_DECELERATION_DISTANCE>
   {
     using type = uint8_t;
-    static constexpr type default_value = 50;
+    static constexpr type default_value = 30;
   };
 
   template <>
@@ -106,6 +107,13 @@ namespace module_config
   {
     using type = uint8_t;
     static constexpr type default_value = 70;
+  };
+
+  template <>
+  struct ModuleSetting<drawer::MOVING_OUT_FINAL_SPEED>
+  {
+    using type = uint32_t;
+    static constexpr type default_value = 5000;
   };
 
   template <>
@@ -133,7 +141,7 @@ namespace module_config
   struct ModuleSetting<drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS>
   {
     using type = uint32_t;
-    static constexpr type default_value = 350;
+    static constexpr type default_value = 700;
   };
 
   template <>

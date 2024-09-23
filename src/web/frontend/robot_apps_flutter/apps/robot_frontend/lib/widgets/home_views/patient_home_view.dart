@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
-import 'package:robot_frontend/widgets/custom_button_view.dart';
+import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
 import 'package:robot_frontend/widgets/delivery_plan_view.dart';
-import 'package:robot_frontend/widgets/rounded_button.dart';
+import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
 import 'package:robot_frontend/widgets/weather_view.dart';
+import 'package:robot_frontend/widgets/welcome_view.dart';
 
 class PatientHomeView extends StatelessWidget {
   const PatientHomeView({super.key});
@@ -16,12 +17,8 @@ class PatientHomeView extends StatelessWidget {
           flex: 2,
           child: Column(
             children: [
-              Expanded(
-                child: CustomButtonView(
-                  text: 'Hallo Nutzer:in,',
-                  content: const Text('mein Name ist Rosalina.', style: TextStyle(color: RobotColors.secondaryText, fontSize: 24)),
-                  onPressed: () {},
-                ),
+              const Expanded(
+                child: WelcomeView(),
               ),
               const SizedBox(height: 16),
               Expanded(
