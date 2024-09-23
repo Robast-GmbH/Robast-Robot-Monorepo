@@ -25,8 +25,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'feuerplan_publisher_node = feuerplan_publisher.publish_feuerplan:main',
-            'costmap_analyzer_node = feuerplan_publisher.costmap_analyzer:main'
+            'feuerplan_publisher_node = feuerplan_publisher.publish_feuerplan:main'
         ],
     },
 )
