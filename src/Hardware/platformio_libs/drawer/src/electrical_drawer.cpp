@@ -362,7 +362,7 @@ namespace drawer
         _encoder->get_normed_current_position(),
         _target_position_uint8);
       _triggered_deceleration_for_drawer_moving_out = true;
-      _motor->set_target_speed_with_decelerating_ramp(TARGET_SPEED_ZERO,
+      _motor->set_target_speed_with_decelerating_ramp(_config->get_drawer_moving_out_final_speed(),
                                                       _encoder->convert_uint8_position_to_drawer_position_scale(
                                                         _config->get_drawer_moving_out_deceleration_distance()),
                                                       _encoder->get_current_position());

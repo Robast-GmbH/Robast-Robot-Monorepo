@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:middleware_api_utilities/src/models/user.dart';
 import 'package:middleware_api_utilities/src/services/request_service.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class UsersApi {
   UsersApi({required this.prefix});
@@ -63,6 +63,13 @@ class UsersApi {
   }) async {
     final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/users/read_and_assign_user_nfc_id?robot_name=$robotName&user_id=$userID'),
+    );
+    return RequestService.wasRequestSuccessful(response: response);
+  }
+
+  Future<bool> setUserSession({required String robotName, required String userID}) async {
+    final response = await RequestService.tryPost(
+      uri: Uri.parse('$prefix/users/set_session?robot_name=$robotName&user_id=$userID'),
     );
     return RequestService.wasRequestSuccessful(response: response);
   }

@@ -17,18 +17,39 @@
   </BehaviorTree>
 
   <BehaviorTree ID="LED_Closing">
-    <Sequence>
-      <InitLEDVector size="21"
-                     led_vector="{leds}"/>
-      <PartialColorizeLED LEDs="{leds}"
-                          blue="155"
-                          brightness="80"
-                          green="155"
-                          lower_bound="0.0"
-                          red="0"
-                          upper_bound="100.0"
-                          LEDs_colored="{leds}"/>
-    </Sequence>
+    <KeepRunningUntilFailure>
+      <Sequence>
+        <InitLEDVector size="21"
+                       led_vector="{leds}"/>
+        <PartialColorizeLED LEDs="{leds}"
+                            blue="0"
+                            brightness="150"
+                            green="166"
+                            lower_bound="0.0"
+                            red="236"
+                            upper_bound="100.0"
+                            LEDs_colored="{leds}"/>
+        <LEDPublisherAction drawer_address="{drawer}"
+                            fading_time_ms="500"
+                            led_topic="/led_cmd"
+                            leds="{leds}"/>
+        <PartialColorizeLED LEDs="{leds}"
+                            blue="0"
+                            brightness="0"
+                            green="166"
+                            lower_bound="0.0"
+                            red="236"
+                            upper_bound="100.0"
+                            LEDs_colored="{leds}"/>
+        <Delay delay_msec="500">
+          <LEDPublisherAction drawer_address="{drawer}"
+                              fading_time_ms="500"
+                              led_topic="/led_cmd"
+                              leds="{leds}"/>
+        </Delay>
+        <Sleep msec="500"/>
+      </Sequence>
+    </KeepRunningUntilFailure>
   </BehaviorTree>
 
   <BehaviorTree ID="LED_Default">
@@ -72,34 +93,60 @@
       <PartialColorizeLED LEDs="{leds}"
                           blue="105"
                           brightness="150"
-                          green="205"
+                          green="166"
                           lower_bound="0.0"
-                          red="0"
+                          red="236"
                           upper_bound="100.0"
                           LEDs_colored="{leds}"/>
     </Sequence>
   </BehaviorTree>
 
   <BehaviorTree ID="LED_unlocked">
-    <Sequence>
-      <InitLEDVector size="21"
-                     led_vector="{leds}"/>
-      <PartialColorizeLED LEDs="{leds}"
-                          blue="105"
-                          brightness="150"
-                          green="205"
-                          lower_bound="0.0"
-                          red="0"
-                          upper_bound="100.0"
-                          LEDs_colored="{leds}"/>
-    </Sequence>
+    <KeepRunningUntilFailure>
+      <Sequence>
+        <InitLEDVector size="21"
+                       led_vector="{leds}"/>
+        <PartialColorizeLED LEDs="{leds}"
+                            blue="0"
+                            brightness="150"
+                            green="166"
+                            lower_bound="0.0"
+                            red="236"
+                            upper_bound="100.0"
+                            LEDs_colored="{leds}"/>
+        <LEDPublisherAction drawer_address="{drawer}"
+                            fading_time_ms="500"
+                            led_topic="/led_cmd"
+                            leds="{leds}"/>
+        <PartialColorizeLED LEDs="{leds}"
+                            blue="0"
+                            brightness="0"
+                            green="166"
+                            lower_bound="0.0"
+                            red="236"
+                            upper_bound="100.0"
+                            LEDs_colored="{leds}"/>
+        <Delay delay_msec="500">
+          <LEDPublisherAction drawer_address="{drawer}"
+                              fading_time_ms="500"
+                              led_topic="/led_cmd"
+                              leds="{leds}"/>
+        </Delay>
+        <Sleep msec="500"/>
+      </Sequence>
+    </KeepRunningUntilFailure>
   </BehaviorTree>
 
   <BehaviorTree ID="Opening_electrical_drawer">
     <Sequence>
-      <ElectricDrawerStatusCondition target_value="251"
-                                     topic="/electrical_drawer_status"
-                                     use_stallguard="true"/>
+      <Parallel failure_count="1"
+                success_count="1">
+        <SubTree ID="LED_unlocked"
+                 _autoremap="true"/>
+        <ElectricDrawerStatusCondition target_value="251"
+                                       topic="/electrical_drawer_status"
+                                       use_stallguard="true"/>
+      </Parallel>
       <PublishDrawerStatus topic_name="/bt_drawer_open"
                            status="true"
                            drawer_address="{drawer}"/>
@@ -134,12 +181,6 @@
                               stall_guard_value="0"
                               target_position="251"/>
         </Delay>
-        <SubTree ID="LED_unlocked"
-                 _autoremap="true"/>
-        <LEDPublisherAction drawer_address="{drawer}"
-                            fading_time_ms="500"
-                            led_topic="/led_cmd"
-                            leds="{leds}"/>
         <ReactiveIfThenElse>
           <Inverter>
             <BoolTopicCondition target_value="true"
@@ -158,15 +199,14 @@
           </Sequence>
           <AlwaysSuccess/>
         </ReactiveIfThenElse>
-        <SubTree ID="LED_Closing"
-                 _autoremap="true"/>
-        <LEDPublisherAction drawer_address="{drawer}"
-                            fading_time_ms="0"
-                            led_topic="/led_cmd"
-                            leds="{leds}"/>
-        <ElectricDrawerStatusCondition target_value="0"
-                                       topic="/electrical_drawer_status"
-                                       use_stallguard="false"/>
+        <Parallel failure_count="1"
+                  success_count="1">
+          <SubTree ID="LED_Closing"
+                   _autoremap="true"/>
+          <ElectricDrawerStatusCondition target_value="0"
+                                         topic="/electrical_drawer_status"
+                                         use_stallguard="false"/>
+        </Parallel>
         <Sequence>
           <DrawerStatusCondition target_value="false"
                                  topic="/drawer_is_open"/>

@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 import 'package:web_frontend/constants/web_colors.dart';
-import 'package:web_frontend/models/controller/delivery_time_controller.dart';
-import 'package:web_frontend/models/controller/location_selection_controller.dart';
-import 'package:web_frontend/models/controller/module_content_controller.dart';
-import 'package:web_frontend/models/controller/submodule_type_controller.dart';
-import 'package:web_frontend/models/controller/user_groups_selection_controller.dart';
-import 'package:web_frontend/models/controller/user_selection_controller.dart';
 import 'package:web_frontend/models/provider/task_provider.dart';
 import 'package:web_frontend/widgets/invalid_inputs_dialog.dart';
 import 'package:web_frontend/widgets/module_content_creation_view.dart';
@@ -26,7 +21,7 @@ class TaskCreationPage extends StatefulWidget {
 
 class _TaskCreationPageState extends State<TaskCreationPage> {
   final moduleContentController = ModuleContentController();
-  final submoduleTypeController = SubmoduleTypeController();
+  final submoduleSizeController = SubmoduleSizeController();
 
   final startController = LocationSelectionController();
   final targetController = LocationSelectionController();
@@ -39,11 +34,10 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
 
   bool validateInputs() {
     return moduleContentController.didItemsChange() &&
-        submoduleTypeController.value != null &&
         startController.room != null &&
         targetController.room != null &&
-        (senderUserController.selectedUser != null || senderUserGroupsSelectionController.selectionAsStringList().isNotEmpty) &&
-        (recipientUserController.selectedUser != null || recipientUserGroupsSelectionController.selectionAsStringList().isNotEmpty);
+        (senderUserController.selectedUser != null || senderUserGroupsSelectionController.userGroups.isNotEmpty) &&
+        (recipientUserController.selectedUser != null || recipientUserGroupsSelectionController.userGroups.isNotEmpty);
   }
 
   @override
@@ -74,7 +68,7 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                 height: 8,
               ),
               SubmoduleTypeSelector(
-                controller: submoduleTypeController,
+                controller: submoduleSizeController,
               ),
               SizedBox(
                 height: 16,
@@ -163,19 +157,19 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                   }
                   if (validateInputs()) {
                     await Provider.of<TaskProvider>(context, listen: false).createDeliveryTaskRequest(
-                      requiredSubmoduleType: submoduleTypeController.valueAsInt(),
+                      requiredSubmoduleType: submoduleSizeController.size,
                       pickupTargetID: startController.room!,
                       pickupEarliestStartTime: senderTimeController.timeAsSecondsSinceEpoch(),
                       senderUserIDs: [
                         if (senderUserController.selectedUser != null) senderUserController.selectedUser!.id,
                       ],
-                      senderUserGroups: senderUserGroupsSelectionController.selectionAsStringList(),
+                      senderUserGroups: senderUserGroupsSelectionController.userGroups,
                       dropoffTargetID: targetController.room!,
                       dropoffEarliestStartTime: recipientTimeController.timeAsSecondsSinceEpoch(),
                       recipientUserIDs: [
                         if (recipientUserController.selectedUser != null) recipientUserController.selectedUser!.id,
                       ],
-                      recipientUserGroups: recipientUserGroupsSelectionController.selectionAsStringList(),
+                      recipientUserGroups: recipientUserGroupsSelectionController.userGroups,
                       itemsByChange: moduleContentController.createItemsByChange(),
                     );
                     if (context.mounted) {

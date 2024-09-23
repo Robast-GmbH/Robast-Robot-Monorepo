@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
-import 'package:robot_frontend/pages/tasks_overview_page.dart';
-import 'package:robot_frontend/widgets/custom_button_view.dart';
-import 'package:robot_frontend/widgets/rounded_button.dart';
+import 'package:robot_frontend/pages/task_pages/tasks_overview_page.dart';
+import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
+import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
 import 'package:robot_frontend/widgets/dialogs/task_details_dialog.dart';
 
 class MenuTasksOverview extends StatefulWidget {

@@ -32,6 +32,8 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
             module_config::ModuleSetting<module_config::drawer::MOVING_IN_FINAL_HOMING_DISTANCE>::default_value);
     REQUIRE(e_drawer_config->get_drawer_moving_out_deceleration_distance() ==
             module_config::ModuleSetting<module_config::drawer::MOVING_OUT_DECELERATION_DISTANCE>::default_value);
+    REQUIRE(e_drawer_config->get_drawer_moving_out_final_speed() ==
+            module_config::ModuleSetting<module_config::drawer::MOVING_OUT_FINAL_SPEED>::default_value);
     REQUIRE(e_drawer_config->get_drawer_push_in_auto_close_speed() ==
             module_config::ModuleSetting<module_config::drawer::PUSH_IN_AUTO_CLOSE_SPEED>::default_value);
     REQUIRE(

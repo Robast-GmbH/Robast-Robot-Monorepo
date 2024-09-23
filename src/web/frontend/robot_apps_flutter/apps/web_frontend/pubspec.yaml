@@ -21,7 +21,6 @@ dependencies:
   provider: ^6.1.2
   shared_data_models: ^0.1.0+1
   shared_preferences: ^2.2.3
-  shared_widgets: ^0.1.0+1
   zoom_widget: ^2.0.1
 
 dev_dependencies:

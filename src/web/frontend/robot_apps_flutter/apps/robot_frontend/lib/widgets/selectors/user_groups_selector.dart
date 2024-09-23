@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
-import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class UserGroupsSelector extends StatefulWidget {
   const UserGroupsSelector({required this.controller, this.onChanged, super.key});
@@ -25,46 +25,31 @@ class _UserGroupsSelectorState extends State<UserGroupsSelector> {
               textAlign: TextAlign.end,
               style: TextStyle(fontSize: 24, color: RobotColors.secondaryText),
             ),
-            const SizedBox(
-              width: 16,
-            ),
             Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: [
-                    buildUserGroupSelector(
-                      label: 'Patient',
-                      value: controller.isPatient,
-                      onChanged: ({required bool newValue}) {
-                        setState(() => controller.isPatient = newValue);
-                        widget.onChanged?.call();
-                      },
-                    ),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    buildUserGroupSelector(
-                      label: 'Angestellte/r',
-                      value: controller.isStaff,
-                      onChanged: ({required bool newValue}) {
-                        setState(() => controller.isStaff = newValue);
-                        widget.onChanged?.call();
-                      },
-                    ),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    buildUserGroupSelector(
-                      label: 'Admin',
-                      value: controller.isAdmin,
-                      onChanged: ({required bool newValue}) {
-                        setState(() => controller.isAdmin = newValue);
-                        widget.onChanged?.call();
-                      },
-                    ),
-                  ],
-                ),
+                    children: User.userGroupsByDisplayName.entries.map(
+                  (entry) {
+                    return Row(
+                      children: [
+                        buildUserGroupSelector(
+                          label: entry.value,
+                          value: controller.userGroups.contains(entry.key),
+                          onChanged: ({required bool newValue}) {
+                            if (newValue) {
+                              controller.userGroups.add(entry.key);
+                            } else {
+                              controller.userGroups.remove(entry.key);
+                            }
+                            setState(() {});
+                            widget.onChanged?.call();
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ).toList()),
               ),
             ),
           ],
@@ -78,6 +63,9 @@ class _UserGroupsSelectorState extends State<UserGroupsSelector> {
       onTap: () => onChanged(newValue: !value),
       child: Row(
         children: [
+          const SizedBox(
+            width: 16,
+          ),
           Checkbox(
             activeColor: RobotColors.accent,
             checkColor: RobotColors.secondaryIcon,

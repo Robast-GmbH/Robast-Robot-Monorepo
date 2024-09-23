@@ -12,7 +12,6 @@ import os
 
 
 class NavigateToPoseActionClient(Node):
-
     def __init__(self):
         super().__init__("navigate_to_pose_action_client")
 
@@ -30,12 +29,7 @@ class NavigateToPoseActionClient(Node):
         self.__remaining_time_publisher = self.create_publisher(
             Duration, "navigation_remaining_time", 10
         )
-        self.__is_navigating_publisher = self.create_publisher(
-            Bool, "is_navigating", 10
-        )
-        self.__status_publisher = self.create_publisher( 
-            String, "goal_status", 10
-        )
+        self.__status_publisher = self.create_publisher(String, "goal_status", 10)
 
         timer_period_in_seconds = 1.0
         self.__timer = self.create_timer(timer_period_in_seconds, self.__timer_callback)
@@ -79,24 +73,21 @@ class NavigateToPoseActionClient(Node):
             return
 
         self.get_logger().info("Goal accepted :)")
-        self.__is_navigating_publisher.publish(Bool(data=True))
         self._get_result_future = self.__goal_handle.get_result_async()
         self._get_result_future.add_done_callback(self.__get_result_callback)
 
     def __get_result_callback(self, future):
         status = future.result().status
 
-        if status == GoalStatus.STATUS_SUCCEEDED:  
+        if status == GoalStatus.STATUS_SUCCEEDED:
             self.get_logger().info("Goal succeeded!")
             self.__status_publisher.publish(String(data="SUCCEEDED"))
-        elif status == GoalStatus.STATUS_CANCELED:  
+        elif status == GoalStatus.STATUS_CANCELED:
             self.get_logger().info("Goal was canceled")
             self.__status_publisher.publish(String(data="CANCELED"))
-        elif status == GoalStatus.STATUS_ABORTED:  
+        elif status == GoalStatus.STATUS_ABORTED:
             self.get_logger().info("Goal failed or was aborted")
             self.__status_publisher.publish(String(data="ABORTED"))
-    
-        self.__is_navigating_publisher.publish(Bool(data=False))
 
     def __feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback

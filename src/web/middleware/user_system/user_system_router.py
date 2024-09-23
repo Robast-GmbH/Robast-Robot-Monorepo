@@ -110,6 +110,17 @@ def get_session(robot_name: str):
     )
 
 
+@user_system_router.post("/set_session", tags=["Auth"], response_model=DefaultResponse)
+def post_set_session(robot_name: str, user_id: str):
+    was_successful = auth_session_manager.set_session(robot_name, user_id)
+    return DefaultResponse(
+        message=(
+            "Session set successfully" if was_successful else "Session could not be set"
+        ),
+        status="success" if was_successful else "failure",
+    )
+
+
 @user_system_router.post(
     "/try_start_session", tags=["Auth"], response_model=DefaultResponse
 )
