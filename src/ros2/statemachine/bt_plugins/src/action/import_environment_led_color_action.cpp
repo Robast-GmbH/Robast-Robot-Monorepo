@@ -15,26 +15,25 @@ namespace bt_plugins
 
   BT::NodeStatus ImportEnvironmentLEDColor::tick()
   {
-    auto getEnvAsInt = [](const char *varName, int defaultValue) -> int
+    auto getEnvAsUInt = [](const char *varName, int defaultValue) -> uint8_t
     {
       const char *value = std::getenv(varName);
       if (value)
       {
-        std::istringstream iss(value);
-        int intValue;
-        if (iss >> intValue)
+        int intValue = std::stoi(value);
+        if (intValue >= 0 && intValue <= 255)
         {
-          return intValue;
+          return static_cast<uint8_t>(intValue);
         }
       }
       return defaultValue;
     };
 
     // Get the values from the environment variables
-    int red = getEnvAsInt("RED", 0);
-    int green = getEnvAsInt("GREEN", 0);
-    int blue = getEnvAsInt("BLUE", 0);
-    int brightness = getEnvAsInt("BRIGHTNESS", 0);
+    const uint8_t red = getEnvAsUInt("RED", 0);
+    const uint8_t green = getEnvAsUInt("GREEN", 0);
+    const uint8_t blue = getEnvAsUInt("BLUE", 0);
+    const uint8_t brightness = getEnvAsUInt("BRIGHTNESS", 0);
 
     setOutput("blue", blue);
     setOutput("red", red);
