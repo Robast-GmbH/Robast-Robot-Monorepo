@@ -60,7 +60,7 @@
 
   <BehaviorTree ID="LED_Close">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="155"
@@ -79,7 +79,7 @@
                                  green="{green}"
                                  blue="{blue}"
                                  brightness="{brightness}"/>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="{blue}"
@@ -94,7 +94,7 @@
 
   <BehaviorTree ID="LED_Open">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="128"
@@ -109,7 +109,7 @@
 
   <BehaviorTree ID="LED_Test">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="200"
@@ -132,7 +132,7 @@
 
   <BehaviorTree ID="LED_unlocked">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="105"
