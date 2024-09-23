@@ -8,6 +8,7 @@ import 'package:robot_frontend/pages/menu_page.dart';
 import 'package:robot_frontend/widgets/auth_view.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/disinfection_view.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -40,12 +41,13 @@ class _AuthPageState extends State<AuthPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BackgroundView(
+        inactivityTimerEnabled: false,
         child: !authCompleted
             ? SizedBox.expand(
                 child: Center(
                   child: AuthView(
                     requiredUserIDs: const [],
-                    requiredUserGroups: const ['PATIENT', 'STAFF', 'ADMIN'],
+                    requiredUserGroups: User.availableUserGroups(),
                     onAuthCompleted: ({required bool wasSuccessful}) {
                       if (wasSuccessful) {
                         authCompleted = true;

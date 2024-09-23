@@ -4,7 +4,8 @@ import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/pages/auth_page.dart';
-import 'package:robot_frontend/pages/module_process_page.dart';
+import 'package:robot_frontend/pages/menu_page.dart';
+import 'package:robot_frontend/pages/module_pages/module_process_page.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
 
 import 'package:robot_frontend/widgets/driving_view.dart';
@@ -44,6 +45,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   @override
+  void deactivate() {
+    Provider.of<ModuleProvider>(context, listen: false).stopSubmodulesUpdateTimer();
+    super.deactivate();
+  }
+
+  @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!isModuleUpdateActive) {
@@ -53,6 +60,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     });
     return Scaffold(
       body: BackgroundView(
+        inactivityTimerEnabled: false,
         child: Column(
           children: [
             const Row(

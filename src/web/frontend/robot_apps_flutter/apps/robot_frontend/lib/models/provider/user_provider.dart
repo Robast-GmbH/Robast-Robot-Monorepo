@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class UserProvider extends ChangeNotifier {
   final availableTitles = [
@@ -36,6 +37,10 @@ class UserProvider extends ChangeNotifier {
     required String userID,
   }) async {
     return _middlewareApiUtilities.users.readAndAssignUserNFC(robotName: robotName, userID: userID);
+  }
+
+  Future<bool> setUserSession({required String robotName, required String userID}) async {
+    return _middlewareApiUtilities.users.setUserSession(robotName: robotName, userID: userID);
   }
 
   Future<User?> getUserSession({required String robotName}) async {

@@ -1,5 +1,5 @@
 from user_system.user_repository import UserRepository
-from pydantic_models.user import User
+from db_models.user import User
 from models.periodic_timer import PeriodicTimer
 from configs.url_config import ROBOT_NAME_TO_IP, ROBOT_API_PORT
 import requests
@@ -29,6 +29,13 @@ class AuthSessionManager:
             self.__sessions: dict[str, User | None] = {}
             for key in ROBOT_NAME_TO_IP:
                 self.__sessions[key] = None
+
+    def set_session(self, robot_name: str, user_id: str) -> bool:
+        user = self.__user_repository.get_user(user_id)
+        if user:
+            self.__sessions[robot_name] = user
+            return True
+        return False
 
     def try_start_session(
         self,

@@ -4,5 +4,3 @@ dependency_overrides:
     path: ../../packages/middleware_api_utilities
   shared_data_models:
     path: ../../packages/shared_data_models
-  shared_widgets:
-    path: ../../packages/shared_widgets

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_data_models/shared_data_models.dart';
-import 'package:web_frontend/widgets/modules_view.dart';
+import 'package:web_frontend/models/provider/fleet_provider.dart';
+import 'package:web_frontend/widgets/modules_overview.dart';
 import 'package:web_frontend/widgets/robot_map_view.dart';
 import 'package:web_frontend/widgets/robot_task_view.dart';
 
@@ -26,16 +28,28 @@ class _RobotPageState extends State<RobotPage> {
     final widgetOptions = <Widget>[
       RobotTaskView(robotName: widget.robot.name),
       RobotMapView(robotName: widget.robot.name),
-      ModulesView(robotName: widget.robot.name),
+      ModulesOverview(robotName: widget.robot.name),
     ];
     return widgetOptions[index];
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<FleetProvider>(context, listen: false).startPeriodicModuleUpdate();
+  }
+
+  @override
+  void deactivate() {
+    Provider.of<FleetProvider>(context, listen: false).stopPeriodicModuleUpdate();
+    super.deactivate();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Robot View: ${widget.robot.name}'),
+        title: Text('Übersicht: ${widget.robot.name}'),
       ),
       body: Center(
         child: getWidgetOption(_selectedIndex),
@@ -44,15 +58,15 @@ class _RobotPageState extends State<RobotPage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.assignment),
-            label: 'Tasks',
+            label: 'Aufträge',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.map),
-            label: 'Map',
+            label: 'Karte',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.extension),
-            label: 'Modules',
+            label: 'Module',
           ),
         ],
         currentIndex: _selectedIndex,

@@ -243,7 +243,7 @@ local_costmap:
         transform_tolerance: 0.2
         mapping_mode: false
         map_save_duration: 60.0
-        observation_sources: lidar2d_marking zed_marking zed_clearing
+
         lidar2d_marking:
           enabled: true
           data_type: LaserScan
@@ -361,6 +361,27 @@ local_costmap:
           horizontal_fov_angle: 1.048 # default 1.04, radians
           decay_acceleration: 5.0 # default 0, 1/s^2. If laser scanner MUST be 0
           model_type: 0 # default 0, model type for frustum. 0=depth camera, 1=3d lidar like VLP16 or similar
+        zed_marking:
+          enabled: true
+          data_type: PointCloud2
+          topic: /zed/zed_node/point_cloud/cloud_registered
+          marking: true
+          clearing: true
+          obstacle_range: 10.0          # meters
+          min_obstacle_height: 0.2     # default 0, meters
+          max_obstacle_height: 1.5     # default 3, meters
+          expected_update_rate: 0.11   # default 0, if not updating at this rate at least, remove from buffer
+          observation_persistence: 1.0 # default 0, use all measurements taken during now-value, 0=latest
+          inf_is_valid: false          # default false, for laser scans
+          filter: "voxel"        # default passthrough, apply "voxel", "passthrough", or no filter to sensor data, recommend on 
+          voxel_min_points: 2          # default 0, minimum points per voxel for voxel filter
+          clear_after_reading: false    # default false, clear the buffer after the layer gets readings from it
+          vertical_fov_angle: 1.1  # default 0.7, radians
+          horizontal_fov_angle: 1.2 # default 1.04, radians
+          decay_acceleration: 10.0     # default 0, 1/s^2. If laser scanner MUST be 0
+          max_z: 1.5                  # default 0, meters
+          min_z: 0.1                  # default 10, meters
+          model_type: 0
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
@@ -428,7 +449,7 @@ global_costmap:
         transform_tolerance: 0.2
         mapping_mode: false
         map_save_duration: 60.0
-        observation_sources: lidar2d
+        observation_sources: lidar2d zed_marking
         lidar2d:
           enabled: true
           data_type: LaserScan
@@ -451,30 +472,37 @@ global_costmap:
           decay_acceleration: 0.0
           model_type: 1
         zed_marking:
+          enabled: true
           data_type: PointCloud2
-          topic: /robot/zed/zed_node/point_cloud/cloud_registered
+          topic: /zed/zed_node/point_cloud/cloud_registered
           marking: true
-          clearing: false
-          obstacle_range: 7.5 # meters
-          min_obstacle_height: 0.3 # default 0, meters
-          max_obstacle_height: 1.6 # default 3, meters
-          expected_update_rate: 0.25 # default 0, if not updating at this rate at least, remove from buffer
-          observation_persistence: 0.0 # default 0, use all measurements taken during now-value, 0=latest
-          inf_is_valid: false # default false, for laser scans
-          filter: "passthrough" # default passthrough, apply "voxel", "passthrough", or no filter to sensor data, recommend on
-          voxel_min_points: 0 # default 0, minimum points per voxel for voxel filter
-          clear_after_reading: true # default false, clear the buffer after the layer gets readings from it
+          clearing: true
+          obstacle_range: 5.0          # meters
+          min_obstacle_height: 0.3     # default 0, meters
+          max_obstacle_height: 2.0     # default 3, meters
+          expected_update_rate: 0.10   # default 0, if not updating at this rate at least, remove from buffer
+          observation_persistence: 1.0 # default 0, use all measurements taken during now-value, 0=latest
+          inf_is_valid: false          # default false, for laser scans
+          filter: "voxel"        # default passthrough, apply "voxel", "passthrough", or no filter to sensor data, recommend on 
+          voxel_min_points: 0          # default 0, minimum points per voxel for voxel filter
+          clear_after_reading: false    # default false, clear the buffer after the layer gets readings from it
+          vertical_fov_angle: 0.8745  # default 0.7, radians
+          horizontal_fov_angle: 1.048 # default 1.04, radians
+          decay_acceleration: 10.0     # default 0, 1/s^2. If laser scanner MUST be 0
+          max_z: 1.5                  # default 0, meters
+          min_z: 0.1                  # default 10, meters
+          model_type: 0 
         zed_clearing:
           data_type: PointCloud2
-          topic: /robot/zed/zed_node/point_cloud/cloud_registered
+          topic: /zed/zed_node/point_cloud/cloud_registered
           marking: false
           clearing: true
-          max_z: 7.0 # default 0, meters
-          min_z: 0.1 # default 10, meters
-          vertical_fov_angle: 1.22 # default 0.7, radians zed:(70°)
-          horizontal_fov_angle: 1.919 # default 1.04, radians zed:(110°)
-          decay_acceleration: 5.0 # default 0, 1/s^2. If laser scanner MUST be 0
-          model_type: 0 # default 0, model type for frustum. 0=depth camera, 1=3d lidar like VLP16 or similar
+          max_z: 7.0                  # default 0, meters
+          min_z: 0.1                  # default 10, meters
+          vertical_fov_angle: 0.8745  # default 0.7, radians
+          horizontal_fov_angle: 1.048 # default 1.04, radians
+          decay_acceleration: 5.0     # default 0, 1/s^2. If laser scanner MUST be 0
+          model_type: 0                # default 0, model type for frustum. 0=depth camera, 1=3d lidar like VLP16 or similar
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 4.0

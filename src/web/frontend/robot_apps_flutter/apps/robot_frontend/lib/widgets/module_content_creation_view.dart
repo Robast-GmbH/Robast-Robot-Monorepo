@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
-import 'package:robot_frontend/models/controller/module_content_controller.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class ModuleContentCreationView extends StatefulWidget {
   const ModuleContentCreationView({
@@ -72,10 +72,10 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
             amountController.clear();
           });
         },
-        child: RoundedContainer(
+        child: const RoundedContainer(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: const Icon(
+            padding: EdgeInsets.symmetric(vertical: 4),
+            child: Icon(
               Icons.add,
               color: RobotColors.primaryIcon,
               size: 64,
@@ -168,6 +168,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
                 textAlign: TextAlign.center,
                 controller: amountController,
                 style: const TextStyle(fontSize: 28, color: RobotColors.secondaryText),
+                keyboardType: const TextInputType.numberWithOptions(),
               ),
             ),
           ],

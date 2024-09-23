@@ -51,6 +51,12 @@ namespace utils
             config_value));
         break;
 
+      case module_config::drawer::MOVING_OUT_FINAL_SPEED:
+        _drawer_config->set_drawer_moving_out_final_speed(
+          std::bit_cast<module_config::ModuleSetting<module_config::drawer::MOVING_OUT_FINAL_SPEED>::type>(
+            config_value));
+        break;
+
       case module_config::drawer::PUSH_IN_AUTO_CLOSE_SPEED:
         _drawer_config->set_drawer_push_in_auto_close_speed(
           static_cast<module_config::ModuleSetting<module_config::drawer::PUSH_IN_AUTO_CLOSE_SPEED>::type>(
@@ -228,6 +234,10 @@ namespace utils
     set_config(module_config::drawer::MOVING_OUT_DECELERATION_DISTANCE,
                static_cast<uint32_t>(
                  module_config::ModuleSetting<module_config::drawer::MOVING_OUT_DECELERATION_DISTANCE>::default_value));
+
+    set_config(module_config::drawer::MOVING_OUT_FINAL_SPEED,
+               std::bit_cast<uint32_t>(
+                 module_config::ModuleSetting<module_config::drawer::MOVING_OUT_FINAL_SPEED>::default_value));
 
     set_config(module_config::drawer::PUSH_IN_AUTO_CLOSE_SPEED,
                static_cast<uint32_t>(

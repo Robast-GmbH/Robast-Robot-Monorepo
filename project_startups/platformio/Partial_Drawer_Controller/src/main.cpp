@@ -8,16 +8,20 @@
 #include "peripherals/gpio_defines.hpp"
 
 // These are the very basic top level configurations for the drawer controller you need to set.
-constexpr uint32_t MODULE_ID = 6;
-constexpr uint8_t LOCK_ID = 0;
-constexpr bool USE_ENCODER = true;
-constexpr bool IS_SHAFT_DIRECTION_INVERTED = true;
-constexpr switch_lib::Switch::SwitchType ENDSTOP_SWITCH_TYPE = switch_lib::Switch::normally_open;
-// LED CONFIGS
-constexpr uint8_t NUM_OF_LEDS = 21;
-constexpr bool USE_COLOR_FADE = false;
+constexpr config::UserConfig USER_CONFIG{.module_version = config::version::CURA,
+                                         .module_prefix = module_id::ModulePrefix::PARTIAL_DRAWER_10x40x8,
+                                         .unique_module_id = 1,
+                                         .lock_id = 0,
+                                         .is_shaft_direction_inverted = true,
+                                         .endstop_switch_type = switch_lib::Switch::normally_open,
+                                         .use_color_fade = false};
 
-std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
+constexpr config::ModuleHardwareConfig MODULE_HARDWARE_CONFIG =
+  config::get_module_hardware_config<USER_CONFIG.module_version>(USER_CONFIG.module_prefix);
+
+constexpr uint32_t MODULE_ID = module_id::generate_module_id(USER_CONFIG.module_prefix, USER_CONFIG.unique_module_id);
+
+std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.num_of_leds>> led_strip;
 
 std::shared_ptr<drawer::ElectricalDrawer> e_drawer;
 
@@ -160,7 +164,7 @@ void process_can_msgs_task_loop(void* pvParameters)
 void setup()
 {
   Serial.begin(115200);
-  debug_println("[Main]: Start...");
+  debug_printf("[Main]: Start the module with the module id: %d\n", MODULE_ID);
 
   // TODO: In the hardware design of v1 the pins of SDA and SCL are mixed up unfortunately for the port expander
   // TODO: In order to use the hardware anyway, we need to create two instances of the bus with different pin init
@@ -177,7 +181,7 @@ void setup()
   endstop_switch = std::make_shared<switch_lib::Switch>(gpio_wrapper,
                                                         peripherals::pin_id::SENSE_INPUT_DRAWER_1_CLOSED,
                                                         SWITCH_PRESSED_THRESHOLD,
-                                                        ENDSTOP_SWITCH_TYPE,
+                                                        USER_CONFIG.endstop_switch_type,
                                                         SWITCH_WEIGHT_NEW_VALUES);
 
   std::vector<partial_drawer_controller::TrayPinConfig> tray_pin_config = {
@@ -219,7 +223,8 @@ void setup()
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   can_message_converter = std::make_unique<utils::CanMessageConverter>();
 
-  led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>>(USE_COLOR_FADE);
+  led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.num_of_leds>>(
+    USER_CONFIG.use_color_fade);
 
   can_queue_mutex = xSemaphoreCreateMutex();
   can_msg_queue = std::make_unique<utils::Queue<robast_can_msgs::CanMessage>>();
@@ -234,15 +239,16 @@ void setup()
 
   config_manager =
     std::make_unique<utils::ConfigManager>(drawer_config, encoder_config, motor_config, motor_monitor_config);
-  config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED, IS_SHAFT_DIRECTION_INVERTED ? 1 : 0);
+  config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
+                             USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
 
   e_drawer = std::make_shared<drawer::ElectricalDrawer>(
     MODULE_ID,
-    LOCK_ID,
+    USER_CONFIG.lock_id,
     can_db,
     gpio_wrapper,
     stepper_1_pin_id_config,
-    USE_ENCODER,
+    MODULE_HARDWARE_CONFIG.use_encoder,
     gpio_wrapper->get_gpio_num_for_pin_id(peripherals::pin_id::STEPPER_1_ENCODER_A),
     gpio_wrapper->get_gpio_num_for_pin_id(peripherals::pin_id::STEPPER_1_ENCODER_B),
     STEPPER_MOTOR_1_ADDRESS,

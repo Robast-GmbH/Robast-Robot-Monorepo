@@ -19,7 +19,7 @@ class FeuerplanPublisher(Node):
         feuerplan_path = self.get_parameter('feuerplan_path').get_parameter_value().string_value 
         self.__feuerplan_image = cv.imread(feuerplan_path, cv.IMREAD_GRAYSCALE)
         self.__confidence_threshold = self.get_parameter('confidence_threshold').get_parameter_value().double_value
-        self.use_sim_time = self.get_parameter('use_sim_time').get_parameter_value().bool_value
+        self.__use_sim_time = self.get_parameter('use_sim_time').get_parameter_value().bool_value
 
         map_qos = QoSProfile(depth=1)
         map_qos.durability = QoSDurabilityPolicy.TRANSIENT_LOCAL

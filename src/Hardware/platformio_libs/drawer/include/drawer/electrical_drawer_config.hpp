@@ -16,6 +16,7 @@ namespace drawer
     void set_drawer_moving_in_deceleration_distance(const uint8_t deceleration_distance);
     void set_drawer_moving_in_final_homing_distance(const uint8_t final_homing_distance);
     void set_drawer_moving_out_deceleration_distance(const uint8_t deceleration_distance);
+    void set_drawer_moving_out_final_speed(const uint64_t final_speed);
     void set_drawer_push_in_auto_close_speed(const uint8_t auto_close_speed);
     void set_drawer_push_in_auto_close_stall_guard_value(const uint8_t stall_guard_value);
     void set_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms(const uint32_t wait_time);
@@ -30,6 +31,7 @@ namespace drawer
     uint8_t get_drawer_moving_in_deceleration_distance() const;
     uint8_t get_drawer_moving_in_final_homing_distance() const;
     uint8_t get_drawer_moving_out_deceleration_distance() const;
+    uint64_t get_drawer_moving_out_final_speed() const;
     uint8_t get_drawer_push_in_auto_close_speed() const;
     uint8_t get_drawer_push_in_auto_close_stall_guard_value() const;
     uint32_t get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms() const;
@@ -45,6 +47,7 @@ namespace drawer
     uint8_t _moving_in_deceleration_distance;
     uint8_t _moving_in_final_homing_distance;
     uint8_t _moving_out_deceleration_distance;
+    uint64_t _moving_out_final_speed;
     uint8_t _push_in_auto_close_speed;
     uint8_t _push_in_auto_close_stall_guard_value;
     uint32_t _push_in_wait_time_after_stall_guard_triggered_in_ms;

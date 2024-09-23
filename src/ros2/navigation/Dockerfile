@@ -82,21 +82,15 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 WORKDIR /workspace
 
 ############################## Build ##################################
-FROM ros:${ROS_BUILD_DISTRO}-ros-base-jammy as build
+FROM ghcr.io/robast-gmbh/monorepo/building-docker:${ROS_BUILD_DISTRO} as build
 ARG ROS_BUILD_DISTRO
-ARG GIT_TOKEN
-ARG GIT_BRANCH=main
 COPY --from=devel / /
 COPY . /ws/src/navigation
-RUN apt-get update && apt-get install -y git
-
-WORKDIR /tmp
-RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
-
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
-  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
+RUN mkdir -p /ws/src/ros2/; mkdir /robast; \
+  mv /monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
+  && mv /monorepo/src/ros2/dds_configs /robast/dds_configs
 
 
 RUN rosdep update && \
@@ -141,6 +135,21 @@ ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 RUN apt-get update \
   && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
 
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -q && \
+apt-get upgrade -yq && \
+apt-get install -yq wget curl git build-essential vim sudo lsb-release locales bash-completion tzdata gosu gnupg2 && \
+rm -rf /var/lib/apt/lists/*
+RUN echo "Set disable_coredump false" >> /etc/sudo.conf
+RUN useradd --create-home --home-dir /home/ubuntu --shell /bin/bash --user-group --groups adm,sudo ubuntu && \
+echo ubuntu:ubuntu | chpasswd && \
+echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+ENV USER=ubuntu
+ARG DEBIAN_FRONTEND=
+
+USER ubuntu
+  
 ENV is_simulation=False
 ENV config_directory=config
 ENV robot_name=rb_theron

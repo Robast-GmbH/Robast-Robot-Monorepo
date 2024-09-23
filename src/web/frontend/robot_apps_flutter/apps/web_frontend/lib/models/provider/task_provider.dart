@@ -2,28 +2,56 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
-import 'package:web_frontend/models/controller/task_creation_controller.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
-class RMFProvider extends ChangeNotifier {
+class TaskProvider extends ChangeNotifier {
+  TaskProvider({required String prefix}) {
+    _middlewareApi = MiddlewareApiUtilities();
+    _middlewareApi.setPrefix(prefix: prefix);
+  }
+
+  void initMiddlewarAPI({required String prefix}) {
+    _middlewareApi.setPrefix(prefix: prefix);
+  }
+
   List<Task> tasks = [];
   BuildingMap? _buildingMap;
-  final Map<String, String> _interruptTokens = {};
   Timer? _tasksUpdateTimer;
 
-  final _middlewareApi = MiddlewareApiUtilities();
+  late final MiddlewareApiUtilities _middlewareApi;
 
-  Future<void> updateBuildingMap() async {
-    try {
-      // _buildingMap = await _rmfApi.getBuildingMap();
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error getting building map: $e');
-    }
+  Future<bool> createDeliveryTaskRequest({
+    required int requiredSubmoduleType,
+    required String pickupTargetID,
+    required int pickupEarliestStartTime,
+    required List<String> senderUserIDs,
+    required List<String> senderUserGroups,
+    required String dropoffTargetID,
+    required int dropoffEarliestStartTime,
+    required List<String> recipientUserIDs,
+    required List<String> recipientUserGroups,
+    required Map<String, int> itemsByChange,
+  }) async {
+    final dropoffItemsByChange = itemsByChange.map((key, value) => MapEntry(key, -value));
+    final task = Task.delivery(
+      requiredSubmoduleType: requiredSubmoduleType,
+      pickupTargetID: pickupTargetID,
+      pickupEarliestStartTime: pickupEarliestStartTime,
+      pickupItemsByChange: itemsByChange,
+      senderUserIDs: senderUserIDs,
+      senderUserGroups: senderUserGroups,
+      dropoffTargetID: dropoffTargetID,
+      dropoffEarliestStartTime: dropoffEarliestStartTime,
+      dropoffItemsByChange: dropoffItemsByChange,
+      recipientUserIDs: recipientUserIDs,
+      recipientUserGroups: recipientUserGroups,
+    );
+    final wasSuccessful = await _middlewareApi.tasks.postTaskRequest(task: task);
+    return wasSuccessful;
   }
 
   Future<void> updateTasks() async {
     try {
-      //  tasks = await _rmfApi.getTasks();
       notifyListeners();
     } catch (e) {
       debugPrint('Error getting tasks: $e');
@@ -54,78 +82,12 @@ class RMFProvider extends ChangeNotifier {
     return getVertices().where((element) => element.isIngestor).map((e) => e.name).toList();
   }
 
-  Future<void> dispatchTask({required String taskType, required TaskCreationController controller}) async {
-    if (taskType == 'Patrol') {
-      await dispatchPatrolTask(
-        places: controller.places,
-        rounds: controller.rounds!,
-      );
-    } else if (taskType == 'Delivery') {
-      await dispatchDeliveryTask(
-        pickup: controller.pickupPlaceID!,
-        dropoff: controller.dropoffPlaceID!,
-        submoduleID: controller.submoduleID!,
-      );
-    } else if (taskType == 'Multi Dropoff') {
-      await dispatchPatrolTask(places: ['floor'], rounds: 1);
-      for (final dropoffPlaceSubmoduleAssignment in controller.dropoffPlaceSubmoduleAssignments) {
-        await dispatchDropOffTask(
-          dropoff: dropoffPlaceSubmoduleAssignment.dropoffPlaceID!,
-          submoduleID: dropoffPlaceSubmoduleAssignment.submoduleID!,
-        );
-      }
-    }
+  Future<RobotTaskStatus?> getRobotTasks({required String robotName}) async {
+    return await _middlewareApi.tasks.getRobotTasks(robotName: robotName);
   }
 
-  Future<void> dispatchDeliveryTask({
-    required String pickup,
-    required String dropoff,
-    required String submoduleID,
-  }) async {
-    try {} catch (e) {
-      debugPrint('Error dispatching delivery task: $e');
-    }
-  }
-
-  Future<void> dispatchDropOffTask({
-    required String dropoff,
-    required String submoduleID,
-  }) async {
-    try {} catch (e) {
-      debugPrint('Error dispatching dropoff task: $e');
-    }
-  }
-
-  Future<void> dispatchPatrolTask({
-    required List<String> places,
-    required int rounds,
-  }) async {
-    try {} catch (e) {
-      debugPrint('Error dispatching patrol task: $e');
-    }
-  }
-
-  Future<void> interruptTask({
-    required String taskID,
-  }) async {
-    try {
-      // final token = await _rmfApi.interruptTask(taskID: taskID);
-      // debugPrint('Interrupt token: $token');
-      // _interruptTokens[taskID] = token;
-    } catch (e) {
-      debugPrint('Error interrupting task: $e');
-    }
-  }
-
-  Future<bool> resumeTask({
-    required String taskID,
-  }) async {
-    try {
-      // return await _rmfApi.resumeTask(taskID: taskID, token: _interruptTokens[taskID]!);
-      return true;
-    } catch (e) {
-      debugPrint('Error resuming task: $e');
-      return false;
-    }
+  Future<List<Task>?> fetchTasks({required String robotName, required int limit, required int offset}) async {
+    final tasks = await _middlewareApi.tasks.getFinishedTasks(robotName: robotName, limit: limit, offset: offset);
+    return tasks;
   }
 }

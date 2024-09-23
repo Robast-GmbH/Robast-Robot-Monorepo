@@ -6,7 +6,8 @@ import 'package:shared_data_models/shared_data_models.dart';
 
 class RobotProvider extends ChangeNotifier {
   Pose? _robotPose;
-  bool _isNavigationBlocked = false;
+  bool _isRobotLost = false;
+  bool get isRobotLost => _isRobotLost;
 
   Timer? _robotPoseUpdateTimer;
 
@@ -18,21 +19,9 @@ class RobotProvider extends ChangeNotifier {
     _robotAPI = RobotApiUtilities(prefix: prefix);
   }
 
-  Future<void> updateIsNavigationBlocked() async {
-    _isNavigationBlocked = await _robotAPI.isNavigationBlocked();
-    notifyListeners();
-  }
-
   Future<void> updateRobotPose() async {
     _robotPose = await _robotAPI.getRobotPose();
     notifyListeners();
-  }
-
-  void startPeriodicIsNavigationBlockedUpdate() {
-    _robotPoseUpdateTimer = startPeriodicUpdate(
-      updateIsNavigationBlocked,
-      const Duration(milliseconds: 100),
-    );
   }
 
   void startPeriodicRobotPoseUpdate() {
@@ -42,7 +31,18 @@ class RobotProvider extends ChangeNotifier {
     );
   }
 
+  void startPeriodicIsRobotLostUpdate() {
+    _robotPoseUpdateTimer = startPeriodicUpdate(
+      updateIsRobotLost,
+      const Duration(seconds: 5),
+    );
+  }
+
   void stopPeriodicRobotPoseUpdate() {
+    _robotPoseUpdateTimer?.cancel();
+  }
+
+  void stopPeriodicIsRobotLostUpdate() {
     _robotPoseUpdateTimer?.cancel();
   }
 
@@ -67,5 +67,10 @@ class RobotProvider extends ChangeNotifier {
       onDisinfection();
     }
     return wasSuccessful;
+  }
+
+  Future<void> updateIsRobotLost() async {
+    _isRobotLost = await _robotAPI.getIsRobotLost();
+    notifyListeners();
   }
 }

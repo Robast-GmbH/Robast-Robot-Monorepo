@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:middleware_api_utilities/src/models/user.dart';
 import 'package:middleware_api_utilities/src/services/request_service.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class UsersApi {
   UsersApi({required this.prefix});
@@ -67,6 +67,13 @@ class UsersApi {
     return RequestService.wasRequestSuccessful(response: response);
   }
 
+  Future<bool> setUserSession({required String robotName, required String userID}) async {
+    final response = await RequestService.tryPost(
+      uri: Uri.parse('$prefix/users/set_session?robot_name=$robotName&user_id=$userID'),
+    );
+    return RequestService.wasRequestSuccessful(response: response);
+  }
+
   Future<User?> getUserSession({required String robotName}) async {
     final response = await RequestService.tryGet(uri: Uri.parse('$prefix/users/session?robot_name=$robotName'));
     if (response != null) {
@@ -96,6 +103,35 @@ class UsersApi {
   Future<bool> endUserSession({required String robotName}) async {
     final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/users/end_session?robot_name=$robotName'),
+    );
+    return RequestService.wasRequestSuccessful(response: response);
+  }
+
+  Future<User?> loginUser({
+    required String mail,
+    required String password,
+  }) async {
+    final response = await RequestService.tryPost(
+      uri: Uri.parse('$prefix/users/login'),
+      data: {
+        'mail': mail,
+        'password': password,
+      },
+    );
+    if (response != null) {
+      final data = RequestService.responseToMap(response: response);
+      if (data['user'] != null) {
+        return User.fromJson(data['user'] as Map<String, dynamic>);
+      }
+      return null;
+    }
+    return null;
+  }
+
+  Future<bool> changePassword({required String userID, required String oldPassword, required String newPassword}) async {
+    final response = await RequestService.tryPost(
+      uri: Uri.parse('$prefix/users/change_password?user_id=$userID&old_password=$oldPassword&new_password=$newPassword'),
+      data: {},
     );
     return RequestService.wasRequestSuccessful(response: response);
   }

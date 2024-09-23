@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:web_frontend/models/controller/task_creation_controller.dart';
+import 'package:shared_data_models/shared_data_models.dart';
+import 'package:web_frontend/constants/web_colors.dart';
 import 'package:web_frontend/models/provider/task_provider.dart';
-import 'package:web_frontend/widgets/delivery_task_creation_view.dart';
-import 'package:web_frontend/widgets/multi_drop_off_task_creation_view.dart';
-import 'package:web_frontend/widgets/patrol_task_creation_view.dart';
+import 'package:web_frontend/widgets/invalid_inputs_dialog.dart';
+import 'package:web_frontend/widgets/module_content_creation_view.dart';
+import 'package:web_frontend/widgets/nfc_missing_dialog.dart';
+import 'package:web_frontend/widgets/selectors/location_selector.dart';
+import 'package:web_frontend/widgets/selectors/submodule_type_selector.dart';
+import 'package:web_frontend/widgets/selectors/time_selector.dart';
+import 'package:web_frontend/widgets/selectors/user_groups_selector.dart';
+import 'package:web_frontend/widgets/selectors/user_selector.dart';
 
 class TaskCreationPage extends StatefulWidget {
   const TaskCreationPage({super.key});
@@ -14,126 +20,186 @@ class TaskCreationPage extends StatefulWidget {
 }
 
 class _TaskCreationPageState extends State<TaskCreationPage> {
-  String? dropdownValue = 'Patrol';
-  final _taskCreationController = TaskCreationController();
+  final moduleContentController = ModuleContentController();
+  final submoduleSizeController = SubmoduleSizeController();
 
-  Widget buildTaskCreationWidget() {
-    if (dropdownValue == 'Patrol') {
-      return PatrolTaskCreationView(
-        controller: _taskCreationController,
-      );
-    } else if (dropdownValue == 'Delivery') {
-      return DeliveryTaskCreationView(
-        controller: _taskCreationController,
-      );
-    } else if (dropdownValue == 'Multi Dropoff') {
-      return MultiDropOffTaskCreationView(
-        controller: _taskCreationController,
-      );
-    } else {
-      return const Placeholder();
-    }
+  final startController = LocationSelectionController();
+  final targetController = LocationSelectionController();
+  final senderUserController = UserSelectionController();
+  final recipientUserController = UserSelectionController();
+  final senderUserGroupsSelectionController = UserGroupsSelectionController();
+  final recipientUserGroupsSelectionController = UserGroupsSelectionController();
+  final senderTimeController = DeliveryTimeController();
+  final recipientTimeController = DeliveryTimeController();
+
+  bool validateInputs() {
+    return moduleContentController.didItemsChange() &&
+        startController.room != null &&
+        targetController.room != null &&
+        (senderUserController.selectedUser != null || senderUserGroupsSelectionController.userGroups.isNotEmpty) &&
+        (recipientUserController.selectedUser != null || recipientUserGroupsSelectionController.userGroups.isNotEmpty);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Task Creation'),
+        title: Row(
+          children: [
+            Icon(Icons.add_task),
+            SizedBox(
+              width: 8,
+            ),
+            Text('Lieferauftrag erstellen'),
+          ],
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: dropdownValue == null
-            ? null
-            : () async {
-                if (_taskCreationController.validateTask(type: dropdownValue!)) {
-                  await showDialog<AlertDialog>(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: const Text('Nice!'),
-                        content: Text('${dropdownValue ?? ''} task has been created.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () async {
-                              await Provider.of<RMFProvider>(context, listen: false).dispatchTask(
-                                taskType: dropdownValue!,
-                                controller: _taskCreationController,
-                              );
-                              if (context.mounted) {
-                                Navigator.pop(context);
-                              }
-                            },
-                            child: const Text('Dispatch'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text('Cancel'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                  }
-                } else {
-                  await showDialog<AlertDialog>(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: const Text('Invalid Task'),
-                        content: const Text('Please check task data.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text('OK'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }
-              },
-        child: const Icon(Icons.send),
-      ),
-      body: Column(
-        children: [
-          const SizedBox(height: 8),
-          Row(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: Text('Task Type:'),
+              ModuleContentCreationView(
+                moduleContentController: moduleContentController,
+                label: 'Fracht',
               ),
-              Expanded(
-                child: DropdownButton<String>(
-                  padding: const EdgeInsets.only(right: 16),
-                  isExpanded: true,
-                  value: dropdownValue,
-                  hint: const Text('Select Task Type'),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      dropdownValue = newValue;
-                    });
-                  },
-                  items: <String>['Patrol', 'Delivery', 'Multi Dropoff'].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
+              SizedBox(
+                height: 8,
+              ),
+              SubmoduleTypeSelector(
+                controller: submoduleSizeController,
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      'Sender',
+                      style: TextStyle(color: WebColors.primaryText, fontSize: 24),
+                    ),
+                  ),
+                  UserSelector(
+                    controller: senderUserController,
+                    initWithSessionUser: true,
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  UserGroupsSelector(controller: senderUserGroupsSelectionController),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  LocationSelector(controller: startController, label: 'Start'),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  TimeSelector(deliveryTimeController: senderTimeController),
+                ],
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: Text(
+                      'Empfänger',
+                      style: TextStyle(color: WebColors.primaryText, fontSize: 24),
+                    ),
+                  ),
+                  UserSelector(
+                    controller: recipientUserController,
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  UserGroupsSelector(controller: recipientUserGroupsSelectionController),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  LocationSelector(controller: targetController, label: 'Ziel'),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  TimeSelector(deliveryTimeController: recipientTimeController),
+                  SizedBox(
+                    height: 8,
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 16,
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  if (!(senderUserController.selectedUser?.hasNfcID() ?? true) || (!(recipientUserController.selectedUser?.hasNfcID() ?? true))) {
+                    final identifiers = <String>[];
+                    if (!(senderUserController.selectedUser?.hasNfcID() ?? true)) {
+                      identifiers.add('Sender');
+                    }
+                    if (!(recipientUserController.selectedUser?.hasNfcID() ?? true)) {
+                      identifiers.add('Empfänger');
+                    }
+                    showDialog(
+                        context: context,
+                        builder: (
+                          context,
+                        ) =>
+                            NfcMissingDialog(identifiers: identifiers));
+                    return;
+                  }
+                  if (validateInputs()) {
+                    await Provider.of<TaskProvider>(context, listen: false).createDeliveryTaskRequest(
+                      requiredSubmoduleType: submoduleSizeController.size,
+                      pickupTargetID: startController.room!,
+                      pickupEarliestStartTime: senderTimeController.timeAsSecondsSinceEpoch(),
+                      senderUserIDs: [
+                        if (senderUserController.selectedUser != null) senderUserController.selectedUser!.id,
+                      ],
+                      senderUserGroups: senderUserGroupsSelectionController.userGroups,
+                      dropoffTargetID: targetController.room!,
+                      dropoffEarliestStartTime: recipientTimeController.timeAsSecondsSinceEpoch(),
+                      recipientUserIDs: [
+                        if (recipientUserController.selectedUser != null) recipientUserController.selectedUser!.id,
+                      ],
+                      recipientUserGroups: recipientUserGroupsSelectionController.userGroups,
+                      itemsByChange: moduleContentController.createItemsByChange(),
                     );
-                  }).toList(),
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                    }
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (context) => InvalidInputsDialog(),
+                    );
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      'Erstellen',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 24),
+                    ),
+                  ),
                 ),
+              ),
+              SizedBox(
+                height: 16,
               ),
             ],
           ),
-          const Divider(color: Colors.grey),
-          Expanded(child: buildTaskCreationWidget()),
-        ],
+        ),
       ),
     );
   }

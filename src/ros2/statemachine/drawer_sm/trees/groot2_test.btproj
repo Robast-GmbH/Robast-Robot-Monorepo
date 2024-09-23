@@ -38,11 +38,24 @@
             <input_port name="topic" default="/drawer_feedback_status"/>
             <input_port name="use_stallguard" default="false"/>
         </Condition>
+        <Action ID="EvaluateDriveDirection" editable="true">
+            <input_port name="path_topic" default="path"/>
+            <input_port name="prediction_horizon" default="60">nav2 plan steps. approx 5cm per step</input_port>
+            <input_port name="global_frame" default="map"/>
+            <input_port name="base_frame" default="base_link"/>
+            <output_port name="direction" default="standing">standing, left, right, forward</output_port>
+        </Action>
         <Action ID="GetBlackboardEntry">
             <input_port name="key" default="drawer_address">string</input_port>
             <output_port name="value" default="{drawer}"/>
         </Action>
         <Action ID="Hans"/>
+        <Action ID="ImportEnvironmentLEDColor" editable="true">
+            <output_port name="red" default="{red}"/>
+            <output_port name="green" default="{green}"/>
+            <output_port name="blue" default="{blue}"/>
+            <output_port name="brightness" default="{brightness}"/>
+        </Action>
         <Action ID="InitLEDVector">
             <input_port name="size" default="128">uint8_t</input_port>
             <output_port name="led_vector" default="{leds}"/>

@@ -17,35 +17,60 @@
   </BehaviorTree>
 
   <BehaviorTree ID="LED_Closing">
-    <Sequence>
-      <PartialDrawerLED drawer_address="{drawer}"
-                        led_brightness_top="0"
-                        led_brightness_mid="0"
-                        led_brightness_bot="0"
-                        topic="/tray_task"/>
-      <InitLEDVector size="21"
-                     led_vector="{leds}"/>
-      <PartialColorizeLED LEDs="{leds}"
-                          blue="155"
-                          brightness="80"
-                          green="155"
-                          lower_bound="0.0"
-                          red="0"
-                          upper_bound="100.0"
-                          LEDs_colored="{leds}"/>
-    </Sequence>
+    <KeepRunningUntilFailure>
+      <Sequence>
+        <PartialDrawerLED drawer_address="{drawer}"
+                          led_brightness_top="0"
+                          led_brightness_mid="0"
+                          led_brightness_bot="0"
+                          topic="/tray_task"/>
+        <InitLEDVector size="21"
+                       led_vector="{leds}"/>
+        <PartialColorizeLED LEDs="{leds}"
+                            blue="0"
+                            brightness="150"
+                            green="166"
+                            lower_bound="0.0"
+                            red="236"
+                            upper_bound="100.0"
+                            LEDs_colored="{leds}"/>
+        <LEDPublisherAction drawer_address="{drawer}"
+                            fading_time_ms="500"
+                            led_topic="/led_cmd"
+                            leds="{leds}"/>
+        <PartialColorizeLED LEDs="{leds}"
+                            blue="0"
+                            brightness="0"
+                            green="166"
+                            lower_bound="0.0"
+                            red="236"
+                            upper_bound="100.0"
+                            LEDs_colored="{leds}"/>
+        <Delay delay_msec="500">
+          <LEDPublisherAction drawer_address="{drawer}"
+                              fading_time_ms="500"
+                              led_topic="/led_cmd"
+                              leds="{leds}"/>
+        </Delay>
+        <Sleep msec="500"/>
+      </Sequence>
+    </KeepRunningUntilFailure>
   </BehaviorTree>
 
   <BehaviorTree ID="LED_Default">
     <Sequence>
+      <ImportEnvironmentLEDColor red="{red}"
+                                 green="{green}"
+                                 blue="{blue}"
+                                 brightness="{brightness}"/>
       <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
-                          blue="155"
-                          brightness="25"
-                          green="155"
+                          blue="{blue}"
+                          brightness="{brightness}"
+                          green="{green}"
                           lower_bound="0.0"
-                          red="0"
+                          red="{red}"
                           upper_bound="100.0"
                           LEDs_colored="{leds}"/>
     </Sequence>
@@ -87,24 +112,51 @@
   </BehaviorTree>
 
   <BehaviorTree ID="LED_unlocked">
-    <Sequence>
-      <InitLEDVector size="21"
-                     led_vector="{leds}"/>
-      <PartialColorizeLED LEDs="{leds}"
-                          blue="105"
-                          brightness="150"
-                          green="205"
-                          lower_bound="0.0"
-                          red="0"
-                          upper_bound="100.0"
-                          LEDs_colored="{leds}"/>
-    </Sequence>
+    <KeepRunningUntilFailure>
+      <Sequence>
+        <InitLEDVector size="21"
+                       led_vector="{leds}"/>
+        <PartialColorizeLED LEDs="{leds}"
+                            blue="0"
+                            brightness="150"
+                            green="166"
+                            lower_bound="0.0"
+                            red="236"
+                            upper_bound="100.0"
+                            LEDs_colored="{leds}"/>
+        <LEDPublisherAction drawer_address="{drawer}"
+                            fading_time_ms="500"
+                            led_topic="/led_cmd"
+                            leds="{leds}"/>
+        <PartialColorizeLED LEDs="{leds}"
+                            blue="0"
+                            brightness="0"
+                            green="166"
+                            lower_bound="0.0"
+                            red="236"
+                            upper_bound="100.0"
+                            LEDs_colored="{leds}"/>
+        <Delay delay_msec="500">
+          <LEDPublisherAction drawer_address="{drawer}"
+                              fading_time_ms="500"
+                              led_topic="/led_cmd"
+                              leds="{leds}"/>
+        </Delay>
+        <Sleep msec="500"/>
+      </Sequence>
+    </KeepRunningUntilFailure>
   </BehaviorTree>
 
   <BehaviorTree ID="Opening_partial_drawer">
     <Sequence>
-      <ElectricDrawerStatusCondition target_value="251"
-                                     topic="/electrical_drawer_status"/>
+      <Parallel failure_count="1"
+                success_count="1">
+        <SubTree ID="LED_unlocked"
+                 _autoremap="true"/>
+        <ElectricDrawerStatusCondition target_value="251"
+                                       topic="/electrical_drawer_status"
+                                       use_stallguard="false"/>
+      </Parallel>
       <Delay delay_msec="50">
         <OpenDrawer drawer_address="{drawer}"
                     drawer_open_topic="/open_drawer"/>
@@ -139,12 +191,6 @@
                               stall_guard_value="80"
                               target_position="251"/>
         </Delay>
-        <SubTree ID="LED_unlocked"
-                 _autoremap="true"/>
-        <LEDPublisherAction drawer_address="{drawer}"
-                            fading_time_ms="500"
-                            led_topic="/led_cmd"
-                            leds="{leds}"/>
         <ReactiveIfThenElse>
           <Inverter>
             <BoolTopicCondition target_value="true"
@@ -163,14 +209,14 @@
           </Sequence>
           <AlwaysSuccess/>
         </ReactiveIfThenElse>
-        <SubTree ID="LED_Closing"
-                 _autoremap="true"/>
-        <LEDPublisherAction drawer_address="{drawer}"
-                            fading_time_ms="0"
-                            led_topic="/led_cmd"
-                            leds="{leds}"/>
-        <ElectricDrawerStatusCondition target_value="0"
-                                       topic="/electrical_drawer_status"/>
+        <Parallel failure_count="1"
+                  success_count="1">
+          <SubTree ID="LED_Closing"
+                   _autoremap="true"/>
+          <ElectricDrawerStatusCondition target_value="0"
+                                         topic="/electrical_drawer_status"
+                                         use_stallguard="false"/>
+        </Parallel>
         <Sequence>
           <DrawerStatusCondition target_value="false"
                                  topic="/drawer_is_open"/>
@@ -218,12 +264,25 @@
                   default="0">uint8. wether the value should be true or false</input_port>
       <input_port name="topic"
                   default="/drawer_feedback_status"/>
+      <input_port name="use_stallguard"
+                  default="false"/>
     </Condition>
     <Action ID="GetBlackboardEntry">
       <input_port name="key"
                   default="drawer_address">string</input_port>
       <output_port name="value"
                    default="{drawer}"/>
+    </Action>
+    <Action ID="ImportEnvironmentLEDColor"
+            editable="true">
+      <output_port name="red"
+                   default="{red}"/>
+      <output_port name="green"
+                   default="{green}"/>
+      <output_port name="blue"
+                   default="{blue}"/>
+      <output_port name="brightness"
+                   default="{brightness}"/>
     </Action>
     <Action ID="InitLEDVector">
       <input_port name="size"

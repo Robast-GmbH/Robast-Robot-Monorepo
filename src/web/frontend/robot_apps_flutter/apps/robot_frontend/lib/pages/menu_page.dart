@@ -1,11 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/provider/inactivity_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/models/sidebar_menu_point.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
+import 'package:robot_frontend/widgets/caire_ai_card_view.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
 import 'package:robot_frontend/widgets/home_views/patient_home_view.dart';
 import 'package:robot_frontend/widgets/home_views/staff_home_view.dart';
@@ -16,6 +18,7 @@ import 'package:robot_frontend/widgets/settings_views/admin_settings_view.dart';
 import 'package:robot_frontend/widgets/settings_views/patient_settings_view.dart';
 import 'package:robot_frontend/widgets/settings_views/staff_settings_view.dart';
 import 'package:robot_frontend/widgets/sidebar.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -38,6 +41,16 @@ class _MenuPageState extends State<MenuPage> {
         'PATIENT': PatientHomeView.new,
       },
     ),
+    if (kIsWeb)
+      SidebarMenuPoint(
+        title: 'caire.ai',
+        icon: Icons.favorite,
+        userGroupWidgets: {
+          'ADMIN': CaireAiCardView.new,
+          'STAFF': CaireAiCardView.new,
+          'PATIENT': CaireAiCardView.new,
+        },
+      ),
     SidebarMenuPoint(
       title: 'Karte',
       icon: Icons.map,
@@ -67,10 +80,23 @@ class _MenuPageState extends State<MenuPage> {
     ),
   ];
 
+  Future<User?> loadCurrentUser() async {
+    // await Provider.of<UserProvider>(context, listen: false).setUserSession(robotName: 'rb_theron', userID: 'a1f26ade-d83a-414a-aaae-62366e0c083c');
+    return Provider.of<UserProvider>(context, listen: false).getUserSession(robotName: 'rb_theron');
+  }
+
   @override
   void initState() {
     super.initState();
-    loadCurrentUserFuture = Provider.of<UserProvider>(context, listen: false).getUserSession(robotName: 'rb_theron');
+    loadCurrentUserFuture = loadCurrentUser();
+  }
+
+  @override
+  deactivate() {
+    Provider.of<InactivityProvider>(context, listen: false).cancelTimer();
+    Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
+    Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
+    super.deactivate();
   }
 
   @override
@@ -99,60 +125,56 @@ class _MenuPageState extends State<MenuPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          child: Stack(
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(top: 12),
-                                child: Align(
-                                  child: ClockView(),
-                                ),
+                        Stack(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(top: 12),
+                              child: Align(
+                                child: ClockView(),
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 16),
-                                    child: Text(
-                                      sidebarMenuPoints[selectedMainMenuIndex].title,
-                                      style: const TextStyle(color: RobotColors.primaryText, fontSize: 40, fontWeight: FontWeight.w400),
-                                    ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 16),
+                                  child: Text(
+                                    sidebarMenuPoints[selectedMainMenuIndex].title,
+                                    style: const TextStyle(color: RobotColors.primaryText, fontSize: 40, fontWeight: FontWeight.w400),
                                   ),
-                                  InkWell(
-                                    onTap: () {
-                                      Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
-                                      Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
-                                      Navigator.pop(context);
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(bottom: 16),
-                                      child: Container(
-                                        decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(16)),
-                                        child: const Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                'Abmelden',
-                                                style: TextStyle(color: RobotColors.primaryText, fontSize: 32),
-                                              ),
-                                              SizedBox(
-                                                width: 16,
-                                              ),
-                                              Icon(
-                                                Icons.logout,
-                                                size: 40,
-                                              ),
-                                            ],
-                                          ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: Container(
+                                      decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(16)),
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              'Abmelden',
+                                              style: TextStyle(color: RobotColors.primaryText, fontSize: 32),
+                                            ),
+                                            SizedBox(
+                                              width: 16,
+                                            ),
+                                            Icon(
+                                              Icons.logout,
+                                              size: 40,
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
-                            ],
-                          ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: 8),
