@@ -77,7 +77,7 @@ namespace module_config
   struct ModuleSetting<drawer::HOMING_SPEED>
   {
     using type = uint32_t;
-    static constexpr type default_value = 500;
+    static constexpr type default_value = 1500;
   };
 
   template <>
