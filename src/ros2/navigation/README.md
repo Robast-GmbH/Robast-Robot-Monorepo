@@ -1,10 +1,9 @@
 TODO: fill out licensing information
 TODO: fill description
 
-## feuerplan_publisher
+## nav action node
 
-This package contains the code to publish a feuerplan image into an occupancy grid message. (starts with task ´publish feuerplan´)
-
+This node adds a `NavigateToPose`action client to handle nav goals through rmf and publishes their terminal states
 
 Error handle:
     nav_bringup: 10
