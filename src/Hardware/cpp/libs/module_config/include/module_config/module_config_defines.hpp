@@ -78,7 +78,7 @@ namespace module_config
   struct ModuleSetting<drawer::HOMING_SPEED>
   {
     using type = uint32_t;
-    static constexpr type default_value = 500;
+    static constexpr type default_value = 1500;
   };
 
   template <>
@@ -92,7 +92,7 @@ namespace module_config
   struct ModuleSetting<drawer::MOVING_IN_DECELERATION_DISTANCE>
   {
     using type = uint8_t;
-    static constexpr type default_value = 50;
+    static constexpr type default_value = 30;
   };
 
   template <>
