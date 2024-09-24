@@ -110,7 +110,7 @@ class NavigateToPoseActionClient(Node):
     def __get_result_callback(self, future):
         status = future.result().status
 
-        if status == GoalStatus.STATUS_SUCCEEDED:
+        if status == GoalStatus.STATUS_SUCCEEDED and not self.__is_desired_goal_pose:
             self.__status_publisher.publish(String(data="SUCCEEDED"))
         elif status == GoalStatus.STATUS_SUCCEEDED and self.__is_desired_goal_pose:
             self.__check_sector_flag = True
