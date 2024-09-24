@@ -2,8 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from ros_bridge import RosBridge
 
-door_available = False
-ros_bridge = RosBridge(ip="localhost", port=9090, door_available=door_available)
+ros_bridge = RosBridge(ip="localhost", port=9090)
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -148,23 +147,6 @@ def get_nfc_tag():
 @app.get("/read_nfc_tag", tags=["NFC"])
 def read_nfc_tag(timeout_in_s: int):
     return ros_bridge.nfc_bridge.read_nfc_tag(timeout_in_s=timeout_in_s)
-
-
-"""
-======================
-Doors API Endpoints
-======================
-"""
-
-if door_available:
-
-    @app.post("/open_door", tags=["Doors"])
-    def post_open_door():
-        return {"success": ros_bridge.door_bridge.open_door()}
-
-    @app.post("/close_door", tags=["Doors"])
-    def post_close_door():
-        return {"success": ros_bridge.door_bridge.close_door()}
 
 
 """
