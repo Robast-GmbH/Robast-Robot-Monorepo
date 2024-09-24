@@ -21,6 +21,7 @@ find_package(nav2_util REQUIRED)
 find_package(tf2_ros REQUIRED)
 
 add_executable(save_map src/save_map_pose.cpp)
+include_directories(include)
 target_link_libraries(save_map yaml-cpp)
 ament_target_dependencies(save_map rclcpp geometry_msgs nav2_util tf2_ros)
 
