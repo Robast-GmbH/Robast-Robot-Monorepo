@@ -106,17 +106,16 @@ Modules API Endpoints
 """
 
 
-@app.get("/submodules", tags=["Modules"])
-def read_submodules():
-    return ros_bridge.module_bridge.get_submodules()
-
-
-@app.get("/is_submodule_open", tags=["Modules"])
-def read_is_submodule_open(module_id: int, submodule_id: int):
+@app.get("/submodule_status", tags=["Modules"])
+def read_submodule_status(module_id: int, submodule_id: int):
     return {
         "is_open": ros_bridge.module_bridge.get_submodule_is_open(
             module_id, submodule_id
-        )
+        ),
+        "is_stall_guard_triggered": ros_bridge.module_bridge.get_submodule_stall_guard_triggered(
+            module_id, submodule_id
+        ),
+        "opening_timed_out": ros_bridge.error_bridge.received_drawer_not_opened_error(),
     }
 
 

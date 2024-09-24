@@ -4,6 +4,7 @@ from sub_bridges.nav_bridge import NavBridge
 from sub_bridges.module_bridge import ModuleBridge
 from sub_bridges.nfc_bridge import NfcBridge
 from sub_bridges.disinfection_module_bridge import DisinfectionModuleBridge
+from sub_bridges.error_bridge import ErrorBridge
 
 
 class RosBridge:
@@ -15,4 +16,4 @@ class RosBridge:
         self.module_bridge = ModuleBridge(self.ros)
         self.nfc_bridge = NfcBridge(self.ros)
         self.disinfection_module_bridge = DisinfectionModuleBridge(self.ros)
-
+        self.error_bridge = ErrorBridge(self.ros)
