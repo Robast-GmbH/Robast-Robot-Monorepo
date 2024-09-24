@@ -35,10 +35,10 @@ jobs:
     - name: Build ${{ env.Project-Name }} dev docker
       uses: docker/build-push-action@v2
       with:
-        context: bringups/debugging_docker/
+        context: src/
         platforms: linux/amd64,linux/arm64/v8
         push: true
-        file: bringups/debugging_docker/Dockerfile
+        file: src/Dockerfile
         tags: |
               ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:${{ env.Ros-Distro }}
         cache-from: type=gha
