@@ -38,7 +38,7 @@ class NavigateToPoseActionClient(Node):
         self.__goal_handle = None
         self.__local_costmap_data = None
         self.__check_sector_flag = False
-        self.__is_desired_goal_pose = False
+        self.__is_reorientation_enabled = False
         self.__rotation_speed = 0.5
         self.__tf_buffer = tf2_ros.Buffer()
         self.__tf_listener = tf2_ros.TransformListener(self.__tf_buffer, self)
@@ -52,7 +52,7 @@ class NavigateToPoseActionClient(Node):
         self.__goal_subscriber = self.create_subscription(Pose, "set_goal_pose", self.__send_goal, 10)
         self.__cancel_goal_subscriber = self.create_subscription(Bool, "cancel_goal", self.__cancel_goal, 10)
         self.__local_costmap_subscriber = self.create_subscription(OccupancyGrid, "/local_costmap/costmap", self.__local_costmap_callback, 10)
-        self.__reorientation_required_subscriber = self.create_subscription(Bool, "is_reorientation_required", self.__perform_free_space_check, 10)
+        self.__is_reorientation_enabled_subscriber = self.create_subscription(Bool, "is_reorientation_enabled", self.__set_reorientation_enabled, 10)
         self.__is_navigating_publisher = self.create_publisher(Bool, "is_navigating", 10)
         self.__remaining_time_publisher = self.create_publisher(Duration, "navigation_remaining_time", 10)
         self.__status_publisher = self.create_publisher( String, "goal_status", 10)
@@ -62,8 +62,8 @@ class NavigateToPoseActionClient(Node):
     def __timer_callback(self):
         self.__remaining_time_publisher.publish(self.__remaining_time)
     
-    def __perform_free_space_check(self, msg: Bool):
-        self.__is_desired_goal_pose = msg.data
+    def __set_reorientation_enabled(self, msg: Bool):
+        self.__is_reorientation_enabled = msg.data
 
     def __local_costmap_callback(self, msg: OccupancyGrid):
         self.__local_costmap_data = msg
@@ -110,9 +110,9 @@ class NavigateToPoseActionClient(Node):
     def __get_result_callback(self, future):
         status = future.result().status
 
-        if status == GoalStatus.STATUS_SUCCEEDED and not self.__is_desired_goal_pose:
+        if status == GoalStatus.STATUS_SUCCEEDED and not self.__is_reorientation_enabled:
             self.__status_publisher.publish(String(data="SUCCEEDED"))
-        elif status == GoalStatus.STATUS_SUCCEEDED and self.__is_desired_goal_pose:
+        elif status == GoalStatus.STATUS_SUCCEEDED and self.__is_reorientation_enabled:
             self.__check_sector_flag = True
         elif status == GoalStatus.STATUS_CANCELED:  
             self.get_logger().info("Goal was canceled")
