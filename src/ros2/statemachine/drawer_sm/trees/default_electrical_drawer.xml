@@ -18,37 +18,55 @@
 
   <BehaviorTree ID="LED_Closing">
     <KeepRunningUntilFailure>
-      <Sequence>
-        <InitLEDVector size="21"
-                       led_vector="{leds}"/>
-        <PartialColorizeLED LEDs="{leds}"
-                            blue="0"
-                            brightness="150"
-                            green="166"
-                            lower_bound="0.0"
-                            red="236"
-                            upper_bound="100.0"
-                            LEDs_colored="{leds}"/>
-        <LEDPublisherAction drawer_address="{drawer}"
-                            fading_time_ms="500"
-                            led_topic="/led_cmd"
-                            leds="{leds}"/>
-        <PartialColorizeLED LEDs="{leds}"
-                            blue="0"
-                            brightness="0"
-                            green="166"
-                            lower_bound="0.0"
-                            red="236"
-                            upper_bound="100.0"
-                            LEDs_colored="{leds}"/>
-        <Delay delay_msec="500">
+      <Parallel failure_count="1"
+                success_count="-1">
+        <Sequence>
+          <ElectricDrawerStatusCondition target_value="0"
+                                         topic="/electrical_drawer_status"
+                                         use_stallguard="true"/>
+          <PublishStateFeedback state_feedback="stall_guard_triggered"
+                                state_feedback_topic="/module_state_update"
+                                drawer_address="{drawer}"/>
+          <DrawerChangeStateReq drawer_address_topic="/close_drawer"
+                                drawer_address="{drawer}"/>
+          <MoveElectricDrawer drawer_address="{drawer}"
+                              move_electric_drawer_topic="/electrical_drawer_task"
+                              speed="200"
+                              stall_guard_value="0"
+                              target_position="0"/>
+        </Sequence>
+        <Sequence>
+          <InitLEDVector size="21"
+                         led_vector="{leds}"/>
+          <PartialColorizeLED LEDs="{leds}"
+                              blue="0"
+                              brightness="150"
+                              green="166"
+                              lower_bound="0.0"
+                              red="236"
+                              upper_bound="100.0"
+                              LEDs_colored="{leds}"/>
           <LEDPublisherAction drawer_address="{drawer}"
                               fading_time_ms="500"
                               led_topic="/led_cmd"
                               leds="{leds}"/>
-        </Delay>
-        <Sleep msec="500"/>
-      </Sequence>
+          <PartialColorizeLED LEDs="{leds}"
+                              blue="0"
+                              brightness="0"
+                              green="166"
+                              lower_bound="0.0"
+                              red="236"
+                              upper_bound="100.0"
+                              LEDs_colored="{leds}"/>
+          <Delay delay_msec="500">
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="500"
+                                led_topic="/led_cmd"
+                                leds="{leds}"/>
+          </Delay>
+          <Sleep msec="500"/>
+        </Sequence>
+      </Parallel>
     </KeepRunningUntilFailure>
   </BehaviorTree>
 
