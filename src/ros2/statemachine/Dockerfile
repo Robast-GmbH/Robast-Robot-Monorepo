@@ -27,7 +27,7 @@ RUN apt-get update && apt-get upgrade -y &&\
     && rosdep init || echo "rosdep already initialized"
 
 WORKDIR /robotnik
-RUN git clone -b humble-devel https://github.com/RobotnikAutomation/robotnik_msgs.git && \
+RUN git clone -b ros2-devel https://github.com/RobotnikAutomation/robotnik_msgs.git && \
 . /opt/ros/${ROS_DISTRO}/setup.sh && \
 colcon build --packages-select robotnik_msgs --install-base /robast/${ROS_DISTRO}/ --cmake-args -DCMAKE_BUILD_TYPE=Release
 
