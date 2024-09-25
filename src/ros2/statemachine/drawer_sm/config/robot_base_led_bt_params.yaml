@@ -11,6 +11,7 @@ robot_tree_initiator:
       - is_robot_charging_condition_node
       - import_environment_led_color_action_bt_node
       - evaluate_drive_direction_action_bt_node
+      - publish_state_feedback_action_bt_node
     bt_path: "/workspace/src/statemachine/drawer_sm/trees/Robo_base.xml"
     trigger_topic: "trigger_base_tree"
     main_tree: "BehaviorTree"
