@@ -147,7 +147,7 @@
         <SubTree ID="LED_unlocked"
                  _autoremap="true"/>
         <Sequence>
-          <ElectricDrawerStatusCondition target_value="251"
+          <ElectricDrawerStatusCondition target_value="220"
                                          topic="/electrical_drawer_status"
                                          use_stallguard="false"/>
           <PublishStateFeedback state_feedback="open"
@@ -155,7 +155,7 @@
                                 drawer_address="{drawer}"/>
         </Sequence>
         <Sequence>
-          <ElectricDrawerStatusCondition target_value="251"
+          <ElectricDrawerStatusCondition target_value="220"
                                          topic="/electrical_drawer_status"
                                          use_stallguard="true"/>
           <PublishStateFeedback state_feedback="stall_guard_triggered"
