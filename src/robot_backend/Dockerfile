@@ -42,11 +42,18 @@ RUN apt-get update && apt-get install -y \
   ros-${ROS_DISTRO}-rosbridge-server \
   && rm -rf /var/lib/apt/lists/*
 
+WORKDIR /robotnik
+RUN git clone -b ros2-devel https://github.com/RobotnikAutomation/robotnik_msgs.git && \
+  . /opt/ros/${ROS_DISTRO}/setup.sh && \
+  colcon build --packages-select robotnik_msgs --install-base /robast/${ROS_DISTRO}/ --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+
 WORKDIR /workspace
 USER robast
 
 RUN echo "source /usr/share/bash-completion/completions/git" >> /home/${USER}/.bashrc \
   && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/${USER}/.bashrc \
-  && echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/${USER}/.bashrc
+  && echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/${USER}/.bashrc \
+  && echo "if [ -f /robast/humble/setup.bash ]; then source /robast/humble/setup.bash; fi" >> /home/${USER}/.bashrc 
 
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml

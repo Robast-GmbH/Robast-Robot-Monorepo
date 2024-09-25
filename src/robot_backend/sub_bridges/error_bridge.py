@@ -13,7 +13,7 @@ class ErrorBridge(BaseBridge):
         super().__init__(ros)
 
         self.__robast_error_subscriber = self.start_subscriber(
-            "/robast_error",
+            "/robast_error_best_effort",
             ErrorBridge.ERROR_MSG,
             on_msg_callback=self.__on_error,
         )

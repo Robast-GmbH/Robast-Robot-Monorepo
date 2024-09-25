@@ -101,9 +101,7 @@ class ModuleBridge(BaseBridge):
         self, module_id: int, submodule_id: int
     ) -> bool:
         try:
-            return self.context[f"{str(module_id)}_{str(submodule_id)}_stall_guard"][
-                "is_triggered"
-            ]
+            return self.context[f"{str(module_id)}_{str(submodule_id)}_stall_guard_triggered"]
         except KeyError:
             return False
 

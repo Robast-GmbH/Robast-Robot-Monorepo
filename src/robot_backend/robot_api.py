@@ -46,6 +46,10 @@ def read_robot_pos():
 def read_robot_lost():
     return ros_bridge.robot_pos_bridge.get_robot_lost()
 
+@app.get("/battery_status", tags=["Robot Status"])
+def read_battery_status():
+    return ros_bridge.robot_status_bridge.get_battery_status()
+
 
 """
 =========================
