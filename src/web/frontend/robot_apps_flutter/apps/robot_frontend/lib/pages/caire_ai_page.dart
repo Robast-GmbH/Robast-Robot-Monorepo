@@ -7,9 +7,9 @@ import 'package:robot_frontend/widgets/custom_scaffold.dart';
 
 class CaireAiPage extends StatefulWidget {
   const CaireAiPage({super.key, this.isMock = false});
-  final isMock;
+  final bool isMock;
   @override
-  _CaireAiPageState createState() => _CaireAiPageState();
+  State<CaireAiPage> createState() => _CaireAiPageState();
 }
 
 class _CaireAiPageState extends State<CaireAiPage> {
@@ -35,29 +35,16 @@ class _CaireAiPageState extends State<CaireAiPage> {
     super.initState();
 
     contextMenu = ContextMenu(
-        menuItems: [
-          ContextMenuItem(
-              id: 1,
-              title: "Special",
-              action: () async {
-                print("Menu item Special clicked!");
-                print(await webViewController?.getSelectedText());
-                await webViewController?.clearFocus();
-              })
-        ],
-        settings: ContextMenuSettings(hideDefaultSystemContextMenuItems: false),
-        onCreateContextMenu: (hitTestResult) async {
-          print("onCreateContextMenu");
-          print(hitTestResult.extra);
-          print(await webViewController?.getSelectedText());
-        },
-        onHideContextMenu: () {
-          print("onHideContextMenu");
-        },
-        onContextMenuActionItemClicked: (contextMenuItemClicked) async {
-          var id = contextMenuItemClicked.id;
-          print("onContextMenuActionItemClicked: $id ${contextMenuItemClicked.title}");
-        });
+      menuItems: [
+        ContextMenuItem(
+            id: 1,
+            title: "Special",
+            action: () async {
+              await webViewController?.clearFocus();
+            })
+      ],
+      settings: ContextMenuSettings(hideDefaultSystemContextMenuItems: false),
+    );
 
     pullToRefreshController = kIsWeb || ![TargetPlatform.iOS, TargetPlatform.android].contains(defaultTargetPlatform)
         ? null
@@ -113,19 +100,6 @@ class _CaireAiPageState extends State<CaireAiPage> {
                         return PermissionResponse(resources: request.resources, action: PermissionResponseAction.GRANT);
                       },
                       shouldOverrideUrlLoading: (controller, navigationAction) async {
-                        var uri = navigationAction.request.url!;
-
-                        // if (!["http", "https", "file", "chrome", "data", "javascript", "about"].contains(uri.scheme)) {
-                        //   if (await canLaunchUrl(uri)) {
-                        //     // Launch the App
-                        //     await launchUrl(
-                        //       uri,
-                        //     );
-                        //     // and cancel the request
-                        //     return NavigationActionPolicy.CANCEL;
-                        //   }
-                        // }
-
                         return NavigationActionPolicy.ALLOW;
                       },
                       onLoadStop: (controller, url) async {
@@ -152,9 +126,6 @@ class _CaireAiPageState extends State<CaireAiPage> {
                           this.url = url.toString();
                           urlController.text = this.url;
                         });
-                      },
-                      onConsoleMessage: (controller, consoleMessage) {
-                        print(consoleMessage);
                       },
                     ),
                     progress < 1.0 ? LinearProgressIndicator(value: progress) : Container(),

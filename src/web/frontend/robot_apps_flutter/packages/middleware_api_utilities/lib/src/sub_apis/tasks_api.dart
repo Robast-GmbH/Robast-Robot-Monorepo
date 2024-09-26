@@ -10,7 +10,7 @@ class TasksApi {
     if (response != null) {
       final data = RequestService.responseToMap(response: response);
 
-      return RobotTaskStatus.fromJson(data['tasks']);
+      return RobotTaskStatus.fromJson(data['tasks'] as Map<String, dynamic>);
     } else {
       return null;
     }

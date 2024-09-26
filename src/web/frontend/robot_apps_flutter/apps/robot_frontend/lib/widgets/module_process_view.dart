@@ -99,6 +99,87 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                 );
               }
 
+              if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.stallguardTriggered) {
+                return Row(
+                  children: [
+                    const Expanded(child: SizedBox()),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 192),
+                        child: Column(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: CustomButtonView(
+                                titleFontSize: 56,
+                                text: 'Öffnung fortsetzen',
+                                onPressed: () async {
+                                  await moduleProvider.openSubmodule(moduleInProcess);
+                                },
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            Expanded(
+                              child: CustomButtonView(
+                                text: 'Schließen',
+                                titleFontSize: 56,
+                                onPressed: () async {
+                                  await moduleProvider.closeSubmodule(moduleInProcess);
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const Expanded(child: SizedBox()),
+                  ],
+                );
+              }
+              if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.openingTimedOut) {
+                return Row(
+                  children: [
+                    const Expanded(child: SizedBox()),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 192),
+                        child: Column(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: CustomButtonView(
+                                text: 'Erneut öffnen',
+                                titleFontSize: 56,
+                                onPressed: () async {
+                                  await moduleProvider.openSubmodule(moduleInProcess);
+                                },
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            Expanded(
+                              child: CustomButtonView(
+                                text: 'Abbrechen',
+                                titleFontSize: 56,
+                                onPressed: () async {
+                                  await moduleProvider.cancelSubmoduleProcess(moduleInProcess);
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const Expanded(child: SizedBox()),
+                  ],
+                );
+              }
               if (moduleInProcess.moduleProcess.status != ModuleProcessStatus.closed) {
                 return Row(
                   children: [
@@ -167,9 +248,10 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                               flex: 2,
                               child: CustomButtonView(
                                 text: 'Fertigstellen',
+                                titleFontSize: 56,
                                 content: Text(
                                   '(automatisch in ${5 - finishTimerClockIndex} Sekunden)',
-                                  style: const TextStyle(color: RobotColors.secondaryText, fontSize: 28),
+                                  style: const TextStyle(color: RobotColors.secondaryText, fontSize: 32),
                                 ),
                                 onPressed: () => onFinish(moduleInProcess),
                               ),
@@ -180,6 +262,7 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                             Expanded(
                               child: CustomButtonView(
                                 text: 'Erneut öffnen',
+                                titleFontSize: 56,
                                 onPressed: () async {
                                   await moduleProvider.openSubmodule(moduleInProcess);
                                   finishedTimer?.cancel();

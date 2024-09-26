@@ -18,13 +18,13 @@ class UserCreationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.person_add),
             SizedBox(
               width: 16,
             ),
-            Text('Nutzererstellung')
+            Text('Nutzererstellung'),
           ],
         ),
       ),
@@ -40,25 +40,25 @@ class UserCreationPage extends StatelessWidget {
                 controller: firstNameController,
                 validator: Validators.nameValidator,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               CustomTextField(
                 label: 'Nachname',
                 controller: lastNameController,
                 validator: Validators.nameValidator,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               CustomTextField(
                 label: 'E-Mail',
                 controller: mailController,
                 validator: Validators.mailValidator,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               CustomTextField(
                 label: 'Nutzergruppen',
                 controller: groupsController,
                 validator: Validators.userGroupsValidator,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () async {
                   if (formKey.currentState!.validate()) {
@@ -75,14 +75,14 @@ class UserCreationPage extends StatelessWidget {
                         userGroups: groupsController.text.split(','),
                       ),
                     );
-                    if (wasUserCreated) {
+                    if (wasUserCreated && context.mounted) {
                       Navigator.pop(context, true);
                     }
                   }
                 },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: const Text('Nutzer erstellen'),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  child: Text('Nutzer erstellen'),
                 ),
               ),
             ],

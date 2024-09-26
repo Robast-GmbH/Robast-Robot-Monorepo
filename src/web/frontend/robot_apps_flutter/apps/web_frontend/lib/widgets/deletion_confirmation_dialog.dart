@@ -9,7 +9,7 @@ class DeletionConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
+      title: const Text(
         'Nutzer wirklich löschen?',
         style: TextStyle(color: Colors.white),
       ),
@@ -21,9 +21,9 @@ class DeletionConfirmationDialog extends StatelessWidget {
           children: [
             Text(
               'Zum Bestätigen "$requiredTextInput" eingeben:',
-              style: TextStyle(color: Colors.white, fontSize: 18),
+              style: const TextStyle(color: Colors.white, fontSize: 18),
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             CustomTextField(
@@ -34,13 +34,13 @@ class DeletionConfirmationDialog extends StatelessWidget {
                 }
                 return null;
               },
-            )
+            ),
           ],
         ),
       ),
       actions: [
         TextButton(
-          child: Text('Bestätigen'),
+          child: const Text('Bestätigen'),
           onPressed: () {
             if (formKey.currentState!.validate()) {
               Navigator.of(context).pop(true);
@@ -48,11 +48,11 @@ class DeletionConfirmationDialog extends StatelessWidget {
           },
         ),
         TextButton(
-          child: Text('Abbrechen'),
+          child: const Text('Abbrechen'),
           onPressed: () {
             Navigator.of(context).pop(false);
           },
-        )
+        ),
       ],
     );
   }

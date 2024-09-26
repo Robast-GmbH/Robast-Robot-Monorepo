@@ -8,7 +8,10 @@ class RobotProvider extends ChangeNotifier {
   Pose? _robotPose;
   bool _isRobotLost = false;
   bool get isRobotLost => _isRobotLost;
+  double? _batteryLevel;
+  double? get batteryLevel => _batteryLevel;
 
+  Timer? _batteryLevelUpdateTimer;
   Timer? _robotPoseUpdateTimer;
 
   late RobotApiUtilities _robotAPI;
@@ -24,6 +27,18 @@ class RobotProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> updateBatteryLevel() async {
+    _batteryLevel = await _robotAPI.getBatteryLevel();
+    notifyListeners();
+  }
+
+  void startPeriodicBatteryLevelUpdate() {
+    _batteryLevelUpdateTimer = startPeriodicUpdate(
+      updateBatteryLevel,
+      const Duration(minutes: 1),
+    );
+  }
+
   void startPeriodicRobotPoseUpdate() {
     _robotPoseUpdateTimer = startPeriodicUpdate(
       updateRobotPose,
@@ -36,6 +51,10 @@ class RobotProvider extends ChangeNotifier {
       updateIsRobotLost,
       const Duration(seconds: 5),
     );
+  }
+
+  void stopPeriodicBatteryLevelUpdate() {
+    _batteryLevelUpdateTimer?.cancel();
   }
 
   void stopPeriodicRobotPoseUpdate() {

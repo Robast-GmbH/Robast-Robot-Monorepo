@@ -18,18 +18,19 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            onPressed: () {
-              showDialog(context: context, builder: (context) => const LogoutConfirmationDialog());
-            },
-            icon: Icon(Icons.logout)),
-        title: Row(
+          onPressed: () {
+            showDialog<LogoutConfirmationDialog>(context: context, builder: (context) => const LogoutConfirmationDialog());
+          },
+          icon: const Icon(Icons.logout),
+        ),
+        title: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(Icons.home),
             SizedBox(
               width: 8,
             ),
-            const Text('Hauptmenü'),
+            Text('Hauptmenü'),
           ],
         ),
         actions: [
@@ -40,7 +41,6 @@ class HomePage extends StatelessWidget {
                 MaterialPageRoute<bool?>(
                   builder: (context) => UserSettingsPage(
                     user: Provider.of<UserProvider>(context, listen: false).user!,
-                    isAdminView: false,
                   ),
                 ),
               );
@@ -73,8 +73,8 @@ class HomePage extends StatelessWidget {
                   ),
                 );
               },
-              child: Padding(
-                padding: const EdgeInsets.all(16),
+              child: const Padding(
+                padding: EdgeInsets.all(16),
                 child: Text(
                   'Flottenmanagement',
                   style: TextStyle(color: Colors.white, fontSize: 24),
@@ -82,7 +82,7 @@ class HomePage extends StatelessWidget {
               ),
             ),
             if (Provider.of<UserProvider>(context).user!.userGroups.contains('ADMIN')) ...[
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               RoundedButton(
                 onPressed: () {
                   Navigator.push(
@@ -92,15 +92,15 @@ class HomePage extends StatelessWidget {
                     ),
                   );
                 },
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
+                child: const Padding(
+                  padding: EdgeInsets.all(16),
                   child: Text(
                     'Nutzermanagement',
                     style: TextStyle(color: Colors.white, fontSize: 24),
                   ),
                 ),
               ),
-            ]
+            ],
           ],
         ),
       ),
