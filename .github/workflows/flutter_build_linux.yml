@@ -9,17 +9,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the repository
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    # Step 2: Install Flutter SDK
     - name: Install Flutter SDK
       uses: subosito/flutter-action@v2
       with:
         flutter-version: 'stable'
 
-    # Step 3: Install necessary Linux packages for Flutter Linux build
     - name: Install dependencies
       run: |
         sudo apt-get update
@@ -28,13 +25,10 @@ jobs:
           clang cmake git ninja-build pkg-config \
           libgtk-3-dev liblzma-dev libstdc++-12-dev
 
-    # Step 4: Ensure Flutter dependencies are installed
-    # Note: Specify the working directory for the Flutter app.
     - name: Install Flutter dependencies
       working-directory: src/web/frontend/robot_apps_flutter/apps/robot_frontend
       run: flutter pub get
 
-    # Step 5: Build the Flutter project for Linux
     - name: Build Flutter Linux App
       working-directory: src/web/frontend/robot_apps_flutter/apps/robot_frontend
       run: flutter build linux --release
