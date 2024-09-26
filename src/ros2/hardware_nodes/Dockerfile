@@ -51,7 +51,7 @@ RUN git clone -b ${ROS_BUILD_DISTRO} https://github.com/autowarefoundation/ros2_
 RUN rosdep update && \
   rosdep install --from-paths /ros2_socketcan_ws/ros2_socketcan --ignore-src -r -y && \
   . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_BUILD_DISTRO}/
+  colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast\
@@ -60,10 +60,11 @@ RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast\
   && mv /monorepo/src/Hardware/cpp/libs ws/ \
   && mv /monorepo/src/ros2/dds_configs /robast/dds_configs
 
+# TODO@Tobi: Running colcon build with -DBUILD_TESTING=OFF should be removed once build artifacts are used for tests with volume mounts
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_BUILD_DISTRO}/
+  colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 ############################## Release ##################################
 FROM ros:${ROS_BUILD_DISTRO}-ros-base as release
