@@ -37,3 +37,12 @@ jobs:
       working-directory: src/web/frontend/robot_apps_flutter/apps/robot_frontend
       run: flutter build linux --release
 
+    - name: Upload Linux Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: linux-build
+        path: src/web/frontend/robot_apps_flutter/apps/robot_frontend/build/linux/release
+
+
+
+
