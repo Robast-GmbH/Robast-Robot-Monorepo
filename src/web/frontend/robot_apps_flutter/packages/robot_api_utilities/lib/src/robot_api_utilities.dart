@@ -155,4 +155,25 @@ class RobotApiUtilities {
       return false;
     }
   }
+
+  Future<double?> getBatteryLevel() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(
+        Uri.parse('$prefix/battery_status'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        if (data['status'] == 'success') {
+          return (data['data'] as Map<String, dynamic>)['level'] as double;
+        }
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
 }
