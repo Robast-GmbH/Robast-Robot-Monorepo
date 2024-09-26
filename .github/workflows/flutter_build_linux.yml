@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-22.04-arm64
+    runs-on: Arm64-Flutter
 
     steps:
     - name: Checkout Repository
