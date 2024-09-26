@@ -9,24 +9,25 @@ class LogoutConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text(
+      title: const Text(
         'Wirklich ausloggen?',
         style: TextStyle(color: Colors.white),
       ),
       actions: [
         TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Provider.of<UserProvider>(context, listen: false).user = null;
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
-            },
-            child: Text('Bestätigen')),
+          onPressed: () {
+            Navigator.of(context).pop();
+            Provider.of<UserProvider>(context, listen: false).user = null;
+            Navigator.pushReplacement(context, MaterialPageRoute<LoginPage>(builder: (context) => LoginPage()));
+          },
+          child: const Text('Bestätigen'),
+        ),
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: Text('Abbrechen'),
-        )
+          child: const Text('Abbrechen'),
+        ),
       ],
     );
   }

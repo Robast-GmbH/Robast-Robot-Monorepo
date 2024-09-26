@@ -8,7 +8,7 @@ import 'package:web_frontend/validators.dart';
 import 'package:web_frontend/widgets/custom_text_field.dart';
 
 class UserSettingsPage extends StatefulWidget {
-  UserSettingsPage({required this.user, this.isAdminView = false, super.key});
+  const UserSettingsPage({required this.user, this.isAdminView = false, super.key});
 
   final User user;
   final bool isAdminView;
@@ -40,11 +40,11 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
     final mapProvider = Provider.of<MapProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.person),
             SizedBox(width: 8),
-            const Text('Nutzereinstellungen'),
+            Text('Nutzereinstellungen'),
           ],
         ),
       ),
@@ -63,7 +63,7 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
               userGroups: widget.user.userGroups,
             );
             final wasSuccessful = await Provider.of<UserProvider>(context, listen: false).updateUser(updatedUser: updatedUser);
-            if (wasSuccessful) {
+            if (wasSuccessful && context.mounted) {
               Navigator.pop(context, true);
             }
           }
@@ -81,39 +81,41 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
                 controller: firstNameController,
                 validator: Validators.nameValidator,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               CustomTextField(
                 label: 'Nachname',
                 controller: lastNameController,
                 validator: Validators.nameValidator,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               CustomTextField(
                 label: 'E-Mail',
                 controller: mailController,
                 validator: Validators.mailValidator,
               ),
               if (mapProvider.roomsByStations.isNotEmpty) ...[
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Station', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                      const Text('Station', style: TextStyle(color: Colors.white70, fontSize: 12)),
                       DropdownButton<String>(
                         isExpanded: true,
                         value: station,
-                        hint: Text('Station auswählen'),
+                        hint: const Text('Station auswählen'),
                         dropdownColor: Colors.grey[800],
                         items: mapProvider.roomsByStations.keys
-                            .map((station) => DropdownMenuItem<String>(
-                                  child: Text(
-                                    station,
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  value: station,
-                                ))
+                            .map(
+                              (station) => DropdownMenuItem<String>(
+                                value: station,
+                                child: Text(
+                                  station,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            )
                             .toList(),
                         onChanged: (value) {
                           if (value != station) {
@@ -128,27 +130,29 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Raum', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                      const Text('Raum', style: TextStyle(color: Colors.white70, fontSize: 12)),
                       DropdownButton<String>(
                         isExpanded: true,
                         value: room,
                         dropdownColor: Colors.grey[800],
-                        disabledHint: Text('Bitte wählen Sie zuerst eine Station aus'),
-                        hint: Text('Raum auswählen'),
+                        disabledHint: const Text('Bitte wählen Sie zuerst eine Station aus'),
+                        hint: const Text('Raum auswählen'),
                         items: station == null
                             ? []
                             : mapProvider.roomsByStations[station]!
-                                .map((station) => DropdownMenuItem<String>(
-                                      child: Text(
-                                        station,
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      value: station,
-                                    ))
+                                .map(
+                                  (station) => DropdownMenuItem<String>(
+                                    value: station,
+                                    child: Text(
+                                      station,
+                                      style: const TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                )
                                 .toList(),
                         onChanged: (value) {
                           setState(() {
@@ -161,7 +165,7 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
                 ),
               ],
               if (!widget.isAdminView) ...[
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
@@ -171,12 +175,12 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
                       ),
                     );
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: const Text('Passwort ändern'),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Text('Passwort ändern'),
                   ),
                 ),
-              ]
+              ],
             ],
           ),
         ),

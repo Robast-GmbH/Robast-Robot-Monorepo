@@ -9,6 +9,7 @@ class CustomButtonView extends StatelessWidget {
     this.trailing = const SizedBox(),
     this.text,
     this.header,
+    this.titleFontSize,
     super.key,
   });
   final String? text;
@@ -17,6 +18,7 @@ class CustomButtonView extends StatelessWidget {
   final VoidCallback onPressed;
   final EdgeInsets padding;
   final Widget? header;
+  final double? titleFontSize;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -46,10 +48,10 @@ class CustomButtonView extends StatelessWidget {
                             Text(
                               text ?? '',
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 height: 0,
                                 color: RobotColors.primaryText,
-                                fontSize: 40,
+                                fontSize: titleFontSize ?? 40,
                                 fontWeight: FontWeight.w400,
                               ),
                             ),

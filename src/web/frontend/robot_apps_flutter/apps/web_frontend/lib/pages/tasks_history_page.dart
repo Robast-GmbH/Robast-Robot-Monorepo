@@ -18,7 +18,7 @@ class _TasksHistoryPageState extends State<TasksHistoryPage> {
   int pageIndex = 0;
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     fetchTasks = Provider.of<TaskProvider>(context, listen: false).fetchTasks(robotName: widget.robotName, limit: 10, offset: 0);
   }
@@ -27,7 +27,7 @@ class _TasksHistoryPageState extends State<TasksHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Vergangene Aufträge'),
+        title: const Text('Vergangene Aufträge'),
       ),
       body: FutureBuilder(
         future: fetchTasks,
@@ -42,15 +42,16 @@ class _TasksHistoryPageState extends State<TasksHistoryPage> {
                 children: [
                   const Text('Fehler beim Laden der Aufträge'),
                   ElevatedButton(
-                      onPressed: () {
-                        setState(
-                          () {
-                            fetchTasks =
-                                Provider.of<TaskProvider>(context, listen: false).fetchTasks(robotName: widget.robotName, limit: 10, offset: pageIndex * 10);
-                          },
-                        );
-                      },
-                      child: Text('Erneut versuchen'))
+                    onPressed: () {
+                      setState(
+                        () {
+                          fetchTasks =
+                              Provider.of<TaskProvider>(context, listen: false).fetchTasks(robotName: widget.robotName, limit: 10, offset: pageIndex * 10);
+                        },
+                      );
+                    },
+                    child: const Text('Erneut versuchen'),
+                  ),
                 ],
               ),
             );
@@ -64,34 +65,36 @@ class _TasksHistoryPageState extends State<TasksHistoryPage> {
                   return TaskTile(task: tasks[index]);
                 }
                 return Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (pageIndex > 0)
                         ElevatedButton(
-                            onPressed: () {
-                              setState(
-                                () {
-                                  pageIndex--;
-                                  fetchTasks = Provider.of<TaskProvider>(context, listen: false)
-                                      .fetchTasks(robotName: widget.robotName, limit: 10, offset: pageIndex * 10);
-                                },
-                              );
-                            },
-                            child: Text('Zurück')),
+                          onPressed: () {
+                            setState(
+                              () {
+                                pageIndex--;
+                                fetchTasks = Provider.of<TaskProvider>(context, listen: false)
+                                    .fetchTasks(robotName: widget.robotName, limit: 10, offset: pageIndex * 10);
+                              },
+                            );
+                          },
+                          child: const Text('Zurück'),
+                        ),
                       if (tasks.length == 10)
                         ElevatedButton(
-                            onPressed: () {
-                              setState(
-                                () {
-                                  pageIndex++;
-                                  fetchTasks = Provider.of<TaskProvider>(context, listen: false)
-                                      .fetchTasks(robotName: widget.robotName, limit: 10, offset: pageIndex * 10);
-                                },
-                              );
-                            },
-                            child: Text('Weiter'))
+                          onPressed: () {
+                            setState(
+                              () {
+                                pageIndex++;
+                                fetchTasks = Provider.of<TaskProvider>(context, listen: false)
+                                    .fetchTasks(robotName: widget.robotName, limit: 10, offset: pageIndex * 10);
+                              },
+                            );
+                          },
+                          child: const Text('Weiter'),
+                        ),
                     ],
                   ),
                 );

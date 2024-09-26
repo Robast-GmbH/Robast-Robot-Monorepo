@@ -30,16 +30,19 @@ class ChangePasswordPage extends StatelessWidget {
               oldPassword: oldPasswordController.text,
               newPassword: newPasswordController.text,
             );
+            if (!context.mounted) return;
             if (wasSuccessful) {
               if (forceChange) {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+                await Navigator.pushReplacement(context, MaterialPageRoute<HomePage>(builder: (context) => const HomePage()));
               } else {
                 Navigator.pop(context);
               }
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Passwort konnte nicht geändert werden'),
-              ));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Passwort konnte nicht geändert werden'),
+                ),
+              );
             }
           }
         },
@@ -56,21 +59,21 @@ class ChangePasswordPage extends StatelessWidget {
                   'Um Ihre Sicherheit zu gewährleisten, müssen Sie Ihr Initialpasswort ändern, bevor Sie die App nutzen können. Dieser Schritt stellt sicher, dass Ihr Konto geschützt ist und nur Sie darauf zugreifen können.',
                   style: TextStyle(color: WebColors.secondaryText, fontSize: 18),
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
               ],
               CustomTextField(
                 label: 'Altes Passwort',
                 controller: oldPasswordController,
                 obsucureText: true,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               CustomTextField(
                 label: 'Neues Passwort',
                 controller: newPasswordController,
                 validator: Validators.passwordValidator,
                 obsucureText: true,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               CustomTextField(
                 label: 'Neues Passwort wiederholen',
                 controller: repeatNewPasswordController,
@@ -82,10 +85,10 @@ class ChangePasswordPage extends StatelessWidget {
                 },
                 obsucureText: true,
               ),
-              SizedBox(height: 16),
-              Card(
+              const SizedBox(height: 16),
+              const Card(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   child: Row(
                     children: [
                       Icon(
@@ -104,7 +107,7 @@ class ChangePasswordPage extends StatelessWidget {
                     ],
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

@@ -38,7 +38,6 @@ class MapProvider extends ChangeNotifier {
   }
 
   Future<Uint8List?> getMapImage() async {
-    mapImageCache ??= await _middlewareApi.getMapImage();
-    return mapImageCache;
+    return mapImageCache ??= await _middlewareApi.getMapImage();
   }
 }

@@ -25,7 +25,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Row(
+          title: const Row(
         children: [
           Icon(Icons.group),
           SizedBox(
@@ -33,7 +33,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
           ),
           Text('Nutzermanagement'),
         ],
-      )),
+      ),),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final didCreateUser = await Navigator.push(
@@ -48,7 +48,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
             });
           }
         },
-        child: Icon(Icons.person_add),
+        child: const Icon(Icons.person_add),
       ),
       body: Center(
         child: FutureBuilder<List<User>>(
@@ -68,10 +68,10 @@ class _UserManagementPageState extends State<UserManagementPage> {
                           onUpdate: () => setState(() {
                             loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
                           }),
-                        ))
+                        ),)
                     .toList(),
               );
-            }),
+            },),
       ),
     );
   }

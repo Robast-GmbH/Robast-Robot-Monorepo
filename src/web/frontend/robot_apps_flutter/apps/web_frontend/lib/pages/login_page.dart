@@ -14,8 +14,8 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isLoading = false;
-    bool showLoginFailed = false;
+    var isLoading = false;
+    var showLoginFailed = false;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -31,81 +31,86 @@ class LoginPage extends StatelessWidget {
                     'assets/robast_logo.png',
                     height: 64,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 16,
                   ),
-                  Text(
+                  const Text(
                     'Robast',
                     style: TextStyle(fontSize: 48, color: Colors.white),
-                  )
+                  ),
                 ],
               ),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
               CustomTextField(
                 controller: mailController,
                 label: 'E-Mail',
                 validator: Validators.mailValidator,
-                prefixIcon: Icon(Icons.mail_outline),
+                prefixIcon: const Icon(Icons.mail_outline),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               CustomTextField(
-                  controller: passwordController,
-                  label: 'Passwort',
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Bitte geben Sie ihr Passwort ein';
-                    }
-                    return null;
-                  },
-                  prefixIcon: Icon(Icons.lock_outline),
-                  obsucureText: true),
-              SizedBox(height: 16),
-              StatefulBuilder(builder: (context, setState) {
-                return ElevatedButton.icon(
-                  onPressed: () async {
-                    if (formKey.currentState!.validate()) {
-                      isLoading = true;
-                      setState(() {});
-                      final wasSuccessful = await Provider.of<UserProvider>(context, listen: false).login(
-                        mail: mailController.text,
-                        password: passwordController.text,
-                      );
-                      isLoading = false;
-                      setState(() {});
-                      if (wasSuccessful) {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                            builder: (context) => Validators.passwordValidator(passwordController.text) == null
-                                ? const HomePage()
-                                : ChangePasswordPage(
-                                    forceChange: true,
-                                    initialInput: passwordController.text,
-                                  ),
-                          ),
-                        );
-                      } else {
-                        showLoginFailed = !wasSuccessful;
+                controller: passwordController,
+                label: 'Passwort',
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Bitte geben Sie ihr Passwort ein';
+                  }
+                  return null;
+                },
+                prefixIcon: const Icon(Icons.lock_outline),
+                obsucureText: true,
+              ),
+              const SizedBox(height: 16),
+              StatefulBuilder(
+                builder: (context, setState) {
+                  return ElevatedButton.icon(
+                    onPressed: () async {
+                      if (formKey.currentState!.validate()) {
+                        isLoading = true;
                         setState(() {});
-                        Future.delayed(Duration(seconds: 1), () {
-                          showLoginFailed = false;
+                        final wasSuccessful = await Provider.of<UserProvider>(context, listen: false).login(
+                          mail: mailController.text,
+                          password: passwordController.text,
+                        );
+                        isLoading = false;
+                        setState(() {});
+                        if (wasSuccessful && context.mounted) {
+                          await Navigator.of(context).pushReplacement(
+                            Validators.passwordValidator(passwordController.text) == null
+                                ? MaterialPageRoute<HomePage>(
+                                    builder: (context) => const HomePage(),
+                                  )
+                                : MaterialPageRoute<ChangePasswordPage>(
+                                    builder: (context) => ChangePasswordPage(
+                                      forceChange: true,
+                                      initialInput: passwordController.text,
+                                    ),
+                                  ),
+                          );
+                        } else {
+                          showLoginFailed = !wasSuccessful;
                           setState(() {});
-                        });
+                          Future.delayed(const Duration(seconds: 1), () {
+                            showLoginFailed = false;
+                            setState(() {});
+                          });
+                        }
                       }
-                    }
-                  },
-                  label: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Text(
-                      'Anmelden',
+                    },
+                    label: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Text(
+                        'Anmelden',
+                      ),
                     ),
-                  ),
-                  icon: isLoading
-                      ? SizedBox.square(dimension: 24, child: CircularProgressIndicator())
-                      : showLoginFailed
-                          ? Icon(Icons.clear)
-                          : Icon(Icons.login),
-                );
-              })
+                    icon: isLoading
+                        ? const SizedBox.square(dimension: 24, child: CircularProgressIndicator())
+                        : showLoginFailed
+                            ? const Icon(Icons.clear)
+                            : const Icon(Icons.login),
+                  );
+                },
+              ),
             ],
           ),
         ),

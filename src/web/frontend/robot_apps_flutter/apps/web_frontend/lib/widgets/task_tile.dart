@@ -13,13 +13,13 @@ class TaskTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8),
       child: RoundedContainer(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -44,14 +44,14 @@ class TaskTile extends StatelessWidget {
                   Text(
                     TimeStampFormatter.format(unixTimeStamp: task.earliestStartTime),
                     style: const TextStyle(fontSize: 24, color: WebColors.primaryText),
-                  )
+                  ),
                 ],
               ),
             ),
             Column(
               children: task.subtasks.map((subtask) {
                 return Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8),
                   child: ExpandableSubtaskTile(subtask: subtask),
                 );
               }).toList(),
