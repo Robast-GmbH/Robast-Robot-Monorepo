@@ -8,8 +8,7 @@ closing external signal -> close_submodule call,
 closed periodic timer polling module is closed,
 idle external signal -> finish module process
 
-stall_guard_triggered_on_opening -> when stall guard is triggered while opening
-stall_guard_triggered_on_closing -> when stall guard is triggered while closing
+stall_guard_triggered-> when stall guard has been triggered
 opening_timed_out -> when manual drawer is not opened in time
 """
 
@@ -90,7 +89,7 @@ class ModuleProcessManager:
         if (
             submodule.module_process_status != "waiting_for_opening"
             and submodule.module_process_status != "opening_timed_out"
-            and submodule.module_process_status != "stall_guard_triggered_on_opening"
+            and submodule.module_process_status != "stall_guard_triggered"
             and submodule.module_process_status != "closed"
         ):
             return False
@@ -112,9 +111,7 @@ class ModuleProcessManager:
         elif submodule_status.opening_timed_out:
             self.__update_module_process_status(address, "opening_timed_out")
         elif submodule_status.is_stall_guard_triggered:
-            self.__update_module_process_status(
-                address, "stall_guard_triggered_on_opening"
-            )
+            self.__update_module_process_status(address, "stall_guard_triggered")
         else:
             timer_cb = partial(self.wait_submodule_open, address)
             Timer(0.5, timer_cb).start()
@@ -125,8 +122,7 @@ class ModuleProcessManager:
             return False
         if (
             submodule.module_process_status != "open"
-            and submodule.module_process_status != "stall_guard_triggered_on_closing"
-            and submodule.module_process_status != "stall_guard_triggered_on_opening"
+            and submodule.module_process_status != "stall_guard_triggered"
         ):
             return False
         requests.post(
@@ -143,13 +139,15 @@ class ModuleProcessManager:
             return
         if not submodule_status.is_open:
             self.__update_module_process_status(address, "closed")
+            return
         elif submodule_status.is_stall_guard_triggered:
-            self.__update_module_process_status(
-                address, "stall_guard_triggered_on_closing"
-            )
+            self.__update_module_process_status(address, "stall_guard_triggered")
         else:
-            timer_cb = partial(self.wait_submodule_closed, address)
-            Timer(0.5, timer_cb).start()
+            submodule = self.repository.read_submodule(address)
+            if submodule and submodule.module_process_status == "stall_guard_triggered":
+                self.__update_module_process_status(address, "closing")
+        timer_cb = partial(self.wait_submodule_closed, address)
+        Timer(0.5, timer_cb).start()
 
     def finish_submodule_process(self, address: SubmoduleAddress) -> bool:
         submodule = self.repository.read_submodule(address)
