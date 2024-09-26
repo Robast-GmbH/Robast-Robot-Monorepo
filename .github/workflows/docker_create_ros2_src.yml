@@ -6,7 +6,7 @@ on:
     branches:
         - main
     paths:
-        - src/ros2/
+        - src/ros2/**
   workflow_dispatch:
 
 jobs:
@@ -18,12 +18,12 @@ jobs:
 
     steps:
     - name: Checkout repository and submodules
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 2
     
     - name: Login to GitHub Container Registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
@@ -33,12 +33,12 @@ jobs:
       uses: docker/setup-buildx-action@v1 
     
     - name: Build ${{ env.Project-Name }} dev docker
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v6
       with:
-        context: bringups/debugging_docker/
+        context: src/
         platforms: linux/amd64,linux/arm64/v8
         push: true
-        file: bringups/debugging_docker/Dockerfile
+        file: src/Dockerfile
         tags: |
               ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:${{ env.Ros-Distro }}
         cache-from: type=gha

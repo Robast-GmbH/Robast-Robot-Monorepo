@@ -30,7 +30,7 @@ jobs:
     - name: Build ${{ env.Project-Name }} release docker
       uses: docker/build-push-action@v4
       with:
-        context: src/ros2/${{ env.Project-Name }}/
+        context: src/${{ env.Project-Name }}/
         platforms: linux/amd64
         push: true
         file: src/${{ env.Project-Name }}/Dockerfile
