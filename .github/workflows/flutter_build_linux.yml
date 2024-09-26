@@ -6,20 +6,19 @@ on:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: Arm64-Flutter
 
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
     - name: Install Flutter
-      uses: subosito/flutter-action@v2
-      id: flutter-action
-      with:
-         architecture: x64
     - run: |
-        git config --global --add safe.directory /opt/hostedtoolcache/flutter/${{ steps.flutter-action.outputs.CHANNEL }}-${{ steps.flutter-action.outputs.VERSION }}-${{ steps.flutter-action.outputs.ARCHITECTURE }}
-        flutter --version
-
+        git clone https://github.com/flutter/flutter.git $HOME/development/flutter
+        cd $HOME/development/flutter
+        git checkout stable
+        mkdir -p $HOME/development/flutter/bin/cache
+        export PATH=$PATH:$HOME/development/flutter/bin
+        
     - name: Install dependencies
       run: |
         sudo apt-get update
