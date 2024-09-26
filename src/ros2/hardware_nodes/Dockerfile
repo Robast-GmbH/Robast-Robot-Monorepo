@@ -40,7 +40,6 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 ############################## Build ##################################
 FROM ghcr.io/robast-gmbh/monorepo/building-docker:${ROS_BUILD_DISTRO} as build
 ARG ROS_BUILD_DISTRO
-COPY --from=devel / /
 COPY . /ws/src/hardware_nodes
 RUN apt-get update && apt-get install -y git
 
