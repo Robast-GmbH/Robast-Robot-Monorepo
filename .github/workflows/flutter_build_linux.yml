@@ -6,7 +6,7 @@ on:
 
 jobs:
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04-arm64
 
     steps:
     - name: Checkout Repository
@@ -41,7 +41,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: linux-build
-        path: src/web/frontend/robot_apps_flutter/apps/robot_frontend/build/linux/x64/release/bundle
+        path: src/web/frontend/robot_apps_flutter/apps/robot_frontend/build/linux/arm64/release/bundle
 
 
 
