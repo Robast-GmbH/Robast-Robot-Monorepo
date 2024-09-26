@@ -1,7 +1,13 @@
 name: Flutter Linux Build
 
 # Manual dispatch event
+
 on:
+  push:
+    branches:
+        - main
+    paths:
+        - src/web/frontend/robot_apps_flutter/**
   workflow_dispatch:
 
 jobs:
