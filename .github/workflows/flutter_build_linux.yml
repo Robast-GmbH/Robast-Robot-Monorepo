@@ -41,7 +41,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: linux-build
-        path: src/web/frontend/robot_apps_flutter/apps/robot_frontend/build/linux/release
+        path: src/web/frontend/robot_apps_flutter/apps/robot_frontend/build/linux/x64/release/bundle
 
 
 
