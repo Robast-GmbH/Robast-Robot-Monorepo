@@ -15,9 +15,9 @@ jobs:
       uses: subosito/flutter-action@v2
       id: flutter-action
       with:
-         architecture: Arm64
+         architecture: arm64
     - run: |
-        git config --global --add safe.directory /opt/hostedtoolcache/flutter/${{ steps.flutter-action.outputs.CHANNEL }}-${{ steps.flutter-action.outputs.VERSION }}-${{ steps.flutter-action.outputs.ARCHITECTURE }}
+        git config --global --add safe.directory /opt/hostedtoolcache/flutter/${{ steps.flutter-action.outputs.CHANNEL }}-${{ steps.flutter-action.outputs.VERSION }}
         flutter --version
 
     - name: Install dependencies
