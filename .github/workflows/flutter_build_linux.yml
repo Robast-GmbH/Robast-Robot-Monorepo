@@ -30,11 +30,15 @@ jobs:
 
     - name: Install Flutter dependencies
       working-directory: src/web/frontend/robot_apps_flutter/apps/robot_frontend
-      run: flutter pub get
+      run: |
+        export PATH=$PATH:$HOME/development/flutter/bin
+        flutter pub get
 
     - name: Build Flutter Linux App
       working-directory: src/web/frontend/robot_apps_flutter/apps/robot_frontend
-      run: flutter build linux --release --target-platform linux-arm64
+      run: |
+        export PATH=$PATH:$HOME/development/flutter/bin
+        flutter build linux --release --target-platform linux-arm64
 
     - name: Upload Linux Build Artifacts
       uses: actions/upload-artifact@v3
