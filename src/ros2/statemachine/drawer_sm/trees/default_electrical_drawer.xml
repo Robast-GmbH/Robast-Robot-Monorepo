@@ -27,13 +27,20 @@
           <PublishStateFeedback state_feedback="stall_guard_triggered"
                                 state_feedback_topic="/module_state_update"
                                 drawer_address="{drawer}"/>
-          <DrawerChangeStateReq drawer_address_topic="/close_drawer"
-                                drawer_address="{drawer}"/>
-          <MoveElectricDrawer drawer_address="{drawer}"
-                              move_electric_drawer_topic="/electrical_drawer_task"
-                              speed="200"
-                              stall_guard_value="0"
-                              target_position="0"/>
+          <ReactiveIfThenElse>
+            <BoolTopicCondition target_value="true"
+                                topic="/push_to_close_triggered"/>
+            <AlwaysSuccess/>
+            <Sequence>
+              <DrawerChangeStateReq drawer_address_topic="/close_drawer"
+                                    drawer_address="{drawer}"/>
+              <MoveElectricDrawer drawer_address="{drawer}"
+                                  move_electric_drawer_topic="/electrical_drawer_task"
+                                  speed="200"
+                                  stall_guard_value="0"
+                                  target_position="0"/>
+            </Sequence>
+          </ReactiveIfThenElse>
           <PublishStateFeedback state_feedback="closing"
                                 state_feedback_topic="/module_state_update"
                                 drawer_address="{drawer}"/>
