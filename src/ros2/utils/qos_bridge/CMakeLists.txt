@@ -14,7 +14,7 @@ find_package(rclcpp REQUIRED)
 find_package(communication_interfaces REQUIRED)
 include_directories(include)
 add_executable(error_qos_bridge src/error_qos_bridge.cpp)
-ament_target_dependencies(error_qos_bridge rclcpp std_msgs communication_interfaces)
+ament_target_dependencies(error_qos_bridge rclcpp communication_interfaces)
 
 install(TARGETS
   error_qos_bridge
