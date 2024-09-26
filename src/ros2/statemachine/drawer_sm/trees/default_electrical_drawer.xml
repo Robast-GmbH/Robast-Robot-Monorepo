@@ -17,9 +17,9 @@
   </BehaviorTree>
 
   <BehaviorTree ID="LED_Closing">
-    <KeepRunningUntilFailure>
-      <Parallel failure_count="1"
-                success_count="-1">
+    <Parallel failure_count="1"
+              success_count="1">
+      <KeepRunningUntilFailure>
         <Sequence>
           <ElectricDrawerStatusCondition target_value="0"
                                          topic="/electrical_drawer_status"
@@ -34,7 +34,12 @@
                               speed="200"
                               stall_guard_value="0"
                               target_position="0"/>
+          <PublishStateFeedback state_feedback="closing"
+                                state_feedback_topic="/module_state_update"
+                                drawer_address="{drawer}"/>
         </Sequence>
+      </KeepRunningUntilFailure>
+      <KeepRunningUntilFailure>
         <Sequence>
           <InitLEDVector size="21"
                          led_vector="{leds}"/>
@@ -66,8 +71,8 @@
           </Delay>
           <Sleep msec="500"/>
         </Sequence>
-      </Parallel>
-    </KeepRunningUntilFailure>
+      </KeepRunningUntilFailure>
+    </Parallel>
   </BehaviorTree>
 
   <BehaviorTree ID="LED_Default">
