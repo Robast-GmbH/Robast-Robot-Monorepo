@@ -16,24 +16,19 @@ RUN echo "source install/setup.bash" >> /home/$USER/.bashrc
 
 RUN apt-get update && apt-get install -y \
   build-essential \
+  git \
+  libboost-all-dev \
+  libpqxx-dev \
   python3-colcon-common-extensions \
   python3-pip \
   python3-rosdep \
-  libboost-all-dev \
   ros-humble-ament-cmake-test \
   ros-${ROS_BUILD_DISTRO}-rmw-cyclonedds-cpp \
   ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
   ros-humble-ros-testing \
   ros-humble-launch-testing \
-  libpqxx-dev \
-  git \
   && rm -rf /var/cache/apk/* \
   && rosdep init || echo "rosdep already initialized"
-
-
-#TODO: @unknown should web stff be realy part of this project?
-RUN pip3 install fastapi -U \ 
-  httpx 
 
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration
