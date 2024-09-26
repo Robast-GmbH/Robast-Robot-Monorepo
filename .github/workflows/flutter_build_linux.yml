@@ -1,0 +1,35 @@
+name: Flutter Linux Build
+
+# Manual dispatch event
+on:
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Checkout the repository
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    # Set up Flutter environment
+    - name: Install Flutter SDK
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: 'stable'
+
+    # Ensure Flutter dependencies are installed
+    - name: Install Dependencies
+      run: flutter pub get
+
+    # Build the Flutter project for Linux
+    - name: Build Flutter Linux App
+      run: flutter build linux --release
+
+    # Upload the built artifacts (optional, for downloading the build result)
+    # - name: Upload Linux Build
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: linux-build
+    #     path: build/linux/release
