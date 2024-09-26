@@ -48,8 +48,8 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /robotnik
 RUN git clone -b ros2-devel https://github.com/RobotnikAutomation/robotnik_msgs.git && \
-  . /opt/ros/${ROS_DISTRO}/setup.sh && \
-  colcon build --packages-select robotnik_msgs --install-base /robast/${ROS_DISTRO}/ --cmake-args -DCMAKE_BUILD_TYPE=Release
+  . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
+  colcon build --packages-select robotnik_msgs --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 #TODO @TAlscher: this is just temporary to get this docker do be deployable
 WORKDIR /release
@@ -60,15 +60,15 @@ COPY --from=build /monorepo/src/robot_backend /release/src/robot_backend
 RUN pip install -r src/robot_backend/requirements.txt && \
   rosdep update && \
   rosdep install --from-paths /release/src --ignore-src -r -y && \
-  . /opt/ros/${ROS_DISTRO}/setup.sh && \
+  . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
   colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 WORKDIR /workspace
 USER robast
 
 RUN echo "source /usr/share/bash-completion/completions/git" >> /home/${USER}/.bashrc \
-  && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/${USER}/.bashrc \
+  && echo "if [ -f /opt/ros/${ROS_BUILD_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_BUILD_DISTRO}/setup.bash; fi" >> /home/${USER}/.bashrc \
   && echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/${USER}/.bashrc \
-  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> /home/${USER}/.bashrc 
+  && echo "if [ -f /robast/${ROS_BUILD_DISTRO}/setup.bash ]; then source /robast/${ROS_BUILD_DISTRO}/setup.bash; fi" >> /home/${USER}/.bashrc 
 
 ENV CYCLONEDDS_URI=/dds_configs/cyclone_DDS_config.xml
