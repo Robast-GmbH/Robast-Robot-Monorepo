@@ -1,7 +1,11 @@
 #!/bin/bash
 
-# Variables
-GITHUB_TOKEN="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"
+./token.sh
+IS_TOKEN_VALID=$?
+if [ $IS_TOKEN_VALID -ne 0 ]; then
+    exit $IS_TOKEN_VALID
+fi
+
 REPO_OWNER="Robast-GmbH"
 REPO_NAME="Monorepo"
 WORKFLOW_NAME="flutter_build_linux.yml"
