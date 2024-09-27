@@ -304,10 +304,10 @@ namespace drawer
       e_drawer_task.target_speed,
       e_drawer_task.stall_guard_value);
 
-    // Check for redundant tasks
-    if (e_drawer_task.target_position == _target_position_uint8)
+    // Discard redundant tasks if the drawer is already moving or at the target position
+    if (e_drawer_task.target_position == _target_position_uint8 &&
+        (!_is_idling || _encoder->get_normed_current_position() == _target_position_uint8))
     {
-      // TODO@Jacob: Add error feedback message?
       Serial.printf("[ElectricalDrawer]: Warning! Received redundant task with target position %d! Discarding it!\n",
                     _target_position_uint8);
       return;
