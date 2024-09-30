@@ -4,6 +4,8 @@
 #ifdef GDK_WINDOWING_X11
 #include <gdk/gdkx.h>
 #endif
+#define START_FULLSCREEN 1
+
 
 #include "flutter/generated_plugin_registrant.h"
 
@@ -49,6 +51,9 @@ static void my_application_activate(GApplication* application) {
 
   gtk_window_set_default_size(window, 1280, 720);
   gtk_widget_show(GTK_WIDGET(window));
+  if (START_FULLSCREEN){
+    gtk_window_fullscreen(GTK_WINDOW(window));
+  }
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(project, self->dart_entrypoint_arguments);
