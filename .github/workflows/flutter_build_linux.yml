@@ -59,8 +59,7 @@ jobs:
     - name: Build robot_frontend docker
       uses: docker/build-push-action@v6
       with:
-            context: src/web/frontend/
-            target: devel
+            context: src/web/frontend/robot_apps_flutter/apps/robot_frontend/
             platforms: linux/arm64
             push: true
             file: src/web/frontend/robot_apps_flutter/apps/robot_frontend/Dockerfile
