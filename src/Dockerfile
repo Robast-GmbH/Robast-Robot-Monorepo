@@ -31,6 +31,3 @@ python3-pip \
 python3-rosdep \
 && rm -rf /var/lib/apt/lists/* \
 && rosdep init || echo "rosdep already initialized"
-
-RUN apt-get update && rosdep update && \
-rosdep install --from-paths /monorepo/src/ros2 --ignore-src -r -y
