@@ -1,7 +1,5 @@
 name: Flutter Linux Build
 
-# Manual dispatch event
-
 on:
   push:
     branches:
@@ -9,7 +7,9 @@ on:
     paths:
         - src/web/frontend/robot_apps_flutter/**
   workflow_dispatch:
-
+env:
+  PROJECT_NAME: robot_frontend
+  ROBOT_FRONTEND_PATH: src/web/frontend/robot_apps_flutter/apps/robot_frontend
 jobs:
   build-linux:
     runs-on: Arm64-Flutter
@@ -35,13 +35,13 @@ jobs:
           libmpv-dev mpv
 
     - name: Install Flutter dependencies
-      working-directory: src/web/frontend/robot_apps_flutter/apps/robot_frontend
+      working-directory: $ROBOT_FRONTEND_PATH
       run: |
         export PATH=$PATH:$HOME/development/flutter/bin
         flutter pub get
 
     - name: Build Flutter Linux App
-      working-directory: src/web/frontend/robot_apps_flutter/apps/robot_frontend
+      working-directory: $ROBOT_FRONTEND_PATH
       run: |
         export PATH=$PATH:$HOME/development/flutter/bin
         flutter build linux --release --target-platform linux-arm64
@@ -56,15 +56,14 @@ jobs:
     - name: configures Docker Buildx to create a builder instance for running the image build.
       uses: docker/setup-buildx-action@v3
 
-    - name: Build robot_frontend docker
+    - name: Build docker
       uses: docker/build-push-action@v6
       with:
-            context: src/web/frontend/robot_apps_flutter/apps/robot_frontend/
+            context: $ROBOT_FRONTEND_PATH/
             platforms: linux/arm64
             push: true
-            file: src/web/frontend/robot_apps_flutter/apps/robot_frontend/Dockerfile
-            build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
-            tags: ghcr.io/robast-gmbh/monorepo/robot_frontend:dev
+            file: $ROBOT_FRONTEND_PATH/Dockerfile
+            tags: ghcr.io/robast-gmbh/monorepo/$PROJECT_NAME:release
 
 
 
