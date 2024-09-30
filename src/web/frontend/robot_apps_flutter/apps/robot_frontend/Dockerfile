@@ -1,3 +1,5 @@
+ARG ARCHITECTURE=arm64
 FROM alpine:3.18
+ARG ARCHITECTURE
 
-COPY build/linux/arm64/release/bundle robot_frontend
+COPY build/linux/${ARCHITECTURE}/release/bundle robot_frontend
