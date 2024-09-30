@@ -49,6 +49,9 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
             module_config::ModuleSetting<module_config::drawer::USE_TMC_STALL_GUARD>::default_value);
     REQUIRE(e_drawer_config->get_use_motor_monitor_stall_guard() ==
             module_config::ModuleSetting<module_config::drawer::USE_MOTOR_MONITOR_STALL_GUARD>::default_value);
+    REQUIRE(e_drawer_config->get_encoder_threshold_for_drawer_not_opened_during_stall() ==
+            module_config::ModuleSetting<
+              module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL>::default_value);            
     REQUIRE(e_drawer_config->get_drawer_default_acceleration() ==
             module_config::ModuleSetting<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::default_value);
   }

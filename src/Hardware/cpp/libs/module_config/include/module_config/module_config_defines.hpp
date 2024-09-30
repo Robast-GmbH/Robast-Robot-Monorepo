@@ -32,7 +32,8 @@ namespace module_config
     constexpr uint8_t STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS = 11;
     constexpr uint8_t USE_TMC_STALL_GUARD = 12;
     constexpr uint8_t USE_MOTOR_MONITOR_STALL_GUARD = 13;
-    constexpr uint8_t DRAWER_DEFAULT_ACCELERATION = 14;
+    constexpr uint8_t ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL = 14;
+    constexpr uint8_t DRAWER_DEFAULT_ACCELERATION = 15;
   } // namespace drawer
 
   namespace encoder
@@ -156,6 +157,15 @@ namespace module_config
   {
     using type = bool;
     static constexpr type default_value = true;
+  };
+
+  
+
+  template <>
+  struct ModuleSetting<drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL>
+  {
+    using type = uint8_t;
+    static constexpr type default_value = 3;
   };
 
   template <>

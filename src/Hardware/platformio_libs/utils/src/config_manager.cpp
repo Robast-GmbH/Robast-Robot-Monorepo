@@ -93,6 +93,12 @@ namespace utils
             config_value));
         break;
 
+      case module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL:
+        _drawer_config->set_encoder_threshold_for_drawer_not_opened_during_stall(
+          static_cast<module_config::ModuleSetting<
+            module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL>::type>(config_value));
+        break;
+
       case module_config::drawer::DRAWER_DEFAULT_ACCELERATION:
         _drawer_config->set_drawer_default_acceleration(
           static_cast<module_config::ModuleSetting<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::type>(
@@ -265,6 +271,11 @@ namespace utils
     set_config(module_config::drawer::USE_MOTOR_MONITOR_STALL_GUARD,
                static_cast<uint32_t>(
                  module_config::ModuleSetting<module_config::drawer::USE_MOTOR_MONITOR_STALL_GUARD>::default_value));
+
+    set_config(module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL,
+               static_cast<uint32_t>(
+                 module_config::ModuleSetting<
+                   module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL>::default_value));
 
     set_config(module_config::drawer::DRAWER_DEFAULT_ACCELERATION,
                static_cast<uint32_t>(

@@ -67,6 +67,11 @@ namespace drawer
     _use_motor_monitor_stall_guard = use_motor_monitor_stall_guard;
   }
 
+  void ElectricalDrawerConfig::set_encoder_threshold_for_drawer_not_opened_during_stall(const uint8_t threshold)
+  {
+    _encoder_threshold_for_drawer_not_opened_during_stall = threshold;
+  }
+
   void ElectricalDrawerConfig::set_drawer_default_acceleration(const uint8_t acceleration)
   {
     _drawer_default_acceleration = acceleration;
@@ -135,6 +140,11 @@ namespace drawer
   bool ElectricalDrawerConfig::get_use_motor_monitor_stall_guard() const
   {
     return _use_motor_monitor_stall_guard;
+  }
+
+  uint8_t ElectricalDrawerConfig::get_encoder_threshold_for_drawer_not_opened_during_stall() const
+  {
+    return _encoder_threshold_for_drawer_not_opened_during_stall;
   }
 
   uint8_t ElectricalDrawerConfig::get_drawer_default_acceleration() const
