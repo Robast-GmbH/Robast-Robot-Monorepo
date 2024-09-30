@@ -218,6 +218,5 @@ venv
 
 COLCON_IGNORE
 
-# Frontend artifacts
-bringups/jetson/frontend/robot_frontend/
-bringups/jetson/frontend/version.txt
+# Frontend copy
+bringups/jetson/start_scripts/robot_frontend/
