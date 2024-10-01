@@ -256,6 +256,12 @@ namespace drawer_bridge
         error_msg.error_data = message_converter.messageToString(drawer_address);
         _error_msg_publisher->publish(error_msg);
         break;
+      case robast_can_msgs::can_data::error_code::MOTOR_DRIVER_STATE_CONTROL_NOT_SUPPORTED_BY_MODULE:
+        error_msg.error_code = ERROR_CODES_MOTOR_DRIVER_STATE_CONTROL_NOT_SUPPORTED_BY_MODULE;
+        error_msg.error_description = "The motor driver state control is not supported by the module.";
+        error_msg.error_data = message_converter.messageToString(drawer_address);
+        _error_msg_publisher->publish(error_msg);
+        break;
 
       default:
         break;

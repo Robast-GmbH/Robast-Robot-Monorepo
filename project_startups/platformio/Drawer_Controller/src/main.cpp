@@ -171,25 +171,26 @@ void process_can_msgs_task_loop(void* pvParameters)
         break;
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_TASK:
         {
-          utils::EDrawerTask e_drawer_task = can_message_converter->convert_to_e_drawer_task(received_message.value());
+          const utils::EDrawerTask e_drawer_task =
+            can_message_converter->convert_to_e_drawer_task(received_message.value());
           i_drawer->add_e_drawer_task_to_queue(e_drawer_task);
         }
         break;
         case robast_can_msgs::can_id::LED_HEADER:
         {
-          led::LedHeader led_header = can_message_converter->convert_to_led_header(received_message.value());
+          const led::LedHeader led_header = can_message_converter->convert_to_led_header(received_message.value());
           led_strip->initialize_led_state_change(led_header);
         }
         break;
         case robast_can_msgs::can_id::SINGLE_LED_STATE:
         {
-          led::LedState led_state = can_message_converter->convert_to_led_state(received_message.value());
+          const led::LedState led_state = can_message_converter->convert_to_led_state(received_message.value());
           led_strip->set_led_state(led_state);
         }
         break;
         case robast_can_msgs::can_id::MODULE_CONFIG:
         {
-          bool config_set_successfully =
+          const bool config_set_successfully =
             config_manager->set_config(received_message->get_can_signals()
                                          .at(robast_can_msgs::can_signal::id::module_config::CONFIG_ID)
                                          .get_data(),
@@ -200,6 +201,14 @@ void process_can_msgs_task_loop(void* pvParameters)
           {
             Serial.println("[Main]: Warning - Tried to set config for invalid config id!");
           }
+        }
+        case robast_can_msgs::can_id::ELECTRICAL_DRAWER_MOTOR_CONTROL:
+        {
+          const bool enable_motor =
+            received_message->get_can_signals()
+              .at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::ENABLE_MOTOR)
+              .get_data();
+          i_drawer->set_motor_driver_state(enable_motor);
         }
         default:
           debug_println("[Main]: Received unsupported CAN message.");

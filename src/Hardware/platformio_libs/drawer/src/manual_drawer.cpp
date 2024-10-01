@@ -15,6 +15,14 @@ namespace drawer
   {
   }
 
+  void ManualDrawer::set_motor_driver_state(const bool enabled) const
+  {
+    Serial.println(
+      "[ManualDrawer]: Warning! Manual drawer does not support motor driver state control. This should not occur.");
+    _can_utils->enqueue_error_feedback_msg(
+      _module_id, _id, robast_can_msgs::can_data::error_code::MOTOR_DRIVER_STATE_CONTROL_NOT_SUPPORTED_BY_MODULE);
+  }
+
   std::optional<robast_can_msgs::CanMessage> ManualDrawer::can_out()
   {
     return _can_utils->get_element_from_feedback_msg_queue();
@@ -42,7 +50,7 @@ namespace drawer
     if (_drawer_lock->is_drawer_auto_close_timeout_triggered())
     {
       _can_utils->enqueue_error_feedback_msg(
-          _module_id, _id, robast_can_msgs::can_data::error_code::TIMEOUT_DRAWER_NOT_OPENED);
+        _module_id, _id, robast_can_msgs::can_data::error_code::TIMEOUT_DRAWER_NOT_OPENED);
       _drawer_lock->set_drawer_auto_close_timeout_triggered(false);
     }
   }
@@ -56,9 +64,9 @@ namespace drawer
       // This makes sure the lock automatically closes as soon as the drawer is opened.
       _drawer_lock->set_expected_lock_state_current_step(lock::LockState::locked);
 
-      _triggered_closing_lock_after_opening = true; // makes sure the feedback msg is only sent once
+      _triggered_closing_lock_after_opening = true;   // makes sure the feedback msg is only sent once
       _can_utils->enqueue_drawer_feedback_msg(
-          _module_id, _id, _endstop_switch->is_switch_pressed(), _drawer_lock->is_lock_switch_pushed());
+        _module_id, _id, _endstop_switch->is_switch_pressed(), _drawer_lock->is_lock_switch_pushed());
     }
   }
 
@@ -69,9 +77,9 @@ namespace drawer
     if (_drawer_lock->is_drawer_opening_in_progress() && is_drawer_closed && _triggered_closing_lock_after_opening)
     {
       _drawer_lock->set_is_drawer_opening_in_progress(false);
-      _triggered_closing_lock_after_opening = false; // reset this flag for the next opening of the drawer
+      _triggered_closing_lock_after_opening = false;   // reset this flag for the next opening of the drawer
       _can_utils->enqueue_drawer_feedback_msg(
-          _module_id, _id, _endstop_switch->is_switch_pressed(), _drawer_lock->is_lock_switch_pushed());
+        _module_id, _id, _endstop_switch->is_switch_pressed(), _drawer_lock->is_lock_switch_pushed());
     }
   }
 
@@ -79,7 +87,7 @@ namespace drawer
   {
     Serial.println("[ManualDrawer]: Warnign! Manual drawer does not support e drawer tasks. This should not occur.");
     _can_utils->enqueue_error_feedback_msg(
-        _module_id, _id, robast_can_msgs::can_data::error_code::E_DRAWER_TASK_NOT_SUPPORTED_BY_MODULE);
+      _module_id, _id, robast_can_msgs::can_data::error_code::E_DRAWER_TASK_NOT_SUPPORTED_BY_MODULE);
   }
 
-} // namespace drawer
+}   // namespace drawer

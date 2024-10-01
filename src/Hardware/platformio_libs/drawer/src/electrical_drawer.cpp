@@ -39,6 +39,11 @@ namespace drawer
     _motor->init();
   }
 
+  void ElectricalDrawer::set_motor_driver_state(const bool enabled) const
+  {
+    enabled ? _motor->enable_driver() : _motor->disable_driver();
+  }
+
   void ElectricalDrawer::unlock()
   {
     if (_drawer_lock.has_value())
