@@ -6,6 +6,7 @@ import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/pages/auth_page.dart';
 import 'package:robot_frontend/pages/module_pages/module_process_page.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
+import 'package:robot_frontend/widgets/disinfection_module_empty_view.dart';
 
 import 'package:robot_frontend/widgets/driving_view.dart';
 import 'package:robot_frontend/widgets/status_bar.dart';
@@ -44,6 +45,18 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   @override
+  void initState() {
+    super.initState();
+    Provider.of<RobotProvider>(context, listen: false).startPeriodicRemainingDisinfectionsUpdate();
+  }
+
+  @override
+  void deactivate() {
+    Provider.of<RobotProvider>(context, listen: false).stopPeriodicRemainingDisinfectionsUpdate();
+    super.deactivate();
+  }
+
+  @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!isModuleUpdateActive) {
@@ -67,19 +80,28 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               ],
             ),
             Expanded(
-              child: DrivingView(
-                onPressed: () async {
-                  await Provider.of<RobotProvider>(context, listen: false).blockNavigation();
-                  if (context.mounted) {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute<AuthPage>(
-                        builder: (context) => const AuthPage(),
-                      ),
+              child: Selector<RobotProvider, int?>(
+                  selector: (context, provider) => provider.remainingDisinfections,
+                  builder: (context, remainingDisinfections, child) {
+                    if (remainingDisinfections == null) {
+                      return const Text("Disinfectionfluid level unknown");
+                    } else if (remainingDisinfections <= 0) {
+                      return const DisinfectionModuleEmptyView();
+                    }
+                    return DrivingView(
+                      onPressed: () async {
+                        await Provider.of<RobotProvider>(context, listen: false).blockNavigation();
+                        if (context.mounted) {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute<AuthPage>(
+                              builder: (context) => const AuthPage(),
+                            ),
+                          );
+                        }
+                      },
                     );
-                  }
-                },
-              ),
+                  }),
             ),
           ],
         ),

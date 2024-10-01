@@ -176,4 +176,43 @@ class RobotApiUtilities {
       return null;
     }
   }
+
+  Future<int?> getRemainingDisinfections() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(
+        Uri.parse('$prefix/disinfection_module_status'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        if (data['status'] == 'success') {
+          return data['remaining_disinfections'] as int;
+        }
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<bool> refillDisinfectionFluidContainer() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.post(
+        Uri.parse('$prefix/refill_disinfection_fluid_container'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
 }

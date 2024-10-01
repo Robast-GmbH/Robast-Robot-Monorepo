@@ -80,9 +80,9 @@ def read_disinfection_triggered(
     return response
 
 
-@app.get("/remaining_disinfections", tags=["Robot Status"])
+@app.get("/disinfection_module_status", tags=["Robot Status"])
 def read_remaining_disinfections(robot_url: str = Depends(get_robot_url)):
-    response = requests.get(f"{robot_url}/remaining_disinfections").json()
+    response = requests.get(f"{robot_url}/disinfection_module_status").json()
     return response
 
 
