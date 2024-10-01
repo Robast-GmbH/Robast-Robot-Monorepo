@@ -8,7 +8,7 @@ disinfection_triggered = threading.Event()
 
 
 class DisinfectionModuleBridge(BaseBridge):
-    FULL = 400
+    FULL = 650
     FILE_PATH = "log/remaining_disinfections.txt"
 
     def __init__(self, ros: Ros) -> None:
