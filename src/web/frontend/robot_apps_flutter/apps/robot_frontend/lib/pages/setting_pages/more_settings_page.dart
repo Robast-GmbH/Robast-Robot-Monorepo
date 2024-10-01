@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/pages/robot_status_page.dart';
 import 'package:robot_frontend/pages/setting_pages/cleaning_page.dart';
 import 'package:robot_frontend/pages/setting_pages/screen_settings_page.dart';
 import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
@@ -58,8 +59,15 @@ class MoreSettingsPage extends StatelessWidget {
                 children: [
                   Expanded(
                     child: CustomButtonView(
-                      text: 'Farbschema',
-                      onPressed: () {},
+                      text: 'Roboterzustand',
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const RobotStatusPage(),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(
