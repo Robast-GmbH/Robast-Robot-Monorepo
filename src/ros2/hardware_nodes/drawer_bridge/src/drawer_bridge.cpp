@@ -185,10 +185,10 @@ namespace drawer_bridge
 
   void DrawerBridge::publish_push_to_close_triggered(const bool is_push_to_close_triggered)
   {
-    std_msgs::msg::Bool push_to_close_triggered_msg;
-    push_to_close_triggered_msg.data = is_push_to_close_triggered;
+    std_msgs::msg::Bool msg;
+    msg.data = is_push_to_close_triggered;
 
-    _push_to_close_triggered->publish(push_to_close_triggered_msg);
+    _push_to_close_triggered->publish(msg);
   }
 
   void DrawerBridge::publish_e_drawer_status(const DrawerAddress drawer_address,
