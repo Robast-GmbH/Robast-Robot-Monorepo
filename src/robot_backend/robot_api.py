@@ -164,3 +164,11 @@ def get_disinfection_triggered(timeout: int):
     return ros_bridge.disinfection_module_bridge.wait_for_disinfection_triggered(
         timeout
     )
+
+@app.get('/remaining_disinfections', tags=["Disinfection"])
+def get_remaining_disinfections():
+    return ros_bridge.disinfection_module_bridge.get_remaining_disinfections()
+
+@app.post("/set_remaining_disinfections", tags=["Disinfection"])
+def set_remaining_disinfections(remaining_disinfections: int):
+    return ros_bridge.disinfection_module_bridge.set_remaining_disinfections(remaining_disinfections)
