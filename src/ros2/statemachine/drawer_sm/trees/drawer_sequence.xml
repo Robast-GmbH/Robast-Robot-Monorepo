@@ -42,6 +42,9 @@
             <PublishDrawerStatus topic_name="/bt_drawer_open"
                                  status="false"
                                  drawer_address="{drawer}"/>
+            <PublishStateFeedback state_feedback="closed"
+                                  state_feedback_topic="/module_state_update"
+                                  drawer_address="{drawer}"/>
           </Sequence>
         </BaseErrorDecorator>
         <Sequence>
@@ -53,6 +56,9 @@
                               fading_time_ms="100"
                               led_topic="/led_cmd"
                               leds="{leds}"/>
+          <PublishStateFeedback state_feedback="closed"
+                                state_feedback_topic="/module_state_update"
+                                drawer_address="{drawer}"/>
         </Sequence>
       </Fallback>
     </ResetDecorator>
@@ -104,6 +110,9 @@
                           red="128"
                           upper_bound="100.0"
                           LEDs_colored="{leds}"/>
+      <PublishStateFeedback state_feedback="open"
+                            state_feedback_topic="/module_state_update"
+                            drawer_address="{drawer}"/>
     </Sequence>
   </BehaviorTree>
 
@@ -142,6 +151,9 @@
                           red="0"
                           upper_bound="100.0"
                           LEDs_colored="{leds}"/>
+      <PublishStateFeedback state_feedback="opening"
+                            state_feedback_topic="/module_state_update"
+                            drawer_address="{drawer}"/>
     </Sequence>
   </BehaviorTree>
 
@@ -220,6 +232,15 @@
                   default="/bt_drawer_open"/>
       <input_port name="status"
                   default="false"/>
+      <input_port name="drawer_address"
+                  default="{drawer}"/>
+    </Action>
+    <Action ID="PublishStateFeedback"
+            editable="true">
+      <input_port name="state_feedback"
+                  default="Idle"/>
+      <input_port name="state_feedback_topic"
+                  default="/state_feedback"/>
       <input_port name="drawer_address"
                   default="{drawer}"/>
     </Action>

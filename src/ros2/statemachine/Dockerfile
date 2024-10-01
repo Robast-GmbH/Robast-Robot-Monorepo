@@ -29,7 +29,7 @@ RUN apt-get update && apt-get upgrade -y &&\
 WORKDIR /robotnik
 RUN git clone -b ros2-devel https://github.com/RobotnikAutomation/robotnik_msgs.git && \
 . /opt/ros/${ROS_DISTRO}/setup.sh && \
-colcon build --packages-select robotnik_msgs --install-base /robast/${ROS_DISTRO}/ --cmake-args -DCMAKE_BUILD_TYPE=Release
+colcon build --packages-select robotnik_msgs --install-base /robast/${ROS_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 WORKDIR /workspace
 
@@ -49,7 +49,6 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 ############################## Build ##################################
 FROM ghcr.io/robast-gmbh/monorepo/building-docker:${ROS_BUILD_DISTRO} as build
 ARG ROS_BUILD_DISTRO
-COPY --from=devel / /
 COPY . /ws/src/statemachine
 
 WORKDIR /tmp
@@ -66,14 +65,14 @@ RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
   . /robast/${ROS_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_DISTRO}/
+  colcon build --install-base /robast/${ROS_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 WORKDIR /robotnik
 
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_DISTRO}/
+  colcon build --install-base /robast/${ROS_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 
 ############################## Release ##################################
