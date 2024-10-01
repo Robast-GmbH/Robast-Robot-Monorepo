@@ -22,6 +22,7 @@ namespace robast_can_msgs
     constexpr uint16_t SINGLE_LED_STATE = 0x007;
     constexpr uint16_t TRAY_LED_BRIGHTNESS = 0x008;
     constexpr uint16_t MODULE_CONFIG = 0x009;
+    constexpr uint16_t ELECTRICAL_DRAWER_MOTOR_CONTROL = 0x00A;
   }   // namespace can_id
 
   namespace can_dlc
@@ -35,6 +36,7 @@ namespace robast_can_msgs
     constexpr uint8_t SINGLE_LED_STATE = 7;
     constexpr uint8_t TRAY_LED_BRIGHTNESS = 6;
     constexpr uint8_t MODULE_CONFIG = 8;
+    constexpr uint8_t ELECTRICAL_DRAWER_MOTOR_CONTROL = 4;
   }   // namespace can_dlc
 
   /*********************************************************************************************************
@@ -52,6 +54,7 @@ namespace robast_can_msgs
     constexpr uint8_t SINGLE_LED_STATE = 6;
     constexpr uint8_t TRAY_LED_BRIGHTNESS = 7;
     constexpr uint8_t MODULE_CONFIG = 8;
+    constexpr uint8_t ELECTRICAL_DRAWER_MOTOR_CONTROL = 9;
   }   // namespace can_msg
 
   namespace can_signal
@@ -132,6 +135,13 @@ namespace robast_can_msgs
         constexpr uint8_t CONFIG_VALUE = 2;
       }   // namespace module_config
 
+      namespace electrical_drawer_motor_control
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t MOTOR_ID = 1;
+        constexpr uint8_t ENABLE_MOTOR = 2;
+      }   // namespace electrical_drawer_motor_control
+
     }   // namespace id
 
     namespace bit_start
@@ -208,6 +218,13 @@ namespace robast_can_msgs
         constexpr uint8_t CONFIG_ID = 24;
         constexpr uint8_t CONFIG_VALUE = 32;
       }   // namespace module_config
+
+      namespace electrical_drawer_motor_control
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t MOTOR_ID = 24;
+        constexpr uint8_t ENABLE_MOTOR = 26;
+      }   // namespace electrical_drawer_motor_control
     }   // namespace bit_start
 
     namespace bit_length
@@ -285,6 +302,13 @@ namespace robast_can_msgs
         constexpr uint8_t CONFIG_VALUE = 32;
       }   // namespace module_config
 
+      namespace electrical_drawer_motor_control
+      {
+        constexpr uint8_t MODULE_ID = 24;
+        constexpr uint8_t MOTOR_ID = 2;
+        constexpr uint8_t ENABLE_MOTOR = 1;
+      }   // namespace electrical_drawer_motor_control
+
     }   // namespace bit_length
 
   }   // namespace can_signal
@@ -294,6 +318,8 @@ namespace robast_can_msgs
     constexpr uint64_t SWITCH_IS_PUSHED = 1;
     constexpr uint64_t STALL_GUARD_TRIGGERED = 1;
     constexpr uint64_t PUSH_TO_CLOSE_TRIGGERED = 1;
+    constexpr uint64_t DISABLE_MOTOR = 0;
+    constexpr uint64_t ENABLE_MOTOR = 1;
 
     namespace error_code
     {

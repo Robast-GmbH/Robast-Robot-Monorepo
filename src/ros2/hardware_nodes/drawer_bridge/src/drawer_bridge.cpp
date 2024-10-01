@@ -40,6 +40,12 @@ namespace drawer_bridge
       "module_config",
       _qos_config.get_qos_open_drawer(),
       std::bind(&DrawerBridge::module_config_topic_callback, this, std::placeholders::_1));
+
+    // TODO@All: In my opinion (Jacob) we should move all module related ros2 topics into the namespace "modules"
+    _electrical_drawer_motor_control_subscription = this->create_subscription<ElectricalDrawerMotorControl>(
+      "modules/motor_control",
+      _qos_config.get_qos_open_drawer(),
+      std::bind(&DrawerBridge::motor_control_topic_callback, this, std::placeholders::_1));
   }
 
   void DrawerBridge::setup_publishers()
@@ -296,6 +302,12 @@ namespace drawer_bridge
   void DrawerBridge::module_config_topic_callback(const ModuleConfig& msg)
   {
     set_module_config(msg.module_address.module_id, msg.config_id, msg.config_value);
+  }
+
+  void DrawerBridge::motor_control_topic_callback(const ElectricalDrawerMotorControl& msg)
+  {
+    const CanMessage can_msg = _can_message_creator.create_can_msg_e_drawer_motor_control(msg);
+    send_can_msg(can_msg);
   }
 
   void DrawerBridge::set_module_config(const uint32_t module_id, const uint8_t config_id, const uint32_t config_value)

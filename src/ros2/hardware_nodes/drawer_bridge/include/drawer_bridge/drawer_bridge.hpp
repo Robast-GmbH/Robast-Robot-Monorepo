@@ -28,6 +28,7 @@
 #include "can_msgs/msg/frame.hpp"
 #include "communication_interfaces/msg/drawer_status.hpp"
 #include "communication_interfaces/msg/drawer_task.hpp"
+#include "communication_interfaces/msg/electrical_drawer_motor_control.hpp"
 #include "communication_interfaces/msg/electrical_drawer_status.hpp"
 #include "communication_interfaces/msg/error_base_msg.hpp"
 #include "communication_interfaces/msg/led.hpp"
@@ -79,6 +80,7 @@ namespace drawer_bridge
     using Led = communication_interfaces::msg::Led;
     using LedCmd = communication_interfaces::msg::LedCmd;
     using DrawerStatus = communication_interfaces::msg::DrawerStatus;
+    using ElectricalDrawerMotorControl = communication_interfaces::msg::ElectricalDrawerMotorControl;
     using ElectricalDrawerStatus = communication_interfaces::msg::ElectricalDrawerStatus;
     using ErrorBaseMsg = communication_interfaces::msg::ErrorBaseMsg;
     using ShelfSetupInfo = communication_interfaces::srv::ShelfSetupInfo;
@@ -104,6 +106,7 @@ namespace drawer_bridge
     rclcpp::Subscription<TrayTask>::SharedPtr _tray_task_subscription;
     rclcpp::Subscription<ModuleConfig>::SharedPtr _module_config_subscription;
     rclcpp::Subscription<CanMessage>::SharedPtr _can_messages_subscription;
+    rclcpp::Subscription<ElectricalDrawerMotorControl>::SharedPtr _electrical_drawer_motor_control_subscription;
     rclcpp::Publisher<DrawerStatus>::SharedPtr _drawer_status_publisher;
     rclcpp::Publisher<ElectricalDrawerStatus>::SharedPtr _electrical_drawer_status_publisher;
     rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr _push_to_close_triggered;
@@ -127,6 +130,8 @@ namespace drawer_bridge
     void tray_task_topic_callback(const TrayTask& msg);
 
     void module_config_topic_callback(const ModuleConfig& msg);
+
+    void motor_control_topic_callback(const ElectricalDrawerMotorControl& msg);
 
     void setup_publishers();
 

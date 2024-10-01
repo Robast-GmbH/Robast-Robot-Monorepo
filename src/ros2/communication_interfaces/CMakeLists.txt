@@ -40,6 +40,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/DrawerAddress.msg"
   "msg/DrawerStatus.msg"
   "msg/DrawerTask.msg"
+  "msg/ElectricalDrawerMotorControl.msg"
   "msg/ElectricalDrawerStatus.msg"
   "msg/Led.msg"
   "msg/LedCmd.msg"
