@@ -76,6 +76,12 @@ namespace utils
             module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>::type>(config_value));
         break;
 
+      case module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS:
+        _drawer_config->set_drawer_push_in_wait_time_after_movement_finished_in_ms(
+          std::bit_cast<module_config::ModuleSetting<
+            module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS>::type>(config_value));
+        break;
+
       case module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS:
         _drawer_config->set_drawer_stall_guard_wait_time_after_movement_started_in_ms(
           std::bit_cast<module_config::ModuleSetting<
@@ -258,6 +264,11 @@ namespace utils
                std::bit_cast<uint32_t>(
                  module_config::ModuleSetting<
                    module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>::default_value));
+
+    set_config(module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS,
+                std::bit_cast<uint32_t>(
+                  module_config::ModuleSetting<
+                    module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS>::default_value));                   
 
     set_config(module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS,
                std::bit_cast<uint32_t>(

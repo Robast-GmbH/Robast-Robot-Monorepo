@@ -83,8 +83,17 @@ namespace drawer
 
     // if the drawer is not moving, we need to check if the drawer is pushed in
     // but make sure to wait a certain amount of time if the stall guard was triggered
-    uint32_t wait_time_in_ms = _config->get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms();
-    if ((millis() - _timestamp_stall_guard_triggered_in_ms > wait_time_in_ms) &&
+    const uint32_t wait_time_in_ms_after_stall_guard_triggered =
+      _config->get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms();
+    const uint32_t wait_time_in_ms_after_movement_finished =
+      _config->get_drawer_push_in_wait_time_after_movement_finished_in_ms();
+
+    const bool is_wait_time_after_stall_guard_triggered_over =
+      (millis() - _timestamp_stall_guard_triggered_in_ms > wait_time_in_ms_after_stall_guard_triggered);
+    const bool is_wait_time_after_movement_finished_over =
+      (millis() - _timestamp_movement_finished_in_ms > wait_time_in_ms_after_movement_finished);
+
+    if (is_wait_time_after_stall_guard_triggered_over && is_wait_time_after_movement_finished_over &&
         _encoder_monitor->check_if_drawer_is_pushed_in())
     {
       add_e_drawer_task_to_queue({DRAWER_TARGET_HOMING_POSITION,
@@ -443,6 +452,7 @@ namespace drawer
 
       _triggered_deceleration_for_drawer_moving_out = false;
       _is_idling = true;
+      _timestamp_movement_finished_in_ms = millis();
       return;
     }
   }
@@ -511,7 +521,7 @@ namespace drawer
     _can_utils->enqueue_e_drawer_feedback_msg(_module_id,
                                               _id,
                                               ENDSTOP_SWITCH_IS_PUSHED,
-                                              LOCK_SWITCH_NOT_PUSHED,
+                                              LOCK_SWITCH_IS_NOT_PUSHED,
                                               is_stall_guard_triggered(),
                                               _encoder->get_normed_current_position(),
                                               PUSH_TO_CLOSE_NOT_TRIGGERED);

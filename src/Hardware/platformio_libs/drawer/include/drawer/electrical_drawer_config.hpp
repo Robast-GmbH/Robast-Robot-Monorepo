@@ -20,6 +20,7 @@ namespace drawer
     void set_drawer_push_in_auto_close_speed(const uint8_t auto_close_speed);
     void set_drawer_push_in_auto_close_stall_guard_value(const uint8_t stall_guard_value);
     void set_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms(const uint32_t wait_time);
+    void set_drawer_push_in_wait_time_after_movement_finished_in_ms(const uint32_t wait_time);
     void set_drawer_stall_guard_wait_time_after_movement_started_in_ms(const uint32_t wait_time);
     void set_use_tmc_stall_guard(const bool use_tmc_stall_guard);
     void set_use_motor_monitor_stall_guard(const bool use_motor_monitor_stall_guard);
@@ -36,6 +37,7 @@ namespace drawer
     uint8_t get_drawer_push_in_auto_close_speed() const;
     uint8_t get_drawer_push_in_auto_close_stall_guard_value() const;
     uint32_t get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms() const;
+    uint32_t get_drawer_push_in_wait_time_after_movement_finished_in_ms() const;
     uint32_t get_drawer_stall_guard_wait_time_after_movement_started_in_ms() const;
     bool get_use_tmc_stall_guard() const;
     bool get_use_motor_monitor_stall_guard() const;
@@ -53,6 +55,7 @@ namespace drawer
     uint8_t _push_in_auto_close_speed;
     uint8_t _push_in_auto_close_stall_guard_value;
     uint32_t _push_in_wait_time_after_stall_guard_triggered_in_ms;
+    uint32_t _push_in_wait_time_after_movement_finished_in_ms;
     uint32_t _stall_guard_wait_time_after_movement_started_in_ms;
     bool _use_tmc_stall_guard;
     bool _use_motor_monitor_stall_guard;

@@ -42,6 +42,9 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
     REQUIRE(e_drawer_config->get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms() ==
             module_config::ModuleSetting<
               module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>::default_value);
+    REQUIRE(e_drawer_config->get_drawer_push_in_wait_time_after_movement_finished_in_ms() ==
+            module_config::ModuleSetting<
+              module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS>::default_value);
     REQUIRE(e_drawer_config->get_drawer_stall_guard_wait_time_after_movement_started_in_ms() ==
             module_config::ModuleSetting<
               module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS>::default_value);
@@ -51,7 +54,7 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
             module_config::ModuleSetting<module_config::drawer::USE_MOTOR_MONITOR_STALL_GUARD>::default_value);
     REQUIRE(e_drawer_config->get_encoder_threshold_for_drawer_not_opened_during_stall() ==
             module_config::ModuleSetting<
-              module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL>::default_value);            
+              module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL>::default_value);
     REQUIRE(e_drawer_config->get_drawer_default_acceleration() ==
             module_config::ModuleSetting<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::default_value);
   }

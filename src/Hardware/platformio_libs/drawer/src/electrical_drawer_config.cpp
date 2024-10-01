@@ -52,6 +52,11 @@ namespace drawer
     _push_in_wait_time_after_stall_guard_triggered_in_ms = wait_time;
   }
 
+  void ElectricalDrawerConfig::set_drawer_push_in_wait_time_after_movement_finished_in_ms(const uint32_t wait_time)
+  {
+    _push_in_wait_time_after_movement_finished_in_ms = wait_time;
+  }
+
   void ElectricalDrawerConfig::set_drawer_stall_guard_wait_time_after_movement_started_in_ms(const uint32_t wait_time)
   {
     _stall_guard_wait_time_after_movement_started_in_ms = wait_time;
@@ -125,6 +130,11 @@ namespace drawer
   uint32_t ElectricalDrawerConfig::get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms() const
   {
     return _push_in_wait_time_after_stall_guard_triggered_in_ms;
+  }
+
+  uint32_t ElectricalDrawerConfig::get_drawer_push_in_wait_time_after_movement_finished_in_ms() const
+  {
+    return _push_in_wait_time_after_movement_finished_in_ms;
   }
 
   uint32_t ElectricalDrawerConfig::get_drawer_stall_guard_wait_time_after_movement_started_in_ms() const
