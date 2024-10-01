@@ -7,7 +7,7 @@ class Validators {
     }
 
     // Basic email pattern
-    final RegExp emailRegex = RegExp(
+    final emailRegex = RegExp(
       r'^[^@\s]+@[^@\s]+\.[^@\s]+$',
     );
 
@@ -33,7 +33,7 @@ class Validators {
     }
 
     // Check if the name contains only alphabetic characters, spaces, or hyphens
-    final RegExp nameRegex = RegExp(r'^[a-zA-Z\s\-]+$');
+    final nameRegex = RegExp(r'^[a-zA-Z\s\-]+$');
     if (!nameRegex.hasMatch(value)) {
       return 'Namen dürfen nur Buchstaben, Leerzeichen und Bindestriche enthalten';
     }
@@ -48,13 +48,13 @@ class Validators {
     if (value.length < 8) {
       return 'Das Passwort muss mindestens 8 Zeichen lang sein';
     }
-    if (!value.contains(RegExp(r'[A-Z]'))) {
+    if (!value.contains(RegExp('[A-Z]'))) {
       return 'Das Passwort muss mindestens einen Großbuchstaben enthalten';
     }
-    if (!value.contains(RegExp(r'[a-z]'))) {
+    if (!value.contains(RegExp('[a-z]'))) {
       return 'Das Passwort muss mindestens einen Kleinbuchstaben enthalten';
     }
-    if (!value.contains(RegExp(r'[0-9]'))) {
+    if (!value.contains(RegExp('[0-9]'))) {
       return 'Das Passwort muss mindestens eine Ziffer enthalten';
     }
     if (!value.contains(RegExp(r'[?!@#\$&*~]'))) {

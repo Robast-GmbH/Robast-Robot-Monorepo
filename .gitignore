@@ -217,3 +217,6 @@ venv
 !src/web/frontend/robot_apps_flutter/packages/**/lib/
 
 COLCON_IGNORE
+
+# Frontend copy
+bringups/jetson/start_scripts/robot_frontend/

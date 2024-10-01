@@ -24,7 +24,7 @@ class ModuleDetailsDialog extends StatelessWidget {
           children: [
             for (final submodule in submodules)
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 child: RoundedContainer(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -66,7 +66,7 @@ class ModuleDetailsDialog extends StatelessWidget {
                                     ...submodule.itemsByCount.entries.map((entry) => Text(
                                           '${entry.key}: ${entry.value}',
                                           style: const TextStyle(color: WebColors.secondaryText, fontSize: 16),
-                                        ))
+                                        ),)
                                   else
                                     const Text(
                                       'leer',
@@ -74,7 +74,7 @@ class ModuleDetailsDialog extends StatelessWidget {
                                     ),
                                 ],
                               ),
-                            )),
+                            ),),
                       ],
                     ),
                   ),

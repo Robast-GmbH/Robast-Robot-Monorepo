@@ -117,6 +117,13 @@ class ModuleProvider extends ChangeNotifier {
     );
   }
 
+  Future<void> cancelSubmoduleProcess(Submodule submoduleInProcess) async {
+    await _middlewareApiUtilities.modules.cancelSubmoduleProcess(
+      robotName: submoduleInProcess.robotName,
+      submoduleAddress: submoduleInProcess.address,
+    );
+  }
+
   Future<bool> reserveSubmodule({
     required SubmoduleAddress submoduleAddress,
     String taskID = '',

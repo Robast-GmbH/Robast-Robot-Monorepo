@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 import 'package:web_frontend/constants/web_colors.dart';
-import 'package:web_frontend/widgets/custom_dropdown_button.dart';
 import 'package:web_frontend/widgets/rounded_container.dart';
 
 class SubmoduleTypeSelector extends StatefulWidget {
@@ -24,11 +23,11 @@ class _SubmoduleTypeSelectorState extends State<SubmoduleTypeSelector> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               'Benötigter Submodultyp',
-              style: const TextStyle(fontSize: 24, color: WebColors.secondaryText),
+              style: TextStyle(fontSize: 24, color: WebColors.secondaryText),
             ),
-            SizedBox(
+            const SizedBox(
               height: 8,
             ),
             GridView.count(
@@ -41,18 +40,18 @@ class _SubmoduleTypeSelectorState extends State<SubmoduleTypeSelector> {
                       });
                     },
                     text: entry.value,
-                    isSelected: widget.controller.size == entry.key);
+                    isSelected: widget.controller.size == entry.key,);
               }).toList(),
-            )
+            ),
           ],
         ),
       ),
-    ));
+    ),);
   }
 }
 
 class SubmoduleSizeButton extends StatelessWidget {
-  const SubmoduleSizeButton({super.key, required this.onPressed, required this.text, required this.isSelected});
+  const SubmoduleSizeButton({required this.onPressed, required this.text, required this.isSelected, super.key});
   final VoidCallback onPressed;
   final String text;
   final bool isSelected;

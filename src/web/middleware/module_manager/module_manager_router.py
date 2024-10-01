@@ -138,3 +138,11 @@ def finish_submodule_process(submodule_address: SubmoduleAddress):
         submodule_address
     )
     return create_status_response(has_been_finished)
+
+
+@module_manager_router.post("/cancel_submodule_process", tags=["Modules"])
+def cancel_submodule_process(submodule_address: SubmoduleAddress):
+    has_been_cancelled = module_process_manager.cancel_submodule_process(
+        submodule_address
+    )
+    return create_status_response(has_been_cancelled)

@@ -13,7 +13,7 @@ class ModulesOverview extends StatelessWidget {
 
   String getModuleStatus(List<Submodule> submodules) {
     var reservedCount = 0;
-    bool isLoaded = false;
+    var isLoaded = false;
     for (final submodule in submodules) {
       if (submodule.isReserved()) {
         reservedCount++;
@@ -22,7 +22,7 @@ class ModulesOverview extends StatelessWidget {
         isLoaded = true;
       }
     }
-    String moduleStatus = isLoaded ? 'beladen, ' : 'leer, ';
+    var moduleStatus = isLoaded ? 'beladen, ' : 'leer, ';
     if (reservedCount == submodules.length) {
       moduleStatus += 'reserviert';
     } else if (reservedCount > 0) {
@@ -38,68 +38,69 @@ class ModulesOverview extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Selector<FleetProvider, Map<String, List<Submodule>>>(
-          selector: (context, provider) => provider.modules,
-          builder: (context, robotsBySubmodules, child) {
-            if (!robotsBySubmodules.containsKey('rb_theron')) {}
-            final submodules = robotsBySubmodules['rb_theron']!;
-            final moduleIDsBySubmodules = <int, List<Submodule>>{};
-            for (final submodule in submodules) {
-              final moduleID = submodule.address.moduleID;
-              if (!moduleIDsBySubmodules.containsKey(moduleID)) {
-                moduleIDsBySubmodules[moduleID] = [];
-              }
-              moduleIDsBySubmodules[moduleID]!.add(submodule);
+        selector: (context, provider) => provider.modules,
+        builder: (context, robotsBySubmodules, child) {
+          if (!robotsBySubmodules.containsKey('rb_theron')) {}
+          final submodules = robotsBySubmodules['rb_theron']!;
+          final moduleIDsBySubmodules = <int, List<Submodule>>{};
+          for (final submodule in submodules) {
+            final moduleID = submodule.address.moduleID;
+            if (!moduleIDsBySubmodules.containsKey(moduleID)) {
+              moduleIDsBySubmodules[moduleID] = [];
             }
+            moduleIDsBySubmodules[moduleID]!.add(submodule);
+          }
 
-            return ListView(
-              children: [
-                ...List.generate(moduleIDsBySubmodules.keys.length, (index) {
-                  final moduleID = moduleIDsBySubmodules.keys.elementAt(index);
-                  return Container(
-                    height: moduleIDsBySubmodules[moduleID]!.first.size * 100,
-                    width: double.infinity,
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 16),
-                        Expanded(
-                          child: RoundedButton(
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => ModuleDetailsDialog(
-                                  moduleID: moduleID,
-                                  position: index + 1,
-                                  submodules: moduleIDsBySubmodules[moduleID]!,
+          return ListView(
+            children: [
+              ...List.generate(moduleIDsBySubmodules.keys.length, (index) {
+                final moduleID = moduleIDsBySubmodules.keys.elementAt(index);
+                return SizedBox(
+                  height: moduleIDsBySubmodules[moduleID]!.first.size * 100,
+                  width: double.infinity,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: RoundedButton(
+                          onPressed: () {
+                            showDialog<ModuleDetailsDialog>(
+                              context: context,
+                              builder: (context) => ModuleDetailsDialog(
+                                moduleID: moduleID,
+                                position: index + 1,
+                                submodules: moduleIDsBySubmodules[moduleID]!,
+                              ),
+                            );
+                          },
+                          color: Colors.white.withOpacity(0.2),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Modul ${index + 1}',
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  color: WebColors.secondaryText,
                                 ),
-                              );
-                            },
-                            color: Colors.white.withOpacity(0.2),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Modul ${index + 1}',
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    color: WebColors.secondaryText,
-                                  ),
-                                ),
-                                Text(
-                                  getModuleStatus(moduleIDsBySubmodules[moduleID]!),
-                                  style: const TextStyle(fontSize: 22, color: WebColors.secondaryText),
-                                ),
-                              ],
-                            ),
+                              ),
+                              Text(
+                                getModuleStatus(moduleIDsBySubmodules[moduleID]!),
+                                style: const TextStyle(fontSize: 22, color: WebColors.secondaryText),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  );
-                }),
-                const SizedBox(height: 16),
-              ],
-            );
-          }),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+              const SizedBox(height: 16),
+            ],
+          );
+        },
+      ),
     );
   }
 }

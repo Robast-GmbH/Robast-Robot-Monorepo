@@ -48,7 +48,7 @@ class CustomButtonView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (header != null) ...[
-                            header!
+                            header!,
                           ] else ...[
                             Text(
                               text ?? '',

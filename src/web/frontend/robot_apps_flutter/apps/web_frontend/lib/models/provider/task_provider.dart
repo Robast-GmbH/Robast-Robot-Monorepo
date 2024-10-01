@@ -83,7 +83,7 @@ class TaskProvider extends ChangeNotifier {
   }
 
   Future<RobotTaskStatus?> getRobotTasks({required String robotName}) async {
-    return await _middlewareApi.tasks.getRobotTasks(robotName: robotName);
+    return _middlewareApi.tasks.getRobotTasks(robotName: robotName);
   }
 
   Future<List<Task>?> fetchTasks({required String robotName, required int limit, required int offset}) async {

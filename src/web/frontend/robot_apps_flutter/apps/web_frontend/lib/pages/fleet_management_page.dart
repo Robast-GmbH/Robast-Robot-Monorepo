@@ -22,11 +22,11 @@ class _FleetManagementPageState extends State<FleetManagementPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.smart_toy),
-            const SizedBox(width: 8),
-            const Text('Flottenmanagement'),
+            SizedBox(width: 8),
+            Text('Flottenmanagement'),
           ],
         ),
       ),
