@@ -161,12 +161,13 @@ namespace drawer_bridge
     drawer_address.drawer_id = can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::DRAWER_ID).get_data();
 
     const bool is_push_to_close_triggered =
-      can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::IS_PUSH_TO_CLOSE_TRIGGERED).get_data() == 1;
+      can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::IS_PUSH_TO_CLOSE_TRIGGERED).get_data() ==
+      robast_can_msgs::can_data::PUSH_TO_CLOSE_TRIGGERED;
     publish_push_to_close_triggered(is_push_to_close_triggered);
 
     const bool is_stall_guard_triggered =
       can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::DRAWER_IS_STALL_GUARD_TRIGGERED).get_data() ==
-      1;
+      robast_can_msgs::can_data::STALL_GUARD_TRIGGERED;
     publish_e_drawer_status(
       drawer_address,
       can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::DRAWER_POSITION).get_data(),
