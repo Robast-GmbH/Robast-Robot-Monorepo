@@ -34,6 +34,7 @@ namespace drawer
   constexpr bool PUSH_TO_CLOSE_NOT_TRIGGERED = false;
   constexpr bool MOTOR_IS_STALLED = true;
   constexpr bool MOTOR_IS_NOT_STALLED = false;
+  constexpr bool LOCK_SWITCH_IS_NOT_PUSHED = false;
 
   class ElectricalDrawer : public interfaces::IDrawer
   {

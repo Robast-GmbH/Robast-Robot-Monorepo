@@ -16,24 +16,19 @@ RUN echo "source install/setup.bash" >> /home/$USER/.bashrc
 
 RUN apt-get update && apt-get install -y \
   build-essential \
+  git \
+  libboost-all-dev \
+  libpqxx-dev \
   python3-colcon-common-extensions \
   python3-pip \
   python3-rosdep \
-  libboost-all-dev \
   ros-humble-ament-cmake-test \
   ros-${ROS_BUILD_DISTRO}-rmw-cyclonedds-cpp \
   ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
   ros-humble-ros-testing \
   ros-humble-launch-testing \
-  libpqxx-dev \
-  git \
   && rm -rf /var/cache/apk/* \
   && rosdep init || echo "rosdep already initialized"
-
-
-#TODO: @unknown should web stff be realy part of this project?
-RUN pip3 install fastapi -U \ 
-  httpx 
 
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration
@@ -45,7 +40,6 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 ############################## Build ##################################
 FROM ghcr.io/robast-gmbh/monorepo/building-docker:${ROS_BUILD_DISTRO} as build
 ARG ROS_BUILD_DISTRO
-COPY --from=devel / /
 COPY . /ws/src/hardware_nodes
 RUN apt-get update && apt-get install -y git
 
@@ -57,7 +51,7 @@ RUN git clone -b ${ROS_BUILD_DISTRO} https://github.com/autowarefoundation/ros2_
 RUN rosdep update && \
   rosdep install --from-paths /ros2_socketcan_ws/ros2_socketcan --ignore-src -r -y && \
   . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_BUILD_DISTRO}/
+  colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast\
@@ -66,10 +60,11 @@ RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast\
   && mv /monorepo/src/Hardware/cpp/libs ws/ \
   && mv /monorepo/src/ros2/dds_configs /robast/dds_configs
 
+# TODO@Tobi: Running colcon build with -DBUILD_TESTING=OFF should be removed once build artifacts are used for tests with volume mounts
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_BUILD_DISTRO}/
+  colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 ############################## Release ##################################
 FROM ros:${ROS_BUILD_DISTRO}-ros-base as release
