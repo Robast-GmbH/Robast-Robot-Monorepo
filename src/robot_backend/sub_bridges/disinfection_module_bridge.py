@@ -2,14 +2,14 @@ from sub_bridges.base_bridge import BaseBridge
 from roslibpy import Ros
 import threading
 from typing import Any, Dict
-
+import os
 
 disinfection_triggered = threading.Event()
 
 
 class DisinfectionModuleBridge(BaseBridge):
     FULL = 400
-    FILE_PATH = "remaining_disinfections.txt"
+    FILE_PATH = "log/remaining_disinfections.txt"
 
     def __init__(self, ros: Ros) -> None:
         super().__init__(ros)
@@ -24,9 +24,7 @@ class DisinfectionModuleBridge(BaseBridge):
         was_successful = disinfection_triggered.wait(timeout=float(time_out))
         return {"status": "success" if was_successful else "failure"}
 
-    def refill_disinfection_fluid_container(
-        self
-    ) -> Dict[str, str]:
+    def refill_disinfection_fluid_container(self) -> Dict[str, str]:
         if self.__write_remaining_disinfections(DisinfectionModuleBridge.FULL):
             return {"status": "success"}
         else:
@@ -46,6 +44,9 @@ class DisinfectionModuleBridge(BaseBridge):
         if remaining_disinfections < 0:
             return False
         try:
+            os.makedirs(
+                os.path.dirname(DisinfectionModuleBridge.FILE_PATH), exist_ok=True
+            )
             with open(DisinfectionModuleBridge.FILE_PATH, "w") as file:
                 file.write(str(remaining_disinfections))
             return True
