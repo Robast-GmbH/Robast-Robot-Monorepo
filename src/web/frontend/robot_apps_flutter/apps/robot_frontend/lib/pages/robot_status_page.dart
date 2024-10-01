@@ -11,12 +11,13 @@ class RobotStatusPage extends StatelessWidget {
     return CustomScaffold(
       title: 'Roboterzustand',
       child: Center(
-          child: Column(
-        children: [
-          Text(Provider.of<RobotProvider>(context).batteryLevel.toString()),
-          Text(Provider.of<RobotProvider>(context).remainingDisinfections.toString())
-        ],
-      )),
+        child: Column(
+          children: [
+            Text(Provider.of<RobotProvider>(context).batteryLevel.toString()),
+            Text(Provider.of<RobotProvider>(context).remainingDisinfections.toString()),
+          ],
+        ),
+      ),
     );
   }
 }
