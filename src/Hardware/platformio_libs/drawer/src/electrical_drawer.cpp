@@ -137,7 +137,7 @@ namespace drawer
       _can_utils->enqueue_e_drawer_feedback_msg(_module_id,
                                                 _id,
                                                 _endstop_switch->is_switch_pressed(),
-                                                false,
+                                                LOCK_SWITCH_IS_NOT_PUSHED,
                                                 is_stall_guard_triggered(),
                                                 _encoder->get_normed_current_position(),
                                                 PUSH_TO_CLOSE_NOT_TRIGGERED);
@@ -303,6 +303,15 @@ namespace drawer
       e_drawer_task.target_position,
       e_drawer_task.target_speed,
       e_drawer_task.stall_guard_value);
+
+    // Discard redundant tasks if the drawer is already moving or at the target position
+    if (e_drawer_task.target_position == _target_position_uint8 &&
+        (!_is_idling || _encoder->get_normed_current_position() == _target_position_uint8))
+    {
+      Serial.printf("[ElectricalDrawer]: Warning! Received redundant task with target position %d! Discarding it!\n",
+                    _target_position_uint8);
+      return;
+    }
 
     _e_drawer_task_queue->enqueue(e_drawer_task);
   }
@@ -480,11 +489,6 @@ namespace drawer
       is_stall_guard_triggered(),
       _encoder->get_normed_current_position(),
       PUSH_TO_CLOSE_NOT_TRIGGERED);
-    _can_utils->enqueue_drawer_feedback_msg(
-      _module_id,
-      _id,
-      _endstop_switch->is_switch_pressed(),
-      _drawer_lock.has_value() ? _drawer_lock.value()->is_lock_switch_pushed() : false);
   }
 
   bool ElectricalDrawer::is_stall_guard_triggered() const
