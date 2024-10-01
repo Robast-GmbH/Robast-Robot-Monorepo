@@ -27,8 +27,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "action/ChangeFootprint.action"
   "action/ChangeFootprintPadding.action"
   "action/ComputeInterimGoal.action"
-  "action/DrawerInteraction.action"
-  "action/DrawerUserAccess.action"
   "action/ImportYamlPoses.action"
 
   "srv/HandleDrawer.srv"
