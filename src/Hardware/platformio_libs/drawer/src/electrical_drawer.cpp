@@ -152,14 +152,13 @@ namespace drawer
 
     if (_target_position_uint8 == _encoder->get_normed_current_position())
     {
-      _can_utils->enqueue_e_drawer_feedback_msg(
-        _module_id,
-        _id,
-        _endstop_switch->is_switch_pressed(),
-        _drawer_lock.has_value() ? _drawer_lock.value()->is_lock_switch_pushed() : false,
-        is_stall_guard_triggered(),
-        _encoder->get_normed_current_position(),
-        PUSH_TO_CLOSE_NOT_TRIGGERED);
+      _can_utils->enqueue_e_drawer_feedback_msg(_module_id,
+                                                _id,
+                                                _endstop_switch->is_switch_pressed(),
+                                                LOCK_SWITCH_IS_NOT_PUSHED,
+                                                is_stall_guard_triggered(),
+                                                _encoder->get_normed_current_position(),
+                                                PUSH_TO_CLOSE_NOT_TRIGGERED);
       return;
     }
 
