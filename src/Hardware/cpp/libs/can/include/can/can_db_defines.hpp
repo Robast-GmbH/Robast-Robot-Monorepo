@@ -292,6 +292,8 @@ namespace robast_can_msgs
   {
     constexpr uint64_t SWITCH_IS_NOT_PUSHED = 0;
     constexpr uint64_t SWITCH_IS_PUSHED = 1;
+    constexpr uint64_t STALL_GUARD_TRIGGERED = 1;
+    constexpr uint64_t PUSH_TO_CLOSE_TRIGGERED = 1;
 
     namespace error_code
     {

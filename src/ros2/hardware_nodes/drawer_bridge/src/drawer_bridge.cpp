@@ -134,7 +134,7 @@ namespace drawer_bridge
     }
   }
 
-  void DrawerBridge::publish_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg)
+  void DrawerBridge::publish_drawer_status(const robast_can_msgs::CanMessage drawer_feedback_can_msg)
   {
     std::vector<robast_can_msgs::CanSignal> can_signals = drawer_feedback_can_msg.get_can_signals();
 
@@ -149,56 +149,81 @@ namespace drawer_bridge
       can_signals.at(robast_can_msgs::can_signal::id::drawer_feedback::IS_LOCK_SWITCH_PUSHED).get_data() ==
       robast_can_msgs::can_data::SWITCH_IS_PUSHED;
 
+    publish_drawer_status(drawer_address, is_endstop_switch_pushed, is_lock_switch_pushed);
+  }
+
+  void DrawerBridge::handle_e_drawer_feedback(const robast_can_msgs::CanMessage electrical_drawer_feedback_can_msg)
+  {
+    std::vector<robast_can_msgs::CanSignal> can_signals = electrical_drawer_feedback_can_msg.get_can_signals();
+
+    DrawerAddress drawer_address = DrawerAddress();
+    drawer_address.module_id = can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::MODULE_ID).get_data();
+    drawer_address.drawer_id = can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::DRAWER_ID).get_data();
+
+    const bool is_push_to_close_triggered =
+      can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::IS_PUSH_TO_CLOSE_TRIGGERED).get_data() ==
+      robast_can_msgs::can_data::PUSH_TO_CLOSE_TRIGGERED;
+    publish_push_to_close_triggered(is_push_to_close_triggered);
+
+    const bool is_stall_guard_triggered =
+      can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::DRAWER_IS_STALL_GUARD_TRIGGERED).get_data() ==
+      robast_can_msgs::can_data::STALL_GUARD_TRIGGERED;
+    publish_e_drawer_status(
+      drawer_address,
+      can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::DRAWER_POSITION).get_data(),
+      is_stall_guard_triggered);
+
+    const bool is_endstop_switch_pushed =
+      can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::IS_ENDSTOP_SWITCH_PUSHED).get_data() ==
+      robast_can_msgs::can_data::SWITCH_IS_PUSHED;
+    const bool is_lock_switch_pushed =
+      can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::IS_LOCK_SWITCH_PUSHED).get_data() ==
+      robast_can_msgs::can_data::SWITCH_IS_PUSHED;
+
+    publish_drawer_status(drawer_address, is_endstop_switch_pushed, is_lock_switch_pushed);
+  }
+
+  void DrawerBridge::publish_push_to_close_triggered(const bool is_push_to_close_triggered)
+  {
+    std_msgs::msg::Bool msg;
+    msg.data = is_push_to_close_triggered;
+
+    _push_to_close_triggered->publish(msg);
+  }
+
+  void DrawerBridge::publish_e_drawer_status(const DrawerAddress drawer_address,
+                                             const uint8_t position,
+                                             const bool is_stall_guard_triggered)
+  {
+    ElectricalDrawerStatus status = ElectricalDrawerStatus();
+    status.drawer_address = drawer_address;
+    status.position = position;
+    status.is_stall_guard_triggered = is_stall_guard_triggered;
+
+    _electrical_drawer_status_publisher->publish(status);
+  }
+
+  void DrawerBridge::publish_drawer_status(const DrawerAddress drawer_address,
+                                           const bool is_endstop_switch_pushed,
+                                           const bool is_lock_switch_pushed)
+  {
     DrawerStatus drawer_status_msg = DrawerStatus();
     drawer_status_msg.drawer_address = drawer_address;
 
     if (!is_endstop_switch_pushed)
     {
       drawer_status_msg.drawer_is_open = true;
-      this->_drawer_status_publisher->publish(drawer_status_msg);
-      // Debugging
-      RCLCPP_INFO(this->get_logger(),
-                  "Sending send_drawer_is_open_feedback with module_id: '%i'",
-                  drawer_status_msg.drawer_address.module_id);
+      _drawer_status_publisher->publish(drawer_status_msg);
     }
 
     if (!is_lock_switch_pushed && is_endstop_switch_pushed)
     {
       drawer_status_msg.drawer_is_open = false;
-      this->_drawer_status_publisher->publish(drawer_status_msg);
-      // Debugging
-      RCLCPP_INFO(this->get_logger(),
-                  "Sending send_drawer_is_closed_feedback with module_id: '%i'",
-                  drawer_status_msg.drawer_address.module_id);
+      _drawer_status_publisher->publish(drawer_status_msg);
     }
   }
 
-  void DrawerBridge::publish_electrical_drawer_status(robast_can_msgs::CanMessage electrical_drawer_feedback_can_msg)
-  {
-    std::vector<robast_can_msgs::CanSignal> can_signals = electrical_drawer_feedback_can_msg.get_can_signals();
-
-    std_msgs::msg::Bool push_to_close_triggered_msg;
-    push_to_close_triggered_msg.data =
-      can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::IS_PUSH_TO_CLOSE_TRIGGERED).get_data() == 1;
-
-    _push_to_close_triggered->publish(push_to_close_triggered_msg);
-
-    ElectricalDrawerStatus status = ElectricalDrawerStatus();
-
-    status.drawer_address.module_id =
-      can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::MODULE_ID).get_data();
-    status.drawer_address.drawer_id =
-      can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::DRAWER_ID).get_data();
-
-    status.position = can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::DRAWER_POSITION).get_data();
-    status.is_stall_guard_triggered =
-      can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::DRAWER_IS_STALL_GUARD_TRIGGERED).get_data() ==
-      1;
-
-    _electrical_drawer_status_publisher->publish(status);
-  }
-
-  void DrawerBridge::publish_drawer_error_msg(robast_can_msgs::CanMessage drawer_error_feedback_can_msg)
+  void DrawerBridge::publish_drawer_error_msg(const robast_can_msgs::CanMessage drawer_error_feedback_can_msg)
   {
     std::vector<robast_can_msgs::CanSignal> can_signals = drawer_error_feedback_can_msg.get_can_signals();
 
@@ -252,7 +277,7 @@ namespace drawer_bridge
           publish_drawer_status(decoded_msg.value());
           break;
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_FEEDBACK:
-          publish_electrical_drawer_status(decoded_msg.value());
+          handle_e_drawer_feedback(decoded_msg.value());
           break;
         case robast_can_msgs::can_id::ERROR_FEEDBACK:
           publish_drawer_error_msg(decoded_msg.value());
@@ -261,7 +286,7 @@ namespace drawer_bridge
     }
   }
 
-  void DrawerBridge::send_can_msg(CanMessage can_msg)
+  void DrawerBridge::send_can_msg(const CanMessage can_msg)
   {
     RCLCPP_INFO(this->get_logger(), "Sending can message with id '%d'!\n ", can_msg.id);
 

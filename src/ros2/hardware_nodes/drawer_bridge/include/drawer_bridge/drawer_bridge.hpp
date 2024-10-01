@@ -134,15 +134,25 @@ namespace drawer_bridge
 
     void setup_services();
 
-    void send_can_msg(CanMessage can_msg);
+    void send_can_msg(const CanMessage can_msg);
 
-    void receive_can_msg_callback(CanMessage can_msg);
+    void receive_can_msg_callback(const CanMessage can_msg);
 
-    void publish_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg);
+    void publish_drawer_status(const robast_can_msgs::CanMessage drawer_feedback_can_msg);
 
-    void publish_electrical_drawer_status(robast_can_msgs::CanMessage electrical_drawer_feedback_can_msg);
+    void handle_e_drawer_feedback(const robast_can_msgs::CanMessage electrical_drawer_feedback_can_msg);
 
-    void publish_drawer_error_msg(robast_can_msgs::CanMessage drawer_error_feedback_can_msg);
+    void publish_drawer_error_msg(const robast_can_msgs::CanMessage drawer_error_feedback_can_msg);
+
+    void publish_push_to_close_triggered(const bool is_push_to_close_triggered);
+
+    void publish_e_drawer_status(const DrawerAddress drawer_address,
+                                 const uint8_t position,
+                                 const bool is_stall_guard_triggered);
+
+    void publish_drawer_status(const DrawerAddress drawer_address,
+                               const bool is_endstop_switch_pushed,
+                               const bool is_lock_switch_pushed);
 
     std::vector<communication_interfaces::msg::Module> get_all_mounted_modules();
 
