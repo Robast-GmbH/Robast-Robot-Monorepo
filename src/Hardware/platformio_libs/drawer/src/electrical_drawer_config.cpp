@@ -82,6 +82,11 @@ namespace drawer
     _drawer_default_acceleration = acceleration;
   }
 
+  void ElectricalDrawerConfig::set_wait_time_to_close_lock_after_drawer_opened_in_ms(const uint32_t wait_time)
+  {
+    _wait_time_to_close_lock_after_drawer_opened_in_ms = wait_time;
+  }
+
   uint32_t ElectricalDrawerConfig::get_drawer_max_speed() const
   {
     return _max_speed;
@@ -160,5 +165,10 @@ namespace drawer
   uint8_t ElectricalDrawerConfig::get_drawer_default_acceleration() const
   {
     return _drawer_default_acceleration;
+  }
+
+  uint32_t ElectricalDrawerConfig::get_wait_time_to_close_lock_after_drawer_opened_in_ms() const
+  {
+    return _wait_time_to_close_lock_after_drawer_opened_in_ms;
   }
 }   // namespace drawer

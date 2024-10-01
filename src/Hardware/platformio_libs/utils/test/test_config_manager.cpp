@@ -57,6 +57,9 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
               module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL>::default_value);
     REQUIRE(e_drawer_config->get_drawer_default_acceleration() ==
             module_config::ModuleSetting<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::default_value);
+    REQUIRE(e_drawer_config->get_wait_time_to_close_lock_after_drawer_opened_in_ms() ==
+            module_config::ModuleSetting<
+              module_config::drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS>::default_value);
   }
 
   SECTION("Check if default configs are set correctly for the encoder config.")

@@ -107,6 +107,7 @@ namespace drawer
     uint32_t _timestamp_stall_guard_triggered_in_ms = 0;
     uint32_t _timestamp_movement_started_in_ms = 0;
     uint32_t _timestamp_movement_finished_in_ms = 0;
+    uint32_t _timestamp_drawer_opened_in_ms = 0;
 
     bool _is_motor_monitor_stall_guard_triggered = false;
     bool _is_tmc_stall_guard_triggered = false;

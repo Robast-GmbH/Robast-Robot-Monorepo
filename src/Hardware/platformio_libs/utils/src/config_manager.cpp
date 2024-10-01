@@ -78,8 +78,9 @@ namespace utils
 
       case module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS:
         _drawer_config->set_drawer_push_in_wait_time_after_movement_finished_in_ms(
-          std::bit_cast<module_config::ModuleSetting<
-            module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS>::type>(config_value));
+          std::bit_cast<
+            module_config::ModuleSetting<module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS>::type>(
+            config_value));
         break;
 
       case module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS:
@@ -109,6 +110,12 @@ namespace utils
         _drawer_config->set_drawer_default_acceleration(
           static_cast<module_config::ModuleSetting<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::type>(
             config_value));
+        break;
+
+      case module_config::drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS:
+        _drawer_config->set_wait_time_to_close_lock_after_drawer_opened_in_ms(
+          std::bit_cast<module_config::ModuleSetting<
+            module_config::drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS>::type>(config_value));
         break;
 
       case module_config::encoder::OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT:
@@ -265,10 +272,10 @@ namespace utils
                  module_config::ModuleSetting<
                    module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>::default_value));
 
-    set_config(module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS,
-                std::bit_cast<uint32_t>(
-                  module_config::ModuleSetting<
-                    module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS>::default_value));                   
+    set_config(
+      module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS,
+      std::bit_cast<uint32_t>(module_config::ModuleSetting<
+                              module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS>::default_value));
 
     set_config(module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS,
                std::bit_cast<uint32_t>(
@@ -291,6 +298,11 @@ namespace utils
     set_config(module_config::drawer::DRAWER_DEFAULT_ACCELERATION,
                static_cast<uint32_t>(
                  module_config::ModuleSetting<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::default_value));
+
+    set_config(module_config::drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS,
+               std::bit_cast<uint32_t>(
+                 module_config::ModuleSetting<
+                   module_config::drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS>::default_value));
   }
 
   void ConfigManager::set_default_encoder_config()

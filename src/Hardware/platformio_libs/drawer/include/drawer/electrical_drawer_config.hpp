@@ -26,6 +26,7 @@ namespace drawer
     void set_use_motor_monitor_stall_guard(const bool use_motor_monitor_stall_guard);
     void set_encoder_threshold_for_drawer_not_opened_during_stall(const uint8_t threshold);
     void set_drawer_default_acceleration(const uint8_t acceleration);
+    void set_wait_time_to_close_lock_after_drawer_opened_in_ms(const uint32_t wait_time);
 
     uint32_t get_drawer_max_speed() const;
     uint32_t get_drawer_homing_speed() const;
@@ -43,6 +44,7 @@ namespace drawer
     bool get_use_motor_monitor_stall_guard() const;
     uint8_t get_encoder_threshold_for_drawer_not_opened_during_stall() const;
     uint8_t get_drawer_default_acceleration() const;
+    uint32_t get_wait_time_to_close_lock_after_drawer_opened_in_ms() const;
 
    private:
     uint64_t _max_speed;
@@ -61,7 +63,9 @@ namespace drawer
     bool _use_motor_monitor_stall_guard;
     uint8_t _encoder_threshold_for_drawer_not_opened_during_stall;
     uint8_t _drawer_default_acceleration;
+    uint32_t _wait_time_to_close_lock_after_drawer_opened_in_ms;
   };
+  ;
 
 }   // namespace drawer
 
