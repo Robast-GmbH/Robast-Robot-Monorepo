@@ -68,6 +68,11 @@ namespace statemachine
       logError();
       // }
       break;
+    case ERROR_CODES_DRAWER_CLOSED_IN_IDLE_STATE:
+      _error_msg = msg;
+      _is_error_received = true;
+      logError();
+      break;
 
     default:
       break;
