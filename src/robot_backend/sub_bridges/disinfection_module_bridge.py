@@ -9,7 +9,6 @@ disinfection_triggered = threading.Event()
 
 class DisinfectionModuleBridge(BaseBridge):
     FULL = 650
-    FILE_PATH = "log/remaining_disinfections.txt"
 
     def __init__(self, ros: Ros) -> None:
         super().__init__(ros)
@@ -18,6 +17,8 @@ class DisinfectionModuleBridge(BaseBridge):
             "builtin_interfaces/msg/Time",
             on_msg_callback=self.__on_disinfection_triggered,
         )
+        home_directory = os.path.expanduser("~")
+        self.file_path = f"{home_directory}/log/remaining_disinfections.txt"
 
     def wait_for_disinfection_triggered(self, time_out: int) -> Dict[str, str]:
         disinfection_triggered.clear()
@@ -44,10 +45,8 @@ class DisinfectionModuleBridge(BaseBridge):
         if remaining_disinfections < 0:
             return False
         try:
-            os.makedirs(
-                os.path.dirname(DisinfectionModuleBridge.FILE_PATH), exist_ok=True
-            )
-            with open(DisinfectionModuleBridge.FILE_PATH, "w") as file:
+            os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
+            with open(self.file_path, "w") as file:
                 file.write(str(remaining_disinfections))
             return True
         except (PermissionError, OSError, TypeError):
@@ -55,7 +54,7 @@ class DisinfectionModuleBridge(BaseBridge):
 
     def __read_remaining_disinfections(self) -> int | None:
         try:
-            with open(DisinfectionModuleBridge.FILE_PATH, "r") as file:
+            with open(self.file_path, "r") as file:
                 return int(file.read().strip())
         except (FileNotFoundError, ValueError):
             return None
