@@ -46,9 +46,15 @@ def read_robot_pos():
 def read_robot_lost():
     return ros_bridge.robot_pos_bridge.get_robot_lost()
 
+
 @app.get("/battery_status", tags=["Robot Status"])
 def read_battery_status():
     return ros_bridge.robot_status_bridge.get_battery_status()
+
+
+@app.get("/emergency_stop_pressed", tags=["Robot Status"])
+def read_emergency_stop_pressed():
+    return ros_bridge.robot_status_bridge.get_emergency_stop_pressed()
 
 
 """
@@ -165,9 +171,11 @@ def get_disinfection_triggered(timeout: int):
         timeout
     )
 
-@app.get('/disinfection_module_status', tags=["Disinfection"])
+
+@app.get("/disinfection_module_status", tags=["Disinfection"])
 def get_disinfection_module_status():
     return ros_bridge.disinfection_module_bridge.get_disinfection_module_status()
+
 
 @app.post("/refill_disinfection_fluid_container", tags=["Disinfection"])
 def refill_disinfection_fluid_container():
