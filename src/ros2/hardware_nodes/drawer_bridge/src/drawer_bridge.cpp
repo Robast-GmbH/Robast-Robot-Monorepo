@@ -244,6 +244,12 @@ namespace drawer_bridge
         error_msg.error_data = message_converter.messageToString(drawer_address);
         _error_msg_publisher->publish(error_msg);
         break;
+      case robast_can_msgs::can_data::error_code::DRAWER_CLOSED_IN_IDLE_STATE:
+        error_msg.error_code = ERROR_CODES_DRAWER_CLOSED_IN_IDLE_STATE;
+        error_msg.error_description = "The drawer was closed in the idle state, which is not the intended behavior.";
+        error_msg.error_data = message_converter.messageToString(drawer_address);
+        _error_msg_publisher->publish(error_msg);
+        break;
 
       default:
         break;
