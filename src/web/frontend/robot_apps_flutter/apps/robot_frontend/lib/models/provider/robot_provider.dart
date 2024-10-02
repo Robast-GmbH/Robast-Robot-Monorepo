@@ -11,8 +11,12 @@ class RobotProvider extends ChangeNotifier {
   double? _batteryLevel;
   double? get batteryLevel => _batteryLevel;
 
+  int? _remainingDisinfections;
+  int? get remainingDisinfections => _remainingDisinfections;
+
   Timer? _batteryLevelUpdateTimer;
   Timer? _robotPoseUpdateTimer;
+  Timer? _remainingDisinfectionsUpdateTimer;
 
   late RobotApiUtilities _robotAPI;
 
@@ -30,6 +34,18 @@ class RobotProvider extends ChangeNotifier {
   Future<void> updateBatteryLevel() async {
     _batteryLevel = await _robotAPI.getBatteryLevel();
     notifyListeners();
+  }
+
+  Future<void> updateRemainingDisinfections() async {
+    _remainingDisinfections = await _robotAPI.getRemainingDisinfections();
+    notifyListeners();
+  }
+
+  void startPeriodicRemainingDisinfectionsUpdate() {
+    _remainingDisinfectionsUpdateTimer = startPeriodicUpdate(
+      updateRemainingDisinfections,
+      const Duration(seconds: 30),
+    );
   }
 
   void startPeriodicBatteryLevelUpdate() {
@@ -51,6 +67,10 @@ class RobotProvider extends ChangeNotifier {
       updateIsRobotLost,
       const Duration(seconds: 5),
     );
+  }
+
+  void stopPeriodicRemainingDisinfectionsUpdate() {
+    _remainingDisinfectionsUpdateTimer?.cancel();
   }
 
   void stopPeriodicBatteryLevelUpdate() {
@@ -84,8 +104,13 @@ class RobotProvider extends ChangeNotifier {
     final wasSuccessful = await _robotAPI.waitForDisinfectionTriggered(timeout: timeout);
     if (wasSuccessful) {
       onDisinfection();
+      updateRemainingDisinfections();
     }
     return wasSuccessful;
+  }
+
+  Future<bool> renewDisinfectionFluidContainer() async {
+    return await _robotAPI.refillDisinfectionFluidContainer();
   }
 
   Future<void> updateIsRobotLost() async {
