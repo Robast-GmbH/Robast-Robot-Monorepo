@@ -55,6 +55,8 @@ Project error handles:
 // 4th and 5th digits indicates the specific error
 #define ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED           50301
 #define ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED_INTERFACE communication_interfaces::msg::DrawerAddress
+#define ERROR_CODES_DRAWER_CLOSED_IN_IDLE_STATE         50302
+#define ERROR_CODES_DRAWER_MISSUSED_INTERFACE           communication_interfaces::msg::DrawerAddress
 
 // fatal_codes
 // first digit is a 6
