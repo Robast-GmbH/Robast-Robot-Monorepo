@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/provider/robot_provider.dart';
 
 class InactivityProvider with ChangeNotifier {
   Timer? _inactivityTimer;
@@ -23,6 +25,12 @@ class InactivityProvider with ChangeNotifier {
     if (_navigatorKey.currentContext == null) return;
     final context = _navigatorKey.currentContext!;
 
+    final isEmergencyStopPressed = Provider.of<RobotProvider>(context, listen: false).isEmergencyStopPressed;
+    if (isEmergencyStopPressed ?? false) {
+      resetInactivityTimer();
+      return;
+    }
+
     bool isBarrierDismissed = true;
     int counter = _timeoutReactionDurationInS;
     Timer? timer;
@@ -41,15 +49,15 @@ class InactivityProvider with ChangeNotifier {
             ),
             content: StatefulBuilder(builder: (context, setState) {
               timer ??= Timer.periodic(const Duration(seconds: 1), (timer) {
-                  counter--;
-                  if (counter > 0) {
-                    setState(() {});
-                  } else {
-                    timer.cancel();
-                    isBarrierDismissed = false;
-                    Navigator.popUntil(context, (route) => route.isFirst);
-                  }
-                });
+                counter--;
+                if (counter > 0) {
+                  setState(() {});
+                } else {
+                  timer.cancel();
+                  isBarrierDismissed = false;
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                }
+              });
               return Text(
                 'Sie waren zu lange inaktiv. Automatische Abmeldung in $counter Sekunden.',
                 style: const TextStyle(
