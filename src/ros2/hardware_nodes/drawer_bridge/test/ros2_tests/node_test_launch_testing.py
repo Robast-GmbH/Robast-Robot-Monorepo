@@ -1,6 +1,13 @@
 
 import os
 import unittest
+import sys
+
+
+current_script_dir = os.path.dirname(__file__)
+workspace_dir = os.path.abspath(os.path.join(current_script_dir, '..', '..', '..', '..', '..'))
+sys.path.append(os.path.join(workspace_dir, 'build', 'can')) # Add the build directory to the Python path
+import can_db_defines_bindings as can_db_defines
 
 import ament_index_python
 import launch
@@ -119,9 +126,9 @@ class TestProcessOutput(unittest.TestCase):
             data = yaml.safe_load(f)
 
         drawer_is_open_can_msg = Frame()
-        drawer_is_open_can_msg.id = data['is_drawer_open_can_frame']['id']
-        drawer_is_open_can_msg.dlc = data['is_drawer_open_can_frame']['dlc']
-        drawer_is_open_can_msg.data = data['is_drawer_open_can_frame']['data']
+        drawer_is_open_can_msg.id = can_db_defines.CAN_ID_DRAWER_FEEDBACK
+        drawer_is_open_can_msg.dlc = can_db_defines.DLC_DRAWER_FEEDBACK
+        drawer_is_open_can_msg.data = data['drawer_feedback_can_frame']['data']
         self.can_in_publisher_.publish(drawer_is_open_can_msg)
         self.node.get_logger().info('Publishing drawer_is_open_can_msg to from_can_bus topic with can_msg_id: "%s"' % drawer_is_open_can_msg.id)
 
@@ -138,8 +145,8 @@ class TestProcessOutput(unittest.TestCase):
             data = yaml.safe_load(f)
 
         error_feedback_can_msg = Frame()
-        error_feedback_can_msg.id = data['error_feedback_can_frame']['id']
-        error_feedback_can_msg.dlc = data['error_feedback_can_frame']['dlc']
+        error_feedback_can_msg.id = can_db_defines.CAN_ID_ERROR_FEEDBACK
+        error_feedback_can_msg.dlc = can_db_defines.DLC_ERROR_FEEDBACK
         error_feedback_can_msg.data = data['error_feedback_can_frame']['data']
         self.can_in_publisher_.publish(error_feedback_can_msg)
         self.node.get_logger().info('Publishing to from_can_bus topic with can_msg_id: "%s"' % error_feedback_can_msg.id)
