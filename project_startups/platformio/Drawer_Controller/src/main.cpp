@@ -207,7 +207,7 @@ void process_can_msgs_task_loop(void* pvParameters)
           const bool enable_motor =
             received_message->get_can_signals()
               .at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::ENABLE_MOTOR)
-              .get_data();
+              .get_data() == 1;
           i_drawer->set_motor_driver_state(enable_motor);
         }
         default:
