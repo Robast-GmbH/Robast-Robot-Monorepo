@@ -3,7 +3,6 @@ import os
 import unittest
 import sys
 
-
 current_script_dir = os.path.dirname(__file__)
 workspace_dir = os.path.abspath(os.path.join(current_script_dir, '..', '..', '..', '..', '..'))
 sys.path.append(os.path.join(workspace_dir, 'build', 'can')) # Add the build directory to the Python path
@@ -23,6 +22,7 @@ from rclpy.qos import (DurabilityPolicy, QoSHistoryPolicy, QoSProfile,
 
 from communication_interfaces.msg import (DrawerAddress, Led, LedCmd,
                                           DrawerStatus, ErrorBaseMsg)
+from communication_interfaces.srv import ModuleConfig, ElectricalDrawerMotorControl
 
 from can_msgs.msg import Frame
 
@@ -66,19 +66,52 @@ class TestProcessOutput(unittest.TestCase):
      
     def setUp(self):
         # Create a ROS node for tests
-        self.node = rclpy.create_node('drawer_bridge_tester')
-        self.received_drawer_feedback_topic = False
-        self.received_drawer_error_feedback_topic = False
-        self.qos_profile = QoSProfile(
+        self.__node = rclpy.create_node('drawer_bridge_tester')
+        self.__received_drawer_feedback_topic = False
+        self.__received_drawer_error_feedback_topic = False
+        self.__qos_profile_open_drawer = QoSProfile(
+            reliability=QoSReliabilityPolicy.RELIABLE,
+            history=QoSHistoryPolicy.KEEP_LAST,
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,
+            depth=1
+        )
+        self.__qos_profile_led_cmd = QoSProfile(
             reliability=QoSReliabilityPolicy.RELIABLE,
             history=QoSHistoryPolicy.KEEP_LAST,
             durability=DurabilityPolicy.TRANSIENT_LOCAL,
             depth=2
         )
+        self.__qos_error_msgs = QoSProfile(
+            reliability=QoSReliabilityPolicy.BEST_EFFORT,
+            history=QoSHistoryPolicy.KEEP_LAST,
+            durability=DurabilityPolicy.TRANSIENT_LOCAL,
+            depth=10
+        )
+        self.__qos_can_msg= QoSProfile(
+            reliability=QoSReliabilityPolicy.RELIABLE,
+            history=QoSHistoryPolicy.KEEP_LAST,
+            durability=DurabilityPolicy.VOLATILE,
+            depth=10
+        )
+        self.setup_subscribers()
+        self.setup_publishers()
+        self.setup_service_clients()
 
+
+    def setup_subscribers(self):
+        self.__to_can_bus_subscriber = self.__node.create_subscription(Frame, 'to_can_bus', self.to_can_bus_callback, qos_profile=self.__qos_can_msg)
+
+    def setup_publishers(self):
+        self.__open_drawer_publisher = self.__node.create_publisher(DrawerAddress, 'open_drawer', qos_profile = self.__qos_profile_open_drawer)
+        self.__led_cmd_publisher = self.__node.create_publisher(LedCmd, 'led_cmd', qos_profile = self.__qos_profile_led_cmd)
+        self.__can_in_publisher = self.__node.create_publisher(Frame,'from_can_bus', qos_profile = self.__qos_can_msg)
+
+    def setup_service_clients(self):
+        self.__module_config_service_client = self.__node.create_client(ModuleConfig, 'module_config')
+        self.__electrical_drawer_motor_control_service_client = self.__node.create_client(ElectricalDrawerMotorControl, 'motor_control')
 
     def tearDown(self):
-        self.node.destroy_node()
+        self.__node.destroy_node()
 
 
     def publish_data(self):
@@ -104,14 +137,14 @@ class TestProcessOutput(unittest.TestCase):
         led_cmd_msg.leds = [led_msg, led_msg]
         led_cmd_msg.start_index = data['led_cmd']['start_index']
 
-        self.led_cmd_publisher_.publish(led_cmd_msg)
-        self.node.get_logger().info('Publishing to led_cmd topic for module_id: "%i"' % led_cmd_msg.drawer_address.module_id)
+        self.__led_cmd_publisher.publish(led_cmd_msg)
+        self.__node.get_logger().info('Publishing to led_cmd topic for module_id: "%i"' % led_cmd_msg.drawer_address.module_id)
 
         drawer_address_msg = DrawerAddress()
         drawer_address_msg.module_id = data['open_drawer']['module_id']
         drawer_address_msg.drawer_id = data['open_drawer']['drawer_id']
-        self.open_drawer_publisher_.publish(drawer_address_msg)
-        self.node.get_logger().info('Publishing to open_drawer topic with module_id: "%s"' % drawer_address_msg.module_id)
+        self.__open_drawer_publisher.publish(drawer_address_msg)
+        self.__node.get_logger().info('Publishing to open_drawer topic with module_id: "%s"' % drawer_address_msg.module_id)
 
 
     def publish_drawer_feedback_can_msg(self):
@@ -129,8 +162,8 @@ class TestProcessOutput(unittest.TestCase):
         drawer_feedback_can_msg.id = can_db_defines.CAN_ID_DRAWER_FEEDBACK
         drawer_feedback_can_msg.dlc = can_db_defines.DLC_DRAWER_FEEDBACK
         drawer_feedback_can_msg.data = data['drawer_feedback_can_frame']['data']
-        self.can_in_publisher_.publish(drawer_feedback_can_msg)
-        self.node.get_logger().info('Publishing drawer_feedback_can_msg to from_can_bus topic with can_msg_id: "%s"' % drawer_feedback_can_msg.id)
+        self.__can_in_publisher.publish(drawer_feedback_can_msg)
+        self.__node.get_logger().info('Publishing drawer_feedback_can_msg to from_can_bus topic with can_msg_id: "%s"' % drawer_feedback_can_msg.id)
 
 
     def publish_drawer_error_feedback_can_msg(self):
@@ -148,30 +181,31 @@ class TestProcessOutput(unittest.TestCase):
         error_feedback_can_msg.id = can_db_defines.CAN_ID_ERROR_FEEDBACK
         error_feedback_can_msg.dlc = can_db_defines.DLC_ERROR_FEEDBACK
         error_feedback_can_msg.data = data['error_feedback_can_frame']['data']
-        self.can_in_publisher_.publish(error_feedback_can_msg)
-        self.node.get_logger().info('Publishing to from_can_bus topic with can_msg_id: "%s"' % error_feedback_can_msg.id)
+        self.__can_in_publisher.publish(error_feedback_can_msg)
+        self.__node.get_logger().info('Publishing to from_can_bus topic with can_msg_id: "%s"' % error_feedback_can_msg.id)
 
 
     def drawer_feedback_subscriber_callback(self, drawer_is_open_msg):
-        self.node.get_logger().info('Received msg on drawer_is_open topic. module_id: "%s"' % drawer_is_open_msg.drawer_address.module_id)
-        self.received_data_drawer_is_open_module_id = drawer_is_open_msg.drawer_address.module_id
-        self.received_data_drawer_is_open_drawer_id = drawer_is_open_msg.drawer_address.drawer_id
-        self.received_data_drawer_is_open_drawer_is_open = drawer_is_open_msg.drawer_is_open
-        self.received_drawer_feedback_topic = True
+        self.__node.get_logger().info('Received msg on drawer_is_open topic. module_id: "%s"' % drawer_is_open_msg.drawer_address.module_id)
+        self.__received_data_drawer_is_open_module_id = drawer_is_open_msg.drawer_address.module_id
+        self.__received_data_drawer_is_open_drawer_id = drawer_is_open_msg.drawer_address.drawer_id
+        self.__received_data_drawer_is_open_drawer_is_open = drawer_is_open_msg.drawer_is_open
+        self.__received_drawer_feedback_topic = True
 
     
     def drawer_error_subscriber_callback(self, error_feedback_msg):
-        self.node.get_logger().info('Received msg on robast_error topic. error_code: "%s"' % error_feedback_msg.error_code)
-        self.received_data_error_feedback_error_code = error_feedback_msg.error_code
-        self.received_data_error_feedback_error_data = error_feedback_msg.error_data
-        self.received_drawer_error_feedback_topic = True
+        self.__node.get_logger().info('Received msg on robast_error topic. error_code: "%s"' % error_feedback_msg.error_code)
+        self.__received_data_error_feedback_error_code = error_feedback_msg.error_code
+        self.__received_data_error_feedback_error_data = error_feedback_msg.error_data
+        self.__received_drawer_error_feedback_topic = True
 
     
     def publish_data_to_dut(self):
-        self.open_drawer_publisher_ = self.node.create_publisher(DrawerAddress, 'open_drawer', qos_profile = self.qos_profile)
-        self.led_cmd_publisher_ = self.node.create_publisher(LedCmd, 'led_cmd', qos_profile = self.qos_profile)
-        self.can_in_publisher_ = self.node.create_publisher(Frame,'from_can_bus', qos_profile = self.qos_profile)
         self.publish_data()
+
+    def to_can_bus_callback(self, msg):
+        self.__node.get_logger().info('Received msg on to_can_bus topic. can_id: "%s"' % msg.id)
+        self.__received_data.append(msg)
 
     
     def get_expected_result(self):
@@ -184,32 +218,32 @@ class TestProcessOutput(unittest.TestCase):
 
         with open(EXPECTED_DATA_PATH) as f:
             data = yaml.safe_load(f)
-        self.expected_data_module_id = data['drawer_feedback']['drawer_address']['module_id']
-        self.expected_data_drawer_id = data['drawer_feedback']['drawer_address']['drawer_id']
-        self.expected_data_drawer_is_open = data['drawer_feedback']['drawer_is_open']
+        self.__expected_data_module_id = data['drawer_feedback']['drawer_address']['module_id']
+        self.__expected_data_drawer_id = data['drawer_feedback']['drawer_address']['drawer_id']
+        self.__expected_data_drawer_is_open = data['drawer_feedback']['drawer_is_open']
 
-        self.expected_data_error_feedback_error_code = data['error_feedback']['error_code']
-        self.expected_data_error_feedback_error_data = data['error_feedback']['error_data']
+        self.__expected_data_error_feedback_error_code = data['error_feedback']['error_code']
+        self.__expected_data_error_feedback_error_data = data['error_feedback']['error_data']
+
+        # Loop through the received data on the can bus topic and check if the expected data is in the received data
+        # for msg in self.received_data:
+        #     match msg.id:
+        #         case can_db_defines.CAN_ID_MODULE_CONFIG:
 
     
     def receive_data_from_dut(self):
-        self.received_data = []
-        self.drawer_feedback_subscriber = self.node.create_subscription(
+        self.__received_data = []
+        self.__drawer_feedback_subscriber = self.__node.create_subscription(
             DrawerStatus,
             'drawer_is_open',
             self.drawer_feedback_subscriber_callback,
-            qos_profile=self.qos_profile
+            qos_profile=self.__qos_profile_open_drawer
         )
-        self.drawer_feedback_subscriber = self.node.create_subscription(
+        self.__robast_error_subscriber = self.__node.create_subscription(
             ErrorBaseMsg,
             'robast_error',
             self.drawer_error_subscriber_callback,
-            qos_profile=QoSProfile(
-                reliability=QoSReliabilityPolicy.BEST_EFFORT,
-                history=QoSHistoryPolicy.KEEP_LAST,
-                durability=DurabilityPolicy.TRANSIENT_LOCAL,
-                depth=10
-            )
+            qos_profile=self.__qos_error_msgs
         )
 
    
@@ -226,27 +260,30 @@ class TestProcessOutput(unittest.TestCase):
         self.publish_drawer_error_feedback_can_msg()
 
         try:
-            self.node.get_logger().info('Starting to compare received data with expected data!')
-            while not self.received_drawer_feedback_topic:
-                rclpy.spin_once(self.node, timeout_sec=0.1)
+            self.__node.get_logger().info('Starting to compare received data with expected data!')
+            while not self.__received_drawer_feedback_topic:
+                rclpy.spin_once(self.__node, timeout_sec=0.1)
 
             # test actual output for expected output
             # self.assertEqual(str(test_data), expected_data)
-            self.assertEqual(self.received_data_drawer_is_open_module_id, self.expected_data_module_id)
-            self.assertEqual(self.received_data_drawer_is_open_drawer_id, self.expected_data_drawer_id)
-            self.assertEqual(self.received_data_drawer_is_open_drawer_is_open, self.expected_data_drawer_is_open)
-            self.node.get_logger().info('Finished checking received data from drawer_is_open!')
+            self.assertEqual(self.__received_data_drawer_is_open_module_id, self.__expected_data_module_id)
+            self.assertEqual(self.__received_data_drawer_is_open_drawer_id, self.__expected_data_drawer_id)
+            self.assertEqual(self.__received_data_drawer_is_open_drawer_is_open, self.__expected_data_drawer_is_open)
+            self.__node.get_logger().info('Finished checking received data from drawer_is_open!')
 
-            while not self.received_drawer_error_feedback_topic:
-                rclpy.spin_once(self.node, timeout_sec=0.1)
+            while not self.__received_drawer_error_feedback_topic:
+                rclpy.spin_once(self.__node, timeout_sec=0.1)
 
-            self.assertEqual(self.received_data_error_feedback_error_code, self.expected_data_error_feedback_error_code)
-            self.assertEqual(self.received_data_error_feedback_error_data, self.expected_data_error_feedback_error_data)
-            self.node.get_logger().info('Finished checking received data from robast_error!')
-
-
+            self.assertEqual(self.__received_data_error_feedback_error_code, self.__expected_data_error_feedback_error_code)
+            self.assertEqual(self.__received_data_error_feedback_error_data, self.__expected_data_error_feedback_error_data)
+            self.__node.get_logger().info('Finished checking received data from robast_error!')
 
         finally:
-            self.node.destroy_publisher(self.open_drawer_publisher_)
-            self.node.destroy_publisher(self.led_cmd_publisher_)
-            self.node.destroy_subscription(self.drawer_feedback_subscriber)
+            self.__node.destroy_publisher(self.__can_in_publisher)
+            self.__node.destroy_publisher(self.__open_drawer_publisher)
+            self.__node.destroy_publisher(self.__led_cmd_publisher)
+            self.__node.destroy_subscription(self.__drawer_feedback_subscriber)
+            self.__node.destroy_subscription(self.__robast_error_subscriber)
+            self.__node.destroy_subscription(self.__to_can_bus_subscriber)
+            self.__node.destroy_client(self.__module_config_service_client)
+            self.__node.destroy_client(self.__electrical_drawer_motor_control_service_client)
