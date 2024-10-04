@@ -111,6 +111,7 @@ class _AuthViewState extends State<AuthView> {
                   child: const Text(
                     'Authentifizierung fehlgeschlagen',
                     style: TextStyle(fontSize: 80, color: RobotColors.primaryText),
+                    textAlign: TextAlign.center,
                   ),
                 );
               }

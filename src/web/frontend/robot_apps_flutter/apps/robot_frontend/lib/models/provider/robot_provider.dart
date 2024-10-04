@@ -14,9 +14,14 @@ class RobotProvider extends ChangeNotifier {
   int? _remainingDisinfections;
   int? get remainingDisinfections => _remainingDisinfections;
 
+  bool? _isEmergencyStopPressed;
+  bool? get isEmergencyStopPressed => _isEmergencyStopPressed;
+
   Timer? _batteryLevelUpdateTimer;
   Timer? _robotPoseUpdateTimer;
   Timer? _remainingDisinfectionsUpdateTimer;
+  Timer? _isEmergencyStopPressedUpdateTimer;
+  Timer? _isRobotLostUpdateTimer;
 
   late RobotApiUtilities _robotAPI;
 
@@ -41,32 +46,53 @@ class RobotProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> updateEmergencyStopPressed() async {
+    _isEmergencyStopPressed = await _robotAPI.getEmergencyStopPressed();
+    notifyListeners();
+  }
+
+  void startPeriodicIsEmergencyStopPressedUpdate() {
+    startPeriodicUpdate(
+      timerRef: _isEmergencyStopPressedUpdateTimer,
+      callback: updateEmergencyStopPressed,
+      duration: const Duration(milliseconds: 100),
+    );
+  }
+
   void startPeriodicRemainingDisinfectionsUpdate() {
-    _remainingDisinfectionsUpdateTimer = startPeriodicUpdate(
-      updateRemainingDisinfections,
-      const Duration(seconds: 30),
+    startPeriodicUpdate(
+      timerRef: _remainingDisinfectionsUpdateTimer,
+      callback: updateRemainingDisinfections,
+      duration: const Duration(seconds: 30),
     );
   }
 
   void startPeriodicBatteryLevelUpdate() {
-    _batteryLevelUpdateTimer = startPeriodicUpdate(
-      updateBatteryLevel,
-      const Duration(minutes: 1),
+    startPeriodicUpdate(
+      timerRef: _batteryLevelUpdateTimer,
+      callback: updateBatteryLevel,
+      duration: const Duration(minutes: 1),
     );
   }
 
   void startPeriodicRobotPoseUpdate() {
-    _robotPoseUpdateTimer = startPeriodicUpdate(
-      updateRobotPose,
-      const Duration(milliseconds: 500),
+    startPeriodicUpdate(
+      timerRef: _robotPoseUpdateTimer,
+      callback: updateRobotPose,
+      duration: const Duration(milliseconds: 500),
     );
   }
 
   void startPeriodicIsRobotLostUpdate() {
-    _robotPoseUpdateTimer = startPeriodicUpdate(
-      updateIsRobotLost,
-      const Duration(seconds: 5),
+    startPeriodicUpdate(
+      timerRef: _isRobotLostUpdateTimer,
+      callback: updateIsRobotLost,
+      duration: const Duration(seconds: 30),
     );
+  }
+
+  void stopPeriodicIsEmergencyStopPressedUpdate() {
+    _isEmergencyStopPressedUpdateTimer?.cancel();
   }
 
   void stopPeriodicRemainingDisinfectionsUpdate() {
@@ -82,12 +108,13 @@ class RobotProvider extends ChangeNotifier {
   }
 
   void stopPeriodicIsRobotLostUpdate() {
-    _robotPoseUpdateTimer?.cancel();
+    _isRobotLostUpdateTimer?.cancel();
   }
 
-  Timer startPeriodicUpdate(VoidCallback callback, Duration duration) {
+  void startPeriodicUpdate({required Timer? timerRef, required VoidCallback callback, required Duration duration}) {
+    timerRef?.cancel();
     callback();
-    return Timer.periodic(duration, (timer) {
+    timerRef = Timer.periodic(duration, (timer) {
       callback();
     });
   }

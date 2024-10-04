@@ -215,4 +215,23 @@ class RobotApiUtilities {
       return false;
     }
   }
+
+  Future<bool?> getEmergencyStopPressed() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(
+        Uri.parse('$prefix/emergency_stop_pressed'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        return data['data'] as bool;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
 }
