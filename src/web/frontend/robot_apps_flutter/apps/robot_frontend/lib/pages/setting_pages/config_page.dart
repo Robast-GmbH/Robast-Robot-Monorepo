@@ -37,6 +37,7 @@ class _ConfigPageState extends State<ConfigPage> {
     required String middlewareAddress,
   }) async {
     Provider.of<RobotProvider>(context, listen: false).initRobotAPI(prefix: robotBackendAddress);
+    Provider.of<RobotProvider>(context, listen: false).startPeriodicIsEmergencyStopPressedUpdate();
     MiddlewareApiUtilities().setPrefix(prefix: middlewareAddress);
     unawaited(Provider.of<MapProvider>(context, listen: false).fetchBuildingMap());
     Provider.of<ModuleProvider>(context, listen: false).stopSubmodulesUpdateTimer();
@@ -58,6 +59,7 @@ class _ConfigPageState extends State<ConfigPage> {
     return CustomScaffold(
       showBackButton: !widget.autoClose,
       inactivityTimerEnabled: false,
+      ignoreEmergencyStop: true,
       child: Row(
         children: [
           const Expanded(child: SizedBox()),

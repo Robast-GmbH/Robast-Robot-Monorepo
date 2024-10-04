@@ -298,7 +298,8 @@ namespace robast_can_msgs
     namespace error_code
     {
       constexpr uint64_t TIMEOUT_DRAWER_NOT_OPENED = 1;
-      constexpr uint64_t E_DRAWER_TASK_NOT_SUPPORTED_BY_MODULE = 2;
+      constexpr uint64_t DRAWER_CLOSED_IN_IDLE_STATE = 2;
+      constexpr uint64_t E_DRAWER_TASK_NOT_SUPPORTED_BY_MODULE = 3;
     }   // namespace error_code
   }   // namespace can_data
 }   // namespace robast_can_msgs

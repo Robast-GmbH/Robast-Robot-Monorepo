@@ -24,6 +24,7 @@ services:
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
       - ./start_scripts/:/start_scripts/:ro
+      - ./log/:/home/robast/log/:rw
     stop_signal: SIGINT
     restart: unless-stopped
     pull_policy: always

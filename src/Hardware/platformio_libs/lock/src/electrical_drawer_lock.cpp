@@ -35,7 +35,7 @@ namespace lock
 
   void ElectricalDrawerLock::handle_lock_control()
   {
-    // Mind that the expected lock state is changed in the handle_lock_status function when a CAN msg is received
+    // Mind that the expected lock state is changed when a CAN msg is received
     const bool change_lock_state = _expected_lock_state_current_step != _lock_state_previous_step;
 
     const unsigned long current_timestamp = millis();

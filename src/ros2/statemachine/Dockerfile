@@ -50,30 +50,24 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 FROM ghcr.io/robast-gmbh/monorepo/building-docker:${ROS_BUILD_DISTRO} as build
 ARG ROS_BUILD_DISTRO
 COPY . /ws/src/statemachine
+COPY --from=devel /robast /robast
 
 WORKDIR /tmp
 RUN git clone -b 4.5.x https://github.com/BehaviorTree/BehaviorTree.CPP.git
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/; mkdir /robast; mkdir -p /robast/src/BT; \
+RUN mkdir -p /ws/src/ros2/; mkdir -p /robast/src/BT; \
   mv /tmp/BehaviorTree.CPP /robast/src/BT \
   && mv /monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
   && mv /monorepo/src/ros2/error_handling /ws/src/ros2/error_handling \
   && mv /monorepo/src/ros2/dds_configs /robast/dds_configs
 
-RUN rosdep update && \
-  rosdep install --from-paths /ws/src --ignore-src -r -y && \
-  . /opt/ros/${ROS_DISTRO}/setup.sh && \
-  . /robast/${ROS_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
-
-WORKDIR /robotnik
-
-RUN rosdep update && \
-  rosdep install --from-paths /ws/src --ignore-src -r -y && \
-  . /opt/ros/${ROS_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
-
+RUN apt-get update && \
+  rosdep update && \
+  rosdep install --from-paths /ws/src --ignore-src -r -y \
+  . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
+  . /robast/${ROS_BUILD_DISTRO}/setup.sh && \
+  colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 ############################## Release ##################################
 FROM ros:${ROS_BUILD_DISTRO}-ros-base as release
