@@ -306,6 +306,9 @@ namespace drawer_bridge
                                                     std::shared_ptr<ModuleConfig::Response> response)
   {
     set_module_config(request->module_address.module_id, request->config_id, request->config_value);
+
+    // TODO: We should wait for the feedback from the module and then set the response
+    response->success = true;
   }
 
   void DrawerBridge::motor_control_service_callback(
@@ -314,6 +317,9 @@ namespace drawer_bridge
   {
     const CanMessage can_msg = _can_message_creator.create_can_msg_e_drawer_motor_control(request);
     send_can_msg(can_msg);
+
+    // TODO: We should wait for the feedback from the module and then set the response
+    response->success = true;
   }
 
   void DrawerBridge::set_module_config(const uint32_t module_id, const uint8_t config_id, const uint32_t config_value)
