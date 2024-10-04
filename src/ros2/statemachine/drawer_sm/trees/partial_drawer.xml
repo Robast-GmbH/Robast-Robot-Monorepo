@@ -53,6 +53,7 @@
             <PublishStateFeedback state_feedback="closing"
                                   state_feedback_topic="/module_state_update"
                                   drawer_address="{drawer}"/>
+            <Sleep msec="100"/>
           </Sequence>
         </KeepRunningUntilFailure>
         <KeepRunningUntilFailure>
