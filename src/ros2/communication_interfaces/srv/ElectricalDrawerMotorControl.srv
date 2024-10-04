@@ -1,0 +1,8 @@
+#request
+DrawerAddress module_address
+uint8 motor_id
+bool enable_motor
+
+---
+#response
+bool success

@@ -35,17 +35,6 @@ namespace drawer_bridge
       "from_can_bus",
       _qos_config.get_qos_can_messages(),
       std::bind(&DrawerBridge::receive_can_msg_callback, this, std::placeholders::_1));
-
-    _module_config_subscription = this->create_subscription<ModuleConfig>(
-      "module_config",
-      _qos_config.get_qos_open_drawer(),
-      std::bind(&DrawerBridge::module_config_topic_callback, this, std::placeholders::_1));
-
-    // TODO@All: In my opinion (Jacob) we should move all module related ros2 topics into the namespace "modules"
-    _electrical_drawer_motor_control_subscription = this->create_subscription<ElectricalDrawerMotorControl>(
-      "modules/motor_control",
-      _qos_config.get_qos_open_drawer(),
-      std::bind(&DrawerBridge::motor_control_topic_callback, this, std::placeholders::_1));
   }
 
   void DrawerBridge::setup_publishers()
@@ -68,6 +57,14 @@ namespace drawer_bridge
     _shelf_setup_info_service = create_service<ShelfSetupInfo>(
       "shelf_setup_info",
       std::bind(&DrawerBridge::provide_shelf_setup_info_callback, this, std::placeholders::_1, std::placeholders::_2));
+
+    _module_config_service = create_service<ModuleConfig>(
+      "module_config",
+      std::bind(&DrawerBridge::module_config_service_callback, this, std::placeholders::_1, std::placeholders::_2));
+
+    _electrical_drawer_motor_control_service = create_service<ElectricalDrawerMotorControl>(
+      "motor_control",
+      std::bind(&DrawerBridge::motor_control_service_callback, this, std::placeholders::_1, std::placeholders::_2));
   }
 
   void DrawerBridge::open_drawer_topic_callback(const DrawerAddress& msg)
@@ -305,14 +302,17 @@ namespace drawer_bridge
     _can_msg_publisher->publish(can_msg);
   }
 
-  void DrawerBridge::module_config_topic_callback(const ModuleConfig& msg)
+  void DrawerBridge::module_config_service_callback(const std::shared_ptr<ModuleConfig::Request> request,
+                                                    std::shared_ptr<ModuleConfig::Response> response)
   {
-    set_module_config(msg.module_address.module_id, msg.config_id, msg.config_value);
+    set_module_config(request->module_address.module_id, request->config_id, request->config_value);
   }
 
-  void DrawerBridge::motor_control_topic_callback(const ElectricalDrawerMotorControl& msg)
+  void DrawerBridge::motor_control_service_callback(
+    const std::shared_ptr<ElectricalDrawerMotorControl::Request> request,
+    std::shared_ptr<ElectricalDrawerMotorControl::Response> response)
   {
-    const CanMessage can_msg = _can_message_creator.create_can_msg_e_drawer_motor_control(msg);
+    const CanMessage can_msg = _can_message_creator.create_can_msg_e_drawer_motor_control(request);
     send_can_msg(can_msg);
   }
 

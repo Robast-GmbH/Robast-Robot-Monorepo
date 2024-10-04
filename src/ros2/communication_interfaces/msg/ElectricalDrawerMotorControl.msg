@@ -1,3 +1,0 @@
-DrawerAddress drawer_address
-uint8 motor_id
-bool enable_motor

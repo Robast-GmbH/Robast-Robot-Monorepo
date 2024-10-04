@@ -28,14 +28,13 @@
 #include "can_msgs/msg/frame.hpp"
 #include "communication_interfaces/msg/drawer_status.hpp"
 #include "communication_interfaces/msg/drawer_task.hpp"
-#include "communication_interfaces/msg/electrical_drawer_motor_control.hpp"
 #include "communication_interfaces/msg/electrical_drawer_status.hpp"
 #include "communication_interfaces/msg/error_base_msg.hpp"
 #include "communication_interfaces/msg/led.hpp"
 #include "communication_interfaces/msg/led_cmd.hpp"
-#include "communication_interfaces/msg/module.hpp"
-#include "communication_interfaces/msg/module_config.hpp"
 #include "communication_interfaces/msg/tray_task.hpp"
+#include "communication_interfaces/srv/electrical_drawer_motor_control.hpp"
+#include "communication_interfaces/srv/module_config.hpp"
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
 #include "drawer_bridge/can_encoder_decoder.hpp"
 #include "drawer_bridge/can_message_creator.hpp"
@@ -80,13 +79,14 @@ namespace drawer_bridge
     using Led = communication_interfaces::msg::Led;
     using LedCmd = communication_interfaces::msg::LedCmd;
     using DrawerStatus = communication_interfaces::msg::DrawerStatus;
-    using ElectricalDrawerMotorControl = communication_interfaces::msg::ElectricalDrawerMotorControl;
     using ElectricalDrawerStatus = communication_interfaces::msg::ElectricalDrawerStatus;
     using ErrorBaseMsg = communication_interfaces::msg::ErrorBaseMsg;
     using ShelfSetupInfo = communication_interfaces::srv::ShelfSetupInfo;
     using TrayTask = communication_interfaces::msg::TrayTask;
-    using ModuleConfig = communication_interfaces::msg::ModuleConfig;
     using CanMessage = can_msgs::msg::Frame;
+
+    using ElectricalDrawerMotorControl = communication_interfaces::srv::ElectricalDrawerMotorControl;
+    using ModuleConfig = communication_interfaces::srv::ModuleConfig;
 
     /**
      * @brief A constructor for drawer_bridge::DrawerBridge class
@@ -98,20 +98,24 @@ namespace drawer_bridge
     void set_module_config(const uint32_t module_id, const uint8_t config_id, const uint32_t config_value);
 
    private:
-    /* VARIABLES */
-    rclcpp::Service<ShelfSetupInfo>::SharedPtr _shelf_setup_info_service;
+    // Publishers
+    rclcpp::Publisher<ElectricalDrawerStatus>::SharedPtr _electrical_drawer_status_publisher;
+    rclcpp::Publisher<DrawerStatus>::SharedPtr _drawer_status_publisher;
+    rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr _push_to_close_triggered;
+    rclcpp::Publisher<ErrorBaseMsg>::SharedPtr _error_msg_publisher;
+    rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr _can_msg_publisher;
+
+    // Subscriptions
     rclcpp::Subscription<DrawerAddress>::SharedPtr _open_drawer_subscription;
     rclcpp::Subscription<DrawerTask>::SharedPtr _drawer_task_subscription;
     rclcpp::Subscription<LedCmd>::SharedPtr _led_cmd_subscription;
     rclcpp::Subscription<TrayTask>::SharedPtr _tray_task_subscription;
-    rclcpp::Subscription<ModuleConfig>::SharedPtr _module_config_subscription;
     rclcpp::Subscription<CanMessage>::SharedPtr _can_messages_subscription;
-    rclcpp::Subscription<ElectricalDrawerMotorControl>::SharedPtr _electrical_drawer_motor_control_subscription;
-    rclcpp::Publisher<DrawerStatus>::SharedPtr _drawer_status_publisher;
-    rclcpp::Publisher<ElectricalDrawerStatus>::SharedPtr _electrical_drawer_status_publisher;
-    rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr _push_to_close_triggered;
-    rclcpp::Publisher<ErrorBaseMsg>::SharedPtr _error_msg_publisher;
-    rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr _can_msg_publisher;
+
+    // Services
+    rclcpp::Service<ElectricalDrawerMotorControl>::SharedPtr _electrical_drawer_motor_control_service;
+    rclcpp::Service<ModuleConfig>::SharedPtr _module_config_service;
+    rclcpp::Service<ShelfSetupInfo>::SharedPtr _shelf_setup_info_service;
 
     robast_can_msgs::CanDb _can_db = robast_can_msgs::CanDb();
 
@@ -129,9 +133,11 @@ namespace drawer_bridge
 
     void tray_task_topic_callback(const TrayTask& msg);
 
-    void module_config_topic_callback(const ModuleConfig& msg);
+    void module_config_service_callback(const std::shared_ptr<ModuleConfig::Request> request,
+                                        std::shared_ptr<ModuleConfig::Response> response);
 
-    void motor_control_topic_callback(const ElectricalDrawerMotorControl& msg);
+    void motor_control_service_callback(const std::shared_ptr<ElectricalDrawerMotorControl::Request> request,
+                                        std::shared_ptr<ElectricalDrawerMotorControl::Response> response);
 
     void setup_publishers();
 

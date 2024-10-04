@@ -127,7 +127,7 @@ namespace drawer_bridge
   }
 
   can_msgs::msg::Frame CanMessageCreator::create_can_msg_e_drawer_motor_control(
-    const ElectricalDrawerMotorControl& motor_control) const
+    const std::shared_ptr<ElectricalDrawerMotorControl::Request> motor_control_request) const
   {
     robast_can_msgs::CanMessage can_msg_e_drawer_motor_control =
       _can_db.can_messages.at(robast_can_msgs::can_msg::ELECTRICAL_DRAWER_MOTOR_CONTROL);
@@ -136,13 +136,13 @@ namespace drawer_bridge
       can_msg_e_drawer_motor_control.get_can_signals();
 
     can_signals_e_drawer_motor_control.at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::MODULE_ID)
-      .set_data(motor_control.drawer_address.module_id);
+      .set_data(motor_control_request->module_address.module_id);
     can_signals_e_drawer_motor_control.at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::MOTOR_ID)
-      .set_data(motor_control.motor_id);
+      .set_data(motor_control_request->motor_id);
     can_signals_e_drawer_motor_control
       .at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::ENABLE_MOTOR)
-      .set_data(motor_control.enable_motor ? robast_can_msgs::can_data::ENABLE_MOTOR
-                                           : robast_can_msgs::can_data::DISABLE_MOTOR);
+      .set_data(motor_control_request->enable_motor ? robast_can_msgs::can_data::ENABLE_MOTOR
+                                                    : robast_can_msgs::can_data::DISABLE_MOTOR);
 
     can_msg_e_drawer_motor_control.set_can_signals(can_signals_e_drawer_motor_control);
 
