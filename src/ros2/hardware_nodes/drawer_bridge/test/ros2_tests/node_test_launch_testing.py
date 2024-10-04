@@ -147,6 +147,30 @@ class TestProcessOutput(unittest.TestCase):
         self.__node.get_logger().info('Publishing to open_drawer topic with module_id: "%s"' % drawer_address_msg.module_id)
 
 
+    def call_service_clients(self):
+        # Read input data that is send to dut
+        INPUT_DATA_PATH = os.path.join(
+        ament_index_python.get_package_prefix('drawer_bridge'),
+            'lib/drawer_bridge',
+            'node_test_input_data.yaml'
+        )
+
+        with open(INPUT_DATA_PATH) as f:
+            data = yaml.safe_load(f)
+
+        while not self.__module_config_service_client.wait_for_service(timeout_sec=1.0):
+            self.__node.get_logger().info('service not available, waiting again...')
+        module_config_request = ModuleConfig.Request()
+        module_config_request.module_address.module_id = data['module_config']['module_id']
+        module_config_request.module_address.drawer_id = data['module_config']['drawer_id']
+        module_config_request.config_id = data['module_config']['config_id']
+        module_config_request.config_value = data['module_config']['config_value']
+        future = self.__module_config_service_client.call_async(module_config_request)
+        rclpy.spin_until_future_complete(self.__node, future)
+        self.__module_config_service_response = future.result()
+
+
+
     def publish_drawer_feedback_can_msg(self):
           # Read input data that is send to dut
         INPUT_DATA_PATH = os.path.join(
@@ -202,10 +226,12 @@ class TestProcessOutput(unittest.TestCase):
     
     def publish_data_to_dut(self):
         self.publish_data()
+        self.call_service_clients()
 
     def to_can_bus_callback(self, msg):
         self.__node.get_logger().info('Received msg on to_can_bus topic. can_id: "%s"' % msg.id)
-        self.__received_data.append(msg)
+        # TODO: Append the data that should be sent over the can bus and check it in the test
+        # self.__received_data.append(msg)
 
     
     def get_expected_result(self):
@@ -277,6 +303,10 @@ class TestProcessOutput(unittest.TestCase):
             self.assertEqual(self.__received_data_error_feedback_error_code, self.__expected_data_error_feedback_error_code)
             self.assertEqual(self.__received_data_error_feedback_error_data, self.__expected_data_error_feedback_error_data)
             self.__node.get_logger().info('Finished checking received data from robast_error!')
+
+            # Check if service requests were successful
+            self.assertEqual(self.__module_config_service_response.success, True)
+            # TODO: Check if the data sent to the "to_can_bus" topic is correct
 
         finally:
             self.__node.destroy_publisher(self.__can_in_publisher)

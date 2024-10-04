@@ -22,3 +22,7 @@ error_feedback_can_frame:
   data: [0x01, 0x02, 0x03, 0x01, 0b00000100, 0x00, 0x00, 0x00]
 
 module_config:
+  module_id: 0x010203
+  drawer_id: 1
+  config_id: 5
+  config_value: 10
