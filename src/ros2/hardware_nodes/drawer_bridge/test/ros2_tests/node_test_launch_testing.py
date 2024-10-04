@@ -125,12 +125,12 @@ class TestProcessOutput(unittest.TestCase):
         with open(INPUT_DATA_PATH) as f:
             data = yaml.safe_load(f)
 
-        drawer_is_open_can_msg = Frame()
-        drawer_is_open_can_msg.id = can_db_defines.CAN_ID_DRAWER_FEEDBACK
-        drawer_is_open_can_msg.dlc = can_db_defines.DLC_DRAWER_FEEDBACK
-        drawer_is_open_can_msg.data = data['drawer_feedback_can_frame']['data']
-        self.can_in_publisher_.publish(drawer_is_open_can_msg)
-        self.node.get_logger().info('Publishing drawer_is_open_can_msg to from_can_bus topic with can_msg_id: "%s"' % drawer_is_open_can_msg.id)
+        drawer_feedback_can_msg = Frame()
+        drawer_feedback_can_msg.id = can_db_defines.CAN_ID_DRAWER_FEEDBACK
+        drawer_feedback_can_msg.dlc = can_db_defines.DLC_DRAWER_FEEDBACK
+        drawer_feedback_can_msg.data = data['drawer_feedback_can_frame']['data']
+        self.can_in_publisher_.publish(drawer_feedback_can_msg)
+        self.node.get_logger().info('Publishing drawer_feedback_can_msg to from_can_bus topic with can_msg_id: "%s"' % drawer_feedback_can_msg.id)
 
 
     def publish_drawer_error_feedback_can_msg(self):
