@@ -18,7 +18,7 @@ class DisinfectionModuleBridge(BaseBridge):
             on_msg_callback=self.__on_disinfection_triggered,
         )
         home_directory = os.path.expanduser("~")
-        self.file_path = f"{home_directory}/log/remaining_disinfections.txt"
+        self.__file_path = f"{home_directory}/log/remaining_disinfections.txt"
 
     def wait_for_disinfection_triggered(self, time_out: int) -> Dict[str, str]:
         disinfection_triggered.clear()
@@ -45,8 +45,8 @@ class DisinfectionModuleBridge(BaseBridge):
         if remaining_disinfections < 0:
             return False
         try:
-            os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
-            with open(self.file_path, "w") as file:
+            os.makedirs(os.path.dirname(self.__file_path), exist_ok=True)
+            with open(self.__file_path, "w") as file:
                 file.write(str(remaining_disinfections))
             return True
         except (PermissionError, OSError, TypeError):
@@ -54,7 +54,7 @@ class DisinfectionModuleBridge(BaseBridge):
 
     def __read_remaining_disinfections(self) -> int | None:
         try:
-            with open(self.file_path, "r") as file:
+            with open(self.__file_path, "r") as file:
                 return int(file.read().strip())
         except (FileNotFoundError, ValueError):
             return None
