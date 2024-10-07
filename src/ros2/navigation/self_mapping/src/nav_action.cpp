@@ -5,13 +5,9 @@
 NavAction::NavAction() : Node("self_mapping_node"), _tf_buffer(get_clock()), _is_navigating(false)
 {
   //parameters
-  this->declare_parameter<std::string>("map_frame", "map");
-  this->declare_parameter<std::string>("costmap_topic", "global_costmap/costmap");
-  this->declare_parameter<std::string>("base_frame", "base_link");
+  this->declare_parameter<std::string>("robot_base_frame_param", "base_link");
+  this->get_parameter("robot_base_frame_param", _base_frame);
 
-  this->get_parameter("map_frame", _map_frame);
-  this->get_parameter("costmap_topic", _costmap_topic);
-  this->get_parameter("base_frame", _base_frame);
   _action_client = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(this, "navigate_to_pose");
 
   rclcpp::QoS _costmap_qos_profile(1);  
@@ -19,7 +15,7 @@ NavAction::NavAction() : Node("self_mapping_node"), _tf_buffer(get_clock()), _is
   _costmap_qos_profile.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL); 
 
   _costmap_sub = this->create_subscription<nav_msgs::msg::OccupancyGrid>(
-      _costmap_topic, _costmap_qos_profile, std::bind(&NavAction::costmap_callback, this, std::placeholders::_1));
+      "global_costmap/costmap", _costmap_qos_profile, std::bind(&NavAction::costmap_callback, this, std::placeholders::_1));
 
   RCLCPP_DEBUG(this->get_logger(), "NavAction Node Initialized");
   
@@ -32,7 +28,7 @@ nav2_msgs::action::NavigateToPose::Goal NavAction::create_goal_message(const geo
   auto goal_msg = nav2_msgs::action::NavigateToPose::Goal();
   goal_msg.pose.pose.position = goal.pose.position;
   goal_msg.pose.pose.orientation.w = 1.;
-  goal_msg.pose.header.frame_id = _map_frame;
+  goal_msg.pose.header.frame_id = "map";
   goal_msg.pose.header.stamp = this->now();
   goal_msg.behavior_tree = "/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_w_recovery_and_replanning_only_if_path_becomes_invalid.xml";
   return goal_msg;
@@ -218,7 +214,7 @@ void NavAction::update_current_position()
   geometry_msgs::msg::TransformStamped transform_stamped;
 
   try {
-    transform_stamped = _tf_buffer.lookupTransform(_map_frame, _base_frame, tf2::TimePointZero);
+    transform_stamped = _tf_buffer.lookupTransform("map", _base_frame, tf2::TimePointZero);
   } catch (tf2::TransformException &ex) {
     RCLCPP_WARN(this->get_logger(), "Could not transform map frame to base frame: %s", ex.what());
     return;
@@ -243,7 +239,7 @@ void NavAction::publish_frontier_markers()
   for (const auto &frontier : _frontiers) {
     visualization_msgs::msg::Marker _marker;
 
-    _marker.header.frame_id = _map_frame;  
+    _marker.header.frame_id = "map";  
     _marker.header.stamp = this->get_clock()->now();
     _marker.ns = "frontiers";
     _marker.id = id++;  
