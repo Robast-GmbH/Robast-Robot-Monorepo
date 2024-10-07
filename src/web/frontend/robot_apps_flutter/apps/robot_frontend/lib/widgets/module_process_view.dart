@@ -119,7 +119,7 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
             moduleProvider.openSubmodule(moduleInProcess);
           });
         }
-        if (processStatus == ModuleProcessStatus.closed && !waitingForFinish && !reopeningTriggered && !openingTriggered) {
+        if (processStatus == ModuleProcessStatus.closed && !waitingForFinish && !reopeningTriggered) {
           waitingForFinish = true;
           finishedTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
             finishTimerClockIndex++;
