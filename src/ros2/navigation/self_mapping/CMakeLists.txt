@@ -18,7 +18,6 @@ find_package(visualization_msgs REQUIRED)
 set(DEPENDENCIES
   rclcpp
   geometry_msgs  
-  tf2
   tf2_ros
   tf2_geometry_msgs
   nav2_msgs
