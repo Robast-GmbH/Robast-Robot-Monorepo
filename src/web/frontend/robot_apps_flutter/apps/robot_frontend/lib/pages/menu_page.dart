@@ -6,7 +6,6 @@ import 'package:robot_frontend/models/provider/inactivity_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/models/sidebar_menu_point.dart';
-import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/caire_ai_card_view.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
