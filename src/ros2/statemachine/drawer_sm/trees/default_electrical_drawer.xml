@@ -17,39 +17,70 @@
   </BehaviorTree>
 
   <BehaviorTree ID="LED_Closing">
-    <KeepRunningUntilFailure>
-      <Sequence>
-        <InitLEDVector size="21"
-                       led_vector="{leds}"/>
-        <PartialColorizeLED LEDs="{leds}"
-                            blue="0"
-                            brightness="150"
-                            green="166"
-                            lower_bound="0.0"
-                            red="236"
-                            upper_bound="100.0"
-                            LEDs_colored="{leds}"/>
-        <LEDPublisherAction drawer_address="{drawer}"
-                            fading_time_ms="500"
-                            led_topic="/led_cmd"
-                            leds="{leds}"/>
-        <PartialColorizeLED LEDs="{leds}"
-                            blue="0"
-                            brightness="0"
-                            green="166"
-                            lower_bound="0.0"
-                            red="236"
-                            upper_bound="100.0"
-                            LEDs_colored="{leds}"/>
-        <Delay delay_msec="500">
+    <Parallel failure_count="1"
+              success_count="1">
+      <KeepRunningUntilFailure>
+        <Sequence>
+          <ElectricDrawerStatusCondition target_value="0"
+                                         topic="/electrical_drawer_status"
+                                         use_stallguard="true"/>
+          <PublishStateFeedback state_feedback="stall_guard_triggered"
+                                state_feedback_topic="/module_state_update"
+                                drawer_address="{drawer}"/>
+          <ReactiveIfThenElse>
+            <BoolTopicCondition target_value="true"
+                                topic="/push_to_close_triggered"/>
+            <AlwaysSuccess/>
+            <Sequence>
+              <DrawerChangeStateReq drawer_address_topic="/close_drawer"
+                                    drawer_address="{drawer}"/>
+              <MoveElectricDrawer drawer_address="{drawer}"
+                                  move_electric_drawer_topic="/electrical_drawer_task"
+                                  speed="200"
+                                  stall_guard_value="0"
+                                  target_position="0"/>
+            </Sequence>
+          </ReactiveIfThenElse>
+          <PublishStateFeedback state_feedback="closing"
+                                state_feedback_topic="/module_state_update"
+                                drawer_address="{drawer}"/>
+          <Sleep msec="100"/>
+        </Sequence>
+      </KeepRunningUntilFailure>
+      <KeepRunningUntilFailure>
+        <Sequence>
+          <InitLEDVector size="21"
+                         led_vector="{leds}"/>
+          <PartialColorizeLED LEDs="{leds}"
+                              blue="0"
+                              brightness="150"
+                              green="166"
+                              lower_bound="0.0"
+                              red="236"
+                              upper_bound="100.0"
+                              LEDs_colored="{leds}"/>
           <LEDPublisherAction drawer_address="{drawer}"
                               fading_time_ms="500"
                               led_topic="/led_cmd"
                               leds="{leds}"/>
-        </Delay>
-        <Sleep msec="500"/>
-      </Sequence>
-    </KeepRunningUntilFailure>
+          <PartialColorizeLED LEDs="{leds}"
+                              blue="0"
+                              brightness="0"
+                              green="166"
+                              lower_bound="0.0"
+                              red="236"
+                              upper_bound="100.0"
+                              LEDs_colored="{leds}"/>
+          <Delay delay_msec="500">
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="500"
+                                led_topic="/led_cmd"
+                                leds="{leds}"/>
+          </Delay>
+          <Sleep msec="500"/>
+        </Sequence>
+      </KeepRunningUntilFailure>
+    </Parallel>
   </BehaviorTree>
 
   <BehaviorTree ID="LED_Default">
@@ -109,13 +140,13 @@
         <PartialColorizeLED LEDs="{leds}"
                             blue="0"
                             brightness="150"
-                            green="166"
+                            green="130"
                             lower_bound="0.0"
-                            red="236"
+                            red="255"
                             upper_bound="100.0"
                             LEDs_colored="{leds}"/>
         <LEDPublisherAction drawer_address="{drawer}"
-                            fading_time_ms="500"
+                            fading_time_ms="700"
                             led_topic="/led_cmd"
                             leds="{leds}"/>
         <PartialColorizeLED LEDs="{leds}"
@@ -123,29 +154,45 @@
                             brightness="0"
                             green="166"
                             lower_bound="0.0"
-                            red="236"
+                            red="255"
                             upper_bound="100.0"
                             LEDs_colored="{leds}"/>
-        <Delay delay_msec="500">
+        <Delay delay_msec="700">
           <LEDPublisherAction drawer_address="{drawer}"
-                              fading_time_ms="500"
+                              fading_time_ms="700"
                               led_topic="/led_cmd"
                               leds="{leds}"/>
         </Delay>
-        <Sleep msec="500"/>
+        <Sleep msec="700"/>
       </Sequence>
     </KeepRunningUntilFailure>
   </BehaviorTree>
 
   <BehaviorTree ID="Opening_electrical_drawer">
     <Sequence>
+      <PublishStateFeedback state_feedback="opening"
+                            state_feedback_topic="/module_state_update"
+                            drawer_address="{drawer}"/>
       <Parallel failure_count="1"
                 success_count="1">
         <SubTree ID="LED_unlocked"
                  _autoremap="true"/>
-        <ElectricDrawerStatusCondition target_value="251"
-                                       topic="/electrical_drawer_status"
-                                       use_stallguard="true"/>
+        <Sequence>
+          <ElectricDrawerStatusCondition target_value="220"
+                                         topic="/electrical_drawer_status"
+                                         use_stallguard="false"/>
+          <PublishStateFeedback state_feedback="open"
+                                state_feedback_topic="/module_state_update"
+                                drawer_address="{drawer}"/>
+        </Sequence>
+        <Sequence>
+          <ElectricDrawerStatusCondition target_value="220"
+                                         topic="/electrical_drawer_status"
+                                         use_stallguard="true"/>
+          <PublishStateFeedback state_feedback="stall_guard_triggered"
+                                state_feedback_topic="/module_state_update"
+                                drawer_address="{drawer}"/>
+        </Sequence>
       </Parallel>
       <PublishDrawerStatus topic_name="/bt_drawer_open"
                            status="true"
@@ -160,68 +207,89 @@
   </BehaviorTree>
 
   <BehaviorTree ID="default_electrical_drawer_tree">
-    <BaseErrorDecorator topic="/robast_error">
-      <Sequence>
-        <GetBlackboardEntry key="drawer_address"
-                            value="{drawer}"/>
-        <SubTree ID="LED_Start"
-                 _autoremap="true"/>
-        <LEDPublisherAction drawer_address="{drawer}"
-                            fading_time_ms="500"
-                            led_topic="/led_cmd"
-                            leds="{leds}"/>
-        <Delay delay_msec="1000">
-          <OpenDrawer drawer_address="{drawer}"
-                      drawer_open_topic="/open_drawer"/>
-        </Delay>
-        <Delay delay_msec="1000">
-          <MoveElectricDrawer drawer_address="{drawer}"
-                              move_electric_drawer_topic="/electrical_drawer_task"
-                              speed="255"
-                              stall_guard_value="0"
-                              target_position="251"/>
-        </Delay>
-        <ReactiveIfThenElse>
-          <Inverter>
-            <BoolTopicCondition target_value="true"
-                                topic="/push_to_close_triggered"/>
-          </Inverter>
-          <Sequence>
-            <SubTree ID="Opening_electrical_drawer"
-                     _autoremap="true"/>
-            <DrawerChangeStateReq drawer_address_topic="/close_drawer"
-                                  drawer_address="{drawer}"/>
-            <MoveElectricDrawer drawer_address="{drawer}"
-                                move_electric_drawer_topic="/electrical_drawer_task"
-                                speed="150"
-                                stall_guard_value="0"
-                                target_position="0"/>
-          </Sequence>
-          <AlwaysSuccess/>
-        </ReactiveIfThenElse>
-        <Parallel failure_count="1"
-                  success_count="1">
-          <SubTree ID="LED_Closing"
-                   _autoremap="true"/>
-          <ElectricDrawerStatusCondition target_value="0"
-                                         topic="/electrical_drawer_status"
-                                         use_stallguard="false"/>
-        </Parallel>
+    <Fallback>
+      <BaseErrorDecorator topic="/robast_error">
         <Sequence>
-          <DrawerStatusCondition target_value="false"
-                                 topic="/drawer_is_open"/>
-          <SubTree ID="LED_Default"
+          <GetBlackboardEntry key="drawer_address"
+                              value="{drawer}"/>
+          <SubTree ID="LED_Start"
                    _autoremap="true"/>
           <LEDPublisherAction drawer_address="{drawer}"
                               fading_time_ms="500"
                               led_topic="/led_cmd"
                               leds="{leds}"/>
+          <Delay delay_msec="1000">
+            <OpenDrawer drawer_address="{drawer}"
+                        drawer_open_topic="/open_drawer"/>
+          </Delay>
+          <Delay delay_msec="1000">
+            <MoveElectricDrawer drawer_address="{drawer}"
+                                move_electric_drawer_topic="/electrical_drawer_task"
+                                speed="255"
+                                stall_guard_value="0"
+                                target_position="220"/>
+          </Delay>
+          <ReactiveIfThenElse>
+            <Inverter>
+              <BoolTopicCondition target_value="true"
+                                  topic="/push_to_close_triggered"/>
+            </Inverter>
+            <Sequence>
+              <SubTree ID="Opening_electrical_drawer"
+                       _autoremap="true"/>
+              <DrawerChangeStateReq drawer_address_topic="/close_drawer"
+                                    drawer_address="{drawer}"/>
+              <MoveElectricDrawer drawer_address="{drawer}"
+                                  move_electric_drawer_topic="/electrical_drawer_task"
+                                  speed="150"
+                                  stall_guard_value="0"
+                                  target_position="0"/>
+            </Sequence>
+            <AlwaysSuccess/>
+          </ReactiveIfThenElse>
+          <PublishStateFeedback state_feedback="closing"
+                                state_feedback_topic="/module_state_update"
+                                drawer_address="{drawer}"/>
+          <Parallel failure_count="1"
+                    success_count="1">
+            <SubTree ID="LED_Closing"
+                     _autoremap="true"/>
+            <ElectricDrawerStatusCondition target_value="0"
+                                           topic="/electrical_drawer_status"
+                                           use_stallguard="false"/>
+          </Parallel>
+          <Sequence>
+            <DrawerStatusCondition target_value="false"
+                                   topic="/drawer_is_open"/>
+            <SubTree ID="LED_Default"
+                     _autoremap="true"/>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="500"
+                                led_topic="/led_cmd"
+                                leds="{leds}"/>
+          </Sequence>
+          <PublishDrawerStatus topic_name="/bt_drawer_open"
+                               status="false"
+                               drawer_address="{drawer}"/>
+          <PublishStateFeedback state_feedback="closed"
+                                state_feedback_topic="/module_state_update"
+                                drawer_address="{drawer}"/>
         </Sequence>
-        <PublishDrawerStatus topic_name="/bt_drawer_open"
-                             status="false"
-                             drawer_address="{drawer}"/>
+      </BaseErrorDecorator>
+      <Sequence>
+        <GetBlackboardEntry key="drawer_address"
+                            value="{drawer}"/>
+        <SubTree ID="LED_Default"
+                 _autoremap="true"/>
+        <LEDPublisherAction drawer_address="{drawer}"
+                            fading_time_ms="500"
+                            led_topic="/led_cmd"
+                            leds="{leds}"/>
+        <PublishStateFeedback state_feedback="closed"
+                              state_feedback_topic="/module_state_update"
+                              drawer_address="{drawer}"/>
       </Sequence>
-    </BaseErrorDecorator>
+    </Fallback>
   </BehaviorTree>
 
   <!-- Description of Node Models (used by Groot) -->
@@ -332,6 +400,15 @@
                   default="/bt_drawer_open"/>
       <input_port name="status"
                   default="false"/>
+      <input_port name="drawer_address"
+                  default="{drawer}"/>
+    </Action>
+    <Action ID="PublishStateFeedback"
+            editable="true">
+      <input_port name="state_feedback"
+                  default="Idle"/>
+      <input_port name="state_feedback_topic"
+                  default="/state_feedback"/>
       <input_port name="drawer_address"
                   default="{drawer}"/>
     </Action>

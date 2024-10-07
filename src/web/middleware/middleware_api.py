@@ -64,9 +64,10 @@ def read_robot_pos(robot_url: str = Depends(get_robot_url)):
     return response
 
 
-@app.get("/battery_level", tags=["Robot Status"])
-def read_robot_battery_level(robot_url: str = Depends(get_robot_url)):
-    return {"battery_level": 1.0}
+@app.get("/battery_status", tags=["Robot Status"])
+def read_robot_battery_status(robot_url: str = Depends(get_robot_url)):
+    response = requests.get(f"{robot_url}/battery_status").json()
+    return response
 
 
 @app.get("/disinfection_triggered", tags=["Robot Status"])
@@ -76,6 +77,12 @@ def read_disinfection_triggered(
     response = requests.get(
         f"{robot_url}/disinfection_triggered?time_out={timeout}"
     ).json()
+    return response
+
+
+@app.get("/disinfection_module_status", tags=["Robot Status"])
+def read_disinfection_module_status(robot_url: str = Depends(get_robot_url)):
+    response = requests.get(f"{robot_url}/disinfection_module_status").json()
     return response
 
 

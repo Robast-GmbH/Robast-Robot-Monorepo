@@ -45,11 +45,11 @@ class _ConfigPageState extends State<ConfigPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.settings),
             SizedBox(width: 8),
-            const Text('Netzwerkeinstellungen'),
+            Text('Netzwerkeinstellungen'),
           ],
         ),
       ),
@@ -75,7 +75,7 @@ class _ConfigPageState extends State<ConfigPage> {
                         Padding(
                           padding: const EdgeInsets.all(16),
                           child: TextFormField(
-                            style: TextStyle(color: WebColors.secondaryText),
+                            style: const TextStyle(color: WebColors.secondaryText),
                             initialValue: sharedPreferences.getString('middlewareAddress') ?? '',
                             decoration: const InputDecoration(
                               labelText: 'Middleware IP',

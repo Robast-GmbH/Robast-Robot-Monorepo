@@ -22,7 +22,7 @@ class CustomDropdownButton extends StatelessWidget {
     return DropdownButtonFormField<String>(
       isExpanded: true,
       isDense: false,
-      decoration: const InputDecoration(contentPadding: EdgeInsets.all(0)),
+      decoration: const InputDecoration(contentPadding: EdgeInsets.zero),
       value: value,
       hint: hint != null
           ? Text(

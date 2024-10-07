@@ -6,8 +6,7 @@ import 'package:web_frontend/widgets/rounded_container.dart';
 
 class TimeSelector extends StatefulWidget {
   const TimeSelector({
-    super.key,
-    required this.deliveryTimeController,
+    required this.deliveryTimeController, super.key,
     this.onTimeSelected,
   });
 
@@ -19,10 +18,10 @@ class TimeSelector extends StatefulWidget {
 
 class _TimePickerWidgetState extends State<TimeSelector> {
   Future<void> _pickDateTime(BuildContext context) async {
-    DateTime now = DateTime.now();
-    DateTime threeDaysFromNow = now.add(const Duration(days: 3));
+    final now = DateTime.now();
+    final threeDaysFromNow = now.add(const Duration(days: 3));
 
-    DateTime? selectedDate = await showDatePicker(
+    final selectedDate = await showDatePicker(
       context: context,
       initialDate: now,
       firstDate: now,
@@ -30,7 +29,7 @@ class _TimePickerWidgetState extends State<TimeSelector> {
     );
 
     if (selectedDate != null && context.mounted) {
-      TimeOfDay? selectedTime = await showTimePicker(
+      final selectedTime = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now(),
       );

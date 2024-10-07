@@ -29,10 +29,13 @@ namespace module_config
     constexpr uint8_t PUSH_IN_AUTO_CLOSE_SPEED = 8;
     constexpr uint8_t PUSH_IN_AUTO_CLOSE_TMC_STALL_GUARD_VALUE = 9;
     constexpr uint8_t PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS = 10;
-    constexpr uint8_t STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS = 11;
-    constexpr uint8_t USE_TMC_STALL_GUARD = 12;
-    constexpr uint8_t USE_MOTOR_MONITOR_STALL_GUARD = 13;
-    constexpr uint8_t DRAWER_DEFAULT_ACCELERATION = 14;
+    constexpr uint8_t PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS = 11;
+    constexpr uint8_t STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS = 12;
+    constexpr uint8_t USE_TMC_STALL_GUARD = 13;
+    constexpr uint8_t USE_MOTOR_MONITOR_STALL_GUARD = 14;
+    constexpr uint8_t ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL = 15;
+    constexpr uint8_t DRAWER_DEFAULT_ACCELERATION = 16;
+    constexpr uint8_t WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS = 17;
   } // namespace drawer
 
   namespace encoder
@@ -138,6 +141,13 @@ namespace module_config
   };
 
   template <>
+  struct ModuleSetting<drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS>
+  {
+    using type = uint32_t;
+    static constexpr type default_value = 200;
+  };
+
+  template <>
   struct ModuleSetting<drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS>
   {
     using type = uint32_t;
@@ -158,11 +168,27 @@ namespace module_config
     static constexpr type default_value = true;
   };
 
+  
+
+  template <>
+  struct ModuleSetting<drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL>
+  {
+    using type = uint8_t;
+    static constexpr type default_value = 3;
+  };
+
   template <>
   struct ModuleSetting<drawer::DRAWER_DEFAULT_ACCELERATION>
   {
     using type = uint8_t;
     static constexpr type default_value = 8;
+  };
+
+  template <>
+  struct ModuleSetting<drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS>
+  {
+    using type = uint32_t;
+    static constexpr type default_value = 1000;
   };
 
   /********************************************************************************************************

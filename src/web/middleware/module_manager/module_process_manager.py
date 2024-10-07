@@ -6,7 +6,10 @@ opening external signal -> open_submodule call,
 open periodic timer polling module is open,
 closing external signal -> close_submodule call,
 closed periodic timer polling module is closed,
-idle external signal -> finish module process,
+idle external signal -> finish module process
+
+stall_guard_triggered-> when stall guard has been triggered
+opening_timed_out -> when manual drawer is not opened in time
 """
 
 from functools import partial
@@ -15,6 +18,7 @@ from module_manager.module_manager import ModuleManager
 from module_manager.module_repository import ModuleRepository
 from user_system.auth_session_manager import AuthSessionManager
 from pydantic_models.submodule_process_request import SubmoduleProcessRequest
+from pydantic_models.submodule_status import SubmoduleStatus
 from configs.url_config import ROBOT_NAME_TO_IP, ROBOT_API_PORT
 from threading import Timer
 import requests
@@ -38,7 +42,9 @@ class ModuleProcessManager:
         if not submodule:
             return False
         submodule.module_process_type = submodule_process_request.process_name
-        submodule.module_process_items_by_change = submodule_process_request.items_by_change
+        submodule.module_process_items_by_change = (
+            submodule_process_request.items_by_change
+        )
         is_auth_required = submodule.reserved_for_ids or submodule.reserved_for_groups
         is_authenticated = self.auth_session_manager.check_auth_status(
             submodule_address.robot_name,
@@ -82,6 +88,8 @@ class ModuleProcessManager:
             return False
         if (
             submodule.module_process_status != "waiting_for_opening"
+            and submodule.module_process_status != "opening_timed_out"
+            and submodule.module_process_status != "stall_guard_triggered"
             and submodule.module_process_status != "closed"
         ):
             return False
@@ -94,13 +102,16 @@ class ModuleProcessManager:
         return True
 
     def wait_submodule_open(self, address: SubmoduleAddress) -> None:
-        is_open = self.poll_submodule_status(address)
-        if is_open:
-            submodule = self.repository.read_submodule(address)
-            if submodule:
-                submodule.module_process_status = "open"
-                self.repository.update_submodule(submodule)
-                self.wait_submodule_closed(address)
+        submodule_status = self.__poll_submodule_status(address)
+        if not submodule_status:
+            return
+        if submodule_status.is_open:
+            self.__update_module_process_status(address, "open")
+            self.wait_submodule_closed(address)
+        elif submodule_status.opening_timed_out:
+            self.__update_module_process_status(address, "opening_timed_out")
+        elif submodule_status.is_stall_guard_triggered:
+            self.__update_module_process_status(address, "stall_guard_triggered")
         else:
             timer_cb = partial(self.wait_submodule_open, address)
             Timer(0.5, timer_cb).start()
@@ -109,7 +120,10 @@ class ModuleProcessManager:
         submodule = self.repository.read_submodule(address)
         if not submodule:
             return False
-        if submodule.module_process_status != "open":
+        if (
+            submodule.module_process_status != "open"
+            and submodule.module_process_status != "stall_guard_triggered"
+        ):
             return False
         requests.post(
             f"http://{self.fleet_ip_config[address.robot_name]}:{self.robot_api_port}/close_submodule?module_id={address.module_id}&submodule_id={address.submodule_id}"
@@ -120,15 +134,20 @@ class ModuleProcessManager:
         return True
 
     def wait_submodule_closed(self, address: SubmoduleAddress) -> None:
-        is_open = self.poll_submodule_status(address)
-        if not is_open:
-            submodule = self.repository.read_submodule(address)
-            if submodule:
-                submodule.module_process_status = "closed"
-                self.repository.update_submodule(submodule)
+        submodule_status = self.__poll_submodule_status(address)
+        if not submodule_status:
+            return
+        if not submodule_status.is_open:
+            self.__update_module_process_status(address, "closed")
+            return
+        elif submodule_status.is_stall_guard_triggered:
+            self.__update_module_process_status(address, "stall_guard_triggered")
         else:
-            timer_cb = partial(self.wait_submodule_closed, address)
-            Timer(0.5, timer_cb).start()
+            submodule = self.repository.read_submodule(address)
+            if submodule and submodule.module_process_status == "stall_guard_triggered":
+                self.__update_module_process_status(address, "closing")
+        timer_cb = partial(self.wait_submodule_closed, address)
+        Timer(0.5, timer_cb).start()
 
     def finish_submodule_process(self, address: SubmoduleAddress) -> bool:
         submodule = self.repository.read_submodule(address)
@@ -150,14 +169,36 @@ class ModuleProcessManager:
         self.repository.update_submodule(submodule)
         return True
 
-    def poll_submodule_status(self, address: SubmoduleAddress) -> bool:
+    def cancel_submodule_process(self, address: SubmoduleAddress) -> bool:
+        submodule = self.repository.read_submodule(address)
+        if not submodule:
+            return False
+        submodule.module_process_items_by_change = {}
+        submodule.module_process_type = ""
+        submodule.module_process_status = "idle"
+        self.repository.update_submodule(submodule)
+        return True
+
+    def __poll_submodule_status(
+        self, address: SubmoduleAddress
+    ) -> SubmoduleStatus | None:
         robot_base_url = (
             f"http://{self.fleet_ip_config[address.robot_name]}:{self.robot_api_port}"
         )
         response = requests.get(
-            f"{robot_base_url}/is_submodule_open?module_id={address.module_id}&submodule_id={address.submodule_id}"
+            f"{robot_base_url}/submodule_status?module_id={address.module_id}&submodule_id={address.submodule_id}"
         )
         if response.status_code == 200:
-            return response.json()["is_open"]
-        else:
-            return False
+            submodule_status = response.json()
+            return SubmoduleStatus.from_json(submodule_status)
+        return None
+
+    def __update_module_process_status(
+        self, address: SubmoduleAddress, status: str
+    ) -> bool:
+        submodule = self.repository.read_submodule(address)
+        if submodule:
+            submodule.module_process_status = status
+            self.repository.update_submodule(submodule)
+            return True
+        return False

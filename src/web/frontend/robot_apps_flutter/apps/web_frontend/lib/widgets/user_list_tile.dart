@@ -16,12 +16,14 @@ class UserListTile extends StatelessWidget {
     return ListTile(
       onTap: () async {
         final didUpdateUser = await Navigator.push(
-            context,
-            MaterialPageRoute<bool?>(
-                builder: (context) => UserSettingsPage(
-                      user: user,
-                      isAdminView: true,
-                    )));
+          context,
+          MaterialPageRoute<bool?>(
+            builder: (context) => UserSettingsPage(
+              user: user,
+              isAdminView: true,
+            ),
+          ),
+        );
         if (didUpdateUser ?? false) {
           onUpdate?.call();
         }
@@ -29,31 +31,33 @@ class UserListTile extends StatelessWidget {
       title: Text('${user.firstName} ${user.lastName}'),
       subtitle: Text((user.mail?.isEmpty ?? true) ? 'Keine E-Mail angegeben' : user.mail!),
       trailing: IconButton(
-          onPressed: () async {
-            final userProvider = Provider.of<UserProvider>(context, listen: false);
-            final bool isCurrentUser = user.id == userProvider.user!.id;
-            final isDeletionConfirmed = await showDialog<bool>(
-                context: context,
-                builder: (context) {
-                  return DeletionConfirmationDialog(requiredTextInput: user.lastName);
-                });
-            if (!(isDeletionConfirmed ?? false)) {
-              return;
-            }
-            final wasUserDeleted = await userProvider.deleteUser(userID: user.id);
-            if (isCurrentUser && wasUserDeleted) {
-              userProvider.user = null;
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-                (Route<dynamic> route) => false,
-              );
-            }
-            if (wasUserDeleted) {
-              onDelete?.call();
-            }
-          },
-          icon: Icon(Icons.delete)),
+        onPressed: () async {
+          final userProvider = Provider.of<UserProvider>(context, listen: false);
+          final isCurrentUser = user.id == userProvider.user!.id;
+          final isDeletionConfirmed = await showDialog<bool>(
+            context: context,
+            builder: (context) {
+              return DeletionConfirmationDialog(requiredTextInput: user.lastName);
+            },
+          );
+          if (!(isDeletionConfirmed ?? false)) {
+            return;
+          }
+          final wasUserDeleted = await userProvider.deleteUser(userID: user.id);
+          if (isCurrentUser && wasUserDeleted && context.mounted) {
+            userProvider.user = null;
+            await Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute<LoginPage>(builder: (context) => LoginPage()),
+              (Route<dynamic> route) => false,
+            );
+          }
+          if (wasUserDeleted) {
+            onDelete?.call();
+          }
+        },
+        icon: const Icon(Icons.delete),
+      ),
     );
   }
 }

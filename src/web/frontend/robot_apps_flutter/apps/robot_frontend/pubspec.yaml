@@ -41,6 +41,6 @@ flutter:
     - assets/logo.svg
     - assets/logo_blink.svg
     - assets/white_qrcode.png
-    - assets/robast_video.mp4
-    - assets/team.jpeg
+    # - assets/robast_video.mp4
+    # - assets/team.jpeg
     - assets/cairelogo.jpeg

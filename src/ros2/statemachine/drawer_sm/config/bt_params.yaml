@@ -13,6 +13,7 @@ drawer_tree_initiator:
       - get_blackboard_value_action_bt_node
       - publish_drawer_status_action_bt_node
       - import_environment_led_color_action_bt_node
+      - publish_state_feedback_action_bt_node
     bt_path: "/workspace/install/drawer_sm/trees/trees/drawer_sequence.xml"
     trigger_topic: "trigger_drawer_tree"
     main_tree: "BehaviorTree"

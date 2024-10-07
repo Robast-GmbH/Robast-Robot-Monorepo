@@ -22,7 +22,7 @@ namespace robast_can_msgs
     constexpr uint16_t SINGLE_LED_STATE = 0x007;
     constexpr uint16_t TRAY_LED_BRIGHTNESS = 0x008;
     constexpr uint16_t MODULE_CONFIG = 0x009;
-  }
+  }   // namespace can_id
 
   namespace can_dlc
   {
@@ -35,7 +35,7 @@ namespace robast_can_msgs
     constexpr uint8_t SINGLE_LED_STATE = 7;
     constexpr uint8_t TRAY_LED_BRIGHTNESS = 6;
     constexpr uint8_t MODULE_CONFIG = 8;
-  }
+  }   // namespace can_dlc
 
   /*********************************************************************************************************
    CAN msg index and can signal index to access the msg and signals in our can_db vector
@@ -52,7 +52,7 @@ namespace robast_can_msgs
     constexpr uint8_t SINGLE_LED_STATE = 6;
     constexpr uint8_t TRAY_LED_BRIGHTNESS = 7;
     constexpr uint8_t MODULE_CONFIG = 8;
-  }
+  }   // namespace can_msg
 
   namespace can_signal
   {
@@ -63,7 +63,7 @@ namespace robast_can_msgs
       {
         constexpr uint8_t MODULE_ID = 0;
         constexpr uint8_t DRAWER_ID = 1;
-      } // drawer_unlock
+      }   // namespace drawer_unlock
 
       namespace drawer_feedback
       {
@@ -71,7 +71,7 @@ namespace robast_can_msgs
         constexpr uint8_t DRAWER_ID = 1;
         constexpr uint8_t IS_ENDSTOP_SWITCH_PUSHED = 2;
         constexpr uint8_t IS_LOCK_SWITCH_PUSHED = 3;
-      } // drawer_feedback
+      }   // namespace drawer_feedback
 
       namespace e_drawer_task
       {
@@ -80,7 +80,7 @@ namespace robast_can_msgs
         constexpr uint8_t DRAWER_TARGET_POSITION = 2;
         constexpr uint8_t DRAWER_SPEED = 3;
         constexpr uint8_t DRAWER_STALL_GUARD_VALUE = 4;
-      } // e_drawer_task
+      }   // namespace e_drawer_task
 
       namespace e_drawer_feedback
       {
@@ -91,14 +91,14 @@ namespace robast_can_msgs
         constexpr uint8_t DRAWER_IS_STALL_GUARD_TRIGGERED = 4;
         constexpr uint8_t DRAWER_POSITION = 5;
         constexpr uint8_t IS_PUSH_TO_CLOSE_TRIGGERED = 6;
-      } // e_drawer_feedback
+      }   // namespace e_drawer_feedback
 
       namespace error_feedback
       {
         constexpr uint8_t MODULE_ID = 0;
         constexpr uint8_t DRAWER_ID = 1;
         constexpr uint8_t ERROR_CODE = 2;
-      } // error_feedback
+      }   // namespace error_feedback
 
       namespace led_header
       {
@@ -106,7 +106,7 @@ namespace robast_can_msgs
         constexpr uint8_t START_INDEX = 1;
         constexpr uint8_t NUM_OF_LEDS = 2;
         constexpr uint8_t FADE_TIME_IN_HUNDREDS_OF_MS = 3;
-      } // led_header
+      }   // namespace led_header
 
       namespace single_led
       {
@@ -115,7 +115,7 @@ namespace robast_can_msgs
         constexpr uint8_t LED_STATE_GREEN = 2;
         constexpr uint8_t LED_STATE_BLUE = 3;
         constexpr uint8_t LED_STATE_BRIGHTNESS = 4;
-      } // single_led
+      }   // namespace single_led
 
       namespace tray_led_brightness
       {
@@ -123,16 +123,16 @@ namespace robast_can_msgs
         constexpr uint8_t TRAY_ID = 1;
         constexpr uint8_t TRAY_LED_ROW_INDEX = 2;
         constexpr uint8_t TRAY_LED_STATE_BRIGHNESS = 3;
-      } // tray_led_brightness
+      }   // namespace tray_led_brightness
 
       namespace module_config
       {
         constexpr uint8_t MODULE_ID = 0;
         constexpr uint8_t CONFIG_ID = 1;
         constexpr uint8_t CONFIG_VALUE = 2;
-      } // module_config
+      }   // namespace module_config
 
-    } // id
+    }   // namespace id
 
     namespace bit_start
     {
@@ -140,7 +140,7 @@ namespace robast_can_msgs
       {
         constexpr uint8_t MODULE_ID = 0;
         constexpr uint8_t DRAWER_ID = 24;
-      } // drawer_unlock
+      }   // namespace drawer_unlock
 
       namespace drawer_feedback
       {
@@ -148,7 +148,7 @@ namespace robast_can_msgs
         constexpr uint8_t DRAWER_ID = 24;
         constexpr uint8_t IS_ENDSTOP_SWITCH_PUSHED = 32;
         constexpr uint8_t IS_LOCK_SWITCH_PUSHED = 33;
-      } // drawer_feedback
+      }   // namespace drawer_feedback
 
       namespace e_drawer_task
       {
@@ -157,7 +157,7 @@ namespace robast_can_msgs
         constexpr uint8_t DRAWER_TARGET_POSITION = 32;
         constexpr uint8_t DRAWER_SPEED = 40;
         constexpr uint8_t DRAWER_STALL_GUARD_VALUE = 48;
-      } // e_drawer_task
+      }   // namespace e_drawer_task
 
       namespace e_drawer_feedback
       {
@@ -168,14 +168,14 @@ namespace robast_can_msgs
         constexpr uint8_t DRAWER_IS_STALL_GUARD_TRIGGERED = 34;
         constexpr uint8_t DRAWER_POSITION = 35;
         constexpr uint8_t IS_PUSH_TO_CLOSE_TRIGGERED = 43;
-      } // e_drawer_feedback
+      }   // namespace e_drawer_feedback
 
       namespace error_feedback
       {
         constexpr uint8_t MODULE_ID = 0;
         constexpr uint8_t DRAWER_ID = 24;
         constexpr uint8_t ERROR_CODE = 32;
-      } // error_feedback
+      }   // namespace error_feedback
 
       namespace led_header
       {
@@ -183,7 +183,7 @@ namespace robast_can_msgs
         constexpr uint8_t START_INDEX = 24;
         constexpr uint8_t NUM_OF_LEDS = 40;
         constexpr uint8_t FADE_TIME_IN_HUNDREDS_OF_MS = 56;
-      } // led_header
+      }   // namespace led_header
 
       namespace single_led
       {
@@ -192,7 +192,7 @@ namespace robast_can_msgs
         constexpr uint8_t LED_STATE_GREEN = 32;
         constexpr uint8_t LED_STATE_BLUE = 40;
         constexpr uint8_t LED_STATE_BRIGHTNESS = 48;
-      } // single_led
+      }   // namespace single_led
 
       namespace tray_led_brightness
       {
@@ -200,15 +200,15 @@ namespace robast_can_msgs
         constexpr uint8_t TRAY_ID = 24;
         constexpr uint8_t TRAY_LED_ROW_INDEX = 32;
         constexpr uint8_t TRAY_LED_STATE_BRIGHNESS = 40;
-      } // tray_led_brightness
+      }   // namespace tray_led_brightness
 
       namespace module_config
       {
         constexpr uint8_t MODULE_ID = 0;
         constexpr uint8_t CONFIG_ID = 24;
         constexpr uint8_t CONFIG_VALUE = 32;
-      } // module_config
-    } // bit_config
+      }   // namespace module_config
+    }   // namespace bit_start
 
     namespace bit_length
     {
@@ -216,7 +216,7 @@ namespace robast_can_msgs
       {
         constexpr uint8_t MODULE_ID = 24;
         constexpr uint8_t DRAWER_ID = 8;
-      } // drawer_unlock
+      }   // namespace drawer_unlock
 
       namespace drawer_feedback
       {
@@ -224,7 +224,7 @@ namespace robast_can_msgs
         constexpr uint8_t DRAWER_ID = 8;
         constexpr uint8_t IS_ENDSTOP_SWITCH_PUSHED = 1;
         constexpr uint8_t IS_LOCK_SWITCH_PUSHED = 1;
-      } // drawer_feedback
+      }   // namespace drawer_feedback
 
       namespace e_drawer_task
       {
@@ -233,7 +233,7 @@ namespace robast_can_msgs
         constexpr uint8_t DRAWER_TARGET_POSITION = 8;
         constexpr uint8_t DRAWER_SPEED = 8;
         constexpr uint8_t DRAWER_STALL_GUARD_VALUE = 8;
-      } // e_drawer_task
+      }   // namespace e_drawer_task
 
       namespace e_drawer_feedback
       {
@@ -244,14 +244,14 @@ namespace robast_can_msgs
         constexpr uint8_t DRAWER_IS_STALL_GUARD_TRIGGERED = 1;
         constexpr uint8_t DRAWER_POSITION = 8;
         constexpr uint8_t IS_PUSH_TO_CLOSE_TRIGGERED = 1;
-      } // e_drawer_feedback
+      }   // namespace e_drawer_feedback
 
       namespace error_feedback
       {
         constexpr uint8_t MODULE_ID = 24;
         constexpr uint8_t DRAWER_ID = 8;
         constexpr uint8_t ERROR_CODE = 6;
-      } // bit_length
+      }   // namespace error_feedback
 
       namespace led_header
       {
@@ -259,7 +259,7 @@ namespace robast_can_msgs
         constexpr uint8_t START_INDEX = 16;
         constexpr uint8_t NUM_OF_LEDS = 16;
         constexpr uint8_t FADE_TIME_IN_HUNDREDS_OF_MS = 8;
-      } // led_header
+      }   // namespace led_header
 
       namespace single_led
       {
@@ -268,7 +268,7 @@ namespace robast_can_msgs
         constexpr uint8_t LED_STATE_GREEN = 8;
         constexpr uint8_t LED_STATE_BLUE = 8;
         constexpr uint8_t LED_STATE_BRIGHTNESS = 8;
-      } // single_led
+      }   // namespace single_led
 
       namespace tray_led_brightness
       {
@@ -276,29 +276,32 @@ namespace robast_can_msgs
         constexpr uint8_t TRAY_ID = 8;
         constexpr uint8_t TRAY_LED_ROW_INDEX = 8;
         constexpr uint8_t TRAY_LED_STATE_BRIGHNESS = 8;
-      } // tray_led_brightness
+      }   // namespace tray_led_brightness
 
       namespace module_config
       {
         constexpr uint8_t MODULE_ID = 24;
         constexpr uint8_t CONFIG_ID = 8;
         constexpr uint8_t CONFIG_VALUE = 32;
-      } // module_config
+      }   // namespace module_config
 
-    } // bit_length
+    }   // namespace bit_length
 
-  } // can_signal
+  }   // namespace can_signal
   namespace can_data
   {
     constexpr uint64_t SWITCH_IS_NOT_PUSHED = 0;
     constexpr uint64_t SWITCH_IS_PUSHED = 1;
+    constexpr uint64_t STALL_GUARD_TRIGGERED = 1;
+    constexpr uint64_t PUSH_TO_CLOSE_TRIGGERED = 1;
 
     namespace error_code
     {
       constexpr uint64_t TIMEOUT_DRAWER_NOT_OPENED = 1;
-      constexpr uint64_t E_DRAWER_TASK_NOT_SUPPORTED_BY_MODULE = 2;
-    }
-  } // namespace can_data
-} // namespace robast_can_msgs
+      constexpr uint64_t DRAWER_CLOSED_IN_IDLE_STATE = 2;
+      constexpr uint64_t E_DRAWER_TASK_NOT_SUPPORTED_BY_MODULE = 3;
+    }   // namespace error_code
+  }   // namespace can_data
+}   // namespace robast_can_msgs
 
-#endif // CAN__CAN_DB_DEFINES_HPP_
+#endif   // CAN__CAN_DB_DEFINES_HPP_

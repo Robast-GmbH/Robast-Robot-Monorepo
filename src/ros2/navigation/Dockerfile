@@ -117,14 +117,23 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
+COPY --from=build /ws/src/navigation/nav_bringup/config_simulation/nav_params/diff__tr0_4__res0_05.json /workspace/src/navigation/nav_bringup/config_simulation/nav_params/diff__tr0_4__res0_05.json
+COPY --from=build /ws/src/navigation/nav_bringup/behavior_trees/humble/ /workspace/src/navigation/nav_bringup/behavior_trees/humble/
 
-RUN apt-get update && apt-get upgrade -y\
+RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y \
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     libzmq3-dev \
+    iputils-ping \
     ros-${ROS_DISTRO}-slam-toolbox \
     ros-${ROS_DISTRO}-robot-localization \
-    ros-${ROS_DISTRO}-spatio-temporal-voxel-layer
+    ros-${ROS_DISTRO}-spatio-temporal-voxel-layer \
+    ros-${ROS_DISTRO}-navigation2 \
+    ros-${ROS_DISTRO}-nav2-common \
+    ros-${ROS_DISTRO}-nav2-velocity-smoother \
+    ros-${ROS_DISTRO}-nav2-mppi-controller \
+    ros-${ROS_DISTRO}-foxglove-bridge \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration
@@ -150,52 +159,6 @@ ARG DEBIAN_FRONTEND=
 
 USER ubuntu
   
-ENV is_simulation=False
-ENV config_directory=config
-ENV robot_name=rb_theron
-ENV init_x=1.46
-ENV init_y=-2.89
-ENV init_z=0.0
-ENV init_yaw=1.57
-ENV prefix=''
-
-############################## DEBUG ##################################
-FROM ros:${ROS_BUILD_DISTRO}-ros-base-jammy as debug
-ARG ROS_BUILD_DISTRO
-COPY --from=release / /
-
-RUN apt update -y && apt upgrade -y && apt install -y \
-    ros-${ROS_DISTRO}-foxglove-bridge \
-    ros-${ROS_DISTRO}-rosbag2 \
-    ros-${ROS_DISTRO}-nav-msgs \
-    ros-${ROS_DISTRO}-depthai-ros-msgs \
-    ros-${ROS_DISTRO}-geographic-msgs \
-    ros-${ROS_DISTRO}-geometry-msgs \
-    ros-${ROS_DISTRO}-lifecycle-msgs \
-    ros-${ROS_DISTRO}-rosbridge-msgs \
-    ros-${ROS_DISTRO}-rviz2 \
-    ros-${ROS_DISTRO}-navigation2 \
-    ros-${ROS_DISTRO}-slam-toolbox
-
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update -q && \
-    apt-get upgrade -yq && \
-    apt-get install -yq wget curl git build-essential vim sudo lsb-release locales bash-completion tzdata gosu gnupg2 && \
-    rm -rf /var/lib/apt/lists/*
-RUN echo "Set disable_coredump false" >> /etc/sudo.conf
-RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
-    echo robast:robast | chpasswd && \
-    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER=robast
-ARG DEBIAN_FRONTEND=
-
-ENV ROS_DOMAIN_ID=0
-# dds setup / configuration
-ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
-# rmw_cyclonedds_cpp #rmw_fastrtps_cpp
-ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
-ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
-
 ENV is_simulation=False
 ENV config_directory=config
 ENV robot_name=rb_theron

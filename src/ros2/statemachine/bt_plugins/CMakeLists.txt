@@ -115,6 +115,9 @@ list(APPEND plugin_libs base_error_decorator_node)
 add_library(partial_colorize_leds_action_bt_node SHARED src/action/partial_colorize_leds_action.cpp)
 list(APPEND plugin_libs partial_colorize_leds_action_bt_node)
 
+add_library(publish_state_feedback_action_bt_node SHARED src/action/publish_state_feedback_action.cpp)
+list(APPEND plugin_libs publish_state_feedback_action_bt_node)
+
 add_library(evaluate_drive_direction_action_bt_node SHARED src/action/evaluate_drive_direction_action.cpp)
 list(APPEND plugin_libs evaluate_drive_direction_action_bt_node)
 

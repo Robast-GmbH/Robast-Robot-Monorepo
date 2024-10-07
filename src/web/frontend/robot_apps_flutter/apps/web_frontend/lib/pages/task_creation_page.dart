@@ -44,7 +44,7 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.add_task),
             SizedBox(
@@ -62,22 +62,21 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
             children: [
               ModuleContentCreationView(
                 moduleContentController: moduleContentController,
-                label: 'Fracht',
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8,
               ),
               SubmoduleTypeSelector(
                 controller: submoduleSizeController,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 16,
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 8),
                     child: Text(
                       'Sender',
                       style: TextStyle(color: WebColors.primaryText, fontSize: 24),
@@ -87,28 +86,28 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                     controller: senderUserController,
                     initWithSessionUser: true,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   UserGroupsSelector(controller: senderUserGroupsSelectionController),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   LocationSelector(controller: startController, label: 'Start'),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   TimeSelector(deliveryTimeController: senderTimeController),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 16,
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 8),
                     child: Text(
                       'Empfänger',
                       style: TextStyle(color: WebColors.primaryText, fontSize: 24),
@@ -117,24 +116,24 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                   UserSelector(
                     controller: recipientUserController,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   UserGroupsSelector(controller: recipientUserGroupsSelectionController),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   LocationSelector(controller: targetController, label: 'Ziel'),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   TimeSelector(deliveryTimeController: recipientTimeController),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 16,
               ),
               ElevatedButton(
@@ -147,12 +146,13 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                     if (!(recipientUserController.selectedUser?.hasNfcID() ?? true)) {
                       identifiers.add('Empfänger');
                     }
-                    showDialog(
-                        context: context,
-                        builder: (
-                          context,
-                        ) =>
-                            NfcMissingDialog(identifiers: identifiers));
+                    await showDialog<NfcMissingDialog>(
+                      context: context,
+                      builder: (
+                        context,
+                      ) =>
+                          NfcMissingDialog(identifiers: identifiers),
+                    );
                     return;
                   }
                   if (validateInputs()) {
@@ -176,14 +176,14 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                       Navigator.of(context).pop();
                     }
                   } else {
-                    showDialog(
+                    await showDialog<InvalidInputsDialog>(
                       context: context,
-                      builder: (context) => InvalidInputsDialog(),
+                      builder: (context) => const InvalidInputsDialog(),
                     );
                   }
                 },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
                   child: SizedBox(
                     width: double.infinity,
                     child: Text(
@@ -194,7 +194,7 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 16,
               ),
             ],

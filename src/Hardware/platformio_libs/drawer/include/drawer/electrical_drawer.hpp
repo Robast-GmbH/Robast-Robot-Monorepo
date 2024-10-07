@@ -34,6 +34,8 @@ namespace drawer
   constexpr bool PUSH_TO_CLOSE_NOT_TRIGGERED = false;
   constexpr bool MOTOR_IS_STALLED = true;
   constexpr bool MOTOR_IS_NOT_STALLED = false;
+  constexpr bool ENDSTOP_SWITCH_IS_PUSHED = true;
+  constexpr bool LOCK_SWITCH_IS_NOT_PUSHED = false;
 
   class ElectricalDrawer : public interfaces::IDrawer
   {
@@ -92,6 +94,7 @@ namespace drawer
 
     bool _drawer_was_homed_once = false;
 
+    bool _is_drawer_opening_in_progress = false;
     bool _is_drawer_moving_out;
     bool _triggered_deceleration_for_drawer_moving_out = false;
     bool _is_idling = true;
@@ -103,6 +106,8 @@ namespace drawer
 
     uint32_t _timestamp_stall_guard_triggered_in_ms = 0;
     uint32_t _timestamp_movement_started_in_ms = 0;
+    uint32_t _timestamp_movement_finished_in_ms = 0;
+    uint32_t _timestamp_drawer_opened_in_ms = 0;
 
     bool _is_motor_monitor_stall_guard_triggered = false;
     bool _is_tmc_stall_guard_triggered = false;

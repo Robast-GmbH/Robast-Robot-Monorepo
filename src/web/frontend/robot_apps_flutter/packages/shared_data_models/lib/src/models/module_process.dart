@@ -1,4 +1,14 @@
-enum ModuleProcessStatus { idle, auth, waitingForOpening, opening, open, closing, closed }
+enum ModuleProcessStatus {
+  idle,
+  auth,
+  waitingForOpening,
+  opening,
+  open,
+  closing,
+  closed,
+  openingTimedOut,
+  stallguardTriggered,
+}
 
 class ModuleProcess {
   ModuleProcess({
@@ -61,6 +71,11 @@ class ModuleProcess {
         return ModuleProcessStatus.closing;
       case 'closed':
         return ModuleProcessStatus.closed;
+      case 'opening_timed_out':
+        return ModuleProcessStatus.openingTimedOut;
+      case 'stall_guard_triggered':
+        return ModuleProcessStatus.stallguardTriggered;
+
       default:
         throw ArgumentError('Invalid enum value for ModuleProcessState');
     }

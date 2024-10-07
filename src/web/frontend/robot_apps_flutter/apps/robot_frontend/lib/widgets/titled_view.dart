@@ -7,26 +7,30 @@ class TitledView extends StatelessWidget {
     required this.child,
     super.key,
     this.showBackButton = false,
+    this.collapsedTitle = false,
     this.onBackButtonPressed,
   });
 
   final String title;
   final Widget child;
   final bool showBackButton;
+  final bool collapsedTitle;
   final VoidCallback? onBackButtonPressed;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        StatusBar(
-          title: title,
-          showBackButton: showBackButton,
-          onBackButtonPressed: onBackButtonPressed ??
-              () {
-                Navigator.of(context).pop();
-              },
-        ),
+        if (!collapsedTitle) ...[
+          StatusBar(
+            title: title,
+            showBackButton: showBackButton,
+            onBackButtonPressed: onBackButtonPressed ??
+                () {
+                  Navigator.of(context).pop();
+                },
+          ),
+        ],
         Expanded(
           child: child,
         ),

@@ -25,6 +25,7 @@ class LocationSelector extends StatefulWidget {
 class _LocationSelectorState extends State<LocationSelector> {
   @override
   Widget build(BuildContext context) {
+    final mapProvider = Provider.of<MapProvider>(context, listen: false);
     final controller = widget.controller;
     return RoundedContainer(
       child: Padding(
@@ -41,17 +42,16 @@ class _LocationSelectorState extends State<LocationSelector> {
             ),
             Expanded(
               child: CustomDropdownButton(
-                hint: 'Station auswählen',
-                value: controller.station,
-                onChanged: (value) {
-                  if (controller.station == value) return;
-                  setState(() {
-                    controller.setStation(value ?? '');
-                  });
-                  widget.onChanged?.call();
-                },
-                items: Provider.of<MapProvider>(context).roomsByStations.keys.toList(),
-              ),
+                  hint: 'Station auswählen',
+                  value: controller.station,
+                  onChanged: (value) {
+                    if (controller.station == value) return;
+                    setState(() {
+                      controller.setStation(value ?? '');
+                    });
+                    widget.onChanged?.call();
+                  },
+                  items: mapProvider.roomsByStations.keys.toList()),
             ),
             const SizedBox(
               width: 16,
@@ -64,7 +64,7 @@ class _LocationSelectorState extends State<LocationSelector> {
                   setState(() => controller.setRoom(value ?? ''));
                   widget.onChanged?.call();
                 },
-                items: controller.station?.isEmpty ?? true ? [] : Provider.of<MapProvider>(context).roomsByStations[controller.station]!.toList(),
+                items: controller.station?.isEmpty ?? true ? [] : mapProvider.roomsByStations[controller.station]!.toList(),
               ),
             ),
           ],

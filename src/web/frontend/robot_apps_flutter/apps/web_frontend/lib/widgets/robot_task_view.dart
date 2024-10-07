@@ -38,7 +38,7 @@ class _RobotTaskViewState extends State<RobotTaskView> {
             return const CircularProgressIndicator();
           }
           if (snapshot.data == null) {
-            return Text("Fail not handled");
+            return const Text('Fail not handled');
           }
           final robotTaskStatus = snapshot.data!;
           final activeTask = robotTaskStatus.activeTask;
@@ -61,7 +61,7 @@ class _RobotTaskViewState extends State<RobotTaskView> {
                   )
                 else
                   const Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(8),
                     child: Text(
                       'Kein Auftrag aktiv',
                       style: TextStyle(color: WebColors.secondaryText, fontSize: 20),
@@ -76,7 +76,7 @@ class _RobotTaskViewState extends State<RobotTaskView> {
                 ),
                 if (queuedTasks.isEmpty)
                   const Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(8),
                     child: Text(
                       'Keine Aufträge in Warteschlange',
                       style: TextStyle(color: WebColors.secondaryText, fontSize: 20),
@@ -112,7 +112,6 @@ class _RobotTaskViewState extends State<RobotTaskView> {
                   child: const Padding(
                     padding: EdgeInsets.only(left: 8, top: 16, bottom: 16),
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           'Vergangene Aufträge',
@@ -125,7 +124,7 @@ class _RobotTaskViewState extends State<RobotTaskView> {
                           Icons.arrow_forward,
                           size: 24,
                           color: WebColors.primaryIcon,
-                        )
+                        ),
                       ],
                     ),
                   ),
