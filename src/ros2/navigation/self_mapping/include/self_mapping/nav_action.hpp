@@ -33,12 +33,9 @@ private:
   geometry_msgs::msg::PoseStamped index_to_pose(int index, int width, float resolution);
   bool is_cell_near_obstacle(int index, int width, int height, int occupied_threshold);
   bool is_free_cell(int index,int free_threshold_min, int free_threshold_max);
-  bool is_point_close(const geometry_msgs::msg::PoseStamped &point, float threshold);
   bool is_in_blacklist(const geometry_msgs::msg::PoseStamped &point, const std::unordered_set<std::pair<float, float>, boost::hash<std::pair<float, float>>> &blacklist_set);
 
-  std::string _map_frame;
   std::string _base_frame;
-  std::string _costmap_topic;
   rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SharedPtr _action_client;
   rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr _costmap_sub;
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr _marker_pub;
