@@ -158,11 +158,7 @@ class ModuleProcessManager:
     def __trigger_periodic_module_status_polling(self) -> None:
         for robot in self.fleet_ip_config.keys():
             for submodule in self.repository.read_robot_submodules(robot):
-                if (
-                    submodule.module_process_status != "idle"
-                    and submodule.module_process_status != "auth"
-                    and submodule.module_process_status != "waiting_for_opening"
-                ):
+                if submodule.module_process_status not in ["idle", "auth", "waiting_for_opening"]:
                     self.__poll_submodule_status(
                         SubmoduleAddress(
                             robot_name=robot,
