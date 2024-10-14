@@ -67,7 +67,7 @@ class ModuleRepository:
         finally:
             session.close()
 
-    def update_submodule(self, updated_submodule: Submodule):
+    def update_submodule(self, updated_submodule: Submodule) -> Submodule | None:
         session = SessionLocal()
         try:
             submodule = (

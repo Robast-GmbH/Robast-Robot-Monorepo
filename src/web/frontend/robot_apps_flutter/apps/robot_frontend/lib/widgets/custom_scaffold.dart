@@ -66,6 +66,7 @@ class CustomScaffold extends StatelessWidget {
                   );
                 }
                 if (isEmergencyStopPressed) {
+                  Navigator.of(context).popUntil((route) => route is PageRoute);
                   return const EmergencyStopView();
                 }
                 return TitledView(
