@@ -61,7 +61,6 @@ namespace robast_can_msgs
   {
     namespace id
     {
-
       namespace drawer_unlock
       {
         constexpr uint8_t MODULE_ID = 0;
