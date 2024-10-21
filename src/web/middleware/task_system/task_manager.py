@@ -28,6 +28,9 @@ class TaskManager:
     def read_all_tasks(self) -> list[Task]:
         return self.task_repository.read_tasks()
 
+    def read_unassigned_tasks(self) -> list[Task]:
+        return self.task_repository.read_unassigned_tasks()
+
     def read_subtask(self, subtask_id: str) -> Subtask | None:
         return self.task_repository.read_subtask(subtask_id)
 
