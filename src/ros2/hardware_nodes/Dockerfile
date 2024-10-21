@@ -54,10 +54,10 @@ RUN rosdep update && \
   colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast\
+RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast \
   && mv /monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
   && mv /monorepo/src/ros2/error_handling /ws/src/ros2/error_handling \
-  && mv /monorepo/src/ros2/utils/qos_bridge /ws/src/ros2/utils/qos_bridge \
+  && mv /monorepo/src/ros2/utils/qos_bridge /ws/src/ros2/qos_bridge \
   && mv /monorepo/src/Hardware/cpp/libs ws/ \
   && mv /monorepo/src/ros2/dds_configs /robast/dds_configs
 
