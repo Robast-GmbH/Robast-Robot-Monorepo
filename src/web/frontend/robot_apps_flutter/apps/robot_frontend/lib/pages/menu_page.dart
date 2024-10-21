@@ -6,9 +6,9 @@ import 'package:robot_frontend/models/provider/inactivity_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/models/sidebar_menu_point.dart';
-import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/caire_ai_card_view.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
+import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/home_views/patient_home_view.dart';
 import 'package:robot_frontend/widgets/home_views/staff_home_view.dart';
 import 'package:robot_frontend/widgets/info_view.dart';
@@ -101,104 +101,103 @@ class _MenuPageState extends State<MenuPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BackgroundView(
-        child: FutureBuilder<User?>(
-          future: loadCurrentUserFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
-              return const SizedBox.expand(child: Center(child: CircularProgressIndicator()));
-            }
-            final user = snapshot.data;
-            return Row(
-              children: [
-                Sidebar(
-                  sidebarMenuPoints: sidebarMenuPoints,
-                  onMenuPointSelected: (index) => setState(() {
-                    selectedMainMenuIndex = index;
-                  }),
-                  user: user,
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 16, right: 16, bottom: 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Stack(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.only(top: 12),
-                              child: Align(
-                                child: ClockView(),
-                              ),
+    return CustomScaffold(
+      collapsedTitle: true,
+      child: FutureBuilder<User?>(
+        future: loadCurrentUserFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const SizedBox.expand(child: Center(child: CircularProgressIndicator()));
+          }
+          final user = snapshot.data;
+          return Row(
+            children: [
+              Sidebar(
+                sidebarMenuPoints: sidebarMenuPoints,
+                onMenuPointSelected: (index) => setState(() {
+                  selectedMainMenuIndex = index;
+                }),
+                user: user,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16, right: 16, bottom: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Stack(
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(top: 12),
+                            child: Align(
+                              child: ClockView(),
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 16),
-                                  child: Text(
-                                    sidebarMenuPoints[selectedMainMenuIndex].title,
-                                    style: const TextStyle(color: RobotColors.primaryText, fontSize: 40, fontWeight: FontWeight.w400),
-                                  ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 16),
+                                child: Text(
+                                  sidebarMenuPoints[selectedMainMenuIndex].title,
+                                  style: const TextStyle(color: RobotColors.primaryText, fontSize: 40, fontWeight: FontWeight.w400),
                                 ),
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 16),
-                                    child: Container(
-                                      decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(16)),
-                                      child: const Padding(
-                                        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              'Abmelden',
-                                              style: TextStyle(color: RobotColors.primaryText, fontSize: 32),
-                                            ),
-                                            SizedBox(
-                                              width: 16,
-                                            ),
-                                            Icon(
-                                              Icons.logout,
-                                              size: 40,
-                                            ),
-                                          ],
-                                        ),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: Container(
+                                    decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(16)),
+                                    child: const Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+                                      child: Row(
+                                        children: [
+                                          Text(
+                                            'Abmelden',
+                                            style: TextStyle(color: RobotColors.primaryText, fontSize: 32),
+                                          ),
+                                          SizedBox(
+                                            width: 16,
+                                          ),
+                                          Icon(
+                                            Icons.logout,
+                                            size: 40,
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ],
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 8),
-                          width: double.infinity,
-                          height: 2,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.black.withOpacity(0.1),
+                              ),
+                            ],
                           ),
+                        ],
+                      ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 8),
+                        width: double.infinity,
+                        height: 2,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.black.withOpacity(0.1),
                         ),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child: sidebarMenuPoints[selectedMainMenuIndex].userGroupWidgets[user!.userGroups.last]!(),
-                          ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: sidebarMenuPoints[selectedMainMenuIndex].userGroupWidgets[user!.userGroups.last]!(),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            );
-          },
-        ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
