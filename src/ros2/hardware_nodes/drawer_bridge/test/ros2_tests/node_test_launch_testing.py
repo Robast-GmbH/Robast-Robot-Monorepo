@@ -2,6 +2,7 @@
 import os
 import unittest
 import sys
+import threading
 
 current_script_dir = os.path.dirname(__file__)
 workspace_dir = os.path.abspath(os.path.join(current_script_dir, '..', '..', '..', '..', '..'))
@@ -67,8 +68,10 @@ class TestProcessOutput(unittest.TestCase):
     def setUp(self):
         # Create a ROS node for tests
         self.__node = rclpy.create_node('drawer_bridge_tester')
+        self.__to_can_node = rclpy.create_node('can_receiver')
         self.__received_drawer_feedback_topic = False
         self.__received_drawer_error_feedback_topic = False
+        self.__received_data_from_can = []
         self.__qos_profile_open_drawer = QoSProfile(
             reliability=QoSReliabilityPolicy.RELIABLE,
             history=QoSHistoryPolicy.KEEP_LAST,
@@ -99,7 +102,7 @@ class TestProcessOutput(unittest.TestCase):
 
 
     def setup_subscribers(self):
-        self.__to_can_bus_subscriber = self.__node.create_subscription(Frame, 'to_can_bus', self.to_can_bus_callback, qos_profile=self.__qos_can_msg)
+        self.__to_can_bus_subscriber = self.__to_can_node.create_subscription(Frame, 'to_can_bus', self.to_can_bus_callback, qos_profile=self.__qos_can_msg)
 
     def setup_publishers(self):
         self.__open_drawer_publisher = self.__node.create_publisher(DrawerAddress, 'open_drawer', qos_profile = self.__qos_profile_open_drawer)
@@ -160,12 +163,12 @@ class TestProcessOutput(unittest.TestCase):
 
         while not self.__module_config_service_client.wait_for_service(timeout_sec=1.0):
             self.__node.get_logger().info('service not available, waiting again...')
-        module_config_request = ModuleConfig.Request()
-        module_config_request.module_address.module_id = data['module_config']['module_id']
-        module_config_request.module_address.drawer_id = data['module_config']['drawer_id']
-        module_config_request.config_id = data['module_config']['config_id']
-        module_config_request.config_value = data['module_config']['config_value']
-        future = self.__module_config_service_client.call_async(module_config_request)
+        self.__module_config_request = ModuleConfig.Request()
+        self.__module_config_request.module_address.module_id = data['module_config']['module_id']
+        self.__module_config_request.module_address.drawer_id = data['module_config']['drawer_id']
+        self.__module_config_request.config_id = data['module_config']['config_id']
+        self.__module_config_request.config_value = data['module_config']['config_value']
+        future = self.__module_config_service_client.call_async(self.__module_config_request)
         rclpy.spin_until_future_complete(self.__node, future)
         self.__module_config_service_response = future.result()
 
@@ -231,7 +234,7 @@ class TestProcessOutput(unittest.TestCase):
     def to_can_bus_callback(self, msg):
         self.__node.get_logger().info('Received msg on to_can_bus topic. can_id: "%s"' % msg.id)
         # TODO: Append the data that should be sent over the can bus and check it in the test
-        # self.__received_data.append(msg)
+        self.__received_data_from_can.append(msg)
 
     
     def get_expected_result(self):
@@ -251,14 +254,8 @@ class TestProcessOutput(unittest.TestCase):
         self.__expected_data_error_feedback_error_code = data['error_feedback']['error_code']
         self.__expected_data_error_feedback_error_data = data['error_feedback']['error_data']
 
-        # Loop through the received data on the can bus topic and check if the expected data is in the received data
-        # for msg in self.received_data:
-        #     match msg.id:
-        #         case can_db_defines.CAN_ID_MODULE_CONFIG:
-
     
     def receive_data_from_dut(self):
-        self.__received_data = []
         self.__drawer_feedback_subscriber = self.__node.create_subscription(
             DrawerStatus,
             'drawer_is_open',
@@ -271,10 +268,17 @@ class TestProcessOutput(unittest.TestCase):
             self.drawer_error_subscriber_callback,
             qos_profile=self.__qos_error_msgs
         )
-
    
 
     def test_dut_output(self):
+        # Create an executor and add to_can_node to spin it asynchronously to receive data from the can bus and proceed with the test
+        self.executor = rclpy.executors.MultiThreadedExecutor()
+        self.executor.add_node(self.__to_can_node)
+
+        # Spin the executor in a separate thread
+        self.spin_thread = threading.Thread(target=self.executor.spin, daemon=True)
+        self.spin_thread.start()
+
         self.publish_data_to_dut()
 
         self.get_expected_result()
@@ -308,12 +312,44 @@ class TestProcessOutput(unittest.TestCase):
             self.assertEqual(self.__module_config_service_response.success, True)
             # TODO: Check if the data sent to the "to_can_bus" topic is correct
 
+            # Loop through the received data on the can bus topic and check if the expected data is in the received data
+            for msg in self.__received_data_from_can:
+                # Print the received data
+                self.__node.get_logger().info('Received data from can bus with the id %s' % msg.id)
+                self.__node.get_logger().info('CAN_ID_MODULE_CONFIG: %s' % can_db_defines.CAN_ID_MODULE_CONFIG)
+                if msg.id == can_db_defines.CAN_ID_MODULE_CONFIG:
+                    self.assertEqual(msg.dlc, can_db_defines.DLC_MODULE_CONFIG)
+                    can_signal_data_module_id = self.__module_config_request.module_address.module_id
+                    can_signal_data_config_id = self.__module_config_request.config_id
+                    can_signal_data_config_value = self.__module_config_request.config_value
+                    can_signal_bit_start_module_id = can_db_defines.CAN_SIGNAL_BIT_START_MODULE_CONFIG_MODULE_ID
+                    can_signal_bit_start_config_id = can_db_defines.CAN_SIGNAL_BIT_START_MODULE_CONFIG_CONFIG_ID
+                    can_signal_bit_start_config_value = can_db_defines.CAN_SIGNAL_BIT_START_MODULE_CONFIG_CONFIG_VALUE
+                    can_signal_bit_length_module_id = can_db_defines.CAN_SIGNAL_BIT_LENGTH_MODULE_CONFIG_MODULE_ID
+                    can_signal_bit_length_config_id = can_db_defines.CAN_SIGNAL_BIT_LENGTH_MODULE_CONFIG_CONFIG_ID
+                    can_signal_bit_length_config_value = can_db_defines.CAN_SIGNAL_BIT_LENGTH_MODULE_CONFIG_CONFIG_VALUE
+
+                    # Combine the data into one variable according to the bit starts and lengths
+                    combined_data = (can_signal_data_module_id << can_signal_bit_start_module_id) & ((1 << can_signal_bit_length_module_id) - 1)
+                    combined_data |= (can_signal_data_config_id << can_signal_bit_start_config_id) & ((1 << can_signal_bit_length_config_id) - 1)
+                    combined_data |= (can_signal_data_config_value << can_signal_bit_start_config_value) & ((1 << can_signal_bit_length_config_value) - 1)
+                    # Print the combined data
+                    self.__node.get_logger().info('Combined data: %s' % combined_data)
+                    self.__node.get_logger().info('Expected data: %s' % msg.data)
+                    # Merge msg.data array into a single integer
+                    msg.data = int.from_bytes(msg.data, byteorder='little')
+                    self.__node.get_logger().info('Expected data as int: %s' % msg.data)
+
+                    # Check if the combined data matches the expected data in the CAN message
+                    self.assertEqual(msg.data, combined_data.to_bytes((combined_data.bit_length() + 7) // 8, byteorder='little'))
+
+
         finally:
             self.__node.destroy_publisher(self.__can_in_publisher)
             self.__node.destroy_publisher(self.__open_drawer_publisher)
             self.__node.destroy_publisher(self.__led_cmd_publisher)
             self.__node.destroy_subscription(self.__drawer_feedback_subscriber)
             self.__node.destroy_subscription(self.__robast_error_subscriber)
-            self.__node.destroy_subscription(self.__to_can_bus_subscriber)
+            self.__to_can_node.destroy_subscription(self.__to_can_bus_subscriber)
             self.__node.destroy_client(self.__module_config_service_client)
             self.__node.destroy_client(self.__electrical_drawer_motor_control_service_client)
