@@ -81,7 +81,7 @@ class AuthSessionManager:
         self.__sessions[robot_name] = None
 
     def get_session(self, robot_name: str) -> User | None:
-        return self.__sessions[robot_name]
+        return self.__sessions.get(robot_name)
 
     def check_auth_status(
         self, robot_name: str, user_ids: list[str], user_groups: list[str]

@@ -294,12 +294,16 @@ class RobotCommandHandle(adpt.RobotCommandHandle):
                         [x, y] = target_pose[:2]
                         theta = target_pose[2]
                         speed_limit = self.get_speed_limit(self.target_waypoint)
+                        self.node.get_logger().info(
+                            f"path_index: {path_index}, {len(self.remaining_waypoints)}"
+                        )
                         response = self.api.navigate(
                             self.name,
                             self.next_cmd_id(),
                             [x, y, theta],
                             self.map_name,
                             speed_limit,
+                            len(self.remaining_waypoints) == 1,
                         )
 
                         if response:

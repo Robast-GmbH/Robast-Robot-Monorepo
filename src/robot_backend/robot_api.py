@@ -65,8 +65,12 @@ Navigation API Endpoints
 
 
 @app.post("/goal_pose", tags=["Navigation"])
-def post_goal_pose(x: float, y: float, z: float):
-    return {"success": ros_bridge.nav_bridge.navigate_to_goal_pose((x, y, z))}
+def post_goal_pose(x: float, y: float, z: float, use_reorientation: bool = False):
+    return {
+        "success": ros_bridge.nav_bridge.navigate_to_goal_pose(
+            (x, y, z), use_reorientation
+        )
+    }
 
 
 @app.post("/cancel_goal", tags=["Navigation"])
