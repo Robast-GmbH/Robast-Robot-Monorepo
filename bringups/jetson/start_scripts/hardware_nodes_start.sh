@@ -3,6 +3,7 @@
 . /robast/humble/setup.sh
 ros2 launch ros2_socketcan socket_can_bridge.launch.xml interface:=can0 &
 ros2 launch drawer_bridge drawer_bridge_launch.py &
+ros2 run qos_bridge error_qos_bridge &
 
 # 1376257 1310721 1114113 1114114 1179649 1245185 1441793 1507329
 module_ids=(1376257 1310721 1114113 1114114 1179649 1245185 1441793 1507329)
