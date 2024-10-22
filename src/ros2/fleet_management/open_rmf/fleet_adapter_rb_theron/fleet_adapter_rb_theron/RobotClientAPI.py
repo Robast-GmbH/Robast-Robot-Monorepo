@@ -154,10 +154,10 @@ class RobotAPI:
         and 1.0. Else return None if any errors are encountered"""
         try:
             response = requests.get(
-                f"{self.__prefix}/battery_level?robot_name={robot_name}",
+                f"{self.__prefix}/battery_status?robot_name={robot_name}",
                 timeout=TIMEOUT_DURATION_IN_S,
             ).json()
-            return response["battery_level"]
+            return response["data"]["level"] / 100.0
         # TODO(ane-robast): Add proper error handling -> RE-2187
         except Exception as e:
             return None
