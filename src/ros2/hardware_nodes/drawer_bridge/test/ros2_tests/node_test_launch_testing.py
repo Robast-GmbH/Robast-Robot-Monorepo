@@ -143,11 +143,11 @@ class TestProcessOutput(unittest.TestCase):
         self.__led_cmd_publisher.publish(led_cmd_msg)
         self.__node.get_logger().info('Publishing to led_cmd topic for module_id: "%i"' % led_cmd_msg.drawer_address.module_id)
 
-        drawer_address_msg = DrawerAddress()
-        drawer_address_msg.module_id = data['open_drawer']['module_id']
-        drawer_address_msg.drawer_id = data['open_drawer']['drawer_id']
-        self.__open_drawer_publisher.publish(drawer_address_msg)
-        self.__node.get_logger().info('Publishing to open_drawer topic with module_id: "%s"' % drawer_address_msg.module_id)
+        self.__open_drawer_msg = DrawerAddress()
+        self.__open_drawer_msg.module_id = data['open_drawer']['module_id']
+        self.__open_drawer_msg.drawer_id = data['open_drawer']['drawer_id']
+        self.__open_drawer_publisher.publish(self.__open_drawer_msg)
+        self.__node.get_logger().info('Publishing to open_drawer topic with module_id: "%s"' % self.__open_drawer_msg.module_id)
 
 
     def call_service_clients(self):
@@ -195,8 +195,8 @@ class TestProcessOutput(unittest.TestCase):
             data = yaml.safe_load(f)
 
         drawer_feedback_can_msg = Frame()
-        drawer_feedback_can_msg.id = can_db_defines.CAN_ID_DRAWER_FEEDBACK
-        drawer_feedback_can_msg.dlc = can_db_defines.DLC_DRAWER_FEEDBACK
+        drawer_feedback_can_msg.id = can_db_defines.can_id.DRAWER_FEEDBACK
+        drawer_feedback_can_msg.dlc = can_db_defines.can_dlc.DRAWER_FEEDBACK
         drawer_feedback_can_msg.data = data['drawer_feedback_can_frame']['data']
         self.__can_in_publisher.publish(drawer_feedback_can_msg)
         self.__node.get_logger().info('Publishing drawer_feedback_can_msg to from_can_bus topic with can_msg_id: "%s"' % drawer_feedback_can_msg.id)
@@ -214,8 +214,8 @@ class TestProcessOutput(unittest.TestCase):
             data = yaml.safe_load(f)
 
         error_feedback_can_msg = Frame()
-        error_feedback_can_msg.id = can_db_defines.CAN_ID_ERROR_FEEDBACK
-        error_feedback_can_msg.dlc = can_db_defines.DLC_ERROR_FEEDBACK
+        error_feedback_can_msg.id = can_db_defines.can_id.ERROR_FEEDBACK
+        error_feedback_can_msg.dlc = can_db_defines.can_dlc.ERROR_FEEDBACK
         error_feedback_can_msg.data = data['error_feedback_can_frame']['data']
         self.__can_in_publisher.publish(error_feedback_can_msg)
         self.__node.get_logger().info('Publishing to from_can_bus topic with can_msg_id: "%s"' % error_feedback_can_msg.id)
@@ -283,21 +283,29 @@ class TestProcessOutput(unittest.TestCase):
         for msg in self.__received_data_from_can:
             expected_data_bytes = None
 
-            if msg.id == can_db_defines.CAN_ID_MODULE_CONFIG:
-                self.assertEqual(msg.dlc, can_db_defines.DLC_MODULE_CONFIG)
+            if msg.id == can_db_defines.can_id.DRAWER_UNLOCK:
+                self.assertEqual(msg.dlc, can_db_defines.can_dlc.DRAWER_UNLOCK)
                 expected_data_uint64 = (
-                    (self.__module_config_request.module_address.module_id << (64 - can_db_defines.CAN_SIGNAL_BIT_LENGTH_MODULE_CONFIG_MODULE_ID - can_db_defines.CAN_SIGNAL_BIT_START_MODULE_CONFIG_MODULE_ID)) |
-                    (self.__module_config_request.config_id << (64 - can_db_defines.CAN_SIGNAL_BIT_LENGTH_MODULE_CONFIG_CONFIG_ID - can_db_defines.CAN_SIGNAL_BIT_START_MODULE_CONFIG_CONFIG_ID)) |
-                    (self.__module_config_request.config_value << (64 - can_db_defines.CAN_SIGNAL_BIT_LENGTH_MODULE_CONFIG_CONFIG_VALUE - can_db_defines.CAN_SIGNAL_BIT_START_MODULE_CONFIG_CONFIG_VALUE))
+                    (self.__open_drawer_msg.module_id << (64 - can_db_defines.can_signal.bit_length.DRAWER_UNLOCK_MODULE_ID - can_db_defines.can_signal.bit_start.DRAWER_UNLOCK_MODULE_ID)) |
+                    (self.__open_drawer_msg.drawer_id << (64 - can_db_defines.can_signal.bit_length.DRAWER_UNLOCK_DRAWER_ID - can_db_defines.can_signal.bit_start.DRAWER_UNLOCK_DRAWER_ID))
                 )
                 expected_data_bytes = expected_data_uint64.to_bytes(8, byteorder='big')
 
-            if msg.id == can_db_defines.CAN_ID_ELECTRICAL_DRAWER_MOTOR_CONTROL:
-                self.assertEqual(msg.dlc, can_db_defines.DLC_ELECTRICAL_DRAWER_MOTOR_CONTROL)
+            if msg.id == can_db_defines.can_id.MODULE_CONFIG:
+                self.assertEqual(msg.dlc, can_db_defines.can_dlc.MODULE_CONFIG)
                 expected_data_uint64 = (
-                    (self.__electrical_drawer_motor_control_request.module_address.module_id << (64 - can_db_defines.CAN_SIGNAL_BIT_LENGTH_ELECTRICAL_DRAWER_MOTOR_CONTROL_MODULE_ID - can_db_defines.CAN_SIGNAL_BIT_START_ELECTRICAL_DRAWER_MOTOR_CONTROL_MODULE_ID)) |
-                    (self.__electrical_drawer_motor_control_request.motor_id << (64 - can_db_defines.CAN_SIGNAL_BIT_LENGTH_ELECTRICAL_DRAWER_MOTOR_CONTROL_MOTOR_ID - can_db_defines.CAN_SIGNAL_BIT_START_ELECTRICAL_DRAWER_MOTOR_CONTROL_MOTOR_ID)) |
-                    (self.__electrical_drawer_motor_control_request.enable_motor << (64 - can_db_defines.CAN_SIGNAL_BIT_LENGTH_ELECTRICAL_DRAWER_MOTOR_CONTROL_ENABLE_MOTOR - can_db_defines.CAN_SIGNAL_BIT_START_ELECTRICAL_DRAWER_MOTOR_CONTROL_ENABLE_MOTOR))
+                    (self.__module_config_request.module_address.module_id << (64 - can_db_defines.can_signal.bit_length.MODULE_CONFIG_MODULE_ID - can_db_defines.can_signal.bit_start.MODULE_CONFIG_MODULE_ID)) |
+                    (self.__module_config_request.config_id << (64 - can_db_defines.can_signal.bit_length.MODULE_CONFIG_CONFIG_ID - can_db_defines.can_signal.bit_start.MODULE_CONFIG_CONFIG_ID)) |
+                    (self.__module_config_request.config_value << (64 - can_db_defines.can_signal.bit_length.MODULE_CONFIG_CONFIG_VALUE - can_db_defines.can_signal.bit_start.MODULE_CONFIG_CONFIG_VALUE))
+                )
+                expected_data_bytes = expected_data_uint64.to_bytes(8, byteorder='big')
+
+            if msg.id == can_db_defines.can_id.ELECTRICAL_DRAWER_MOTOR_CONTROL:
+                self.assertEqual(msg.dlc, can_db_defines.can_dlc.ELECTRICAL_DRAWER_MOTOR_CONTROL)
+                expected_data_uint64 = (
+                    (self.__electrical_drawer_motor_control_request.module_address.module_id << (64 - can_db_defines.can_signal.bit_length.ELECTRICAL_DRAWER_MOTOR_CONTROL_MODULE_ID - can_db_defines.can_signal.bit_start.ELECTRICAL_DRAWER_MOTOR_CONTROL_MODULE_ID)) |
+                    (self.__electrical_drawer_motor_control_request.motor_id << (64 - can_db_defines.can_signal.bit_length.ELECTRICAL_DRAWER_MOTOR_CONTROL_MOTOR_ID - can_db_defines.can_signal.bit_start.ELECTRICAL_DRAWER_MOTOR_CONTROL_MOTOR_ID)) |
+                    (self.__electrical_drawer_motor_control_request.enable_motor << (64 - can_db_defines.can_signal.bit_length.ELECTRICAL_DRAWER_MOTOR_CONTROL_ENABLE_MOTOR - can_db_defines.can_signal.bit_start.ELECTRICAL_DRAWER_MOTOR_CONTROL_ENABLE_MOTOR))
                 )
                 expected_data_bytes = expected_data_uint64.to_bytes(8, byteorder='big')
 
