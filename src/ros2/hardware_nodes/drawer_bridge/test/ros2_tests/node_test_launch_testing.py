@@ -172,6 +172,15 @@ class TestProcessOutput(unittest.TestCase):
         rclpy.spin_until_future_complete(self.__node, future)
         self.__module_config_service_response = future.result()
 
+        while not self.__electrical_drawer_motor_control_service_client.wait_for_service(timeout_sec=1.0):
+            self.__node.get_logger().info('service not available, waiting again...')
+        self.__electrical_drawer_motor_control_request = ElectricalDrawerMotorControl.Request()
+        self.__electrical_drawer_motor_control_request.module_address.module_id = data['electrical_drawer_motor_control']['module_id']
+        self.__electrical_drawer_motor_control_request.motor_id = data['electrical_drawer_motor_control']['motor_id']
+        self.__electrical_drawer_motor_control_request.enable_motor = data['electrical_drawer_motor_control']['enable_motor']
+        future = self.__electrical_drawer_motor_control_service_client.call_async(self.__electrical_drawer_motor_control_request)
+        rclpy.spin_until_future_complete(self.__node, future)
+        self.__electrical_drawer_motor_control_service_response = future.result()
 
 
     def publish_drawer_feedback_can_msg(self):
@@ -233,7 +242,6 @@ class TestProcessOutput(unittest.TestCase):
 
     def to_can_bus_callback(self, msg):
         self.__node.get_logger().info('Received msg on to_can_bus topic. can_id: "%s"' % msg.id)
-        # TODO: Append the data that should be sent over the can bus and check it in the test
         self.__received_data_from_can.append(msg)
 
     
@@ -268,14 +276,41 @@ class TestProcessOutput(unittest.TestCase):
             self.drawer_error_subscriber_callback,
             qos_profile=self.__qos_error_msgs
         )
-   
+
+    
+    def check_to_can_bus_data(self):
+         # Loop through the received data on the can bus topic and check if the expected data is in the received data
+        for msg in self.__received_data_from_can:
+            expected_data_bytes = None
+
+            if msg.id == can_db_defines.CAN_ID_MODULE_CONFIG:
+                self.assertEqual(msg.dlc, can_db_defines.DLC_MODULE_CONFIG)
+                expected_data_uint64 = (
+                    (self.__module_config_request.module_address.module_id << (64 - can_db_defines.CAN_SIGNAL_BIT_LENGTH_MODULE_CONFIG_MODULE_ID - can_db_defines.CAN_SIGNAL_BIT_START_MODULE_CONFIG_MODULE_ID)) |
+                    (self.__module_config_request.config_id << (64 - can_db_defines.CAN_SIGNAL_BIT_LENGTH_MODULE_CONFIG_CONFIG_ID - can_db_defines.CAN_SIGNAL_BIT_START_MODULE_CONFIG_CONFIG_ID)) |
+                    (self.__module_config_request.config_value << (64 - can_db_defines.CAN_SIGNAL_BIT_LENGTH_MODULE_CONFIG_CONFIG_VALUE - can_db_defines.CAN_SIGNAL_BIT_START_MODULE_CONFIG_CONFIG_VALUE))
+                )
+                expected_data_bytes = expected_data_uint64.to_bytes(8, byteorder='big')
+
+            if msg.id == can_db_defines.CAN_ID_ELECTRICAL_DRAWER_MOTOR_CONTROL:
+                self.assertEqual(msg.dlc, can_db_defines.DLC_ELECTRICAL_DRAWER_MOTOR_CONTROL)
+                expected_data_uint64 = (
+                    (self.__electrical_drawer_motor_control_request.module_address.module_id << (64 - can_db_defines.CAN_SIGNAL_BIT_LENGTH_ELECTRICAL_DRAWER_MOTOR_CONTROL_MODULE_ID - can_db_defines.CAN_SIGNAL_BIT_START_ELECTRICAL_DRAWER_MOTOR_CONTROL_MODULE_ID)) |
+                    (self.__electrical_drawer_motor_control_request.motor_id << (64 - can_db_defines.CAN_SIGNAL_BIT_LENGTH_ELECTRICAL_DRAWER_MOTOR_CONTROL_MOTOR_ID - can_db_defines.CAN_SIGNAL_BIT_START_ELECTRICAL_DRAWER_MOTOR_CONTROL_MOTOR_ID)) |
+                    (self.__electrical_drawer_motor_control_request.enable_motor << (64 - can_db_defines.CAN_SIGNAL_BIT_LENGTH_ELECTRICAL_DRAWER_MOTOR_CONTROL_ENABLE_MOTOR - can_db_defines.CAN_SIGNAL_BIT_START_ELECTRICAL_DRAWER_MOTOR_CONTROL_ENABLE_MOTOR))
+                )
+                expected_data_bytes = expected_data_uint64.to_bytes(8, byteorder='big')
+
+            if expected_data_bytes is not None:
+                self.__node.get_logger().info('Checking data bytes for can_id: "%s"' % msg.id)
+                # Compare each data byte
+                for i, byte in enumerate(msg.data):
+                    self.assertEqual(byte, expected_data_bytes[i])
 
     def test_dut_output(self):
-        # Create an executor and add to_can_node to spin it asynchronously to receive data from the can bus and proceed with the test
+        # Create an executor and add to_can_node to spin it in separate thread to receive data from the can bus and proceed with the test
         self.executor = rclpy.executors.MultiThreadedExecutor()
         self.executor.add_node(self.__to_can_node)
-
-        # Spin the executor in a separate thread
         self.spin_thread = threading.Thread(target=self.executor.spin, daemon=True)
         self.spin_thread.start()
 
@@ -295,7 +330,6 @@ class TestProcessOutput(unittest.TestCase):
                 rclpy.spin_once(self.__node, timeout_sec=0.1)
 
             # test actual output for expected output
-            # self.assertEqual(str(test_data), expected_data)
             self.assertEqual(self.__received_data_drawer_is_open_module_id, self.__expected_data_module_id)
             self.assertEqual(self.__received_data_drawer_is_open_drawer_id, self.__expected_data_drawer_id)
             self.assertEqual(self.__received_data_drawer_is_open_drawer_is_open, self.__expected_data_drawer_is_open)
@@ -310,46 +344,16 @@ class TestProcessOutput(unittest.TestCase):
 
             # Check if service requests were successful
             self.assertEqual(self.__module_config_service_response.success, True)
-            # TODO: Check if the data sent to the "to_can_bus" topic is correct
+            self.assertEqual(self.__electrical_drawer_motor_control_service_response.success, True)
 
-            # Loop through the received data on the can bus topic and check if the expected data is in the received data
-            for msg in self.__received_data_from_can:
-                # Print the received data
-                self.__node.get_logger().info('Received data from can bus with the id %s' % msg.id)
-                self.__node.get_logger().info('CAN_ID_MODULE_CONFIG: %s' % can_db_defines.CAN_ID_MODULE_CONFIG)
-                if msg.id == can_db_defines.CAN_ID_MODULE_CONFIG:
-                    self.assertEqual(msg.dlc, can_db_defines.DLC_MODULE_CONFIG)
-                    can_signal_data_module_id = self.__module_config_request.module_address.module_id
-                    can_signal_data_config_id = self.__module_config_request.config_id
-                    can_signal_data_config_value = self.__module_config_request.config_value
-                    can_signal_bit_start_module_id = can_db_defines.CAN_SIGNAL_BIT_START_MODULE_CONFIG_MODULE_ID
-                    can_signal_bit_start_config_id = can_db_defines.CAN_SIGNAL_BIT_START_MODULE_CONFIG_CONFIG_ID
-                    can_signal_bit_start_config_value = can_db_defines.CAN_SIGNAL_BIT_START_MODULE_CONFIG_CONFIG_VALUE
-                    can_signal_bit_length_module_id = can_db_defines.CAN_SIGNAL_BIT_LENGTH_MODULE_CONFIG_MODULE_ID
-                    can_signal_bit_length_config_id = can_db_defines.CAN_SIGNAL_BIT_LENGTH_MODULE_CONFIG_CONFIG_ID
-                    can_signal_bit_length_config_value = can_db_defines.CAN_SIGNAL_BIT_LENGTH_MODULE_CONFIG_CONFIG_VALUE
-
-                    # Combine the data into one variable according to the bit starts and lengths
-                    combined_data = (can_signal_data_module_id << can_signal_bit_start_module_id) & ((1 << can_signal_bit_length_module_id) - 1)
-                    combined_data |= (can_signal_data_config_id << can_signal_bit_start_config_id) & ((1 << can_signal_bit_length_config_id) - 1)
-                    combined_data |= (can_signal_data_config_value << can_signal_bit_start_config_value) & ((1 << can_signal_bit_length_config_value) - 1)
-                    # Print the combined data
-                    self.__node.get_logger().info('Combined data: %s' % combined_data)
-                    self.__node.get_logger().info('Expected data: %s' % msg.data)
-                    # Merge msg.data array into a single integer
-                    msg.data = int.from_bytes(msg.data, byteorder='little')
-                    self.__node.get_logger().info('Expected data as int: %s' % msg.data)
-
-                    # Check if the combined data matches the expected data in the CAN message
-                    self.assertEqual(msg.data, combined_data.to_bytes((combined_data.bit_length() + 7) // 8, byteorder='little'))
-
-
+            self.check_to_can_bus_data()
+           
         finally:
             self.__node.destroy_publisher(self.__can_in_publisher)
             self.__node.destroy_publisher(self.__open_drawer_publisher)
             self.__node.destroy_publisher(self.__led_cmd_publisher)
             self.__node.destroy_subscription(self.__drawer_feedback_subscriber)
             self.__node.destroy_subscription(self.__robast_error_subscriber)
-            self.__to_can_node.destroy_subscription(self.__to_can_bus_subscriber)
             self.__node.destroy_client(self.__module_config_service_client)
             self.__node.destroy_client(self.__electrical_drawer_motor_control_service_client)
+            self.__to_can_node.destroy_subscription(self.__to_can_bus_subscriber)

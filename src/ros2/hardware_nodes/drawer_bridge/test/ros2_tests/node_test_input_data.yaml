@@ -26,3 +26,8 @@ module_config:
   drawer_id: 1
   config_id: 5
   config_value: 10
+
+electrical_drawer_motor_control:
+  module_id: 0x010203
+  motor_id: 1
+  enable_motor: true
