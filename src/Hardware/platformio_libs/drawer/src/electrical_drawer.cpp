@@ -176,6 +176,17 @@ namespace drawer
       return;
     }
 
+    // We need to reset the stall guard before we start a new movement because stall guard is a status at the moment
+    // TODO: "stall guard triggerd" should be an event not a status
+    _can_utils->enqueue_e_drawer_feedback_msg(
+      _module_id,
+      _id,
+      _endstop_switch->is_switch_pressed(),
+      _drawer_lock.has_value() ? _drawer_lock.value()->is_lock_switch_pushed() : false,
+      MOTOR_IS_NOT_STALLED,
+      _encoder->get_normed_current_position(),
+      PUSH_TO_CLOSE_NOT_TRIGGERED);
+
     _is_drawer_moving_out = _target_position_uint8 > _encoder->get_normed_current_position();
 
     set_target_speed_and_direction(target_speed, use_acceleration_ramp);
