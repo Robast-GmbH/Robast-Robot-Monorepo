@@ -14,3 +14,19 @@ source /home/robast/.bashrc
 pnpm env use --global 20
 export PATH=$PATH:/home/robast/.local/bin
 source ~/.bashrc
+
+cd /workspace && colcon build
+source install/setup.bash
+
+cd /rmf-web-workspace/rmf-web && pnpm install
+
+cd packages/api-server/api_server
+sed -i "s/host=app_config.host,/host='0.0.0.0',/" __main__.py
+
+cd ..
+pnpm start &
+
+ros2 run dispenser_ingestor_mock dispenser_ingestor_mock &
+
+sleep 5
+ros2 launch fleet_adapter_rb_theron rmf_launch.py

@@ -17,7 +17,7 @@ class DispenserIngestorMock(Node):
     def __init__(self) -> None:
         super().__init__("dispenser_ingestor_mock")
 
-        self.declare_parameter("middleware_url", "http://10.10.13.7:8003")
+        self.declare_parameter("middleware_url", "http://10.10.13.8:8003")
         middleware_url = self.get_parameter("middleware_url").value
         self.__robot_module_api = RobotModulesAPI(
             middleware_url,
