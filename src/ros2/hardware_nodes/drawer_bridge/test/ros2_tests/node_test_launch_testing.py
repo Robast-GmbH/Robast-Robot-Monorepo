@@ -351,8 +351,8 @@ class TestProcessOutput(unittest.TestCase):
             self.__node.get_logger().info('Finished checking received data from robast_error!')
 
             # Check if service requests were successful
-            self.assertEqual(self.__module_config_service_response.success, True)
-            self.assertEqual(self.__electrical_drawer_motor_control_service_response.success, True)
+            self.assertTrue(self.__module_config_service_response.success)
+            self.assertTrue(self.__electrical_drawer_motor_control_service_response.success)
 
             self.check_to_can_bus_data()
            
