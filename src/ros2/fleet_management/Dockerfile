@@ -41,10 +41,13 @@ RUN apt-get update && apt-get install -y \
   
 WORKDIR /rmf-web-workspace
 RUN git clone https://github.com/open-rmf/rmf-web.git
+RUN cd rmf-web && git checkout humble
+COPY entrypoint.sh /workspace/entrypoint.sh
 RUN chown -Rf robast .
+RUN chown -Rf robast /workspace
 
-WORKDIR /workspace
 USER robast
+
 
 RUN echo "source /usr/share/bash-completion/completions/git" >> /home/${USER}/.bashrc \
   && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/${USER}/.bashrc \
