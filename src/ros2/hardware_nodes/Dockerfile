@@ -54,9 +54,10 @@ RUN rosdep update && \
   colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast\
+RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast \
   && mv /monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
   && mv /monorepo/src/ros2/error_handling /ws/src/ros2/error_handling \
+  && mv /monorepo/src/ros2/utils/qos_bridge /ws/src/ros2/qos_bridge \
   && mv /monorepo/src/Hardware/cpp/libs ws/ \
   && mv /monorepo/src/ros2/dds_configs /robast/dds_configs
 
@@ -73,11 +74,11 @@ COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
 
 RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y \
-    libboost-all-dev \
-    ros-${ROS_BUILD_DISTRO}-rmw-cyclonedds-cpp \
-    ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
-    && rm -rf /var/cache/apk/*
+  apt-get install -y \
+  libboost-all-dev \
+  ros-${ROS_BUILD_DISTRO}-rmw-cyclonedds-cpp \
+  ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
+  && rm -rf /var/cache/apk/*
 
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration

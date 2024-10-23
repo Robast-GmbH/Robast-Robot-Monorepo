@@ -65,8 +65,12 @@ Navigation API Endpoints
 
 
 @app.post("/goal_pose", tags=["Navigation"])
-def post_goal_pose(x: float, y: float, z: float):
-    return {"success": ros_bridge.nav_bridge.navigate_to_goal_pose((x, y, z))}
+def post_goal_pose(x: float, y: float, z: float, use_reorientation: bool = False):
+    return {
+        "success": ros_bridge.nav_bridge.navigate_to_goal_pose(
+            (x, y, z), use_reorientation
+        )
+    }
 
 
 @app.post("/cancel_goal", tags=["Navigation"])
@@ -118,15 +122,7 @@ Modules API Endpoints
 
 @app.get("/submodule_status", tags=["Modules"])
 def read_submodule_status(module_id: int, submodule_id: int):
-    return {
-        "is_open": ros_bridge.module_bridge.get_submodule_is_open(
-            module_id, submodule_id
-        ),
-        "is_stall_guard_triggered": ros_bridge.module_bridge.get_submodule_stall_guard_triggered(
-            module_id, submodule_id
-        ),
-        "opening_timed_out": ros_bridge.error_bridge.received_drawer_not_opened_error(),
-    }
+    return ros_bridge.module_bridge.get_submodule_state(module_id, submodule_id)
 
 
 @app.post("/open_submodule", tags=["Modules"])

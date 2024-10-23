@@ -7,6 +7,7 @@ import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/pages/menu_page.dart';
 import 'package:robot_frontend/widgets/auth_view.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
+import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/disinfection_view.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 
@@ -39,41 +40,40 @@ class _AuthPageState extends State<AuthPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BackgroundView(
-        inactivityTimerEnabled: false,
-        child: !authCompleted
-            ? SizedBox.expand(
-                child: Center(
-                  child: AuthView(
-                    requiredUserIDs: const [],
-                    requiredUserGroups: User.availableUserGroups(),
-                    onAuthCompleted: ({required bool wasSuccessful}) {
-                      if (wasSuccessful) {
-                        authCompleted = true;
-                        setState(() {});
-                      }
-                      startTimeoutTimer();
-                    },
-                    onRetry: () {
-                      timeoutTimer?.cancel();
-                    },
-                  ),
+    return CustomScaffold(
+      inactivityTimerEnabled: false,
+      collapsedTitle: true,
+      child: !authCompleted
+          ? SizedBox.expand(
+              child: Center(
+                child: AuthView(
+                  requiredUserIDs: const [],
+                  requiredUserGroups: User.availableUserGroups(),
+                  onAuthCompleted: ({required bool wasSuccessful}) {
+                    if (wasSuccessful) {
+                      authCompleted = true;
+                      setState(() {});
+                    }
+                    startTimeoutTimer();
+                  },
+                  onRetry: () {
+                    timeoutTimer?.cancel();
+                  },
                 ),
-              )
-            : DisinfectionView(
-                onDisinfection: () {
-                  if (context.mounted) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute<MenuPage>(
-                        builder: (context) => const MenuPage(),
-                      ),
-                    );
-                  }
-                },
               ),
-      ),
+            )
+          : DisinfectionView(
+              onDisinfection: () {
+                if (context.mounted) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute<MenuPage>(
+                      builder: (context) => const MenuPage(),
+                    ),
+                  );
+                }
+              },
+            ),
     );
   }
 }
