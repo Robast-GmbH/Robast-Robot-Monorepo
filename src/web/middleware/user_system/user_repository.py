@@ -31,16 +31,8 @@ class UserRepository:
             self.__initialized = True
             self.__create_table()
 
-    def __create_table(self) -> None:
-        """Create users table if it doesn't exist"""
-        User.metadata.create_all(bind=engine)
-
-    def get_session(self):
-        """Helper function to create a new session"""
-        return SessionLocal()
-
     def login_user(self, email: str, password: str) -> User | None:
-        session = self.get_session()
+        session = self.__get_session()
         try:
             user = session.query(User).filter(User.mail == email).first()
             if user and user.password == password:
@@ -60,7 +52,7 @@ class UserRepository:
         room: str,
         user_groups: list[str],
     ) -> User | None:
-        session = self.get_session()
+        session = self.__get_session()
         user_id = str(uuid.uuid4())
         password = f"{first_name}-{last_name}-{datetime.datetime.now().year}"
 
@@ -84,7 +76,7 @@ class UserRepository:
         return new_user
 
     def get_all_users(self) -> list[User]:
-        session = self.get_session()
+        session = self.__get_session()
         try:
             users = session.query(User).all()
             return users
@@ -92,7 +84,7 @@ class UserRepository:
             session.close()
 
     def get_user(self, user_id: str) -> User | None:
-        session = self.get_session()
+        session = self.__get_session()
         try:
             user = session.query(User).filter(User.id == user_id).first()
             return user
@@ -100,7 +92,7 @@ class UserRepository:
             session.close()
 
     def get_user_by_nfc_id(self, nfc_id: str) -> User | None:
-        session = self.get_session()
+        session = self.__get_session()
         try:
             user = session.query(User).filter(User.nfc_id == nfc_id).first()
             return user
@@ -119,7 +111,7 @@ class UserRepository:
         room: str | None = None,
         user_groups: list[str] | None = None,
     ) -> User | None:
-        session = self.get_session()
+        session = self.__get_session()
         try:
             user = session.query(User).filter(User.id == user_id).first()
             if user:
@@ -150,7 +142,7 @@ class UserRepository:
     def update_user_password(
         self, user_id: str, old_password: str, new_password: str
     ) -> bool:
-        session = self.get_session()
+        session = self.__get_session()
         try:
             user = (
                 session.query(User)
@@ -166,7 +158,7 @@ class UserRepository:
             session.close()
 
     def delete_user(self, user_id: str) -> bool:
-        session = self.get_session()
+        session = self.__get_session()
         try:
             user = session.query(User).filter(User.id == user_id).first()
             if user:
@@ -176,3 +168,11 @@ class UserRepository:
             return False
         finally:
             session.close()
+
+    def __create_table(self) -> None:
+        """Create users table if it doesn't exist"""
+        User.metadata.create_all(bind=engine)
+
+    def __get_session(self):
+        """Helper function to create a new session"""
+        return SessionLocal()

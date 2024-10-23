@@ -27,6 +27,10 @@ class NavBridge(BaseBridge):
             "/cancel_goal",
             "std_msgs/msg/Bool",
         )
+        self.__enable_reorientation_publisher = self.start_publisher(
+            "/is_reorientation_enabled",
+            "std_msgs/msg/Bool",
+        )
 
         self.__sin_lookup: list[float] = [
             np.sin(np.radians(x / 2)) for x in range(0, 360, LOOKUP_TABLE_RESOLUTION)
@@ -39,7 +43,15 @@ class NavBridge(BaseBridge):
         self.__is_nav_blocked = False
         self.__goal_pose = None
 
-    def navigate_to_goal_pose(self, goal_pose: tuple[float, float, float]) -> bool:
+    def navigate_to_goal_pose(
+        self,
+        goal_pose: tuple[float, float, float],
+        use_reorientation: bool | None,
+    ) -> bool:
+        if use_reorientation is not None:
+            self.__enable_reorientation_publisher.publish(
+                Message({"data": use_reorientation})
+            )
         self.__goal_pose = goal_pose
         if not self.__is_nav_blocked:
             self.__clear_goal_status()
@@ -77,7 +89,7 @@ class NavBridge(BaseBridge):
     def unblock_nav(self) -> bool:
         self.__is_nav_blocked = False
         if self.__goal_pose is not None:
-            self.navigate_to_goal_pose(self.__goal_pose)
+            self.navigate_to_goal_pose(self.__goal_pose, None)
         return True
 
     def requires_replan(self) -> bool:
