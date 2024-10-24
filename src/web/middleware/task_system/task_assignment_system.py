@@ -2,7 +2,7 @@ from task_system.models.robot import Robot
 from task_system.models.nav_graph import NavGraph
 from pydantic_models.task_request import TaskRequest
 from db_models.task import Task
-from task_system.task_repository import TaskRepository
+from task_system.task_manager import TaskManager
 from configs.url_config import ROBOT_NAME_TO_IP
 
 from threading import Timer
@@ -21,7 +21,7 @@ class TaskAssignmentSystem:
         with open(rmf_nav_config_path, "r") as file:
             nav_graph_json = json.load(file)["levels"][0]["nav_graphs"][0]
         self.__nav_graph = NavGraph.from_json(data=nav_graph_json)
-        self.__task_repository = TaskRepository()
+        self.__task_manager = TaskManager()
         self.__robots = self.__init_robots()
         self.__task_assignment_trigger_timer = None
         self.__start_task_assignment_trigger_timer()
@@ -45,7 +45,7 @@ class TaskAssignmentSystem:
         if self.__task_assignment_trigger_timer is not None:
             self.__task_assignment_trigger_timer.cancel()
 
-        self.__task_repository.create_task(task.to_db_task())
+        self.__task_manager.create_task(task.to_db_task())
 
         if task.assignee_name:
             robot = self.__robots[task.assignee_name]
@@ -83,7 +83,7 @@ class TaskAssignmentSystem:
         self.__task_assignment_trigger_timer.start()
 
     def __trigger_task_assignment(self) -> None:
-        unassigned_tasks = self.__task_repository.read_unassigned_tasks()
+        unassigned_tasks = self.__task_manager.read_unassigned_tasks()
         unassigned_tasks = [
             task
             for task in unassigned_tasks

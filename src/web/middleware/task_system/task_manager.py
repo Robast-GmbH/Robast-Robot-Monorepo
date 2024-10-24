@@ -28,6 +28,9 @@ class TaskManager:
     def read_all_tasks(self) -> list[Task]:
         return self.task_repository.read_tasks()
 
+    def read_unassigned_tasks(self) -> list[Task]:
+        return self.task_repository.read_unassigned_tasks()
+
     def read_subtask(self, subtask_id: str) -> Subtask | None:
         return self.task_repository.read_subtask(subtask_id)
 
@@ -74,10 +77,10 @@ class TaskManager:
 
     def assign_task(self, task_id, assignee_name) -> bool:
         task = self.task_repository.read_task(task_id)
-        if task:
-            task.assignee_name = assignee_name
-            for subtask in task.subtasks:
-                subtask.assignee_name = assignee_name
-            task.status = "pending"
-            return self.task_repository.update_task(task)
-        return False
+        if not task:
+            return False
+        task.assignee_name = assignee_name
+        for subtask in task.subtasks:
+            subtask.assignee_name = assignee_name
+        task.status = "pending"
+        return self.task_repository.update_task(task)

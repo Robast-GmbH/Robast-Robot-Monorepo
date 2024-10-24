@@ -56,7 +56,10 @@ class DisinfectionModuleBridge(BaseBridge):
         try:
             with open(self.__file_path, "r") as file:
                 return int(file.read().strip())
-        except (FileNotFoundError, ValueError):
+        except FileNotFoundError:
+            self.__write_remaining_disinfections(0)
+            return 0
+        except (PermissionError, OSError, TypeError, ValueError):
             return None
 
     def __on_disinfection_triggered(self, msg: dict[str, Any]) -> None:

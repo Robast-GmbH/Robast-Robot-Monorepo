@@ -95,9 +95,15 @@ Navigation API Endpoints
 
 @app.post("/goal_pose", tags=["Navigation"])
 def post_goal_pose(
-    x: float, y: float, z: float, robot_url: str = Depends(get_robot_url)
+    x: float,
+    y: float,
+    z: float,
+    use_reorientation: bool = False,
+    robot_url: str = Depends(get_robot_url),
 ):
-    response = requests.post(f"{robot_url}/goal_pose?x={x}&y={y}&z={z}").content
+    response = requests.post(
+        f"{robot_url}/goal_pose?x={x}&y={y}&z={z}&use_reorientation={use_reorientation}"
+    ).content
     return response
 
 
