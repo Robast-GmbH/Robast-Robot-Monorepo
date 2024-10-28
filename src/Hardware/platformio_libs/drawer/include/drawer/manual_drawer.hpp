@@ -25,7 +25,7 @@ namespace drawer
 
     void add_e_drawer_task_to_queue(const utils::EDrawerTask &e_drawer_task) override;
 
-    void set_motor_driver_state(const bool enabled) const override;
+    void set_motor_driver_state(const bool enabled, const uint8_t motor_id) const override;
 
    private:
     const uint32_t _module_id;

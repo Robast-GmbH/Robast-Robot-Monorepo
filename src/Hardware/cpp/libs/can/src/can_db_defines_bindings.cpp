@@ -99,6 +99,8 @@ PYBIND11_MODULE(can_db_defines_bindings, m)
     robast_can_msgs::can_signal::id::electrical_drawer_motor_control::MOTOR_ID;
   id.attr("ELECTRICAL_DRAWER_MOTOR_CONTROL_ENABLE_MOTOR") =
     robast_can_msgs::can_signal::id::electrical_drawer_motor_control::ENABLE_MOTOR;
+  id.attr("ELECTRICAL_DRAWER_MOTOR_CONTROL_CONFIRM_CHANGE") =
+    robast_can_msgs::can_signal::id::electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE;
 
   py::module_ bit_start = can_signal.def_submodule("bit_start");
   bit_start.attr("DRAWER_UNLOCK_MODULE_ID") = robast_can_msgs::can_signal::bit_start::drawer_unlock::MODULE_ID;
@@ -167,6 +169,8 @@ PYBIND11_MODULE(can_db_defines_bindings, m)
     robast_can_msgs::can_signal::bit_start::electrical_drawer_motor_control::MOTOR_ID;
   bit_start.attr("ELECTRICAL_DRAWER_MOTOR_CONTROL_ENABLE_MOTOR") =
     robast_can_msgs::can_signal::bit_start::electrical_drawer_motor_control::ENABLE_MOTOR;
+  bit_start.attr("ELECTRICAL_DRAWER_MOTOR_CONTROL_CONFIRM_CHANGE") =
+    robast_can_msgs::can_signal::bit_start::electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE;
 
   py::module_ bit_length = can_signal.def_submodule("bit_length");
   bit_length.attr("DRAWER_UNLOCK_MODULE_ID") = robast_can_msgs::can_signal::bit_length::drawer_unlock::MODULE_ID;
@@ -238,4 +242,6 @@ PYBIND11_MODULE(can_db_defines_bindings, m)
     robast_can_msgs::can_signal::bit_length::electrical_drawer_motor_control::MOTOR_ID;
   bit_length.attr("ELECTRICAL_DRAWER_MOTOR_CONTROL_ENABLE_MOTOR") =
     robast_can_msgs::can_signal::bit_length::electrical_drawer_motor_control::ENABLE_MOTOR;
+  bit_length.attr("ELECTRICAL_DRAWER_MOTOR_CONTROL_CONFIRM_CHANGE") =
+    robast_can_msgs::can_signal::bit_length::electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE;
 }

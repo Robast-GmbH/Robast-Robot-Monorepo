@@ -41,8 +41,9 @@ namespace interfaces
      * Set the state of the motor driver.
      *
      * @param enabled true if the motor driver should be enabled, false if it should be disabled
+     * @param motor_id the id of the motor
      */
-    virtual void set_motor_driver_state(const bool enabled) const = 0;
+    virtual void set_motor_driver_state(const bool enabled, const uint8_t motor_id) const = 0;
 
    private:
     /**

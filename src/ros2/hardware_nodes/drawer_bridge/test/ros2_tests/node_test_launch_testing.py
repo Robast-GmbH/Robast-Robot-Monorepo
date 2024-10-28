@@ -18,12 +18,14 @@ import pytest
 import rclpy
 import yaml
 from launch_ros.actions import Node
+from rclpy.action import ActionClient
+
 from rclpy.qos import (DurabilityPolicy, QoSHistoryPolicy, QoSProfile,
                        QoSReliabilityPolicy)
 
 from communication_interfaces.msg import (DrawerAddress, Led, LedCmd,
                                           DrawerStatus, ErrorBaseMsg)
-from communication_interfaces.srv import ModuleConfig, ElectricalDrawerMotorControl
+from communication_interfaces.action import ModuleConfig, ElectricalDrawerMotorControl
 
 from can_msgs.msg import Frame
 
@@ -98,20 +100,23 @@ class TestProcessOutput(unittest.TestCase):
         )
         self.setup_subscribers()
         self.setup_publishers()
-        self.setup_service_clients()
+        self.setup_action_clients()
 
 
     def setup_subscribers(self):
-        self.__to_can_bus_subscriber = self.__to_can_node.create_subscription(Frame, 'to_can_bus', self.to_can_bus_callback, qos_profile=self.__qos_can_msg)
+        self.__to_can_bus_subscriber = self.__node.create_subscription(Frame, 'to_can_bus', self.to_can_bus_callback, qos_profile=self.__qos_can_msg)
+
 
     def setup_publishers(self):
         self.__open_drawer_publisher = self.__node.create_publisher(DrawerAddress, 'open_drawer', qos_profile = self.__qos_profile_open_drawer)
         self.__led_cmd_publisher = self.__node.create_publisher(LedCmd, 'led_cmd', qos_profile = self.__qos_profile_led_cmd)
-        self.__can_in_publisher = self.__node.create_publisher(Frame,'from_can_bus', qos_profile = self.__qos_can_msg)
+        self.__can_in_publisher = self.__to_can_node.create_publisher(Frame,'from_can_bus', qos_profile = self.__qos_can_msg)
 
-    def setup_service_clients(self):
-        self.__module_config_service_client = self.__node.create_client(ModuleConfig, 'module_config')
-        self.__electrical_drawer_motor_control_service_client = self.__node.create_client(ElectricalDrawerMotorControl, 'motor_control')
+
+    def setup_action_clients(self):
+        self.__module_config_service_client = ActionClient(self.__node, ModuleConfig, 'module_config')
+        self.__electrical_drawer_motor_control_service_client = ActionClient(self.__node, ElectricalDrawerMotorControl, 'motor_control')
+
 
     def tearDown(self):
         self.__node.destroy_node()
@@ -150,7 +155,7 @@ class TestProcessOutput(unittest.TestCase):
         self.__node.get_logger().info('Publishing to open_drawer topic with module_id: "%s"' % self.__open_drawer_msg.module_id)
 
 
-    def call_service_clients(self):
+    def call_action_clients(self):
         # Read input data that is send to dut
         INPUT_DATA_PATH = os.path.join(
         ament_index_python.get_package_prefix('drawer_bridge'),
@@ -161,26 +166,59 @@ class TestProcessOutput(unittest.TestCase):
         with open(INPUT_DATA_PATH) as f:
             data = yaml.safe_load(f)
 
-        while not self.__module_config_service_client.wait_for_service(timeout_sec=1.0):
-            self.__node.get_logger().info('service not available, waiting again...')
-        self.__module_config_request = ModuleConfig.Request()
-        self.__module_config_request.module_address.module_id = data['module_config']['module_id']
-        self.__module_config_request.module_address.drawer_id = data['module_config']['drawer_id']
-        self.__module_config_request.config_id = data['module_config']['config_id']
-        self.__module_config_request.config_value = data['module_config']['config_value']
-        future = self.__module_config_service_client.call_async(self.__module_config_request)
-        rclpy.spin_until_future_complete(self.__node, future)
-        self.__module_config_service_response = future.result()
+        while not self.__module_config_service_client.wait_for_server(timeout_sec=1.0):
+            self.__node.get_logger().info('Action server not available, waiting again...')        
+        self.__module_config_goal = ModuleConfig.Goal()
+        self.__module_config_goal.module_address.module_id = data['module_config']['module_id']
+        self.__module_config_goal.module_address.drawer_id = data['module_config']['drawer_id']
+        self.__module_config_goal.config_id = data['module_config']['config_id']
+        self.__module_config_goal.config_value = data['module_config']['config_value']
+        send_goal_future = self.__module_config_service_client.send_goal_async(self.__module_config_goal)
+        rclpy.spin_until_future_complete(self.__node, send_goal_future)
 
-        while not self.__electrical_drawer_motor_control_service_client.wait_for_service(timeout_sec=1.0):
-            self.__node.get_logger().info('service not available, waiting again...')
-        self.__electrical_drawer_motor_control_request = ElectricalDrawerMotorControl.Request()
-        self.__electrical_drawer_motor_control_request.module_address.module_id = data['electrical_drawer_motor_control']['module_id']
-        self.__electrical_drawer_motor_control_request.motor_id = data['electrical_drawer_motor_control']['motor_id']
-        self.__electrical_drawer_motor_control_request.enable_motor = data['electrical_drawer_motor_control']['enable_motor']
-        future = self.__electrical_drawer_motor_control_service_client.call_async(self.__electrical_drawer_motor_control_request)
-        rclpy.spin_until_future_complete(self.__node, future)
-        self.__electrical_drawer_motor_control_service_response = future.result()
+        goal_handle = send_goal_future.result()
+        if not goal_handle.accepted:
+            self.__node.get_logger().info('Setting config: Goal rejected!')
+            return
+        self.__node.get_logger().info('Setting config: Goal accepted!')
+
+        result_future = goal_handle.get_result_async()
+        rclpy.spin_until_future_complete(self.__node, result_future)
+        self.__setting_module_config_succeeded = result_future.result().result.success
+
+        while not self.__electrical_drawer_motor_control_service_client.wait_for_server(timeout_sec=1.0):
+            self.__node.get_logger().info('Action server not available, waiting again...')
+        self.__electrical_drawer_motor_control_goal = ElectricalDrawerMotorControl.Goal()
+        self.__electrical_drawer_motor_control_goal.module_address.module_id = data['electrical_drawer_motor_control']['module_id']
+        self.__electrical_drawer_motor_control_goal.motor_id = data['electrical_drawer_motor_control']['motor_id']
+        self.__electrical_drawer_motor_control_goal.enable_motor = data['electrical_drawer_motor_control']['enable_motor']
+        send_goal_future = self.__electrical_drawer_motor_control_service_client.send_goal_async(self.__electrical_drawer_motor_control_goal)
+        rclpy.spin_until_future_complete(self.__node, send_goal_future)
+
+        goal_handle = send_goal_future.result()
+        if not goal_handle.accepted:
+            self.__node.get_logger().info('Setting motor control: Goal rejected!')
+            return
+        self.__node.get_logger().info('Setting motor control: Goal accepted!')
+
+        # Send message to can_in topic to mimic the response from the dut
+        e_motor_control_changed = 1
+        expected_data_motor_control_feedback_uint64 = (
+            (self.__electrical_drawer_motor_control_goal.module_address.module_id << (64 - can_db_defines.can_signal.bit_length.ELECTRICAL_DRAWER_MOTOR_CONTROL_MODULE_ID - can_db_defines.can_signal.bit_start.ELECTRICAL_DRAWER_MOTOR_CONTROL_MODULE_ID)) |
+            (self.__electrical_drawer_motor_control_goal.motor_id << (64 - can_db_defines.can_signal.bit_length.ELECTRICAL_DRAWER_MOTOR_CONTROL_MOTOR_ID - can_db_defines.can_signal.bit_start.ELECTRICAL_DRAWER_MOTOR_CONTROL_MOTOR_ID)) |
+            (self.__electrical_drawer_motor_control_goal.enable_motor << (64 - can_db_defines.can_signal.bit_length.ELECTRICAL_DRAWER_MOTOR_CONTROL_ENABLE_MOTOR - can_db_defines.can_signal.bit_start.ELECTRICAL_DRAWER_MOTOR_CONTROL_ENABLE_MOTOR)) |
+            (e_motor_control_changed << (64 - can_db_defines.can_signal.bit_length.ELECTRICAL_DRAWER_MOTOR_CONTROL_CONFIRM_CHANGE - can_db_defines.can_signal.bit_start.ELECTRICAL_DRAWER_MOTOR_CONTROL_CONFIRM_CHANGE))
+        )
+        electrical_drawer_motor_control_feedback = Frame()
+        electrical_drawer_motor_control_feedback.id = can_db_defines.can_id.ELECTRICAL_DRAWER_MOTOR_CONTROL
+        electrical_drawer_motor_control_feedback.dlc = can_db_defines.can_dlc.ELECTRICAL_DRAWER_MOTOR_CONTROL
+        electrical_drawer_motor_control_feedback.data = list(expected_data_motor_control_feedback_uint64.to_bytes(8, byteorder='big'))
+        self.__can_in_publisher.publish(electrical_drawer_motor_control_feedback)
+
+        # Get the result of the action client
+        result_future = goal_handle.get_result_async()
+        rclpy.spin_until_future_complete(self.__node, result_future)
+        self.__setting_electrical_drawer_motor_control_succeeded = result_future.result().result.success
 
 
     def publish_drawer_feedback_can_msg(self):
@@ -238,14 +276,15 @@ class TestProcessOutput(unittest.TestCase):
     
     def publish_data_to_dut(self):
         self.publish_data()
-        self.call_service_clients()
+        self.call_action_clients()
+
 
     def to_can_bus_callback(self, msg):
         self.__node.get_logger().info('Received msg on to_can_bus topic. can_id: "%s"' % msg.id)
         self.__received_data_from_can.append(msg)
 
     
-    def get_expected_result(self):
+    def get_expected_results(self):
         # Read data of expected result
         EXPECTED_DATA_PATH = os.path.join(
         ament_index_python.get_package_prefix('drawer_bridge'),
@@ -263,7 +302,7 @@ class TestProcessOutput(unittest.TestCase):
         self.__expected_data_error_feedback_error_data = data['error_feedback']['error_data']
 
     
-    def receive_data_from_dut(self):
+    def create_subscriber(self):
         self.__drawer_feedback_subscriber = self.__node.create_subscription(
             DrawerStatus,
             'drawer_is_open',
@@ -294,18 +333,18 @@ class TestProcessOutput(unittest.TestCase):
             if msg.id == can_db_defines.can_id.MODULE_CONFIG:
                 self.assertEqual(msg.dlc, can_db_defines.can_dlc.MODULE_CONFIG)
                 expected_data_uint64 = (
-                    (self.__module_config_request.module_address.module_id << (64 - can_db_defines.can_signal.bit_length.MODULE_CONFIG_MODULE_ID - can_db_defines.can_signal.bit_start.MODULE_CONFIG_MODULE_ID)) |
-                    (self.__module_config_request.config_id << (64 - can_db_defines.can_signal.bit_length.MODULE_CONFIG_CONFIG_ID - can_db_defines.can_signal.bit_start.MODULE_CONFIG_CONFIG_ID)) |
-                    (self.__module_config_request.config_value << (64 - can_db_defines.can_signal.bit_length.MODULE_CONFIG_CONFIG_VALUE - can_db_defines.can_signal.bit_start.MODULE_CONFIG_CONFIG_VALUE))
+                    (self.__module_config_goal.module_address.module_id << (64 - can_db_defines.can_signal.bit_length.MODULE_CONFIG_MODULE_ID - can_db_defines.can_signal.bit_start.MODULE_CONFIG_MODULE_ID)) |
+                    (self.__module_config_goal.config_id << (64 - can_db_defines.can_signal.bit_length.MODULE_CONFIG_CONFIG_ID - can_db_defines.can_signal.bit_start.MODULE_CONFIG_CONFIG_ID)) |
+                    (self.__module_config_goal.config_value << (64 - can_db_defines.can_signal.bit_length.MODULE_CONFIG_CONFIG_VALUE - can_db_defines.can_signal.bit_start.MODULE_CONFIG_CONFIG_VALUE))
                 )
                 expected_data_bytes = expected_data_uint64.to_bytes(8, byteorder='big')
 
             if msg.id == can_db_defines.can_id.ELECTRICAL_DRAWER_MOTOR_CONTROL:
                 self.assertEqual(msg.dlc, can_db_defines.can_dlc.ELECTRICAL_DRAWER_MOTOR_CONTROL)
                 expected_data_uint64 = (
-                    (self.__electrical_drawer_motor_control_request.module_address.module_id << (64 - can_db_defines.can_signal.bit_length.ELECTRICAL_DRAWER_MOTOR_CONTROL_MODULE_ID - can_db_defines.can_signal.bit_start.ELECTRICAL_DRAWER_MOTOR_CONTROL_MODULE_ID)) |
-                    (self.__electrical_drawer_motor_control_request.motor_id << (64 - can_db_defines.can_signal.bit_length.ELECTRICAL_DRAWER_MOTOR_CONTROL_MOTOR_ID - can_db_defines.can_signal.bit_start.ELECTRICAL_DRAWER_MOTOR_CONTROL_MOTOR_ID)) |
-                    (self.__electrical_drawer_motor_control_request.enable_motor << (64 - can_db_defines.can_signal.bit_length.ELECTRICAL_DRAWER_MOTOR_CONTROL_ENABLE_MOTOR - can_db_defines.can_signal.bit_start.ELECTRICAL_DRAWER_MOTOR_CONTROL_ENABLE_MOTOR))
+                    (self.__electrical_drawer_motor_control_goal.module_address.module_id << (64 - can_db_defines.can_signal.bit_length.ELECTRICAL_DRAWER_MOTOR_CONTROL_MODULE_ID - can_db_defines.can_signal.bit_start.ELECTRICAL_DRAWER_MOTOR_CONTROL_MODULE_ID)) |
+                    (self.__electrical_drawer_motor_control_goal.motor_id << (64 - can_db_defines.can_signal.bit_length.ELECTRICAL_DRAWER_MOTOR_CONTROL_MOTOR_ID - can_db_defines.can_signal.bit_start.ELECTRICAL_DRAWER_MOTOR_CONTROL_MOTOR_ID)) |
+                    (self.__electrical_drawer_motor_control_goal.enable_motor << (64 - can_db_defines.can_signal.bit_length.ELECTRICAL_DRAWER_MOTOR_CONTROL_ENABLE_MOTOR - can_db_defines.can_signal.bit_start.ELECTRICAL_DRAWER_MOTOR_CONTROL_ENABLE_MOTOR))
                 )
                 expected_data_bytes = expected_data_uint64.to_bytes(8, byteorder='big')
 
@@ -322,11 +361,11 @@ class TestProcessOutput(unittest.TestCase):
         self.spin_thread = threading.Thread(target=self.executor.spin, daemon=True)
         self.spin_thread.start()
 
+        self.get_expected_results()
+
+        self.create_subscriber()
+
         self.publish_data_to_dut()
-
-        self.get_expected_result()
-
-        self.receive_data_from_dut()
 
         self.publish_drawer_feedback_can_msg()
 
@@ -350,9 +389,9 @@ class TestProcessOutput(unittest.TestCase):
             self.assertEqual(self.__received_data_error_feedback_error_data, self.__expected_data_error_feedback_error_data)
             self.__node.get_logger().info('Finished checking received data from robast_error!')
 
-            # Check if service requests were successful
-            self.assertTrue(self.__module_config_service_response.success)
-            self.assertTrue(self.__electrical_drawer_motor_control_service_response.success)
+            # Check if action calls were successful
+            self.assertTrue(self.__setting_module_config_succeeded)
+            self.assertTrue(self.__setting_electrical_drawer_motor_control_succeeded)
 
             self.check_to_can_bus_data()
            

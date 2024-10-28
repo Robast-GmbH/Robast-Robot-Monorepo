@@ -139,6 +139,7 @@ namespace robast_can_msgs
         constexpr uint8_t MODULE_ID = 0;
         constexpr uint8_t MOTOR_ID = 1;
         constexpr uint8_t ENABLE_MOTOR = 2;
+        constexpr uint8_t CONFIRM_CONTROL_CHANGE = 3;
       }   // namespace electrical_drawer_motor_control
 
     }   // namespace id
@@ -223,6 +224,7 @@ namespace robast_can_msgs
         constexpr uint8_t MODULE_ID = 0;
         constexpr uint8_t MOTOR_ID = 24;
         constexpr uint8_t ENABLE_MOTOR = 26;
+        constexpr uint8_t CONFIRM_CONTROL_CHANGE = 27;
       }   // namespace electrical_drawer_motor_control
     }   // namespace bit_start
 
@@ -306,6 +308,7 @@ namespace robast_can_msgs
         constexpr uint8_t MODULE_ID = 24;
         constexpr uint8_t MOTOR_ID = 2;
         constexpr uint8_t ENABLE_MOTOR = 1;
+        constexpr uint8_t CONFIRM_CONTROL_CHANGE = 1;
       }   // namespace electrical_drawer_motor_control
 
     }   // namespace bit_length
@@ -319,6 +322,7 @@ namespace robast_can_msgs
     constexpr uint64_t PUSH_TO_CLOSE_TRIGGERED = 1;
     constexpr uint64_t DISABLE_MOTOR = 0;
     constexpr uint64_t ENABLE_MOTOR = 1;
+    constexpr uint64_t CONTROL_CHANGE_CONFIRMED = 1;
 
     namespace error_code
     {

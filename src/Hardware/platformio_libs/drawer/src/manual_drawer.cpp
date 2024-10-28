@@ -15,7 +15,7 @@ namespace drawer
   {
   }
 
-  void ManualDrawer::set_motor_driver_state(const bool enabled) const
+  void ManualDrawer::set_motor_driver_state(const bool enabled, const uint8_t motor_id) const
   {
     Serial.println(
       "[ManualDrawer]: Warning! Manual drawer does not support motor driver state control. This should not occur.");

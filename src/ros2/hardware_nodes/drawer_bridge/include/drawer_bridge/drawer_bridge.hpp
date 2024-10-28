@@ -6,6 +6,8 @@
 #include <chrono>
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp_action/rclcpp_action.hpp>
+
 // C library headers
 #include <stdio.h>
 #include <string.h>
@@ -26,6 +28,8 @@
 #include "can/can_db.hpp"
 #include "can/can_helper.hpp"
 #include "can_msgs/msg/frame.hpp"
+#include "communication_interfaces/action/electrical_drawer_motor_control.hpp"
+#include "communication_interfaces/action/module_config.hpp"
 #include "communication_interfaces/msg/drawer_status.hpp"
 #include "communication_interfaces/msg/drawer_task.hpp"
 #include "communication_interfaces/msg/electrical_drawer_status.hpp"
@@ -33,9 +37,6 @@
 #include "communication_interfaces/msg/led.hpp"
 #include "communication_interfaces/msg/led_cmd.hpp"
 #include "communication_interfaces/msg/tray_task.hpp"
-#include "communication_interfaces/srv/electrical_drawer_motor_control.hpp"
-#include "communication_interfaces/srv/module_config.hpp"
-#include "communication_interfaces/srv/shelf_setup_info.hpp"
 #include "drawer_bridge/can_encoder_decoder.hpp"
 #include "drawer_bridge/can_message_creator.hpp"
 #include "drawer_bridge/drawer_defines.h"
@@ -43,13 +44,12 @@
 #include "error_utils/error_definitions.hpp"
 #include "error_utils/generic_error_converter.hpp"
 #include "module_config/module_config_defines.hpp"
-#include "shelf_setup.hpp"
 #include "std_msgs/msg/bool.hpp"
-
-using namespace std::chrono_literals;
 
 namespace drawer_bridge
 {
+  constexpr std::chrono::seconds MAX_WAIT_TIME_FOR_MOTOR_CONTROL_CONFIRMATION_IN_S = std::chrono::seconds(5);
+
   struct led_parameters
   {
     uint8_t led_red;
@@ -81,12 +81,11 @@ namespace drawer_bridge
     using DrawerStatus = communication_interfaces::msg::DrawerStatus;
     using ElectricalDrawerStatus = communication_interfaces::msg::ElectricalDrawerStatus;
     using ErrorBaseMsg = communication_interfaces::msg::ErrorBaseMsg;
-    using ShelfSetupInfo = communication_interfaces::srv::ShelfSetupInfo;
     using TrayTask = communication_interfaces::msg::TrayTask;
     using CanMessage = can_msgs::msg::Frame;
 
-    using ElectricalDrawerMotorControl = communication_interfaces::srv::ElectricalDrawerMotorControl;
-    using ModuleConfig = communication_interfaces::srv::ModuleConfig;
+    using ElectricalDrawerMotorControl = communication_interfaces::action::ElectricalDrawerMotorControl;
+    using ModuleConfig = communication_interfaces::action::ModuleConfig;
 
     /**
      * @brief A constructor for drawer_bridge::DrawerBridge class
@@ -94,8 +93,6 @@ namespace drawer_bridge
     DrawerBridge();
 
     friend class TestDrawerBridge;   // this class has full access to all private and protected parts of this class
-
-    void set_module_config(const uint32_t module_id, const uint8_t config_id, const uint32_t config_value);
 
    private:
     // Publishers
@@ -112,10 +109,9 @@ namespace drawer_bridge
     rclcpp::Subscription<TrayTask>::SharedPtr _tray_task_subscription;
     rclcpp::Subscription<CanMessage>::SharedPtr _can_messages_subscription;
 
-    // Services
-    rclcpp::Service<ElectricalDrawerMotorControl>::SharedPtr _electrical_drawer_motor_control_service;
-    rclcpp::Service<ModuleConfig>::SharedPtr _module_config_service;
-    rclcpp::Service<ShelfSetupInfo>::SharedPtr _shelf_setup_info_service;
+    // Action Servers
+    rclcpp_action::Server<ElectricalDrawerMotorControl>::SharedPtr _electrical_drawer_motor_control_action_server;
+    rclcpp_action::Server<ModuleConfig>::SharedPtr _module_config_action_server;
 
     robast_can_msgs::CanDb _can_db = robast_can_msgs::CanDb();
 
@@ -123,6 +119,10 @@ namespace drawer_bridge
     CanMessageCreator _can_message_creator = CanMessageCreator();
 
     QoSConfig _qos_config = QoSConfig();
+
+    std::mutex _motor_control_mutex;
+    std::condition_variable _motor_control_cv;
+    bool _is_motor_control_change_confirmed = false;
 
     /* FUNCTIONS */
     void open_drawer_topic_callback(const DrawerAddress& msg);
@@ -133,17 +133,11 @@ namespace drawer_bridge
 
     void tray_task_topic_callback(const TrayTask& msg);
 
-    void module_config_service_callback(const std::shared_ptr<ModuleConfig::Request> request,
-                                        std::shared_ptr<ModuleConfig::Response> response);
-
-    void motor_control_service_callback(const std::shared_ptr<ElectricalDrawerMotorControl::Request> request,
-                                        std::shared_ptr<ElectricalDrawerMotorControl::Response> response);
-
     void setup_publishers();
 
     void setup_subscriptions();
 
-    void setup_services();
+    void setup_action_server();
 
     void send_can_msg(const CanMessage can_msg);
 
@@ -152,6 +146,8 @@ namespace drawer_bridge
     void publish_drawer_status(const robast_can_msgs::CanMessage drawer_feedback_can_msg);
 
     void handle_e_drawer_feedback(const robast_can_msgs::CanMessage electrical_drawer_feedback_can_msg);
+
+    void handle_e_drawer_motor_control_feedback(const robast_can_msgs::CanMessage e_drawer_motor_control_can_msg);
 
     void publish_drawer_error_msg(const robast_can_msgs::CanMessage drawer_error_feedback_can_msg);
 
@@ -165,13 +161,33 @@ namespace drawer_bridge
                                const bool is_endstop_switch_pushed,
                                const bool is_lock_switch_pushed);
 
-    std::vector<communication_interfaces::msg::Module> get_all_mounted_modules();
+    void set_module_config(const std::shared_ptr<rclcpp_action::ServerGoalHandle<ModuleConfig>> goal_handle);
 
-    /**
-     * @brief Service server execution callback
-     */
-    void provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request,
-                                           std::shared_ptr<ShelfSetupInfo::Response> response);
+    void set_electrical_drawer_motor_control(
+      const std::shared_ptr<rclcpp_action::ServerGoalHandle<ElectricalDrawerMotorControl>> goal_handle);
+
+    void wait_for_motor_control_change();
+
+    void reset_motor_control_change_flag();
+
+    // Action Server Callbacks
+    rclcpp_action::GoalResponse handle_module_config_goal(const rclcpp_action::GoalUUID& uuid,
+                                                          std::shared_ptr<const ModuleConfig::Goal> goal);
+
+    rclcpp_action::CancelResponse handle_module_config_cancel(
+      const std::shared_ptr<rclcpp_action::ServerGoalHandle<ModuleConfig>> goal_handle);
+
+    void handle_module_config_accepted(
+      const std::shared_ptr<rclcpp_action::ServerGoalHandle<ModuleConfig>> goal_handle);
+
+    rclcpp_action::GoalResponse handle_electrical_drawer_motor_control_goal(
+      const rclcpp_action::GoalUUID& uuid, std::shared_ptr<const ElectricalDrawerMotorControl::Goal> goal);
+
+    rclcpp_action::CancelResponse handle_electrical_drawer_motor_control_cancel(
+      const std::shared_ptr<rclcpp_action::ServerGoalHandle<ElectricalDrawerMotorControl>> goal_handle);
+
+    void handle_electrical_drawer_motor_control_accepted(
+      const std::shared_ptr<rclcpp_action::ServerGoalHandle<ElectricalDrawerMotorControl>> goal_handle);
   };
 }   // namespace drawer_bridge
 #endif   // DRAWER_BRIDGE__DRAWER_BRIDGE_HPP_

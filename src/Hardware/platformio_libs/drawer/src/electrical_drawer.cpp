@@ -39,9 +39,12 @@ namespace drawer
     _motor->init();
   }
 
-  void ElectricalDrawer::set_motor_driver_state(const bool enabled) const
+  void ElectricalDrawer::set_motor_driver_state(const bool enabled, const uint8_t motor_id) const
   {
+    // TODO@Jacob: Once we have more then one motor, we need to change this to a switch case and use the motor_id
     enabled ? _motor->enable_driver() : _motor->disable_driver();
+
+    _can_utils->enqueue_e_drawer_motor_control_msg(_module_id, motor_id, enabled, CONFIRM_MOTOR_CONTROL_CHANGE);
   }
 
   void ElectricalDrawer::unlock()

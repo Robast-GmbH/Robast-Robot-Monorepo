@@ -4,6 +4,7 @@ using CanMessage = robast_can_msgs::CanMessage;
 namespace error_feedback = robast_can_msgs::can_signal::id::error_feedback;
 namespace drawer_feedback = robast_can_msgs::can_signal::id::drawer_feedback;
 namespace e_drawer_feedback = robast_can_msgs::can_signal::id::e_drawer_feedback;
+namespace electrical_drawer_motor_control = robast_can_msgs::can_signal::id::electrical_drawer_motor_control;
 
 namespace can_toolbox
 {
@@ -50,6 +51,16 @@ namespace can_toolbox
                                                                              normed_current_position,
                                                                              is_push_to_close_triggered);
     _feedback_can_msg_queue->enqueue(electrical_drawer_feedback_msg);
+  }
+
+  void CanUtils::enqueue_e_drawer_motor_control_msg(const uint32_t module_id,
+                                                    const uint8_t motor_id,
+                                                    const bool enable_motor,
+                                                    const bool confirm_control_change) const
+  {
+    CanMessage electrical_drawer_motor_control_msg =
+      create_e_drawer_motor_control_msg(module_id, motor_id, enable_motor, confirm_control_change);
+    _feedback_can_msg_queue->enqueue(electrical_drawer_motor_control_msg);
   }
 
   CanMessage CanUtils::create_error_feedback_msg(const uint32_t module_id,
@@ -112,5 +123,26 @@ namespace can_toolbox
     can_msg_electrical_drawer_feedback.set_can_signals(can_signals_electrical_drawer_feedback);
 
     return can_msg_electrical_drawer_feedback;
+  }
+
+  CanMessage CanUtils::create_e_drawer_motor_control_msg(const uint32_t module_id,
+                                                         const uint8_t motor_id,
+                                                         const bool enable_motor,
+                                                         const bool confirm_control_change) const
+  {
+    CanMessage can_msg_electrical_drawer_motor_control =
+      _can_db->can_messages.at(robast_can_msgs::can_msg::ELECTRICAL_DRAWER_MOTOR_CONTROL);
+    std::vector can_signals_electrical_drawer_motor_control = can_msg_electrical_drawer_motor_control.get_can_signals();
+
+    can_signals_electrical_drawer_motor_control.at(electrical_drawer_motor_control::MODULE_ID).set_data(module_id);
+    can_signals_electrical_drawer_motor_control.at(electrical_drawer_motor_control::MOTOR_ID).set_data(motor_id);
+    can_signals_electrical_drawer_motor_control.at(electrical_drawer_motor_control::ENABLE_MOTOR)
+      .set_data(enable_motor);
+    can_signals_electrical_drawer_motor_control.at(electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE)
+      .set_data(confirm_control_change);
+
+    can_msg_electrical_drawer_motor_control.set_can_signals(can_signals_electrical_drawer_motor_control);
+
+    return can_msg_electrical_drawer_motor_control;
   }
 }   // namespace can_toolbox
