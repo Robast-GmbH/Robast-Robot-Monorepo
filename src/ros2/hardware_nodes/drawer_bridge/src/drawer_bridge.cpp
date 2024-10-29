@@ -345,7 +345,7 @@ namespace drawer_bridge
   {
     std::unique_lock<std::mutex> lock(_motor_control_mutex);
     _motor_control_cv.wait_for(lock,
-                               std::chrono::seconds(1),
+                               MAX_WAIT_TIME_FOR_MOTOR_CONTROL_CONFIRMATION_IN_S,
                                [this]
                                {
                                  return _is_motor_control_change_confirmed;
