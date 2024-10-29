@@ -195,7 +195,7 @@ namespace drawer_bridge
     std::vector<robast_can_msgs::CanSignal> can_signals = e_drawer_motor_control_can_msg.get_can_signals();
 
     {
-      std::lock_guard<std::mutex> lock(_motor_control_mutex);
+      std::scoped_lock<std::mutex> lock(_motor_control_mutex);
       _is_motor_control_change_confirmed =
         can_signals.at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE)
           .get_data() == robast_can_msgs::can_data::CONTROL_CHANGE_CONFIRMED;
@@ -354,7 +354,7 @@ namespace drawer_bridge
 
   void DrawerBridge::reset_motor_control_change_flag()
   {
-    std::lock_guard<std::mutex> lock(_motor_control_mutex);
+    std::scoped_lock<std::mutex> lock(_motor_control_mutex);
     _is_motor_control_change_confirmed = false;
   }
 
