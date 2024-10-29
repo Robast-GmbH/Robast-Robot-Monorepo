@@ -2,6 +2,7 @@
 #include "can/can_db.hpp"
 #include "can_encoder_decoder.hpp"
 #include "can_msgs/msg/frame.hpp"
+#include "communication_interfaces/action/electrical_drawer_motor_control.hpp"
 #include "communication_interfaces/msg/drawer_task.hpp"
 #include "communication_interfaces/msg/led.hpp"
 #include "communication_interfaces/msg/led_cmd.hpp"
@@ -17,6 +18,8 @@ namespace drawer_bridge
     using Led = communication_interfaces::msg::Led;
     using LedCmd = communication_interfaces::msg::LedCmd;
     using TrayTask = communication_interfaces::msg::TrayTask;
+
+    using ElectricalDrawerMotorControl = communication_interfaces::action::ElectricalDrawerMotorControl;
 
     can_msgs::msg::Frame create_can_msg_drawer_unlock(const DrawerAddress& msg) const;
 
@@ -34,6 +37,9 @@ namespace drawer_bridge
     can_msgs::msg::Frame create_can_msg_set_module_config(const DrawerAddress& drawer_address,
                                                           const uint8_t config_id,
                                                           const uint32_t config_value) const;
+
+    can_msgs::msg::Frame create_can_msg_e_drawer_motor_control(
+      const std::shared_ptr<const ElectricalDrawerMotorControl::Goal> motor_control_goal) const;
 
    private:
     CanEncoderDecoder _can_encoder_decoder = CanEncoderDecoder();

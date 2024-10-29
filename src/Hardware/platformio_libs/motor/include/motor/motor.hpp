@@ -67,6 +67,10 @@ namespace stepper_motor
 
     void reset_stall_guard();
 
+    void enable_driver();
+
+    void disable_driver();
+
    private:
     const std::unique_ptr<TMC2209Stepper> _driver;
 
@@ -133,10 +137,6 @@ namespace stepper_motor
     void read_stall_guard_pin();
 
     void setup_driver();
-
-    void enable_driver();
-
-    void disable_driver();
   };
 }   // namespace stepper_motor
 

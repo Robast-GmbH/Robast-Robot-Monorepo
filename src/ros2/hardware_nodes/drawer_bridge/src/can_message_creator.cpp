@@ -126,4 +126,27 @@ namespace drawer_bridge
     return _can_encoder_decoder.encode_msg(can_msg_set_module_config);
   }
 
+  can_msgs::msg::Frame CanMessageCreator::create_can_msg_e_drawer_motor_control(
+    const std::shared_ptr<const ElectricalDrawerMotorControl::Goal> motor_control_goal) const
+  {
+    robast_can_msgs::CanMessage can_msg_e_drawer_motor_control =
+      _can_db.can_messages.at(robast_can_msgs::can_msg::ELECTRICAL_DRAWER_MOTOR_CONTROL);
+
+    std::vector<robast_can_msgs::CanSignal> can_signals_e_drawer_motor_control =
+      can_msg_e_drawer_motor_control.get_can_signals();
+
+    can_signals_e_drawer_motor_control.at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::MODULE_ID)
+      .set_data(motor_control_goal->module_address.module_id);
+    can_signals_e_drawer_motor_control.at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::MOTOR_ID)
+      .set_data(motor_control_goal->motor_id);
+    can_signals_e_drawer_motor_control
+      .at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::ENABLE_MOTOR)
+      .set_data(motor_control_goal->enable_motor ? robast_can_msgs::can_data::ENABLE_MOTOR
+                                                 : robast_can_msgs::can_data::DISABLE_MOTOR);
+
+    can_msg_e_drawer_motor_control.set_can_signals(can_signals_e_drawer_motor_control);
+
+    return _can_encoder_decoder.encode_msg(can_msg_e_drawer_motor_control);
+  }
+
 }   // namespace drawer_bridge
