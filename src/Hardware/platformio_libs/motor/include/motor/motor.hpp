@@ -97,7 +97,7 @@ namespace stepper_motor
     static constexpr uint8_t _TOFF_VALUE = 2;
     static constexpr float _R_SENSE = 0.33f;   // Match to your driver
     static constexpr uint8_t _INSTANT_ACCELERATION = 0;
-    HardwareSerial& _SERIAL_PORT = Serial2;
+    HardwareSerial _SERIAL_PORT = Serial2;
 
     static constexpr double _STALL_GUARD_READER_THRESHOLD = 0.9;
     static constexpr double _STALL_GUARD_READER_WEIGHT_NEW_READINGS = 1.0;
