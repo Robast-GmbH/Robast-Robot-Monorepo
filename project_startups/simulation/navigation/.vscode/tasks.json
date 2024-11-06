@@ -191,7 +191,7 @@
                 {
                         "type": "shell",
                         "label": "start laser fusion",
-                        "command": "source /workspace/install/setup.bash; ros2 launch ira_laser_tools laserscan_multi_merger.launch",
+                        "command": "source /workspace/install/setup.bash; ros2 launch ira_laser_tools laserscan_multi_merger.launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
