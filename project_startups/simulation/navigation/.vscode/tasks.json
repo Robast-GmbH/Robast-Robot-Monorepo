@@ -17,7 +17,7 @@
                         "type": "shell",
                         "command": "clear; colcon build --symlink-install DCMAKE_BUILD_TYPE=Debug' -Wall -Wextra -Wpedantic --packages-skip robast_map_update_module ndt_omp_ros2 graph_based_slam scanmatcher robast_nav_recoveries robast_nav_interim_goal",
                         "problemMatcher": []
-                    },
+                },
                 {
                         "label": "build-ros-theron",
                         "detail": "Symlink Build for Ros-Theron.",
@@ -46,77 +46,23 @@
                         "label": "default_startup",
                         "detail": "Starts Nav, slam, rviz",
                         "dependsOn": [
+                                "start laser fusion",
                                 "start slam_toolbox",
                                 "start nav_without_localization",
                                 "start rviz"
                         ],
                         "problemMatcher": []
-                },
-                {
-                        "label": "default_startup_amcl",
-                        "detail": "Starts Nav, amcl, keepout_mask, rviz",
-                        "dependsOn": [
-                                "start amcl",
-                                "start keepout_mask",
-                                "start nav_without_localization",
-                                "start rviz_amcl"
-                        ]
-                },
-                {
-                        "label": "default_startup_amcl_with_mapping",
-                        "detail": "Starts Nav, amcl_with_slam_mapping, keepout_mask",
-                        "dependsOn": [
-                                "start keepout_mask",
-                                "start nav_without_localization",
-                                "start rviz_amcl",
-                                "start amcl_with_slam_mapping"
-                        ],
-                        "problemMatcher": []
-                },
-                {
-                        "label": "default_startup_amcl_door_bells",
-                        "detail": "Starts Nav, amcl, rviz, door_bells",
-                        "dependsOn": [
-                                "start amcl",
-                                "start keepout_mask",
-                                "start nav_without_localization_with_door_bells_launch",
-                                "start rviz_amcl"
-                        ]
                 },
                 {
                         "label": "default_startup_robot_localization",
                         "detail": "Starts Nav, slam, robot_localization for odom->base, behavior_tree_server_collection, rviz",
                         "dependsOn": [
+                                "start laser fusion",
+                                "start robot_localization",
                                 "start slam_toolbox",
                                 "start nav_without_localization",
-                                "start robot_localization",
                                 "start behavior_tree_server_collection",
                                 "start rviz"
-                        ],
-                        "problemMatcher": []
-                },
-                {
-                        "label": "default_startup_amcl_robot_localization",
-                        "detail": "Starts Nav, amcl, robot_localization for odom->base, keepout_mask, rviz",
-                        "dependsOn": [
-                                "start amcl",
-                                "start keepout_mask",
-                                "start nav_without_localization",
-                                "start robot_localization",
-                                "start rviz_amcl"
-                        ],
-                        "problemMatcher": []
-                },
-                {
-                        "label": "default_startup_amcl_robot_localization_global",
-                        "detail": "Starts Nav, amcl, robot_localization for map->odom->base, keepout_mask, rviz",
-                        "dependsOn": [
-                                "start amcl",
-                                "start keepout_mask",
-                                "start nav_without_localization",
-                                "start robot_localization",
-                                "start robot_localization_global",
-                                "start rviz_amcl"
                         ],
                         "problemMatcher": []
                 },
@@ -153,29 +99,8 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start rosboard",
-                        "command": "source /workspace/install/setup.bash; ros2 run rosboard rosboard_node",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": false,
-                                "group": "default_start"
-                        }
-                },
-                {
-                        "type": "shell",
                         "label": "start rviz",
                         "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup rviz_launch.py",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": true
-                        }
-                },
-                {
-                        "type": "shell",
-                        "label": "start rviz_amcl",
-                        "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup rviz_amcl_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -265,18 +190,18 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start amcl_with_slam_mapping",
-                        "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup slam_with_amcl_launch.py",
+                        "label": "start laser fusion",
+                        "command": "source /workspace/install/setup.bash; ros2 launch ira_laser_tools laserscan_multi_merger.launch",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
-                                "focus": true
+                                "focus": false
                         }
                 },
                 {
                         "type": "shell",
-                        "label": "start amcl",
-                        "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup amcl_launch.py",
+                        "label": "start amcl_with_slam_mapping",
+                        "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup slam_with_amcl_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -349,7 +274,6 @@
                                 "focus": true,
                         }
                 },
-
                 {
                         "type": "shell",
                         "label": "build tests",
@@ -382,7 +306,7 @@
                                 "focus": false,
                                 "group": "waypoint_testing"
                         }
-                },                
+                },
                 {
                         "label": "new ament_cmake package",
                         "detail": "Create a new ROS cpp package from a template.",
