@@ -67,6 +67,18 @@ namespace drawer
 
     void set_motor_driver_state(const bool enabled, const uint8_t motor_id) const override;
 
+    uint8_t get_current_position() const;
+
+    uint8_t get_target_position() const;
+
+    uint8_t get_target_speed() const;
+
+    bool is_drawer_moving_in() const;
+
+    void set_target_speed_and_direction(const uint8_t target_speed, const bool use_acceleration_ramp);
+
+    void set_target_speed_with_decelerating_ramp(uint8_t target_speed);
+
    private:
     const uint32_t _module_id;
     const uint8_t _id;
@@ -154,8 +166,6 @@ namespace drawer
     bool get_is_stall_guard_triggered() const;
 
     void handle_stall_guard_triggered();
-
-    void set_target_speed_and_direction(const uint8_t target_speed, const bool use_acceleration_ramp);
 
     void reset_encoder_if_endstop_is_pushed();
 
