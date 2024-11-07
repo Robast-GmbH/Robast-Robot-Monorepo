@@ -32,9 +32,13 @@ namespace partial_drawer_controller
 
     std::vector<std::unique_ptr<switch_lib::Switch>> _tray_switches;
 
+    std::vector<uint32_t> _timestamp_last_tray_lock_opening;
+
     const std::unique_ptr<OnboardLedDriver> _onboard_led_driver;
 
     bool _triggered_closing_lock_after_opening = false;
+
+    static constexpr uint16_t _ELECTRICAL_TRAY_LOCK_MECHANISM_TIME_IN_MS = 700;
 
     void handle_tray_just_opened(uint8_t vector_id);
   };

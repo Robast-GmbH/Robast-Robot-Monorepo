@@ -20,6 +20,7 @@ namespace partial_drawer_controller
                                                                     switch_pressed_threshold,
                                                                     switch_lib::Switch::normally_closed,
                                                                     switch_new_reading_weight));
+      _timestamp_last_tray_lock_opening.push_back(0);
     }
   }
 
@@ -30,7 +31,9 @@ namespace partial_drawer_controller
 
   void TrayManager::unlock_lock(uint8_t tray_id)
   {
+    debug_printf("[TrayManager]: Unlocking lock for tray %d\n", tray_id);
     _electrical_tray_locks[tray_id - 1]->unlock();
+    _timestamp_last_tray_lock_opening[tray_id - 1] = millis();
   }
 
   void TrayManager::set_tray_led_brightness(const uint8_t tray_id, const uint8_t led_row, const uint8_t brightness)
@@ -43,15 +46,32 @@ namespace partial_drawer_controller
     for (uint8_t i = 0; i < _electrical_tray_locks.size(); ++i)
     {
       _electrical_tray_locks[i]->update_state();
-      _tray_switches[i]->update_sensor_value();
+      // We have two problems with the switches at the moment:
+      // 1. The switches are not reliable pressed when the tray is closed
+      // 2. It takes a lot of resources to read the switches because they are connected to the port expander
+      // _tray_switches[i]->update_sensor_value(); // TODO: Use that once switch work reliable
       handle_tray_just_opened(i);
     }
   }
 
   void TrayManager::handle_tray_just_opened(uint8_t vector_id)
   {
-    bool is_tray_open = !_tray_switches[vector_id]->is_switch_pressed();
-    if (_electrical_tray_locks[vector_id]->is_drawer_opening_in_progress() && is_tray_open)
+    if (!_electrical_tray_locks[vector_id]->is_drawer_opening_in_progress())
+    {
+      return;
+    }
+
+    // Usually we should close the lock once the switch isn't pressed anymore
+    // which should indicate that the tray is open, but the switch is not pressed
+    // reliably.
+    // bool is_tray_open = !_tray_switches[vector_id]->is_switch_pressed(); // TODO: Use that once switch is reliable
+    // Therefore we close the lock after some time which should ensure that the tray is open
+    const uint32_t current_timestamp = millis();
+    const uint32_t time_since_lock_was_opened = current_timestamp - _timestamp_last_tray_lock_opening[vector_id];
+    const bool has_lock_mechanism_time_passed =
+      time_since_lock_was_opened >= _ELECTRICAL_TRAY_LOCK_MECHANISM_TIME_IN_MS;
+
+    if (has_lock_mechanism_time_passed)
     {
       // this makes sure the lock automatically closes as soon as the drawer is opened
       _electrical_tray_locks[vector_id]->set_expected_lock_state_current_step(lock::LockState::locked);
