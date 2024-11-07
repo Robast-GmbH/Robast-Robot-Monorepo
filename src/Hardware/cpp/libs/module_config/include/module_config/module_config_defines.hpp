@@ -151,7 +151,7 @@ namespace module_config
   struct ModuleSetting<drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS>
   {
     using type = uint32_t;
-    static constexpr type default_value = 700;
+    static constexpr type default_value = 200;
   };
 
   template <>
