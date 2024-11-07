@@ -151,6 +151,8 @@ namespace drawer
 
     bool is_stall_guard_triggered();
 
+    bool get_is_stall_guard_triggered() const;
+
     void handle_stall_guard_triggered();
 
     void set_target_speed_and_direction(const uint8_t target_speed, const bool use_acceleration_ramp);
@@ -162,8 +164,6 @@ namespace drawer
     uint32_t get_normed_target_speed_uint32(const uint8_t target_speed) const;
 
     uint8_t get_normed_target_speed_uint8(const uint32_t target_speed) const;
-
-    bool is_stall_guard_triggered() const;
   };
 }   // namespace drawer
 
