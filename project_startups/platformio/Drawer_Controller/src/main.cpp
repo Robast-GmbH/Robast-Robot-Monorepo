@@ -294,9 +294,10 @@ void setup()
   encoder_config = std::make_shared<motor::EncoderConfig>();
   motor_config = std::make_shared<motor::MotorConfig>();
   motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
+  tray_manager_config = std::make_shared<tray::TrayManagerConfig>();
 
-  config_manager =
-    std::make_unique<utils::ConfigManager>(drawer_config, encoder_config, motor_config, motor_monitor_config);
+  config_manager = std::make_unique<utils::ConfigManager>(
+    drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config);
   config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                              USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
 

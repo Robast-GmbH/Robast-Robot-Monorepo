@@ -1,16 +1,17 @@
-#ifndef PARTIAL_DRAWER_CONTROLLER_TRAY_MANAGER_HPP
-#define PARTIAL_DRAWER_CONTROLLER_TRAY_MANAGER_HPP
+#ifndef TRAY_TRAY_MANAGER_HPP
+#define TRAY_TRAY_MANAGER_HPP
 
 #include <memory>
 
 #include "drawer/electrical_drawer.hpp"
 #include "led/onboard_led_driver.hpp"
-#include "lock/electrical_tray_lock.hpp"
-#include "lock/tray_pin_config.hpp"
 #include "motor/motor_monitor_config.hpp"
 #include "switch/switch.hpp"
+#include "tray/electrical_tray_lock.hpp"
+#include "tray/tray_manager_config.hpp"
+#include "tray/tray_pin_config.hpp"
 
-namespace partial_drawer_controller
+namespace tray
 {
   class TrayManager
   {
@@ -20,6 +21,7 @@ namespace partial_drawer_controller
                 const std::shared_ptr<TwoWire> wire,
                 const std::shared_ptr<drawer::ElectricalDrawer> e_drawer,
                 const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config,
+                const std::shared_ptr<tray::TrayManagerConfig> tray_manager_config,
                 const float switch_pressed_threshold,
                 const float switch_new_reading_weight);
 
@@ -33,8 +35,8 @@ namespace partial_drawer_controller
 
    private:
     const std::shared_ptr<drawer::ElectricalDrawer> _e_drawer;
-
     const std::shared_ptr<motor::MotorMonitorConfig> _motor_monitor_config;
+    const std::shared_ptr<tray::TrayManagerConfig> _tray_manager_config;
 
     std::vector<std::unique_ptr<ElectricalTrayLock>> _electrical_tray_locks;
 
@@ -44,15 +46,19 @@ namespace partial_drawer_controller
 
     std::vector<bool> _reduced_speed_for_tray_lid;
 
+    std::vector<uint8_t> _tray_lid_positions;
+
     uint8_t _target_speed_before_reduced_speed = 0;
 
     float _speed_deviation_in_percentage_for_stall_before_reduced_speed = 0.0;
 
-    const std::unique_ptr<OnboardLedDriver> _onboard_led_driver;
+    const std::unique_ptr<led::OnboardLedDriver> _onboard_led_driver;
 
     bool _triggered_closing_lock_after_opening = false;
 
     static constexpr uint16_t _ELECTRICAL_TRAY_LOCK_MECHANISM_TIME_IN_MS = 700;
+
+    uint8_t get_tray_lid_position(uint8_t tray_id);
 
     void update_tray_states();
 
@@ -61,6 +67,6 @@ namespace partial_drawer_controller
     void handle_e_drawer_movement_to_close_lid(uint8_t tray_id);
   };
 
-}   // namespace partial_drawer_controller
+}   // namespace tray
 
-#endif   // PARTIAL_DRAWER_CONTROLLER_TRAY_MANAGER_HPP
+#endif   // TRAY_TRAY_MANAGER_HPP

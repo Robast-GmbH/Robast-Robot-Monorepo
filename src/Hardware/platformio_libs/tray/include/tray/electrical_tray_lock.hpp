@@ -1,5 +1,5 @@
-#ifndef PARTIAL_DRAWER_CONTROLLER_ELECTRICAL_TRAY_LOCK_HPP
-#define PARTIAL_DRAWER_CONTROLLER_ELECTRICAL_TRAY_LOCK_HPP
+#ifndef TRAY_ELECTRICAL_TRAY_LOCK_HPP
+#define TRAY_ELECTRICAL_TRAY_LOCK_HPP
 
 #include <Arduino.h>
 
@@ -9,7 +9,7 @@
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "lock/lock_state.hpp"
 
-namespace partial_drawer_controller
+namespace tray
 {
   class ElectricalTrayLock
   {
@@ -58,5 +58,5 @@ namespace partial_drawer_controller
 
     void initialize_lock();
   };
-}   // namespace partial_drawer_controller
-#endif   // PARTIAL_DRAWER_CONTROLLER_ELECTRICAL_TRAY_LOCK_HPP
+}   // namespace tray_drawer_controller
+#endif   // TRAY_ELECTRICAL_TRAY_LOCK_HPP

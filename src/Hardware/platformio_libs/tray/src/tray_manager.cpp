@@ -1,17 +1,19 @@
-#include "lock/tray_manager.hpp"
+#include "tray/tray_manager.hpp"
 
-namespace partial_drawer_controller
+namespace tray
 {
   TrayManager::TrayManager(const std::vector<TrayPinConfig>& tray_pin_configs,
                            const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                            const std::shared_ptr<TwoWire> wire,
                            const std::shared_ptr<drawer::ElectricalDrawer> e_drawer,
                            const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config,
+                           const std::shared_ptr<tray::TrayManagerConfig> tray_manager_config,
                            const float switch_pressed_threshold,
                            const float switch_new_reading_weight)
-      : _onboard_led_driver{std::make_unique<OnboardLedDriver>(wire)},
+      : _onboard_led_driver{std::make_unique<led::OnboardLedDriver>(wire)},
         _e_drawer{e_drawer},
-        _motor_monitor_config{motor_monitor_config}
+        _motor_monitor_config{motor_monitor_config},
+        _tray_manager_config{tray_manager_config}
   {
     _electrical_tray_locks.reserve(tray_pin_configs.size());
     _tray_switches.reserve(tray_pin_configs.size());
@@ -27,6 +29,20 @@ namespace partial_drawer_controller
       _timestamp_last_tray_lock_opening.push_back(0);
       _reduced_speed_for_tray_lid.push_back(false);
     }
+    for (uint8_t tray_id = 1; tray_id <= _electrical_tray_locks.size(); ++tray_id)
+    {
+      _tray_lid_positions.push_back(get_tray_lid_position(tray_id));
+    }
+  }
+
+  uint8_t TrayManager::get_tray_lid_position(uint8_t tray_id)
+  {
+    const uint8_t POSITION_OFFSET = _tray_manager_config->get_position_offset_for_tray_lid_computation();
+    const uint8_t tray_lid_position =
+      ((255 - POSITION_OFFSET) * (_electrical_tray_locks.size() - tray_id)) / _electrical_tray_locks.size() +
+      POSITION_OFFSET;
+    Serial.printf("[TrayManager]: Tray %d lid position: %d\n", tray_id, tray_lid_position);
+    return tray_lid_position;
   }
 
   void TrayManager::init(std::function<void()> set_enable_pin_high)
@@ -95,62 +111,37 @@ namespace partial_drawer_controller
 
   void TrayManager::handle_e_drawer_movement_to_close_lid(uint8_t tray_id)
   {
-    if (!_electrical_tray_locks[tray_id - 1]->is_drawer_opening_in_progress())
+    if (!_electrical_tray_locks[tray_id - 1]->is_drawer_opening_in_progress() || !_e_drawer->is_drawer_moving_in() ||
+        _e_drawer->get_target_position() != 0)
     {
       return;
     }
 
-    if (!_e_drawer->is_drawer_moving_in())
-    {
-      return;
-    }
+    const uint8_t distance_to_tray_lid = abs(_tray_lid_positions[tray_id - 1] - _e_drawer->get_current_position());
+    const uint8_t threshold = _tray_manager_config->get_distance_to_tray_lid_threshold();
 
-    if (_e_drawer->get_target_position() != 0)
-    {
-      return;
-    }
-
-    // TODO: Move these constants to some better place
-    const uint8_t current_position = _e_drawer->get_current_position();
-    const uint8_t POSITION_OFFSET = 55;
-    uint8_t tray_lid_position =
-      ((255 - POSITION_OFFSET) * (_electrical_tray_locks.size() - tray_id)) / _electrical_tray_locks.size() +
-      POSITION_OFFSET;
-    const uint8_t distance_to_tray_lid = abs(tray_lid_position - current_position);
-    const uint8_t distance_to_tray_lid_threshold = 30;
-    const uint32_t TARGET_SPEED_TO_CLOSE_TRAY_LID = 50;
-    const float SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID = 0.95;
-
-    // When the current position is close to the tray_lid_position, we want to slow down the drawer
-    // to not run into stall guard
     if (!_reduced_speed_for_tray_lid[tray_id - 1])
     {
-      if (distance_to_tray_lid < distance_to_tray_lid_threshold)
+      if (distance_to_tray_lid < threshold)
       {
         _speed_deviation_in_percentage_for_stall_before_reduced_speed =
           _motor_monitor_config->get_speed_deviation_in_percentage_for_stall();
         _target_speed_before_reduced_speed = _e_drawer->get_target_speed();
 
-        _e_drawer->set_target_speed_with_decelerating_ramp(TARGET_SPEED_TO_CLOSE_TRAY_LID);
+        _e_drawer->set_target_speed_with_decelerating_ramp(_tray_manager_config->get_target_speed_to_close_tray_lid());
         _motor_monitor_config->set_speed_deviation_in_percentage_for_stall(
-          SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID);
+          _tray_manager_config->get_speed_deviation_in_percentage_for_stall_when_closing_lid());
 
         _reduced_speed_for_tray_lid[tray_id - 1] = true;
-
-        debug_printf("[TrayManager]: Reduced speed for tray %d to %d\n", tray_id, TARGET_SPEED_TO_CLOSE_TRAY_LID);
       }
     }
-    else
+    else if (distance_to_tray_lid > threshold)
     {
-      if (distance_to_tray_lid > distance_to_tray_lid_threshold)
-      {
-        _motor_monitor_config->set_speed_deviation_in_percentage_for_stall(
-          _speed_deviation_in_percentage_for_stall_before_reduced_speed);
-        _e_drawer->set_target_speed_and_direction(_target_speed_before_reduced_speed, true);
-        _reduced_speed_for_tray_lid[tray_id - 1] = false;
-        _electrical_tray_locks[tray_id - 1]->set_is_drawer_opening_in_progress(false);
-        debug_printf("[TrayManager]: Restored speed for tray %d to %d\n", tray_id, _target_speed_before_reduced_speed);
-      }
+      _motor_monitor_config->set_speed_deviation_in_percentage_for_stall(
+        _speed_deviation_in_percentage_for_stall_before_reduced_speed);
+      _e_drawer->set_target_speed_and_direction(_target_speed_before_reduced_speed, true);
+      _reduced_speed_for_tray_lid[tray_id - 1] = false;
+      _electrical_tray_locks[tray_id - 1]->set_is_drawer_opening_in_progress(false);
     }
   }
-}   // namespace partial_drawer_controller
+}   // namespace tray

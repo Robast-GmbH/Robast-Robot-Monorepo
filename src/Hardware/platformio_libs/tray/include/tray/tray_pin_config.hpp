@@ -1,7 +1,7 @@
-#ifndef PARTIAL_DRAWER_CONTROLLER_TRAY_PIN_CONFIG_HPP
-#define PARTIAL_DRAWER_CONTROLLER_TRAY_PIN_CONFIG_HPP
+#ifndef TRAY_TRAY_PIN_CONFIG_HPP
+#define TRAY_TRAY_PIN_CONFIG_HPP
 
-namespace partial_drawer_controller
+namespace tray
 {
 
   struct TrayPinConfig
@@ -26,6 +26,6 @@ namespace partial_drawer_controller
     }
   };
 
-}   // namespace drawer_controller
+}   // namespace tray
 
-#endif   // PARTIAL_DRAWER_CONTROLLER_TRAY_PIN_CONFIG_HPP
+#endif   // TRAY_TRAY_PIN_CONFIG_HPP

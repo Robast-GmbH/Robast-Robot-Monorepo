@@ -1,6 +1,6 @@
-#include "lock/electrical_tray_lock.hpp"
+#include "tray/electrical_tray_lock.hpp"
 
-namespace partial_drawer_controller
+namespace tray
 {
   ElectricalTrayLock::ElectricalTrayLock(const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                                          const uint8_t power_open_pin_id,
@@ -106,4 +106,4 @@ namespace partial_drawer_controller
     _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
     _gpio_wrapper->digital_write(_power_close_pin_id, LOW);
   }
-}   // namespace partial_drawer_controller
+}   // namespace tray
