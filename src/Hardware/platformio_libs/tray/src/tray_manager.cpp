@@ -41,7 +41,6 @@ namespace tray
     const uint8_t tray_lid_position =
       ((255 - POSITION_OFFSET) * (_electrical_tray_locks.size() - tray_id)) / _electrical_tray_locks.size() +
       POSITION_OFFSET;
-    Serial.printf("[TrayManager]: Tray %d lid position: %d\n", tray_id, tray_lid_position);
     return tray_lid_position;
   }
 
