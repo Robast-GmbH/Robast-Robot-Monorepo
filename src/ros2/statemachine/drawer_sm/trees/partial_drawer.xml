@@ -237,7 +237,7 @@
                               move_electric_drawer_topic="/electrical_drawer_task"
                               speed="200"
                               stall_guard_value="80"
-                              target_position="251"/>
+                              target_position="254"/>
         </Delay>
         <ReactiveIfThenElse>
           <Inverter>

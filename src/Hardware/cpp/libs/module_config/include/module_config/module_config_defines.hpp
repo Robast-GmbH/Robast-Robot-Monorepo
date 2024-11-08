@@ -214,7 +214,7 @@ namespace module_config
   struct ModuleSetting<encoder::ENCODER_COUNT_DRAWER_MAX_EXTENT>
   {
     using type = uint32_t;
-    static constexpr type default_value = 83000;
+    static constexpr type default_value = 85000;
   };
 
   template <>
