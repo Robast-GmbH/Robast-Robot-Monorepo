@@ -163,7 +163,9 @@ void process_can_msgs_task_loop(void* pvParameters)
 
     e_drawer->update_state();
 
-    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = e_drawer->can_out();
+    heartbeat->generate_heartbeat();
+
+    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = can_utils->get_element_from_feedback_msg_queue();
 
     if (to_be_sent_message.has_value())
     {
@@ -215,11 +217,14 @@ void setup()
   motor_config = std::make_shared<motor::MotorConfig>();
   motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
   tray_manager_config = std::make_shared<tray::TrayManagerConfig>();
+  heartbeat_config = std::make_shared<watchdog::HeartbeatConfig>();
 
   config_manager = std::make_unique<utils::ConfigManager>(
-    drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config);
+    drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config, heartbeat_config);
   config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                              USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
+
+  heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, heartbeat_config);
 
   e_drawer = std::make_shared<drawer::ElectricalDrawer>(
     MODULE_ID,

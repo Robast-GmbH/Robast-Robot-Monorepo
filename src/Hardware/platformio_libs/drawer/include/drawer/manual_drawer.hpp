@@ -17,8 +17,6 @@ namespace drawer
                  const std::shared_ptr<switch_lib::Switch> endstop_switch,
                  const std::shared_ptr<lock::ElectricalDrawerLock> drawer_lock);
 
-    std::optional<robast_can_msgs::CanMessage> can_out() override;
-
     void update_state() override;
 
     void unlock() override;

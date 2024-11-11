@@ -72,7 +72,13 @@ namespace module_config
     constexpr uint8_t POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION = 51;
     constexpr uint8_t DISTANCE_TO_TRAY_LID_THRESHOLD = 52;
     constexpr uint8_t TARGET_SPEED_TO_CLOSE_TRAY_LID = 53;
-  }
+  } // namespace tray_manager
+
+  namespace watchdog
+  {
+    constexpr uint8_t HEARTBEAT_INTERVAL_IN_MS = 60;    
+  } // namespace watchdog
+  
 
   /********************************************************************************************************
    * Configs for the drawer
@@ -354,6 +360,16 @@ namespace module_config
   {
     using type = uint8_t;
     static constexpr type default_value = 50;
+  };
+
+  /********************************************************************************************************
+   * Configs for the watchdog
+   ********************************************************************************************************/
+  template <>
+  struct ModuleSetting<watchdog::HEARTBEAT_INTERVAL_IN_MS>
+  {
+    using type = uint16_t;
+    static constexpr type default_value = 1000;
   };
 
 } // namespace module_config

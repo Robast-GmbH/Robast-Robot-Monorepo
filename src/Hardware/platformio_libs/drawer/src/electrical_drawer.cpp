@@ -60,11 +60,6 @@ namespace drawer
     }
   }
 
-  std::optional<robast_can_msgs::CanMessage> ElectricalDrawer::can_out()
-  {
-    return _can_utils->get_element_from_feedback_msg_queue();
-  }
-
   void ElectricalDrawer::update_state()
   {
     if (_drawer_lock.has_value())

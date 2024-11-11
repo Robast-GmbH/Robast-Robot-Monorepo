@@ -57,8 +57,6 @@ namespace drawer
                      const std::shared_ptr<motor::EncoderConfig> encoder_config,
                      const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config);
 
-    std::optional<robast_can_msgs::CanMessage> can_out() override;
-
     void update_state() override;
 
     void unlock() override;

@@ -23,11 +23,6 @@ namespace drawer
       _module_id, _id, robast_can_msgs::can_data::error_code::MOTOR_DRIVER_STATE_CONTROL_NOT_SUPPORTED_BY_MODULE);
   }
 
-  std::optional<robast_can_msgs::CanMessage> ManualDrawer::can_out()
-  {
-    return _can_utils->get_element_from_feedback_msg_queue();
-  }
-
   void ManualDrawer::update_state()
   {
     handle_drawer_lock_control();
