@@ -23,6 +23,7 @@ namespace robast_can_msgs
     constexpr uint16_t TRAY_LED_BRIGHTNESS = 0x008;
     constexpr uint16_t MODULE_CONFIG = 0x009;
     constexpr uint16_t ELECTRICAL_DRAWER_MOTOR_CONTROL = 0x00A;
+    constexpr uint16_t HEARTBEAT = 0x00B;
   }   // namespace can_id
 
   namespace can_dlc
@@ -37,6 +38,7 @@ namespace robast_can_msgs
     constexpr uint8_t TRAY_LED_BRIGHTNESS = 6;
     constexpr uint8_t MODULE_CONFIG = 8;
     constexpr uint8_t ELECTRICAL_DRAWER_MOTOR_CONTROL = 4;
+    constexpr uint8_t HEARTBEAT = 3;
   }   // namespace can_dlc
 
   /*********************************************************************************************************
@@ -55,6 +57,7 @@ namespace robast_can_msgs
     constexpr uint8_t TRAY_LED_BRIGHTNESS = 7;
     constexpr uint8_t MODULE_CONFIG = 8;
     constexpr uint8_t ELECTRICAL_DRAWER_MOTOR_CONTROL = 9;
+    constexpr uint8_t HEARTBEAT = 10;
   }   // namespace can_msg
 
   namespace can_signal
@@ -142,6 +145,12 @@ namespace robast_can_msgs
         constexpr uint8_t CONFIRM_CONTROL_CHANGE = 3;
       }   // namespace electrical_drawer_motor_control
 
+      namespace heartbeat
+      {
+        constexpr uint8_t MODULE_ID = 0;
+      } // namespace heartbeat
+      
+
     }   // namespace id
 
     namespace bit_start
@@ -226,6 +235,12 @@ namespace robast_can_msgs
         constexpr uint8_t ENABLE_MOTOR = 26;
         constexpr uint8_t CONFIRM_CONTROL_CHANGE = 27;
       }   // namespace electrical_drawer_motor_control
+
+      namespace heartbeat
+      {
+        constexpr uint8_t MODULE_ID = 0;
+      } // namespace heartbeat
+
     }   // namespace bit_start
 
     namespace bit_length
@@ -310,6 +325,11 @@ namespace robast_can_msgs
         constexpr uint8_t ENABLE_MOTOR = 1;
         constexpr uint8_t CONFIRM_CONTROL_CHANGE = 1;
       }   // namespace electrical_drawer_motor_control
+
+      namespace heartbeat
+      {
+        constexpr uint8_t MODULE_ID = 24;
+      } // namespace heartbeat
 
     }   // namespace bit_length
 
