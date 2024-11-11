@@ -4,14 +4,14 @@ namespace drawer
 {
   ManualDrawer::ManualDrawer(const uint32_t module_id,
                              const uint8_t id,
-                             const std::shared_ptr<robast_can_msgs::CanDb> can_db,
+                             const std::shared_ptr<can_toolbox::CanUtils> can_utils,
                              const std::shared_ptr<switch_lib::Switch> endstop_switch,
                              const std::shared_ptr<lock::ElectricalDrawerLock> drawer_lock)
-      : _module_id(module_id),
-        _id(id),
-        _endstop_switch(endstop_switch),
-        _drawer_lock(drawer_lock),
-        _can_utils(std::make_unique<can_toolbox::CanUtils>(can_db))
+      : _module_id{module_id},
+        _id{id},
+        _can_utils{can_utils},
+        _endstop_switch{endstop_switch},
+        _drawer_lock{drawer_lock}
   {
   }
 

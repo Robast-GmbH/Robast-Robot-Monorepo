@@ -31,6 +31,8 @@ SemaphoreHandle_t can_queue_mutex = NULL;
 
 std::shared_ptr<robast_can_msgs::CanDb> can_db;
 
+std::shared_ptr<can_toolbox::CanUtils> can_utils;
+
 std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper;
 
 std::shared_ptr<lock::ElectricalDrawerLock> drawer_lock;

@@ -199,6 +199,7 @@ void setup()
 
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   can_message_converter = std::make_unique<utils::CanMessageConverter>();
+  can_utils = std::make_shared<can_toolbox::CanUtils>(can_db);
 
   led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.num_of_leds>>(
     USER_CONFIG.use_color_fade);
@@ -223,8 +224,8 @@ void setup()
   e_drawer = std::make_shared<drawer::ElectricalDrawer>(
     MODULE_ID,
     USER_CONFIG.lock_id,
-    can_db,
     gpio_wrapper,
+    can_utils,
     stepper_1_pin_id_config,
     MODULE_HARDWARE_CONFIG.use_encoder,
     gpio_wrapper->get_gpio_num_for_pin_id(peripherals::pin_id::STEPPER_1_ENCODER_A),

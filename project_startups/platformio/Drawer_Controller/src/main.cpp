@@ -263,6 +263,7 @@ void setup()
 
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   can_message_converter = std::make_unique<utils::CanMessageConverter>();
+  can_utils = std::make_shared<can_toolbox::CanUtils>(can_db);
 
   led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.num_of_leds>>(
     USER_CONFIG.use_color_fade);
@@ -306,8 +307,8 @@ void setup()
     i_drawer = std::make_shared<drawer::ElectricalDrawer>(
       MODULE_ID,
       USER_CONFIG.lock_id,
-      can_db,
       gpio_wrapper,
+      can_utils,
       stepper_1_pin_id_config,
       MODULE_HARDWARE_CONFIG.use_encoder,
       gpio_wrapper->get_gpio_num_for_pin_id(gpio_defines::pin_id::STEPPER_1_ENCODER_A),
@@ -323,7 +324,7 @@ void setup()
   else
   {
     i_drawer =
-      std::make_shared<drawer::ManualDrawer>(MODULE_ID, USER_CONFIG.lock_id, can_db, endstop_switch, drawer_lock);
+      std::make_shared<drawer::ManualDrawer>(MODULE_ID, USER_CONFIG.lock_id, can_utils, endstop_switch, drawer_lock);
   }
 
   // Initialize CAN Controller right before can task receive loop is started, otherwise rx_queue might overflow

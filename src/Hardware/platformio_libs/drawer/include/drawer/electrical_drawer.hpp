@@ -43,8 +43,8 @@ namespace drawer
    public:
     ElectricalDrawer(const uint32_t module_id,
                      const uint8_t id,
-                     const std::shared_ptr<robast_can_msgs::CanDb> can_db,
                      const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
+                     const std::shared_ptr<can_toolbox::CanUtils> can_utils,
                      const stepper_motor::StepperPinIdConfig &stepper_pin_id_config,
                      const bool use_encoder,
                      const uint8_t encoder_pin_a,
@@ -94,7 +94,7 @@ namespace drawer
     // optional because the lock is not always installed (e.g. in the partial drawer)
     const std::optional<std::shared_ptr<lock::ElectricalDrawerLock>> _drawer_lock;
 
-    const std::unique_ptr<can_toolbox::CanUtils> _can_utils;
+    const std::shared_ptr<can_toolbox::CanUtils> _can_utils;
 
     const std::shared_ptr<stepper_motor::Motor> _motor;
 
