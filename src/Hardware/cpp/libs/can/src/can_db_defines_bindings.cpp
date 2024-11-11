@@ -6,6 +6,8 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(can_db_defines_bindings, m)
 {
+  m.attr("CAN_STD_MSG_DLC_MAXIMUM") = robast_can_msgs::CAN_STD_MSG_DLC_MAXIMUM;
+
   // Expose can_id constants
   py::module_ can_id = m.def_submodule("can_id");
   can_id.attr("DRAWER_UNLOCK") = robast_can_msgs::can_id::DRAWER_UNLOCK;
@@ -18,6 +20,7 @@ PYBIND11_MODULE(can_db_defines_bindings, m)
   can_id.attr("TRAY_LED_BRIGHTNESS") = robast_can_msgs::can_id::TRAY_LED_BRIGHTNESS;
   can_id.attr("MODULE_CONFIG") = robast_can_msgs::can_id::MODULE_CONFIG;
   can_id.attr("ELECTRICAL_DRAWER_MOTOR_CONTROL") = robast_can_msgs::can_id::ELECTRICAL_DRAWER_MOTOR_CONTROL;
+  can_id.attr("HEARTBEAT") = robast_can_msgs::can_id::HEARTBEAT;
 
   // Expose can_dlc constants
   py::module_ can_dlc = m.def_submodule("can_dlc");
@@ -31,6 +34,7 @@ PYBIND11_MODULE(can_db_defines_bindings, m)
   can_dlc.attr("TRAY_LED_BRIGHTNESS") = robast_can_msgs::can_dlc::TRAY_LED_BRIGHTNESS;
   can_dlc.attr("MODULE_CONFIG") = robast_can_msgs::can_dlc::MODULE_CONFIG;
   can_dlc.attr("ELECTRICAL_DRAWER_MOTOR_CONTROL") = robast_can_msgs::can_dlc::ELECTRICAL_DRAWER_MOTOR_CONTROL;
+  can_dlc.attr("HEARTBEAT") = robast_can_msgs::can_dlc::HEARTBEAT;
 
   // Expose can_signal constants
   py::module_ can_signal = m.def_submodule("can_signal");
@@ -102,6 +106,9 @@ PYBIND11_MODULE(can_db_defines_bindings, m)
   id.attr("ELECTRICAL_DRAWER_MOTOR_CONTROL_CONFIRM_CHANGE") =
     robast_can_msgs::can_signal::id::electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE;
 
+  id.attr("HEARTBEAT_MODULE_ID") = robast_can_msgs::can_signal::id::heartbeat::MODULE_ID;
+  id.attr("HEARTBEAT_INTERVAL_IN_MS") = robast_can_msgs::can_signal::id::heartbeat::INTERVAL_IN_MS;
+
   py::module_ bit_start = can_signal.def_submodule("bit_start");
   bit_start.attr("DRAWER_UNLOCK_MODULE_ID") = robast_can_msgs::can_signal::bit_start::drawer_unlock::MODULE_ID;
   bit_start.attr("DRAWER_UNLOCK_DRAWER_ID") = robast_can_msgs::can_signal::bit_start::drawer_unlock::DRAWER_ID;
@@ -171,6 +178,9 @@ PYBIND11_MODULE(can_db_defines_bindings, m)
     robast_can_msgs::can_signal::bit_start::electrical_drawer_motor_control::ENABLE_MOTOR;
   bit_start.attr("ELECTRICAL_DRAWER_MOTOR_CONTROL_CONFIRM_CHANGE") =
     robast_can_msgs::can_signal::bit_start::electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE;
+
+  bit_start.attr("HEARTBEAT_MODULE_ID") = robast_can_msgs::can_signal::bit_start::heartbeat::MODULE_ID;
+  bit_start.attr("HEARTBEAT_INTERVAL_IN_MS") = robast_can_msgs::can_signal::bit_start::heartbeat::INTERVAL_IN_MS;
 
   py::module_ bit_length = can_signal.def_submodule("bit_length");
   bit_length.attr("DRAWER_UNLOCK_MODULE_ID") = robast_can_msgs::can_signal::bit_length::drawer_unlock::MODULE_ID;
@@ -244,4 +254,7 @@ PYBIND11_MODULE(can_db_defines_bindings, m)
     robast_can_msgs::can_signal::bit_length::electrical_drawer_motor_control::ENABLE_MOTOR;
   bit_length.attr("ELECTRICAL_DRAWER_MOTOR_CONTROL_CONFIRM_CHANGE") =
     robast_can_msgs::can_signal::bit_length::electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE;
+
+  bit_length.attr("HEARTBEAT_MODULE_ID") = robast_can_msgs::can_signal::bit_length::heartbeat::MODULE_ID;
+  bit_length.attr("HEARTBEAT_INTERVAL_IN_MS") = robast_can_msgs::can_signal::bit_length::heartbeat::INTERVAL_IN_MS;
 }
