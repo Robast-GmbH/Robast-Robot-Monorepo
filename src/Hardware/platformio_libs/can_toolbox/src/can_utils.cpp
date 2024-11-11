@@ -63,9 +63,9 @@ namespace can_toolbox
     _feedback_can_msg_queue->enqueue(electrical_drawer_motor_control_msg);
   }
 
-  void CanUtils::enqueue_heartbeat_msg(const uint32_t module_id) const
+  void CanUtils::enqueue_heartbeat_msg(const uint32_t module_id, const uint16_t interval_in_ms) const
   {
-    _feedback_can_msg_queue->enqueue(create_heartbeat_msg(module_id));
+    _feedback_can_msg_queue->enqueue(create_heartbeat_msg(module_id, interval_in_ms));
   }
 
   CanMessage CanUtils::create_error_feedback_msg(const uint32_t module_id,
@@ -151,12 +151,13 @@ namespace can_toolbox
     return can_msg_electrical_drawer_motor_control;
   }
 
-  CanMessage CanUtils::create_heartbeat_msg(const uint32_t module_id) const
+  CanMessage CanUtils::create_heartbeat_msg(const uint32_t module_id, const uint16_t interval_in_ms) const
   {
     CanMessage can_msg_heartbeat = _can_db->can_messages.at(robast_can_msgs::can_msg::HEARTBEAT);
     std::vector can_signals_heartbeat = can_msg_heartbeat.get_can_signals();
 
     can_signals_heartbeat.at(robast_can_msgs::can_signal::id::heartbeat::MODULE_ID).set_data(module_id);
+    can_signals_heartbeat.at(robast_can_msgs::can_signal::id::heartbeat::INTERVAL_IN_MS).set_data(interval_in_ms);
 
     can_msg_heartbeat.set_can_signals(can_signals_heartbeat);
 

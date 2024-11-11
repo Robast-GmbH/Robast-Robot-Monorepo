@@ -50,6 +50,8 @@ namespace drawer_bridge
       create_publisher<std_msgs::msg::Bool>("push_to_close_triggered", _qos_config.get_qos_open_drawer());
 
     _error_msg_publisher = create_publisher<ErrorBaseMsg>("robast_error", _qos_config.get_qos_error_msgs());
+
+    _heartbeat_publisher = create_publisher<Heartbeat>("heartbeat", _qos_config.get_qos_heartbeat());
   }
 
   void DrawerBridge::setup_action_server()
@@ -138,7 +140,7 @@ namespace drawer_bridge
     }
   }
 
-  void DrawerBridge::publish_drawer_status(const robast_can_msgs::CanMessage drawer_feedback_can_msg)
+  void DrawerBridge::handle_drawer_status(const robast_can_msgs::CanMessage drawer_feedback_can_msg)
   {
     std::vector<robast_can_msgs::CanSignal> can_signals = drawer_feedback_can_msg.get_can_signals();
 
@@ -282,6 +284,19 @@ namespace drawer_bridge
     }
   }
 
+  void DrawerBridge::publish_heartbeat(const robast_can_msgs::CanMessage heartbeat_can_msg)
+  {
+    std::vector<robast_can_msgs::CanSignal> can_signals = heartbeat_can_msg.get_can_signals();
+
+    Heartbeat heartbeat_msg = Heartbeat();
+    heartbeat_msg.stamp = this->now();
+    heartbeat_msg.id = std::to_string(can_signals.at(robast_can_msgs::can_signal::id::heartbeat::MODULE_ID).get_data());
+    heartbeat_msg.interval_in_ms =
+      can_signals.at(robast_can_msgs::can_signal::id::heartbeat::INTERVAL_IN_MS).get_data();
+
+    _heartbeat_publisher->publish(heartbeat_msg);
+  }
+
   void DrawerBridge::receive_can_msg_callback(CanMessage can_msg)
   {
     RCLCPP_INFO(this->get_logger(), "Received CAN message: id:'%d' dlc:'%d' \n ", can_msg.id, can_msg.dlc);
@@ -293,7 +308,7 @@ namespace drawer_bridge
       switch (can_msg.id)
       {
         case robast_can_msgs::can_id::DRAWER_FEEDBACK:
-          publish_drawer_status(decoded_msg.value());
+          handle_drawer_status(decoded_msg.value());
           break;
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_FEEDBACK:
           handle_e_drawer_feedback(decoded_msg.value());
@@ -303,6 +318,9 @@ namespace drawer_bridge
           break;
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_MOTOR_CONTROL:
           handle_e_drawer_motor_control_feedback(decoded_msg.value());
+          break;
+        case robast_can_msgs::can_id::HEARTBEAT:
+          publish_heartbeat(decoded_msg.value());
           break;
       }
     }

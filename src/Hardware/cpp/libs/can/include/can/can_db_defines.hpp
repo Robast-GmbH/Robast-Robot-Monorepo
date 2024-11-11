@@ -38,7 +38,7 @@ namespace robast_can_msgs
     constexpr uint8_t TRAY_LED_BRIGHTNESS = 6;
     constexpr uint8_t MODULE_CONFIG = 8;
     constexpr uint8_t ELECTRICAL_DRAWER_MOTOR_CONTROL = 4;
-    constexpr uint8_t HEARTBEAT = 3;
+    constexpr uint8_t HEARTBEAT = 5;
   }   // namespace can_dlc
 
   /*********************************************************************************************************
@@ -148,8 +148,8 @@ namespace robast_can_msgs
       namespace heartbeat
       {
         constexpr uint8_t MODULE_ID = 0;
-      } // namespace heartbeat
-      
+        constexpr uint8_t INTERVAL_IN_MS = 1;
+      }   // namespace heartbeat
 
     }   // namespace id
 
@@ -239,7 +239,8 @@ namespace robast_can_msgs
       namespace heartbeat
       {
         constexpr uint8_t MODULE_ID = 0;
-      } // namespace heartbeat
+        constexpr uint8_t INTERVAL_IN_MS = 24;
+      }   // namespace heartbeat
 
     }   // namespace bit_start
 
@@ -329,7 +330,8 @@ namespace robast_can_msgs
       namespace heartbeat
       {
         constexpr uint8_t MODULE_ID = 24;
-      } // namespace heartbeat
+        constexpr uint8_t INTERVAL_IN_MS = 16;
+      }   // namespace heartbeat
 
     }   // namespace bit_length
 

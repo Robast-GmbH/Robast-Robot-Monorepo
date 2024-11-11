@@ -102,7 +102,8 @@ namespace robast_can_msgs
             CanMessage(
                 can_id::HEARTBEAT,
                 can_dlc::HEARTBEAT,
-                {CanSignal(can_signal::bit_start::heartbeat::MODULE_ID, can_signal::bit_length::heartbeat::MODULE_ID, 0)}
+                {CanSignal(can_signal::bit_start::heartbeat::MODULE_ID, can_signal::bit_length::heartbeat::MODULE_ID, 0),
+                 CanSignal(can_signal::bit_start::heartbeat::INTERVAL_IN_MS, can_signal::bit_length::heartbeat::INTERVAL_IN_MS, 0)}
             )
         };
     };

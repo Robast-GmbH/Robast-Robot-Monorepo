@@ -13,10 +13,11 @@ namespace watchdog
   {
     const uint32_t current_time = millis();
     const uint32_t elapsed_time = current_time - _last_heartbeat_time_in_ms;
+    const uint16_t heartbeat_interval_in_ms = _heartbeat_config->get_heartbeat_interval_in_ms();
 
-    if (elapsed_time >= _heartbeat_config->get_heartbeat_interval_in_ms())
+    if (elapsed_time >= heartbeat_interval_in_ms)
     {
-      _can_utils->enqueue_heartbeat_msg(_module_id);
+      _can_utils->enqueue_heartbeat_msg(_module_id, heartbeat_interval_in_ms);
       _last_heartbeat_time_in_ms = current_time;
     }
   }
