@@ -58,5 +58,5 @@ namespace statemachine
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
-  factory.registerNodeType<statemachine::CheckSafetyRegisterCondition>("CheckSafetyRegisterCondition");
+  factory.registerNodeType<statemachine::CheckSafetyRegisterCondition>("CheckSafetyRegister");
 }
