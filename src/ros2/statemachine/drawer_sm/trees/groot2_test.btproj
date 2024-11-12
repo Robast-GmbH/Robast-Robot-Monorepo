@@ -117,6 +117,12 @@
         <Decorator ID="ResetDecorator">
             <input_port name="topic" default="/tree_reset"/>
         </Decorator>
+        <Action ID="SetDefaultLEDColor" editable="true">
+            <output_port name="red" default="{red}"/>
+            <output_port name="green" default="{green}"/>
+            <output_port name="blue" default="{blue}"/>
+            <output_port name="brightness" default="{brightness}"/>
+        </Action>
         <Action ID="UserToDrawerMapping" editable="true"/>
     </TreeNodesModel>
 </root>

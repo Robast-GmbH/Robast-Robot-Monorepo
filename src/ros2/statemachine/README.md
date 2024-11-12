@@ -25,3 +25,12 @@ Error handle: 30
     bt_conversions: 32
     bt_plugins: 33
     drawer_sm: 34
+
+
+Cura LED infos:
+    Base:
+        Count: 119 => 0,84 ist faktor
+        hinten: 30
+        links: 29
+        vorne: 31
+        rechts: 29

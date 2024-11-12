@@ -35,9 +35,9 @@ services:
       - UID=1000
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
       - RED=${RED:-0}
-      - GREEN=${GREEN:-255}
+      - GREEN=${GREEN:-0}
       - BLUE=${BLUE:-0}
-      - BRIGHTNESS=${BRIGHTNESS:-20}
+      - BRIGHTNESS=${BRIGHTNESS:-0}
     devices:
       - "/dev/robast/robast_nfc:/dev/robast/robast_nfc"
     volumes:

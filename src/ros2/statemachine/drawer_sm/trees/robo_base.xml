@@ -3,10 +3,10 @@
       main_tree_to_execute="BehaviorTree">
   <BehaviorTree ID="BehaviorTree">
     <Sequence>
-      <ImportEnvironmentLEDColor red="{red}"
-                                 green="{green}"
-                                 blue="{blue}"
-                                 brightness="{brightness}"/>
+      <SetDefaultLEDColor red="{red}"
+                          green="{green}"
+                          blue="{blue}"
+                          brightness="{brightness}"/>
       <GetBlackboardEntry key="drawer_address"
                           value="{drawer}"/>
       <KeepRunningUntilFailure>
@@ -223,17 +223,6 @@
       <output_port name="value"
                    default="{drawer}"/>
     </Action>
-    <Action ID="ImportEnvironmentLEDColor"
-            editable="true">
-      <output_port name="red"
-                   default="{red}"/>
-      <output_port name="green"
-                   default="{green}"/>
-      <output_port name="blue"
-                   default="{blue}"/>
-      <output_port name="brightness"
-                   default="{brightness}"/>
-    </Action>
     <Action ID="InitLEDVector">
       <input_port name="size"
                   default="128">uint8_t</input_port>
@@ -281,6 +270,17 @@
                   default="0.0">double</input_port>
       <output_port name="LEDs_colored"
                    default="{leds}"/>
+    </Action>
+    <Action ID="SetDefaultLEDColor"
+            editable="true">
+      <output_port name="red"
+                   default="{red}"/>
+      <output_port name="green"
+                   default="{green}"/>
+      <output_port name="blue"
+                   default="{blue}"/>
+      <output_port name="brightness"
+                   default="{brightness}"/>
     </Action>
   </TreeNodesModel>
 
