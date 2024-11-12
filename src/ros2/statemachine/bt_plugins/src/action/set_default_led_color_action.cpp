@@ -1,4 +1,4 @@
-#include "set_default_led_color_action.hpp"
+#include "bt_plugins/action/set_default_led_color_action.hpp"
 
 namespace bt_plugins
 {

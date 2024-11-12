@@ -25,6 +25,10 @@
             <input_port name="red" default="0">uint8</input_port>
             <input_port name="use_blackboard_address" default="false">bool. wether to use the address that's passed around by I/O or blackboard</input_port>
         </Action>
+        <Condition ID="CheckSafetyRegister" editable="true">
+            <input_port name="key" default="FRONT_LASER_SAFE_ZONE_FREE"/>
+            <input_port name="topic" default="/robot/safety_module/raw_registers"/>
+        </Condition>
         <Action ID="DrawerChangeStateReq">
             <input_port name="drawer_address_topic" default="/open_request"/>
             <output_port name="drawer_address" default="{drawer}"/>
