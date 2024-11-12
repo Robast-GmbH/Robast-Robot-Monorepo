@@ -58,6 +58,9 @@ Project error handles:
 #define ERROR_CODES_MOTOR_DRIVER_CONTROL_NOT_SUPPORTED_BY_MODULE           50303
 #define ERROR_CODES_MOTOR_DRIVER_CONTROL_NOT_SUPPORTED_BY_MODULE_INTERFACE communication_interfaces::msg::DrawerAddress
 
+#define ERROR_CODES_HEARTBEAT_TIMEOUT                                      50304
+#define ERROR_CODES_HEARTBEAT_TIMEOUT_INTERFACE                            std::string
+
 // fatal_codes
 // first digit is a 6
 // 2nd and 3rd digits indicates the project

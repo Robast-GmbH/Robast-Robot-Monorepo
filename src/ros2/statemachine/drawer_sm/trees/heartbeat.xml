@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root BTCPP_format="4" main_tree_to_execute="BehaviorTree">
+  <BehaviorTree ID="BehaviorTree">
+    <Sequence>
+      <KeepRunningUntilFailure>
+        <HeartbeatCondition topic="/heartbeat" timeouts_until_failure="3" id="{id}"/>
+      </KeepRunningUntilFailure>
+      <RobastErrorPublisher topic="/robast_error" error_code="50304" error_data="{id}" error_description="Heartbeat timeout occured for module."/>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- Description of Node Models (used by Groot) -->
+  <TreeNodesModel>
+    <Condition ID="HeartbeatCondition">
+      <input_port name="topic" default="/heartbeat"/>
+      <input_port name="timeouts_until_failure" default="3">uint8</input_port>
+      <output_port name="id" default="1">string</output_port>
+    </Condition>
+    <Action ID="RobastErrorPublisher">
+      <input_port name="topic" default="/robast_error"/>
+      <input_port name="error_code" default="0">uint16</input_port>
+      <input_port name="error_data" default="error_data">string</input_port>
+      <input_port name="error_description" default="error_description">string</input_port>
+    </Action>
+  </TreeNodesModel>
+
+</root>
