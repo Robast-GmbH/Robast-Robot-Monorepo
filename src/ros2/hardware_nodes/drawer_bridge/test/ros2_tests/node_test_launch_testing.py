@@ -469,6 +469,7 @@ class TestProcessOutput(unittest.TestCase):
             self.__node.destroy_publisher(self.__led_cmd_publisher)
             self.__node.destroy_subscription(self.__drawer_feedback_subscriber)
             self.__node.destroy_subscription(self.__robast_error_subscriber)
+            self.__node.destroy_subscription(self.__heartbeat_subscriber)
             self.__node.destroy_client(self.__module_config_service_client)
             self.__node.destroy_client(self.__electrical_drawer_motor_control_service_client)
             self.__to_can_node.destroy_subscription(self.__to_can_bus_subscriber)
