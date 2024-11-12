@@ -94,8 +94,8 @@ list(APPEND plugin_libs drawer_change_state_request_action_bt_node)
 add_library(open_drawer_action_bt_node SHARED src/action/open_drawer_action.cpp)
 list(APPEND plugin_libs open_drawer_action_bt_node)
 
-add_library(set_default_leds_action_bt_node SHARED src/action/set_default_leds_action.cpp)
-list(APPEND plugin_libs set_default_leds_action_bt_node)
+add_library(set_default_led_color_action_bt_node SHARED src/action/set_default_led_color_action.cpp)
+list(APPEND plugin_libs set_default_led_color_action_bt_node)
 
 add_library(move_electric_drawer_action_bt_node SHARED src/action/move_electric_drawer_action.cpp)
 list(APPEND plugin_libs move_electric_drawer_action_bt_node)
