@@ -63,9 +63,6 @@ namespace bt_base_nodes
       blackboard_->set<std::chrono::milliseconds>(
           "bt_loop_duration",
           std::chrono::milliseconds(tree_tick_time_));
-      blackboard_->set<std::chrono::steady_clock::time_point>(
-          "transition_time",
-          std::chrono::steady_clock::now());
       bt_engine_ = std::make_unique<statemachine::BehaviorTreeEngine>(plugins_);
       bt_ = bt_engine_->createTreeFromFile(_bt_path, blackboard_, _main_tree_name);
       init_subscriber(_trigger_topic);
@@ -74,9 +71,6 @@ namespace bt_base_nodes
   protected:
     virtual void callbackRunBT(const typename TopicT::SharedPtr msg)
     {
-      blackboard_->set<std::chrono::steady_clock::time_point>(
-          "transition_time",
-          std::chrono::steady_clock::now());
       RCLCPP_DEBUG(rclcpp::get_logger("BTSubBase"), "Tree starts");
       bt_.tickWhileRunning();
       RCLCPP_DEBUG(rclcpp::get_logger("BTSubBase"), "Tree ends");
