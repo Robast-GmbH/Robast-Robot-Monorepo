@@ -12,13 +12,13 @@ namespace statemachine
 
     getInput("timeouts_until_failure", _timeouts_until_failure);
     getInput("topic", _topic_name);
-    _id = _blackboard->get<std::string>("id");
 
     if (_topic_name == "")
     {
-      auto var = getInput<std::string>("topic");
       _topic_name = "/heartbeat";
     }
+
+    _id = "not_set";
 
     rclcpp::QoS qos_heartbeat_msgs = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
     qos_heartbeat_msgs.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
@@ -38,21 +38,25 @@ namespace statemachine
   {
     _callback_group_executor.spin_some();
 
-    const builtin_interfaces::msg::Time current_timestamp = _node->now();
-
-    // Convert builtin_interfaces::msg::Time to rclcpp::Time
-    rclcpp::Time rcl_current_timestamp(current_timestamp);
-    rclcpp::Time rcl_last_heartbeat_timestamp(_last_heartbeat_timestamp);
-
-    const rclcpp::Duration time_since_last_heartbeat = rcl_current_timestamp - rcl_last_heartbeat_timestamp;
-
-    std::chrono::nanoseconds failure_timeout_duration_in_ns(_heartbeat_interval_in_ms * 1000000 *
-                                                            _timeouts_until_failure);
-
-    rclcpp::Duration failure_timeout_duration(failure_timeout_duration_in_ns);
-
-    if (time_since_last_heartbeat > failure_timeout_duration)
+    if (_id == "not_set")
     {
+      RCLCPP_DEBUG(rclcpp::get_logger("HeartbeatCondition"), "ID not set yet. Waiting for first heartbeat.");
+      return BT::NodeStatus::SUCCESS;
+    }
+
+    const std::chrono::milliseconds time_since_last_heartbeat_ms =
+        convert_to_milliseconds(_node->now()) - convert_to_milliseconds(_last_heartbeat_timestamp);
+    const std::chrono::milliseconds failure_timeout_duration_in_ms(_heartbeat_interval_in_ms * _timeouts_until_failure);
+
+    if (time_since_last_heartbeat_ms > failure_timeout_duration_in_ms)
+    {
+      RCLCPP_INFO(
+          rclcpp::get_logger("HeartbeatCondition"),
+          "HeartbeatCondition FAILURE. Timeout for id %s occurred! Last heartbeat was %ld ms ago. Timeout is %ld ms.",
+          _id.c_str(),
+          time_since_last_heartbeat_ms.count(),
+          failure_timeout_duration_in_ms.count());
+
       setOutput("id", _id);
       return BT::NodeStatus::FAILURE;
     }
@@ -62,14 +66,21 @@ namespace statemachine
 
   void HeartbeatCondition::_callback_heartbeat(const communication_interfaces::msg::Heartbeat::SharedPtr msg)
   {
+    _id = _blackboard->get<std::string>("id");
+
     if (msg->id == _id)
     {
       _heartbeat_interval_in_ms = msg->interval_in_ms;
       _last_heartbeat_timestamp = msg->stamp;
     }
 
-    RCLCPP_INFO(
+    RCLCPP_DEBUG(
         rclcpp::get_logger("HeartbeatCondition"), "Received heartbeat from %s. I am %s", msg->id.c_str(), _id.c_str());
+  }
+
+  std::chrono::milliseconds HeartbeatCondition::convert_to_milliseconds(const builtin_interfaces::msg::Time &time)
+  {
+    return std::chrono::milliseconds(time.sec * 1000 + time.nanosec / 1000000);
   }
 
 }   // namespace statemachine

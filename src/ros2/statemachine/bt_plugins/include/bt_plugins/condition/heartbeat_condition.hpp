@@ -23,6 +23,8 @@ namespace statemachine
               BT::OutputPort<std::string>("id", "1")};
     }
 
+    static std::chrono::milliseconds convert_to_milliseconds(const builtin_interfaces::msg::Time &time);
+
    private:
     rclcpp::Node::SharedPtr _node;
     BT::Blackboard::Ptr _blackboard;
