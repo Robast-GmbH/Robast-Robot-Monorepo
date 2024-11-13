@@ -67,7 +67,7 @@
             <input_port name="key" default="drawer_address">string</input_port>
             <output_port name="value" default="{drawer}"/>
         </Action>
-        <Action ID="RobastErrorPublisher">
+        <Action ID="RobastErrorPub">
             <input_port name="topic" default="/robast_error"/>
             <input_port name="error_code" default="0">uint16</input_port>
             <input_port name="error_data" default="error_data">string</input_port>
