@@ -16,6 +16,7 @@ find_package(behaviortree_cpp REQUIRED)
 find_package(error_utils REQUIRED)
 find_package(bt_base_types REQUIRED)
 find_package(robotnik_msgs REQUIRED)
+find_package(robotnik_safety_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
@@ -35,6 +36,7 @@ set(dependencies
   bt_base_types
   nav_msgs
   robotnik_msgs
+  robotnik_safety_msgs
   geometry_msgs
   tf2
   tf2_geometry_msgs
@@ -94,6 +96,9 @@ list(APPEND plugin_libs drawer_change_state_request_action_bt_node)
 add_library(open_drawer_action_bt_node SHARED src/action/open_drawer_action.cpp)
 list(APPEND plugin_libs open_drawer_action_bt_node)
 
+add_library(set_default_led_color_action_bt_node SHARED src/action/set_default_led_color_action.cpp)
+list(APPEND plugin_libs set_default_led_color_action_bt_node)
+
 add_library(move_electric_drawer_action_bt_node SHARED src/action/move_electric_drawer_action.cpp)
 list(APPEND plugin_libs move_electric_drawer_action_bt_node)
 
@@ -144,6 +149,9 @@ list(APPEND plugin_libs led_changed_condition_node)
 
 add_library(is_robot_charging_condition_node SHARED src/condition/is_robot_charging_condition.cpp)
 list(APPEND plugin_libs is_robot_charging_condition_node)
+
+add_library(check_safety_register_condition_node SHARED src/condition/check_safety_register_condition.cpp)
+list(APPEND plugin_libs check_safety_register_condition_node)
 
 add_library(reactive_if_then_else_node SHARED src/control/reactive_if_then_else.cpp)
 list(APPEND plugin_libs reactive_if_then_else_node)

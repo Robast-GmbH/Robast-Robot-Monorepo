@@ -29,7 +29,7 @@ RUN apt-get update && apt-get upgrade -y &&\
 WORKDIR /robotnik
 RUN git clone -b ros2-devel https://github.com/RobotnikAutomation/robotnik_msgs.git && \
 . /opt/ros/${ROS_DISTRO}/setup.sh && \
-colcon build --packages-select robotnik_msgs --install-base /robast/${ROS_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
+colcon build --packages-select robotnik_msgs robotnik_safety_msgs --install-base /robast/${ROS_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 WORKDIR /workspace
 
