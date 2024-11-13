@@ -29,8 +29,8 @@ Error handle: 30
 
 Cura LED infos:
     Base:
-        start: hinten rechts
-        Count: 119 => 0,84 ist faktor
+        start: back right
+        Count: 119 => 0,84 is factor
         back: 30 => 100
         left: 29 => 74,79
         front: 31 => 50,42
