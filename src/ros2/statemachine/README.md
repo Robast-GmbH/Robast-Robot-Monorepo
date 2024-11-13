@@ -31,7 +31,7 @@ Cura LED infos:
     Base:
         start: hinten rechts
         Count: 119 => 0,84 ist faktor
-        hinten: 30 => 100
-        links: 29 => 74,79
-        vorne: 31 => 50,42
-        rechts: 29 => 24,37%
+        back: 30 => 100
+        left: 29 => 74,79
+        front: 31 => 50,42
+        right: 29 => 24,37%

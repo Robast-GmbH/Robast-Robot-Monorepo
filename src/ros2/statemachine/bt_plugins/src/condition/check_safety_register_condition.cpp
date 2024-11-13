@@ -16,7 +16,6 @@ namespace statemachine
 
     if (_topic_name == "")
     {
-      auto var = getInput<std::string>("topic");
       _topic_name = "/robot/safety_module/raw_registers";
     }
 
