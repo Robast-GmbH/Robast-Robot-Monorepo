@@ -40,7 +40,7 @@ namespace statemachine
     {
       return BT::NodeStatus::SUCCESS;
     }
-    return BT::NodeStatus::RUNNING;
+    return BT::NodeStatus::FAILURE;
   }
 
   void CheckSafetyRegisterCondition::callbackSafetyRegisterFeedback(const robotnik_safety_msgs::msg::RegisterArray::SharedPtr msg)
