@@ -20,7 +20,8 @@ namespace statemachine
     }
 
     rclcpp::QoS qos(rclcpp::KeepLast(1));
-    qos.transient_local().reliable();
+    qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+    qos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
 
     rclcpp::SubscriptionOptions sub_option;
     sub_option.callback_group = _callback_group;
