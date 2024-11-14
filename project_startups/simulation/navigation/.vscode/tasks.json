@@ -194,8 +194,18 @@
                 },
                 {
                         "type": "shell",
-                        "label": "publish feuerplan",
-                        "command": "source /workspace/install/setup.bash; ros2 launch feuerplan_publisher feuerplan_publisher.launch.py",
+                        "label": "start nav_without_localization",
+                        "command": "clear; source /workspace/install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start self_mapping",
+                        "command": "source /workspace/install/setup.bash; ros2 launch self_mapping self_mapping.launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
