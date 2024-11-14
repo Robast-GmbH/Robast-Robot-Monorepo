@@ -72,10 +72,15 @@ namespace statemachine
     {
       _heartbeat_interval_in_ms = msg->interval_in_ms;
       _last_heartbeat_timestamp = msg->stamp;
-    }
 
-    RCLCPP_DEBUG(
-        rclcpp::get_logger("HeartbeatCondition"), "Received heartbeat from %s. I am %s", msg->id.c_str(), _id.c_str());
+      RCLCPP_DEBUG(rclcpp::get_logger("HeartbeatCondition"),
+                   "Received heartbeat from %s. I am %s, my interval is %d ms and the "
+                   "last heartbeat was at %ld ms.",
+                   msg->id.c_str(),
+                   _id.c_str(),
+                   _heartbeat_interval_in_ms,
+                   convert_to_milliseconds(_last_heartbeat_timestamp).count());
+    }
   }
 
   std::chrono::milliseconds HeartbeatCondition::convert_to_milliseconds(const builtin_interfaces::msg::Time &time)
