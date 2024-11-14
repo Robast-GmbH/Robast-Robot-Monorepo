@@ -38,6 +38,8 @@ namespace stepper_motor
 
     _SERIAL_PORT.begin(115200);
 
+    while (!_SERIAL_PORT);   // Wait for serial port to connect
+
     setup_driver();
 
     debug_println("[Motor]: Testing connection...");
