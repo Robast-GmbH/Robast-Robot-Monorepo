@@ -23,12 +23,12 @@ def __generate_segmentation_mask_and_inpaint(segmentation_model, image, inpainti
     height, width = image.shape[:2]
     combined_mask = np.zeros((height, width), dtype=np.uint8)
     segmentation_results = segmentation_model.predict(image, task='segment')
-
+    box_offset_margin = 3
     for result in segmentation_results:
         for box in result.boxes.xyxy:
             x1, y1, x2, y2 = map(int, box)
-            y1 = max(y1 - 3, 0)
-            y2 = max(y2 - 3, 0)
+            y1 = max(y1 - box_offset_margin, 0)
+            y2 = max(y2 - box_offset_margin, 0)
             cv2.rectangle(combined_mask, (x1, y1), (x2, y2), 255, thickness=cv2.FILLED)
 
     kernel = np.ones((3, 3), np.uint8)
@@ -66,7 +66,7 @@ def __generate_detection_mask_and_inpaint(detection_models, image, inpainting_mo
     return image
 
 def __perform_inpainting(image, box_mask, inpainting_model):
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    
     image_norm = norm_img(image)
     mask_norm = norm_img(box_mask)
     mask_tensor = (mask_norm > 0).astype(np.uint8)
@@ -75,7 +75,6 @@ def __perform_inpainting(image, box_mask, inpainting_model):
     inpainted_image = inpainting_model(image_tensor, mask_tensor)
     inpainted_result = inpainted_image[0].permute(1, 2, 0).detach().cpu().numpy()
     inpainted_result = np.clip(inpainted_result * 255, 0, 255).astype("uint8")
-    inpainted_result = cv2.cvtColor(inpainted_result, cv2.COLOR_RGB2BGR)
 
     return inpainted_result
 
