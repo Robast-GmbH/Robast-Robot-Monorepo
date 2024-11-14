@@ -39,6 +39,8 @@ namespace statemachine
     uint16_t _heartbeat_interval_in_ms;
     builtin_interfaces::msg::Time _last_heartbeat_timestamp;
 
+    bool _first_heartbeat_received = false;
+
     void _callback_heartbeat(const communication_interfaces::msg::Heartbeat::SharedPtr msg);
   };
 

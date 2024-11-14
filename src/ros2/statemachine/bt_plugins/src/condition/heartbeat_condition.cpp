@@ -18,8 +18,6 @@ namespace statemachine
       _topic_name = "/heartbeat";
     }
 
-    _id = "not_set";
-
     rclcpp::QoS qos_heartbeat_msgs = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
     qos_heartbeat_msgs.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
     qos_heartbeat_msgs.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
@@ -38,9 +36,9 @@ namespace statemachine
   {
     _callback_group_executor.spin_some();
 
-    if (_id == "not_set")
+    if (!_first_heartbeat_received)
     {
-      RCLCPP_DEBUG(rclcpp::get_logger("HeartbeatCondition"), "ID not set yet. Waiting for first heartbeat.");
+      RCLCPP_DEBUG(rclcpp::get_logger("HeartbeatCondition"), "Waiting for first heartbeat...");
       return BT::NodeStatus::SUCCESS;
     }
 
@@ -58,6 +56,7 @@ namespace statemachine
           failure_timeout_duration_in_ms.count());
 
       setOutput("id", _id);
+      _first_heartbeat_received = false;
       return BT::NodeStatus::FAILURE;
     }
 
@@ -72,6 +71,7 @@ namespace statemachine
     {
       _heartbeat_interval_in_ms = msg->interval_in_ms;
       _last_heartbeat_timestamp = msg->stamp;
+      _first_heartbeat_received = true;
 
       RCLCPP_DEBUG(rclcpp::get_logger("HeartbeatCondition"),
                    "Received heartbeat from %s. I am %s, my interval is %d ms and the "
