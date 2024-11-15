@@ -79,16 +79,17 @@ def __perform_inpainting(image, box_mask, inpainting_model):
     return inpainted_result
 
 def main(args):
+    current_working_directory = os.getcwd()
 
     segmentation_model, detection_models, inpainting_model = __load_models(
-        os.path.join(os.getcwd(), args.detection_models_folder),
-        os.path.join(os.getcwd(), args.segmentation_model_path),
-        os.path.join(os.getcwd(), args.inpainting_model_path)
+        os.path.join(current_working_directory, args.detection_models_folder),
+        os.path.join(current_working_directory, args.segmentation_model_path),
+        os.path.join(current_working_directory, args.inpainting_model_path)
     )
-    image = cv2.imread(os.path.join(os.getcwd(), args.input_image_path))
+    image = cv2.imread(os.path.join(current_working_directory, args.input_image_path))
     image = __generate_segmentation_mask_and_inpaint(segmentation_model, image, inpainting_model)
     inpainted_image = __generate_detection_mask_and_inpaint(detection_models, image, inpainting_model)
-    cv2.imwrite(os.path.join(os.getcwd(), args.output_image_path), inpainted_image)
+    cv2.imwrite(os.path.join(current_working_directory, args.output_image_path), inpainted_image)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Inpainting Script with YOLO and Big-LAMA Models")
