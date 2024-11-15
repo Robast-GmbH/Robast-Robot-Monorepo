@@ -12,10 +12,12 @@ services:
       - ROS_DOMAIN_ID=23
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
       - NVIDIA_DRIVER_CAPABILITIES=all
+      - CYCLONEDDS_URI=/DDS/cyclone_DDS_config.xml
     volumes:
       - ./start_scripts/:/start_scripts/:ro
       - ./zed_setup/:/zed_setup/:ro
       - ./healthchecks/zed_check.sh:/healthchecks/zed_check.sh:ro
+      - ./DDS/:/DDS/:ro
     stop_signal: SIGINT
     restart: unless-stopped
     network_mode: "host"
@@ -37,11 +39,13 @@ services:
       - RED=${RED:-0}
       - GREEN=${GREEN:-0}
       - BLUE=${BLUE:-0}
-      - BRIGHTNESS=${BRIGHTNESS:-0}
+      - BRIGHTNESS=${BRIGHTNESS:-20}
+      - CYCLONEDDS_URI=/DDS/cyclone_DDS_config.xml
     devices:
       - "/dev/robast/robast_nfc:/dev/robast/robast_nfc"
     volumes:
       - ./start_scripts/:/start_scripts/:ro
+      - ./DDS/:/DDS/:ro
     stop_signal: SIGINT
     restart: unless-stopped
     network_mode: "host"
@@ -58,9 +62,11 @@ services:
       - GREEN=${GREEN:-0}
       - BLUE=${BLUE:-0}
       - BRIGHTNESS=${BRIGHTNESS:-0}
+      - CYCLONEDDS_URI=/DDS/cyclone_DDS_config.xml
     volumes:
       - ./start_scripts/:/start_scripts/:ro
       - ./healthchecks/statemachine_check.sh:/healthchecks/statemachine_check.sh:ro
+      - ./DDS/:/DDS/:ro
     stop_signal: SIGINT
     restart: unless-stopped
     network_mode: "host"
@@ -78,10 +84,12 @@ services:
     environment:
       - ROS_DOMAIN_ID=23
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - CYCLONEDDS_URI=/DDS/cyclone_DDS_config.xml
     volumes:
       - ./start_scripts/:/start_scripts/:ro
       - /proc/device-tree/compatible:/proc/device-tree/compatible
       - /proc/device-tree/chosen:/proc/device-tree/chosen
+      - ./DDS/:/DDS/:ro
     devices:
       - "/dev/gpiochip0:/dev/gpiochip0"
     privileged: true
