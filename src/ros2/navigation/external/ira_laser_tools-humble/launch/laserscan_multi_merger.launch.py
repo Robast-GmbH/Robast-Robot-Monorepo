@@ -20,9 +20,9 @@ def generate_launch_description():
             name='laserscan_multi_merger',
             output='screen',
             parameters=[
-                {'destination_frame': 'base_link'},
+                {'destination_frame': 'robot/base_link'},
                 {'cloud_destination_topic': '/merged_cloud'},
-                {'scan_destination_topic': '/merged_laser/scan'},
+                {'scan_destination_topic': '/robot/merged_laser/scan'},
                 {'laserscan_topics': laserscan_topics},
                 {'angle_min': -3.14},
                 {'angle_max': 3.14},
