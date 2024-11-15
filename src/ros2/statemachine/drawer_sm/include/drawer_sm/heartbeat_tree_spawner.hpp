@@ -1,7 +1,7 @@
 #ifndef DRAWER_SM_HEARTBEAT_TREE_SPAWNER_HPP
 #define DRAWER_SM_HEARTBEAT_TREE_SPAWNER_HPP
 
-#include <boost/process.hpp>
+#include <cstdlib>
 #include <rclcpp/rclcpp.hpp>
 
 #include "bt_base_nodes/bt_sub_initiator/heartbeat_tree_initiator.hpp"

@@ -32,43 +32,43 @@ namespace drawer_sm
     std::vector<std::string> node_names = this->get_node_graph_interface()->get_node_names();
 
     const std::string target_node_name = "/heartbeat_tree_initiator_" + msg->id;
-    if (std::find(node_names.begin(), node_names.end(), target_node_name) == node_names.end())
+    if (std::find(node_names.begin(), node_names.end(), target_node_name) != node_names.end())
     {
-      RCLCPP_INFO(get_logger(), "Creating new tree for %s", msg->id.c_str());
-
-      std::thread(
-          [this, msg]()
-          {
-            try
-            {
-              // Launch the first process
-              boost::process::child process1("ros2 launch drawer_sm heartbeat_launch.py id:=" + msg->id);
-              process1.wait();   // Wait for the process to complete
-            }
-            catch (const std::exception &e)
-            {
-              RCLCPP_ERROR(this->get_logger(), "Failed to launch process: %s", e.what());
-            }
-          })
-          .detach();
-
-      std::thread(
-          [this, msg]()
-          {
-            try
-            {
-              // Launch the second process for publishing to the topic
-              boost::process::child process2("ros2 topic pub /trigger_heartbeat_tree std_msgs/msg/String \"data: '" +
-                                             msg->id + "'\" --once");
-              process2.wait();   // Wait for the process to complete
-            }
-            catch (const std::exception &e)
-            {
-              RCLCPP_ERROR(this->get_logger(), "Failed to launch process: %s", e.what());
-            }
-          })
-          .detach();
+      return;   // tree already exists
     }
+
+    RCLCPP_INFO(get_logger(), "Creating new tree for %s", msg->id.c_str());
+
+    std::thread(
+        [this, msg]()
+        {
+          try
+          {
+            const std::string command = "ros2 launch drawer_sm heartbeat_launch.py id:=" + msg->id;
+            std::system(command.c_str());
+          }
+          catch (const std::exception &e)
+          {
+            RCLCPP_ERROR(this->get_logger(), "Failed to launch process: %s", e.what());
+          }
+        })
+        .detach();
+
+    std::thread(
+        [this, msg]()
+        {
+          try
+          {
+            const std::string command =
+                "ros2 topic pub /trigger_heartbeat_tree std_msgs/msg/String \"data: '" + msg->id + "'\" --once";
+            std::system(command.c_str());
+          }
+          catch (const std::exception &e)
+          {
+            RCLCPP_ERROR(this->get_logger(), "Failed to launch process: %s", e.what());
+          }
+        })
+        .detach();
   }
 
 }   // namespace drawer_sm
