@@ -214,7 +214,7 @@ local_costmap:
         enabled: True
         observation_sources: scan
         scan:
-          topic: /merged_laser/scan
+          topic: /robot/merged_laser/scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -246,7 +246,7 @@ local_costmap:
         lidar2d_marking:
           enabled: true
           data_type: LaserScan
-          topic: /merged_laser/scan
+          topic: /robot/merged_laser/scan
           marking: true
           clearing: true
           obstacle_range: 5.0
@@ -267,7 +267,7 @@ local_costmap:
         lidar2d_clearing:
           enabled: true
           data_type: LaserScan
-          topic: /merged_laser/scan
+          topic: /robot/merged_laser/scan
           marking: false
           clearing: true
           obstacle_range: 5.0
@@ -338,7 +338,7 @@ global_costmap:
         enabled: True
         observation_sources: scan
         scan:
-          topic: /merged_laser/scan
+          topic: /robot/merged_laser/scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -371,7 +371,7 @@ global_costmap:
         lidar2d_marking:
           enabled: true
           data_type: LaserScan
-          topic: /merged_laser/scan
+          topic: /robot/merged_laser/scan
           marking: true
           clearing: false
           obstacle_range: 5.0
@@ -392,7 +392,7 @@ global_costmap:
         lidar2d_clearing:
           enabled: true
           data_type: LaserScan
-          topic: /merged_laser/scan
+          topic: /robot/merged_laser/scan
           marking: false
           clearing: true
           obstacle_range: 5.0

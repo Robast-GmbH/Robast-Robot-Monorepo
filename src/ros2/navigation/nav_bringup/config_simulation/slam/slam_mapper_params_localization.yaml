@@ -13,7 +13,7 @@ slam_toolbox:
     odom_frame: odom
     map_frame: map
     base_frame: base_footprint
-    scan_topic: /merged_laser/scan
+    scan_topic: /robot/merged_laser/scan
     mode: localization #localization mapping
     debug_logging: false
     throttle_scans: 1

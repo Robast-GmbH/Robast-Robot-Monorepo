@@ -188,13 +188,12 @@ def generate_launch_description():
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings +
                         [('cmd_vel', 'cmd_vel_nav')]),
-            # Node(
-            #     package='nav2_collision_monitor',
-            #     executable='collision_monitor',
-            #     output='screen',
-            #     emulate_tty=True,  # https://github.com/ros2/launch/issues/188
-            #     parameters=[configured_params],
-            #     remappings=remappings),
+            Node(
+                package='nav2_collision_monitor',
+                executable='collision_monitor',
+                output='screen',
+                parameters=[configured_params],
+                remappings=remappings),
             
             Node(
                 package='nav2_lifecycle_manager',
