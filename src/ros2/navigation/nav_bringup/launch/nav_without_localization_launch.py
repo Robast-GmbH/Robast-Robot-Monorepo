@@ -34,9 +34,9 @@ def generate_launch_description():
         use_sim_time_default = "false"
         remappings = [
             ("/odom", "robot/robotnik_base_control/odom"),
-            ("/cmd_vel_smoothed", "robot/robotnik_base_control/cmd_vel")
+            ("/cmd_vel_smoothed", "/robot/robotnik_base_control/cmd_vel_unsafe")
         ]
-        cmd_vel_remapping_behavior_server = [("/cmd_vel", "robot/robotnik_base_control/cmd_vel")]
+        cmd_vel_remapping_behavior_server = [("/cmd_vel", "/robot/robotnik_base_control/cmd_vel_unsafe")]
 
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
