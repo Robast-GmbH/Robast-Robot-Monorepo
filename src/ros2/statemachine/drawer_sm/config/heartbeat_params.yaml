@@ -1,9 +1,0 @@
-heartbeat_tree_initiator:
-  ros__parameters:
-    plugins:
-      - heartbeat_condition_node
-      - robast_error_pub_node
-    bt_path: "/workspace/install/drawer_sm/trees/trees/heartbeat.xml"
-    trigger_topic: "trigger_heartbeat_tree"
-    main_tree: "default_heartbeat_drawer_tree"
-    tree_tick_time: 10

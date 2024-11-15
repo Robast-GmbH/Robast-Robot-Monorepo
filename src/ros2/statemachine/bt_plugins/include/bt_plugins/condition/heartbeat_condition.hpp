@@ -1,10 +1,11 @@
 #ifndef BT_PLUGINS_CONDITION_HEARTBEAT_CONDITION_HPP
 #define BT_PLUGINS_CONDITION_HEARTBEAT_CONDITION_HPP
 
+#include <rclcpp/rclcpp.hpp>
+
 #include "behaviortree_cpp/condition_node.h"
 #include "builtin_interfaces/msg/time.hpp"
 #include "communication_interfaces/msg/heartbeat.hpp"
-#include "rclcpp/rclcpp.hpp"
 
 namespace statemachine
 {

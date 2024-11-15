@@ -18,6 +18,7 @@ find_package(std_msgs REQUIRED)
 find_package(communication_interfaces REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
 find_package(bt_plugins REQUIRED)
+find_package(bt_base_nodes REQUIRED)
 
 set(dependencies
   rclcpp
@@ -27,6 +28,7 @@ set(dependencies
   communication_interfaces
   behaviortree_cpp
   bt_plugins
+  bt_base_nodes
 )
 
 include_directories(
@@ -62,8 +64,32 @@ else()
     message(STATUS "Boost coroutines disabled by CMake option.")
 endif()
 
+set(executable_heartbeat_tree_spawner heartbeat_tree_spawner)
 
-ament_target_dependencies(drawer_sm_startup_debug
+add_executable(${executable_heartbeat_tree_spawner}
+  src/heartbeat_tree_main.cpp)
+
+set(library_heartbeat_tree_spawner ${executable_heartbeat_tree_spawner}_core)
+
+add_library(${library_heartbeat_tree_spawner} SHARED
+  src/heartbeat_tree_spawner.cpp
+)
+
+ament_target_dependencies(${executable_heartbeat_tree_spawner}
+  ${dependencies}
+)
+target_link_libraries(${executable_heartbeat_tree_spawner} ${library_heartbeat_tree_spawner})
+
+ament_target_dependencies(${library_heartbeat_tree_spawner}
+  ${dependencies}
+)
+
+target_include_directories(${executable_heartbeat_tree_spawner} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
+ament_target_dependencies(
+  drawer_sm_startup_debug
   ${dependencies}
 )
 
@@ -75,6 +101,7 @@ target_include_directories(drawer_sm_startup_debug
 
 install(TARGETS
 drawer_sm_startup_debug
+${executable_heartbeat_tree_spawner}
 DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY
