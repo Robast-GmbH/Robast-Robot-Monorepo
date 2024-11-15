@@ -25,6 +25,7 @@ namespace motor
     {
       if (position_difference == 0)
       {
+        debug_println("[MotorMonitor]: Stall guard is triggered because the position difference is 0!");
         return true;
       }
 
@@ -39,19 +40,17 @@ namespace motor
 
         float speed_deviation = _motor_monitor_config->get_speed_deviation_in_percentage_for_stall();
 
-        const uint32_t upper_speed_limit =
-          static_cast<uint32_t>(std::round(active_motor_speed_normed_to_encoder_speed * (1 + speed_deviation)));
         const uint32_t lower_speed_limit =
           static_cast<uint32_t>(std::round(active_motor_speed_normed_to_encoder_speed * (1 - speed_deviation)));
 
-        if ((encoder_speed > upper_speed_limit || (encoder_speed < lower_speed_limit)))
+        if (encoder_speed < lower_speed_limit)
         {
           debug_printf(
             "[MotorMonitor]: Motor is stalled! Target motor speed: %u. Active motor speed: %u, Active Motor Speed "
             "normed to encoder speed: %u, "
             "Encoder Speed: %u. Deviation is higher than "
             "%.1f%%. Time difference between encoder measurements in ms: %d. Max time diff: %d. Position difference: "
-            "%d. Current position: %d. Last Position: %d. upper_speed_limit: %u, lower_speed_limit: %u\n",
+            "%d. Current position: %d. Last Position: %d. lower_speed_limit: %u\n",
             _motor->get_target_speed(),
             active_motor_speed,
             active_motor_speed_normed_to_encoder_speed,
@@ -62,7 +61,6 @@ namespace motor
             position_difference,
             current_position,
             _last_position,
-            upper_speed_limit,
             lower_speed_limit);
           return true;
         }
