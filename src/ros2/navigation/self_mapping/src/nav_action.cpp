@@ -1,12 +1,17 @@
 #include <random>
 #include <cmath>
+#include <chrono>
 #include "self_mapping/nav_action.hpp"
+
+using namespace std::chrono_literals;
 
 NavAction::NavAction() : Node("self_mapping_node"), _tf_buffer(get_clock()), _is_navigating(false)
 {
   //parameters
   this->declare_parameter<std::string>("robot_base_frame_param", "base_link");
+  this->declare_parameter<std::string>("cmd_vel_topic", "");
   this->get_parameter("robot_base_frame_param", _base_frame);
+  this->get_parameter("cmd_vel_topic", _cmd_vel_topic);
 
   _action_client = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(this, "navigate_to_pose");
 
@@ -21,6 +26,8 @@ NavAction::NavAction() : Node("self_mapping_node"), _tf_buffer(get_clock()), _is
   
   _tf_listener = std::make_shared<tf2_ros::TransformListener>(_tf_buffer);
   _marker_pub = this->create_publisher<visualization_msgs::msg::MarkerArray>("visualization_marker_array", 10);
+  _cmd_vel_pub = this->create_publisher<geometry_msgs::msg::Twist>(_cmd_vel_topic, 10);
+  _timer = this->create_wall_timer(20ms, std::bind(&NavAction::monitor_rotation, this));
 }
 
 nav2_msgs::action::NavigateToPose::Goal NavAction::create_goal_message(const geometry_msgs::msg::PoseStamped &goal)
@@ -77,21 +84,14 @@ void NavAction::handle_goal_result(const rclcpp_action::ClientGoalHandle<nav2_ms
   }
 }
 
-void NavAction::navigate_to_frontier()
-{
-  if (_frontiers.empty()) {
-    RCLCPP_INFO(this->get_logger(), "No frontiers found. Waiting for new costmap...");
-  } else {
-    send_to_a_frontier();
-  }
-} 
-
 void NavAction::costmap_callback(const nav_msgs::msg::OccupancyGrid::SharedPtr msg)
 {
   RCLCPP_DEBUG(this->get_logger(), "Costmap callback triggered");
   _costmap = *msg;
-  if (_frontiers.empty()) {
-    find_new_frontiers();
+  _costmap_received = true; 
+  if (_frontiers.empty() && !_is_rotating) {
+    RCLCPP_INFO(this->get_logger(), "Rotating 360 degrees to find new frontiers...");
+    rotate_360_degrees();
   }
   else {
     send_to_a_frontier();
@@ -173,7 +173,7 @@ void NavAction::send_to_a_frontier(){
   else if (_is_navigating) {
     RCLCPP_DEBUG(this->get_logger(), "Waiting for current navigation to finish...");
   }
-  else if (_frontiers.empty()) {
+  else if (_frontiers.empty() && !_is_rotating) {
     RCLCPP_INFO(this->get_logger(), "No frontiers found. Waiting for new costmap...");
   }
 }
@@ -268,4 +268,66 @@ void NavAction::publish_frontier_markers()
   _marker_pub->publish(_marker_array);
 
   RCLCPP_DEBUG(this->get_logger(), "Published %zu frontier markers.", _marker_array.markers.size());
+}
+
+void NavAction::rotate_360_degrees()
+{
+  geometry_msgs::msg::TransformStamped transform_stamped;
+  try {
+    transform_stamped = _tf_buffer.lookupTransform("map", _base_frame, tf2::TimePointZero);
+  } catch (tf2::TransformException &ex) {
+    RCLCPP_WARN(this->get_logger(), "Could not get transform for initial orientation: %s", ex.what());
+    return;
+  }
+
+  tf2::Quaternion initial_orientation;
+  tf2::fromMsg(transform_stamped.transform.rotation, initial_orientation);
+  tf2::Matrix3x3 matrix(initial_orientation);
+  double roll, pitch, yaw;
+  matrix.getRPY(roll, pitch, yaw);
+  _initial_yaw = yaw;
+  _accumulated_yaw = 0.0;
+  _is_rotating = true;
+}
+
+
+void NavAction::monitor_rotation()
+{
+  if (!_is_rotating ) {
+    return;
+  }
+
+  geometry_msgs::msg::Twist twist;
+  twist.angular.z = 0.5;
+  _cmd_vel_pub->publish(twist);
+
+  geometry_msgs::msg::TransformStamped transform_stamped;
+  try {
+    transform_stamped = _tf_buffer.lookupTransform("map", _base_frame, tf2::TimePointZero);
+  } catch (tf2::TransformException &ex) {
+    RCLCPP_WARN(this->get_logger(), "Could not get transform to monitor rotation: %s", ex.what());
+    return;
+  }
+
+  tf2::Quaternion current_orientation;
+  tf2::fromMsg(transform_stamped.transform.rotation, current_orientation);
+  tf2::Matrix3x3 matrix(current_orientation);
+  double roll, pitch, current_yaw;
+  matrix.getRPY(roll, pitch, current_yaw);
+
+  double yaw_change = current_yaw - _initial_yaw;
+
+  if (yaw_change > M_PI) yaw_change -= 2 * M_PI;
+  if (yaw_change < -M_PI) yaw_change += 2 * M_PI;
+
+  _accumulated_yaw += std::fabs(yaw_change);
+  _initial_yaw = current_yaw;
+
+  if (_accumulated_yaw >= 2 * M_PI) {
+    _is_rotating = false;
+    twist.angular.z = 0.0;
+    _cmd_vel_pub->publish(twist);
+    RCLCPP_INFO(this->get_logger(), "360-degree rotation completed. Finding new frontiers...");
+    find_new_frontiers();
+  }
 }
