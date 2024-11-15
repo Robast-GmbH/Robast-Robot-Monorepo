@@ -119,6 +119,7 @@ if(BUILD_TESTING)
   ament_xmllint()
 endif()
 
+ament_export_libraries(${library_heartbeat_tree_spawner})
 
 ament_export_include_directories(include)
 
