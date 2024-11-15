@@ -67,7 +67,7 @@ endif()
 set(executable_heartbeat_tree_spawner heartbeat_tree_spawner)
 
 add_executable(${executable_heartbeat_tree_spawner}
-  src/heartbeat_tree_main.cpp)
+  src/heartbeat_tree_spawner_main.cpp)
 
 set(library_heartbeat_tree_spawner ${executable_heartbeat_tree_spawner}_core)
 
