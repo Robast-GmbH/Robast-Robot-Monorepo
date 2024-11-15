@@ -82,6 +82,7 @@ services:
     volumes:
       - ./machine_learning_tasks/:/workspace/:cached
       - ../../src/ros2/machine_learning_tasks:/workspace/src/machine_learning_tasks:cached
+      - ../../src/preprocessing/py/map_inpainting:/workspace/src/map_inpainting:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
     deploy:
       resources:
