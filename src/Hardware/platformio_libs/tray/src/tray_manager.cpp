@@ -110,8 +110,7 @@ namespace tray
 
   void TrayManager::handle_e_drawer_movement_to_close_lid(uint8_t tray_id)
   {
-    if (!_electrical_tray_locks[tray_id - 1]->is_drawer_opening_in_progress() || !_e_drawer->is_drawer_moving_in() ||
-        _e_drawer->get_target_position() != 0)
+    if (!_electrical_tray_locks[tray_id - 1]->is_drawer_opening_in_progress() || !_e_drawer->is_drawer_moving_in())
     {
       return;
     }
@@ -119,20 +118,17 @@ namespace tray
     const uint8_t distance_to_tray_lid = abs(_tray_lid_positions[tray_id - 1] - _e_drawer->get_current_position());
     const uint8_t threshold = _tray_manager_config->get_distance_to_tray_lid_threshold();
 
-    if (!_reduced_speed_for_tray_lid[tray_id - 1])
+    if (!_reduced_speed_for_tray_lid[tray_id - 1] && distance_to_tray_lid < threshold)
     {
-      if (distance_to_tray_lid < threshold)
-      {
-        _speed_deviation_in_percentage_for_stall_before_reduced_speed =
-          _motor_monitor_config->get_speed_deviation_in_percentage_for_stall();
-        _target_speed_before_reduced_speed = _e_drawer->get_target_speed();
+      _speed_deviation_in_percentage_for_stall_before_reduced_speed =
+        _motor_monitor_config->get_speed_deviation_in_percentage_for_stall();
+      _target_speed_before_reduced_speed = _e_drawer->get_target_speed();
 
-        _e_drawer->set_target_speed_with_decelerating_ramp(_tray_manager_config->get_target_speed_to_close_tray_lid());
-        _motor_monitor_config->set_speed_deviation_in_percentage_for_stall(
-          _tray_manager_config->get_speed_deviation_in_percentage_for_stall_when_closing_lid());
+      _e_drawer->set_target_speed_with_decelerating_ramp(_tray_manager_config->get_target_speed_to_close_tray_lid());
+      _motor_monitor_config->set_speed_deviation_in_percentage_for_stall(
+        _tray_manager_config->get_speed_deviation_in_percentage_for_stall_when_closing_lid());
 
-        _reduced_speed_for_tray_lid[tray_id - 1] = true;
-      }
+      _reduced_speed_for_tray_lid[tray_id - 1] = true;
     }
     else if (distance_to_tray_lid > threshold)
     {
