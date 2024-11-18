@@ -1,6 +1,6 @@
-#include "lock/electrical_tray_lock.hpp"
+#include "tray/electrical_tray_lock.hpp"
 
-namespace partial_drawer_controller
+namespace tray
 {
   ElectricalTrayLock::ElectricalTrayLock(const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                                          const uint8_t power_open_pin_id,
@@ -22,7 +22,7 @@ namespace partial_drawer_controller
     // lock will be closed when the set the lock to closed in the current step
     _lock_state_previous_step = lock::LockState::unlocked;
     set_expected_lock_state_current_step(lock::LockState::locked);
-    set_is_drawer_opening_in_progress(false);
+    set_is_tray_lock_opening_in_progress(false);
   }
 
   void ElectricalTrayLock::update_state()
@@ -55,6 +55,16 @@ namespace partial_drawer_controller
     _expected_lock_state_current_step = expected_lock_state_current_step;
   }
 
+  void ElectricalTrayLock::set_is_tray_lock_opening_in_progress(const bool is_tray_lock_opening_in_progress)
+  {
+    _is_tray_lock_opening_in_progress = is_tray_lock_opening_in_progress;
+  }
+
+  bool ElectricalTrayLock::is_tray_lock_opening_in_progress()
+  {
+    return _is_tray_lock_opening_in_progress;
+  }
+
   void ElectricalTrayLock::set_is_drawer_opening_in_progress(const bool is_drawer_opening_in_progress)
   {
     _is_drawer_opening_in_progress = is_drawer_opening_in_progress;
@@ -67,13 +77,14 @@ namespace partial_drawer_controller
 
   void ElectricalTrayLock::unlock()
   {
-    if (is_drawer_opening_in_progress())
+    if (is_tray_lock_opening_in_progress())
     {
-      debug_printf("[ElectricalTrayLock]: Drawer opening is already in progress, so lock won't be opened again!\n");
+      debug_printf("[ElectricalTrayLock]: Tray Lock opening is already in progress, so lock won't be opened again!\n");
     }
     else
     {
       set_expected_lock_state_current_step(lock::LockState::unlocked);
+      set_is_tray_lock_opening_in_progress(true);
       set_is_drawer_opening_in_progress(true);
     }
   }
@@ -95,4 +106,4 @@ namespace partial_drawer_controller
     _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
     _gpio_wrapper->digital_write(_power_close_pin_id, LOW);
   }
-}   // namespace partial_drawer_controller
+}   // namespace tray

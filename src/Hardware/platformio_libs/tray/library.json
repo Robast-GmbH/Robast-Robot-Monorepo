@@ -1,8 +1,8 @@
 {
-    "name": "led",
+    "name": "tray",
     "version": "1.0.0",
-    "description": "A library that contains functions and classes for led action.",
-    "keywords": "led",
+    "description": "A library that contains all functions to control the trays of the partial drawer.",
+    "keywords": "tray",
     "repository":
     {
       "type": "git",
@@ -19,5 +19,5 @@
     "license": "MIT",
     "frameworks": "*",
     "platforms": "*",
-    "headers": ["led_strip.hpp", "led_header.hpp", "led_animation.hpp", "led_state.hpp", "LP503x.hpp", "onboard_led_driver.hpp"]
+    "headers": ["electrical_tray_lock.hpp", "tray_manager_config.hpp", "tray_manager.hpp", "tray_pin_config.hpp"]
   }

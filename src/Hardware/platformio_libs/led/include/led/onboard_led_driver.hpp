@@ -1,5 +1,5 @@
-#ifndef PARTIAL_DRAWER_CONTROLLER_LED_DRIVER_HPP
-#define PARTIAL_DRAWER_CONTROLLER_LED_DRIVER_HPP
+#ifndef LED_ONBOARD_LED_DRIVER_HPP
+#define LED_ONBOARD_LED_DRIVER_HPP
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -7,9 +7,8 @@
 #include <memory>
 
 #include "led/LP503x.hpp"
-#include "peripherals/pinout_defines.hpp"
 
-namespace partial_drawer_controller
+namespace led
 {
   namespace slave_address
   {
@@ -150,5 +149,5 @@ namespace partial_drawer_controller
     }
   };
 
-}   // namespace partial_drawer_controller
-#endif   // PARTIAL_DRAWER_CONTROLLER_LED_DRIVER_HPP
+}   // namespace led
+#endif   // LED_ONBOARD_LED_DRIVER_HPP

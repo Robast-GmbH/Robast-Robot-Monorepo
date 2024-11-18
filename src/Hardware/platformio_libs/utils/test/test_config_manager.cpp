@@ -15,8 +15,9 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
   auto encoder_config = std::make_shared<motor::EncoderConfig>();
   auto motor_config = std::make_shared<motor::MotorConfig>();
   auto motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
+  auto tray_manager_config = std::make_shared<tray::TrayManagerConfig>();
 
-  utils::ConfigManager config_manager(e_drawer_config, encoder_config, motor_config, motor_monitor_config);
+  utils::ConfigManager config_manager(e_drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config);
 
   SECTION("Check if default configs are set correctly for the e-drawer config.")
   {
@@ -106,5 +107,18 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
     REQUIRE(motor_monitor_config->get_speed_deviation_in_percentage_for_stall() ==
             module_config::ModuleSetting<
               module_config::motor_monitor::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL>::default_value);
+  }
+
+  SECTION("Check if default configs are set correctly for the tray manager config.")
+  {
+    REQUIRE(tray_manager_config->get_speed_deviation_in_percentage_for_stall_when_closing_lid() ==
+            module_config::ModuleSetting<
+              module_config::tray_manager::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID>::default_value);
+    REQUIRE(tray_manager_config->get_position_offset_for_tray_lid_computation() ==
+            module_config::ModuleSetting<module_config::tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION>::default_value);
+    REQUIRE(tray_manager_config->get_distance_to_tray_lid_threshold() ==
+            module_config::ModuleSetting<module_config::tray_manager::DISTANCE_TO_TRAY_LID_THRESHOLD>::default_value);
+    REQUIRE(tray_manager_config->get_target_speed_to_close_tray_lid() ==
+            module_config::ModuleSetting<module_config::tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID>::default_value);
   }
 }

@@ -41,6 +41,7 @@ std::shared_ptr<drawer::ElectricalDrawerConfig> drawer_config;
 std::shared_ptr<motor::EncoderConfig> encoder_config;
 std::shared_ptr<motor::MotorConfig> motor_config;
 std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config;
+std::shared_ptr<tray::TrayManagerConfig> tray_manager_config;
 
 std::shared_ptr<switch_lib::Switch> endstop_switch;
 
