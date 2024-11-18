@@ -34,7 +34,7 @@ def generate_launch_description():
         use_sim_time_default = "false"
         remappings = [
             ("/odom", "robot/robotnik_base_control/odom"),
-            ("/cmd_vel_smoothed", "/robot/robotnik_base_control/cmd_vel_unsafe")
+            # ("/cmd_vel_smoothed", "/robot/robotnik_base_control/cmd_vel_unsafe")
         ]
         cmd_vel_remapping_behavior_server = [("/cmd_vel", "/robot/robotnik_base_control/cmd_vel_unsafe")]
 
@@ -54,7 +54,8 @@ def generate_launch_description():
                        'behavior_server',
                        'bt_navigator',
                        'waypoint_follower',
-                       'velocity_smoother']
+                       'velocity_smoother',
+                       'collision_monitor']
 
     # Create our own temporary YAML files that include substitutions
     # nav_to_pose_bt = os.path.join(get_package_share_directory("nav2_bt_navigator"), "nav_to_pose_with_consistent_replanning_and_if_path_becomes_invalid", ".xml")
