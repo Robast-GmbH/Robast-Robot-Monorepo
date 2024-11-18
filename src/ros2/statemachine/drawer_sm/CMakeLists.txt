@@ -100,17 +100,22 @@ target_include_directories(drawer_sm_startup_debug
 )
 
 install(TARGETS
-drawer_sm_startup_debug
-${executable_heartbeat_tree_spawner}
-DESTINATION lib/${PROJECT_NAME})
+  drawer_sm_startup_debug
+  ${executable_heartbeat_tree_spawner}
+  ${library_heartbeat_tree_spawner}
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 install(DIRECTORY
-config
-trees
-DESTINATION share/${PROJECT_NAME})
+  config
+  trees
+  DESTINATION share/${PROJECT_NAME}
+)
 
-
-install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_cmake_lint_cmake REQUIRED)
