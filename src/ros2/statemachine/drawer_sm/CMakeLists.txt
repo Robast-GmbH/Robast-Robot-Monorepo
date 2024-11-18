@@ -102,8 +102,14 @@ target_include_directories(drawer_sm_startup_debug
 install(TARGETS
   drawer_sm_startup_debug
   ${executable_heartbeat_tree_spawner}
-  ${library_heartbeat_tree_spawner}
   DESTINATION lib/${PROJECT_NAME}
+)
+
+install(TARGETS
+  ${library_heartbeat_tree_spawner}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
 install(DIRECTORY
@@ -124,7 +130,7 @@ if(BUILD_TESTING)
   ament_xmllint()
 endif()
 
-ament_export_libraries(${library_heartbeat_tree_spawner})
+ament_export_libraries(${library_heartbeat_tree_spawner}/)
 
 ament_export_include_directories(include)
 
