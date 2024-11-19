@@ -4,6 +4,7 @@ import 'package:web_frontend/models/provider/map_provider.dart';
 import 'package:web_frontend/models/provider/user_provider.dart';
 import 'package:web_frontend/pages/config_page.dart';
 import 'package:web_frontend/pages/fleet_management_page.dart';
+import 'package:web_frontend/pages/manuals_management_page.dart';
 import 'package:web_frontend/pages/user_management_page.dart';
 import 'package:web_frontend/pages/user_settings_page.dart';
 import 'package:web_frontend/widgets/logout_confirmation_dialog.dart';
@@ -96,6 +97,24 @@ class HomePage extends StatelessWidget {
                   padding: EdgeInsets.all(16),
                   child: Text(
                     'Nutzermanagement',
+                    style: TextStyle(color: Colors.white, fontSize: 24),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              RoundedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<ManualsManagementPage>(
+                      builder: (context) => const ManualsManagementPage(),
+                    ),
+                  );
+                },
+                child: const Padding(
+                  padding: EdgeInsets.all(16),
+                  child: Text(
+                    'Anleitungsmanagement',
                     style: TextStyle(color: Colors.white, fontSize: 24),
                   ),
                 ),

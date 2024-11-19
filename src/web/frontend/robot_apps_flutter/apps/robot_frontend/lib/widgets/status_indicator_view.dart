@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
+import 'package:robot_frontend/pages/manuals_page.dart';
 import 'package:robot_frontend/pages/setting_pages/config_page.dart';
 import 'package:robot_frontend/widgets/buttons/developer_button_view.dart';
 
@@ -51,13 +52,8 @@ class _StatusIndicatorViewState extends State<StatusIndicatorView> {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Icon(
-          Icons.icecream,
-          size: 40,
-        ),
-        const SizedBox(width: 8),
         const Icon(
           Icons.link,
           size: 40,
@@ -73,6 +69,16 @@ class _StatusIndicatorViewState extends State<StatusIndicatorView> {
                   size: 40,
                 );
               }),
+        ),
+        const SizedBox(width: 8),
+        IconButton(
+          padding: const EdgeInsets.all(0),
+          onPressed: () => Navigator.push(context, MaterialPageRoute<ConfigPage>(builder: (context) => const ManualsPage())),
+          color: RobotColors.primaryIcon,
+          icon: const Icon(
+            Icons.info_outline,
+            size: 36,
+          ),
         ),
         const SizedBox(width: 8),
         DeveloperButtonView(

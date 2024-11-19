@@ -5,11 +5,15 @@ import 'package:http/http.dart' as http;
 class RequestService {
   static Future<http.Response?> tryGet({
     required Uri uri,
+    int timeout = 1,
   }) async {
     try {
-      final response = await http.get(uri, headers: {
-        'charset': 'utf-8',
-      },);
+      final response = await http.get(
+        uri,
+        headers: {
+          'charset': 'utf-8',
+        },
+      ).timeout(Duration(seconds: timeout));
 
       if (response.statusCode == 200) {
         return response;
