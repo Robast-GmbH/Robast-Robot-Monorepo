@@ -33,37 +33,34 @@ class _ManualsPageState extends State<ManualsPage> {
   Widget build(BuildContext context) {
     return CustomScaffold(
       ignoreEmergencyStop: true,
-      child: TitledView(
-        title: 'Anleitungen',
-        showBackButton: true,
-        child: FutureBuilder<void>(
-            future: _updateManuals,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              return ListView(
-                children: List.generate(
-                  manuals.length,
-                  (index) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 64),
-                    child: CustomElevatedButton(
-                      label: manuals[index],
-                      onPressed: () async {
-                        final baseDir = await manualsManager.getCacheDir();
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PdfPage(path: '$baseDir/${manuals[index]}'),
-                          ),
-                        );
-                      },
-                    ),
+      title: 'Anleitungen',
+      child: FutureBuilder<void>(
+          future: _updateManuals,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return ListView(
+              children: List.generate(
+                manuals.length,
+                (index) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 64),
+                  child: CustomElevatedButton(
+                    label: manuals[index],
+                    onPressed: () async {
+                      final baseDir = await manualsManager.getCacheDir();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PdfPage(path: '$baseDir/${manuals[index]}'),
+                        ),
+                      );
+                    },
                   ),
                 ),
-              );
-            }),
-      ),
+              ),
+            );
+          }),
     );
   }
 }
