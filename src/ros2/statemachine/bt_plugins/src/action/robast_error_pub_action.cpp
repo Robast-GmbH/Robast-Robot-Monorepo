@@ -19,17 +19,10 @@ namespace statemachine
 
   BT::NodeStatus RobastErrorPub::tick()
   {
-    uint16_t error_code;
-    getInput<uint16_t>("error_code", error_code);
-    std::string error_data;
-    getInput<std::string>("error_data", error_data);
-    std::string error_description;
-    getInput<std::string>("error_description", error_description);
-
     communication_interfaces::msg::ErrorBaseMsg error_msg;
-    error_msg.error_code = error_code;
-    error_msg.error_data = error_data;
-    error_msg.error_description = error_description;
+    getInput<uint16_t>("error_code", error_msg.error_code);
+    getInput<std::string>("error_data", error_msg.error_data);
+    getInput<std::string>("error_description", error_msg.error_description);
     _error_publisher->publish(error_msg);
     return BT::NodeStatus::SUCCESS;
   }
