@@ -39,7 +39,7 @@ namespace statemachine
     if (!_first_heartbeat_received)
     {
       RCLCPP_DEBUG(rclcpp::get_logger("HeartbeatCondition"), "Waiting for first heartbeat...");
-      return BT::NodeStatus::SUCCESS;
+      return BT::NodeStatus::RUNNING;
     }
 
     const std::chrono::milliseconds time_since_last_heartbeat_ms =
