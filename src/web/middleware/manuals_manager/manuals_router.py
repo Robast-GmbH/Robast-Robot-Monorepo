@@ -7,10 +7,16 @@ manuals_router = APIRouter()
 
 UPLOAD_FOLDER = "./uploaded_files"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+BASE_DIR = Path(UPLOAD_FOLDER).resolve()
 
 
 def get_file_path(file_name: str) -> Path:
-    return Path(UPLOAD_FOLDER) / file_name
+    file_path = BASE_DIR / file_name
+    if not file_path.resolve().is_relative_to(BASE_DIR):
+        raise ValueError("Attempted path traversal detected")
+    if not file_name.endswith(".pdf"):
+        raise ValueError("Invalid file type")
+    return Path(file_path)
 
 
 @manuals_router.post("/", tags=["Manuals"])
