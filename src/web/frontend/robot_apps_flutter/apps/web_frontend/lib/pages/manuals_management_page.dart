@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -107,7 +106,7 @@ class _ManualsManagementPageState extends State<ManualsManagementPage> {
             onPressed: () async {
               _loadFiles = loadFiles();
             },
-          )
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -115,7 +114,7 @@ class _ManualsManagementPageState extends State<ManualsManagementPage> {
           onPressed: () async {
             await pickAndUploadFile();
             _loadFiles = loadFiles();
-          }),
+          },),
       body: FutureBuilder(
           future: _loadFiles,
           builder: (context, snapshot) {
@@ -151,7 +150,7 @@ class _ManualsManagementPageState extends State<ManualsManagementPage> {
                   )
                   .toList(),
             );
-          }),
+          },),
     );
   }
 }
