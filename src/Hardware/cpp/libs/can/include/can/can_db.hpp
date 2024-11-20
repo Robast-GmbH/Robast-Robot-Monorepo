@@ -92,6 +92,13 @@ namespace robast_can_msgs
                 {CanSignal(can_signal::bit_start::module_config::MODULE_ID, can_signal::bit_length::module_config::MODULE_ID, 0),
                  CanSignal(can_signal::bit_start::module_config::CONFIG_ID, can_signal::bit_length::module_config::CONFIG_ID, 0),
                  CanSignal(can_signal::bit_start::module_config::CONFIG_VALUE, can_signal::bit_length::module_config::CONFIG_VALUE, 0)}),
+            CanMessage(
+                can_id::ELECTRICAL_DRAWER_MOTOR_CONTROL,
+                can_dlc::ELECTRICAL_DRAWER_MOTOR_CONTROL,
+                {CanSignal(can_signal::bit_start::electrical_drawer_motor_control::MODULE_ID, can_signal::bit_length::electrical_drawer_motor_control::MODULE_ID, 0),
+                 CanSignal(can_signal::bit_start::electrical_drawer_motor_control::MOTOR_ID, can_signal::bit_length::electrical_drawer_motor_control::MOTOR_ID, 0),
+                 CanSignal(can_signal::bit_start::electrical_drawer_motor_control::ENABLE_MOTOR, can_signal::bit_length::electrical_drawer_motor_control::ENABLE_MOTOR, 0),
+                 CanSignal(can_signal::bit_start::electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE, can_signal::bit_length::electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE, 0)}),
         };
     };
 } // namespace robast_can_msgs

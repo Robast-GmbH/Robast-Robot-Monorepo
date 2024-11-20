@@ -19,5 +19,5 @@
     "license": "MIT",
     "frameworks": "*",
     "platforms": "*",
-    "headers": ["led_strip.hpp", "led_header.hpp", "led_animation.hpp", "led_state.hpp"]
+    "headers": ["led_strip.hpp", "led_header.hpp", "led_animation.hpp", "led_state.hpp", "LP503x.hpp", "onboard_led_driver.hpp"]
   }

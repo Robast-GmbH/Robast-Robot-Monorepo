@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
-import 'package:robot_frontend/pages/tasks_overview_page.dart';
-import 'package:robot_frontend/widgets/custom_button_view.dart';
-import 'package:robot_frontend/widgets/rounded_button.dart';
-import 'package:robot_frontend/widgets/task_details_dialog.dart';
+import 'package:robot_frontend/pages/task_pages/tasks_overview_page.dart';
+import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
+import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
+import 'package:robot_frontend/widgets/dialogs/task_details_dialog.dart';
 
 class MenuTasksOverview extends StatefulWidget {
   const MenuTasksOverview({super.key});
@@ -31,14 +31,14 @@ class _MenuTasksOverviewState extends State<MenuTasksOverview> {
           fetchRobotTaskStatus = Provider.of<TaskProvider>(context, listen: false).fetchRobotTaskStatus(robotName: 'rb_theron');
           setState(() {});
         },
-        child: Row(
+        child: const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
               child: Text(
                 'Auftragsübersicht',
                 textAlign: TextAlign.start,
-                style: const TextStyle(
+                style: TextStyle(
                   height: 0,
                   color: RobotColors.primaryText,
                   fontSize: 40,
@@ -59,7 +59,7 @@ class _MenuTasksOverviewState extends State<MenuTasksOverview> {
           future: fetchRobotTaskStatus,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
-              return Center(child: const CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
             final taskProvider = Provider.of<TaskProvider>(context, listen: false);
             return Column(
@@ -77,7 +77,7 @@ class _MenuTasksOverviewState extends State<MenuTasksOverview> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             'Aktiv',
                             style: TextStyle(fontSize: 32, color: RobotColors.secondaryText),
                           ),
@@ -85,7 +85,7 @@ class _MenuTasksOverviewState extends State<MenuTasksOverview> {
                             taskProvider.activeTask != null
                                 ? '${taskProvider.activeTask!.name} bei ${taskProvider.activeTask!.targetID}'
                                 : 'Kein aktiver Auftrag',
-                            style: TextStyle(fontSize: 24, color: RobotColors.secondaryText),
+                            style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),
                           ),
                         ],
                       )),
@@ -102,7 +102,7 @@ class _MenuTasksOverviewState extends State<MenuTasksOverview> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             'Nächster',
                             style: TextStyle(fontSize: 32, color: RobotColors.secondaryText),
                           ),
@@ -110,7 +110,7 @@ class _MenuTasksOverviewState extends State<MenuTasksOverview> {
                             taskProvider.queuedTasks.isNotEmpty
                                 ? '${taskProvider.queuedTasks.first.name} bei ${taskProvider.queuedTasks.first.targetID}'
                                 : 'Keine weiteren Aufträge',
-                            style: TextStyle(fontSize: 24, color: RobotColors.secondaryText),
+                            style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),
                           ),
                         ],
                       )),
@@ -121,7 +121,7 @@ class _MenuTasksOverviewState extends State<MenuTasksOverview> {
                       onPressed: () {
                         Navigator.push(context, MaterialPageRoute(builder: (context) => const TasksOverviewPage()));
                       },
-                      child: Text(
+                      child: const Text(
                         'Mehr anzeigen',
                         style: TextStyle(fontSize: 32, color: RobotColors.secondaryText),
                       )),

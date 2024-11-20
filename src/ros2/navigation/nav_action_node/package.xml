@@ -16,6 +16,11 @@
   <depend>nav2_msgs</depend>
   <depend>std_msgs</depend>
   <depend>geometry_msgs</depend>
+  <depend>action_msgs</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf_transformations</depend>
+  <depend>visualization_msgs</depend>
+
   <export>
     <build_type>ament_python</build_type>
   </export>

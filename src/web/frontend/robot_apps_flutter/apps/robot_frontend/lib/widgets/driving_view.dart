@@ -86,12 +86,12 @@ class _DrivingViewState extends State<DrivingView> {
                                       SvgPicture.string(
                                         logo,
                                         width: double.infinity,
-                                        color: RobotColors.primaryIcon,
+                                        colorFilter: const ColorFilter.mode(RobotColors.primaryIcon, BlendMode.srcIn),
                                       ),
                                     SvgPicture.string(
                                       logoBlink,
                                       width: double.infinity,
-                                      color: RobotColors.primaryIcon,
+                                      colorFilter: const ColorFilter.mode(RobotColors.primaryIcon, BlendMode.srcIn),
                                     ),
                                   ],
                                 )
@@ -99,7 +99,7 @@ class _DrivingViewState extends State<DrivingView> {
                                 SvgPicture.string(
                                   logoHappy,
                                   width: double.infinity,
-                                  color: RobotColors.primaryIcon,
+                                  colorFilter: const ColorFilter.mode(RobotColors.primaryIcon, BlendMode.srcIn),
                                 ),
                             ],
                           ),

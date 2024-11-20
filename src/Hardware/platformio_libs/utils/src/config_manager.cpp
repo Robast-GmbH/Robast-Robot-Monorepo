@@ -5,11 +5,13 @@ namespace utils
   ConfigManager::ConfigManager(const std::shared_ptr<drawer::ElectricalDrawerConfig> drawer_config,
                                const std::shared_ptr<motor::EncoderConfig> encoder_config,
                                const std::shared_ptr<motor::MotorConfig> motor_config,
-                               const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config)
+                               const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config,
+                               const std::shared_ptr<tray::TrayManagerConfig> tray_manager_config)
       : _drawer_config{drawer_config},
         _encoder_config{encoder_config},
         _motor_config{motor_config},
-        _motor_monitor_config{motor_monitor_config}
+        _motor_monitor_config{motor_monitor_config},
+        _tray_manager_config{tray_manager_config}
   {
     set_default_configs();
   }
@@ -51,6 +53,12 @@ namespace utils
             config_value));
         break;
 
+      case module_config::drawer::MOVING_OUT_FINAL_SPEED:
+        _drawer_config->set_drawer_moving_out_final_speed(
+          std::bit_cast<module_config::ModuleSetting<module_config::drawer::MOVING_OUT_FINAL_SPEED>::type>(
+            config_value));
+        break;
+
       case module_config::drawer::PUSH_IN_AUTO_CLOSE_SPEED:
         _drawer_config->set_drawer_push_in_auto_close_speed(
           static_cast<module_config::ModuleSetting<module_config::drawer::PUSH_IN_AUTO_CLOSE_SPEED>::type>(
@@ -70,6 +78,13 @@ namespace utils
             module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>::type>(config_value));
         break;
 
+      case module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS:
+        _drawer_config->set_drawer_push_in_wait_time_after_movement_finished_in_ms(
+          std::bit_cast<
+            module_config::ModuleSetting<module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS>::type>(
+            config_value));
+        break;
+
       case module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS:
         _drawer_config->set_drawer_stall_guard_wait_time_after_movement_started_in_ms(
           std::bit_cast<module_config::ModuleSetting<
@@ -87,10 +102,22 @@ namespace utils
             config_value));
         break;
 
+      case module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL:
+        _drawer_config->set_encoder_threshold_for_drawer_not_opened_during_stall(
+          static_cast<module_config::ModuleSetting<
+            module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL>::type>(config_value));
+        break;
+
       case module_config::drawer::DRAWER_DEFAULT_ACCELERATION:
         _drawer_config->set_drawer_default_acceleration(
           static_cast<module_config::ModuleSetting<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::type>(
             config_value));
+        break;
+
+      case module_config::drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS:
+        _drawer_config->set_wait_time_to_close_lock_after_drawer_opened_in_ms(
+          std::bit_cast<module_config::ModuleSetting<
+            module_config::drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS>::type>(config_value));
         break;
 
       case module_config::encoder::OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT:
@@ -187,6 +214,32 @@ namespace utils
             config_value));
         break;
 
+      case module_config::tray_manager::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID:
+        _tray_manager_config->set_speed_deviation_in_percentage_for_stall_when_closing_lid(
+          std::bit_cast<module_config::ModuleSetting<
+            module_config::tray_manager::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID>::type>(
+            config_value));
+        break;
+
+      case module_config::tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION:
+        _tray_manager_config->set_position_offset_for_tray_lid_computation(
+          static_cast<
+            module_config::ModuleSetting<module_config::tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION>::type>(
+            config_value));
+        break;
+
+      case module_config::tray_manager::DISTANCE_TO_TRAY_LID_THRESHOLD:
+        _tray_manager_config->set_distance_to_tray_lid_threshold(
+          static_cast<module_config::ModuleSetting<module_config::tray_manager::DISTANCE_TO_TRAY_LID_THRESHOLD>::type>(
+            config_value));
+        break;
+
+      case module_config::tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID:
+        _tray_manager_config->set_target_speed_to_close_tray_lid(
+          static_cast<module_config::ModuleSetting<module_config::tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID>::type>(
+            config_value));
+        break;
+
       default:
         return false;
     }
@@ -199,9 +252,11 @@ namespace utils
 
     set_default_encoder_config();
 
-    set_motor_config();
+    set_default_motor_config();
 
     set_default_motor_monitor_config();
+
+    set_default_tray_manager_config();
   }
 
   void ConfigManager::set_default_drawer_config()
@@ -229,6 +284,10 @@ namespace utils
                static_cast<uint32_t>(
                  module_config::ModuleSetting<module_config::drawer::MOVING_OUT_DECELERATION_DISTANCE>::default_value));
 
+    set_config(module_config::drawer::MOVING_OUT_FINAL_SPEED,
+               std::bit_cast<uint32_t>(
+                 module_config::ModuleSetting<module_config::drawer::MOVING_OUT_FINAL_SPEED>::default_value));
+
     set_config(module_config::drawer::PUSH_IN_AUTO_CLOSE_SPEED,
                static_cast<uint32_t>(
                  module_config::ModuleSetting<module_config::drawer::PUSH_IN_AUTO_CLOSE_SPEED>::default_value));
@@ -243,6 +302,11 @@ namespace utils
                  module_config::ModuleSetting<
                    module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>::default_value));
 
+    set_config(
+      module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS,
+      std::bit_cast<uint32_t>(module_config::ModuleSetting<
+                              module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS>::default_value));
+
     set_config(module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS,
                std::bit_cast<uint32_t>(
                  module_config::ModuleSetting<
@@ -256,9 +320,19 @@ namespace utils
                static_cast<uint32_t>(
                  module_config::ModuleSetting<module_config::drawer::USE_MOTOR_MONITOR_STALL_GUARD>::default_value));
 
+    set_config(module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL,
+               static_cast<uint32_t>(
+                 module_config::ModuleSetting<
+                   module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL>::default_value));
+
     set_config(module_config::drawer::DRAWER_DEFAULT_ACCELERATION,
                static_cast<uint32_t>(
                  module_config::ModuleSetting<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::default_value));
+
+    set_config(module_config::drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS,
+               std::bit_cast<uint32_t>(
+                 module_config::ModuleSetting<
+                   module_config::drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS>::default_value));
   }
 
   void ConfigManager::set_default_encoder_config()
@@ -288,7 +362,7 @@ namespace utils
         module_config::ModuleSetting<module_config::encoder::DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS>::default_value));
   }
 
-  void ConfigManager::set_motor_config()
+  void ConfigManager::set_default_motor_config()
   {
     set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                static_cast<uint32_t>(
@@ -326,6 +400,30 @@ namespace utils
       module_config::motor_monitor::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL,
       std::bit_cast<uint32_t>(module_config::ModuleSetting<
                               module_config::motor_monitor::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL>::default_value));
+  }
+
+  void ConfigManager::set_default_tray_manager_config()
+  {
+    set_config(
+      module_config::tray_manager::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID,
+      std::bit_cast<uint32_t>(
+        module_config::ModuleSetting<
+          module_config::tray_manager::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID>::default_value));
+
+    set_config(
+      module_config::tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION,
+      static_cast<uint32_t>(module_config::ModuleSetting<
+                            module_config::tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION>::default_value));
+
+    set_config(
+      module_config::tray_manager::DISTANCE_TO_TRAY_LID_THRESHOLD,
+      static_cast<uint32_t>(
+        module_config::ModuleSetting<module_config::tray_manager::DISTANCE_TO_TRAY_LID_THRESHOLD>::default_value));
+
+    set_config(
+      module_config::tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID,
+      static_cast<uint32_t>(
+        module_config::ModuleSetting<module_config::tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID>::default_value));
   }
 
 }   // namespace utils

@@ -37,6 +37,14 @@ namespace interfaces
      */
     virtual void add_e_drawer_task_to_queue(const utils::EDrawerTask &e_drawer_task) = 0;
 
+    /**
+     * Set the state of the motor driver.
+     *
+     * @param enabled true if the motor driver should be enabled, false if it should be disabled
+     * @param motor_id the id of the motor
+     */
+    virtual void set_motor_driver_state(const bool enabled, const uint8_t motor_id) const = 0;
+
    private:
     /**
      * Handles the procedure of what to do when drawer just opened.

@@ -17,7 +17,14 @@ class TestUserSystem(unittest.TestCase):
 
     def test_create_user(self):
         user = self.user_system.create_user(
-            "Dr.", "Bob", "Brown", "some_station", "some_room", ["staff"]
+            "",
+            "bob@brown.de",
+            "Dr.",
+            "Bob",
+            "Brown",
+            "some_station",
+            "some_room",
+            ["staff"],
         )
         self.assertIsNotNone(user)
         if user is not None:
@@ -27,7 +34,14 @@ class TestUserSystem(unittest.TestCase):
 
     def test_get_user(self):
         user = self.user_system.create_user(
-            "Dr.", "Bob", "Brown", "some_station", "some_room", ["staff"]
+            "",
+            "bob@brown.de",
+            "Dr.",
+            "Bob",
+            "Brown",
+            "some_station",
+            "some_room",
+            ["staff"],
         )
         if user is not None:
             retrieved_user = self.user_system.get_user(user.id)
@@ -39,7 +53,14 @@ class TestUserSystem(unittest.TestCase):
 
     def test_update_user(self):
         user = self.user_system.create_user(
-            "Dr.", "Bob", "Brown", "some_station", "some_room", ["staff"]
+            "",
+            "bob@brown.de",
+            "Dr.",
+            "Bob",
+            "Brown",
+            "some_station",
+            "some_room",
+            ["staff"],
         )
         if user is not None:
             self.user_system.update_user(
@@ -53,7 +74,14 @@ class TestUserSystem(unittest.TestCase):
 
     def test_delete_user(self):
         user = self.user_system.create_user(
-            "Dr.", "Bob", "Brown", "some_station", "some_room", ["staff"]
+            "",
+            "bob@brown.de",
+            "Dr.",
+            "Bob",
+            "Brown",
+            "some_station",
+            "some_room",
+            ["staff"],
         )
         if user is not None:
             self.user_system.delete_user(user.id)

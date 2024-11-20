@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/sidebar_menu_point.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class Sidebar extends StatefulWidget {
   const Sidebar({required this.sidebarMenuPoints, required this.onMenuPointSelected, this.user, super.key});
@@ -112,7 +112,8 @@ class _SidebarState extends State<Sidebar> {
   Widget buildMenuButton({required Widget icon, required String title, required VoidCallback onPressed, required bool isSelected, required bool isExpanded}) {
     return Column(
       children: [
-        InkWell(
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
           onTap: onPressed,
           child: Container(
             decoration: BoxDecoration(

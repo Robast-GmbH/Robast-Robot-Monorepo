@@ -15,8 +15,9 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
   auto encoder_config = std::make_shared<motor::EncoderConfig>();
   auto motor_config = std::make_shared<motor::MotorConfig>();
   auto motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
+  auto tray_manager_config = std::make_shared<tray::TrayManagerConfig>();
 
-  utils::ConfigManager config_manager(e_drawer_config, encoder_config, motor_config, motor_monitor_config);
+  utils::ConfigManager config_manager(e_drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config);
 
   SECTION("Check if default configs are set correctly for the e-drawer config.")
   {
@@ -32,6 +33,8 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
             module_config::ModuleSetting<module_config::drawer::MOVING_IN_FINAL_HOMING_DISTANCE>::default_value);
     REQUIRE(e_drawer_config->get_drawer_moving_out_deceleration_distance() ==
             module_config::ModuleSetting<module_config::drawer::MOVING_OUT_DECELERATION_DISTANCE>::default_value);
+    REQUIRE(e_drawer_config->get_drawer_moving_out_final_speed() ==
+            module_config::ModuleSetting<module_config::drawer::MOVING_OUT_FINAL_SPEED>::default_value);
     REQUIRE(e_drawer_config->get_drawer_push_in_auto_close_speed() ==
             module_config::ModuleSetting<module_config::drawer::PUSH_IN_AUTO_CLOSE_SPEED>::default_value);
     REQUIRE(
@@ -40,6 +43,9 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
     REQUIRE(e_drawer_config->get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms() ==
             module_config::ModuleSetting<
               module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>::default_value);
+    REQUIRE(e_drawer_config->get_drawer_push_in_wait_time_after_movement_finished_in_ms() ==
+            module_config::ModuleSetting<
+              module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS>::default_value);
     REQUIRE(e_drawer_config->get_drawer_stall_guard_wait_time_after_movement_started_in_ms() ==
             module_config::ModuleSetting<
               module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS>::default_value);
@@ -47,8 +53,14 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
             module_config::ModuleSetting<module_config::drawer::USE_TMC_STALL_GUARD>::default_value);
     REQUIRE(e_drawer_config->get_use_motor_monitor_stall_guard() ==
             module_config::ModuleSetting<module_config::drawer::USE_MOTOR_MONITOR_STALL_GUARD>::default_value);
+    REQUIRE(e_drawer_config->get_encoder_threshold_for_drawer_not_opened_during_stall() ==
+            module_config::ModuleSetting<
+              module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL>::default_value);
     REQUIRE(e_drawer_config->get_drawer_default_acceleration() ==
             module_config::ModuleSetting<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::default_value);
+    REQUIRE(e_drawer_config->get_wait_time_to_close_lock_after_drawer_opened_in_ms() ==
+            module_config::ModuleSetting<
+              module_config::drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS>::default_value);
   }
 
   SECTION("Check if default configs are set correctly for the encoder config.")
@@ -95,5 +107,18 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
     REQUIRE(motor_monitor_config->get_speed_deviation_in_percentage_for_stall() ==
             module_config::ModuleSetting<
               module_config::motor_monitor::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL>::default_value);
+  }
+
+  SECTION("Check if default configs are set correctly for the tray manager config.")
+  {
+    REQUIRE(tray_manager_config->get_speed_deviation_in_percentage_for_stall_when_closing_lid() ==
+            module_config::ModuleSetting<
+              module_config::tray_manager::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID>::default_value);
+    REQUIRE(tray_manager_config->get_position_offset_for_tray_lid_computation() ==
+            module_config::ModuleSetting<module_config::tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION>::default_value);
+    REQUIRE(tray_manager_config->get_distance_to_tray_lid_threshold() ==
+            module_config::ModuleSetting<module_config::tray_manager::DISTANCE_TO_TRAY_LID_THRESHOLD>::default_value);
+    REQUIRE(tray_manager_config->get_target_speed_to_close_tray_lid() ==
+            module_config::ModuleSetting<module_config::tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID>::default_value);
   }
 }

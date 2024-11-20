@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:middleware_api_utilities/src/services/request_service.dart';
+import 'package:middleware_api_utilities/src/sub_apis/manuals_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/modules_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/nfc_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/tasks_api.dart';
@@ -25,6 +25,7 @@ class MiddlewareApiUtilities {
     _users = UsersApi(prefix: prefix);
     _tasks = TasksApi(prefix: prefix);
     _nfc = NFCApi(prefix: prefix);
+    _manuals = ManualsApi(prefix: prefix);
   }
 
   late String _prefix;
@@ -32,11 +33,14 @@ class MiddlewareApiUtilities {
   late UsersApi _users;
   late TasksApi _tasks;
   late NFCApi _nfc;
+  late ManualsApi _manuals;
 
+  String get prefix => _prefix;
   ModulesApi get modules => _modules;
   UsersApi get users => _users;
   TasksApi get tasks => _tasks;
   NFCApi get nfc => _nfc;
+  ManualsApi get manuals => _manuals;
 
   Future<bool> testConnection({
     required String url,

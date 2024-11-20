@@ -25,13 +25,17 @@ namespace module_config
     constexpr uint8_t MOVING_IN_DECELERATION_DISTANCE = 4;
     constexpr uint8_t MOVING_IN_FINAL_HOMING_DISTANCE = 5;
     constexpr uint8_t MOVING_OUT_DECELERATION_DISTANCE = 6;
-    constexpr uint8_t PUSH_IN_AUTO_CLOSE_SPEED = 7;
-    constexpr uint8_t PUSH_IN_AUTO_CLOSE_TMC_STALL_GUARD_VALUE = 8;
-    constexpr uint8_t PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS = 9;
-    constexpr uint8_t STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS = 10;
-    constexpr uint8_t USE_TMC_STALL_GUARD = 11;
-    constexpr uint8_t USE_MOTOR_MONITOR_STALL_GUARD = 12;
-    constexpr uint8_t DRAWER_DEFAULT_ACCELERATION = 13;
+    constexpr uint8_t MOVING_OUT_FINAL_SPEED = 7;
+    constexpr uint8_t PUSH_IN_AUTO_CLOSE_SPEED = 8;
+    constexpr uint8_t PUSH_IN_AUTO_CLOSE_TMC_STALL_GUARD_VALUE = 9;
+    constexpr uint8_t PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS = 10;
+    constexpr uint8_t PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS = 11;
+    constexpr uint8_t STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS = 12;
+    constexpr uint8_t USE_TMC_STALL_GUARD = 13;
+    constexpr uint8_t USE_MOTOR_MONITOR_STALL_GUARD = 14;
+    constexpr uint8_t ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL = 15;
+    constexpr uint8_t DRAWER_DEFAULT_ACCELERATION = 16;
+    constexpr uint8_t WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS = 17;
   } // namespace drawer
 
   namespace encoder
@@ -62,6 +66,14 @@ namespace module_config
     constexpr uint8_t SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL = 43;
   } // namespace motor_monitor
 
+  namespace tray_manager
+  {
+    constexpr uint8_t SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID = 50;
+    constexpr uint8_t POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION = 51;
+    constexpr uint8_t DISTANCE_TO_TRAY_LID_THRESHOLD = 52;
+    constexpr uint8_t TARGET_SPEED_TO_CLOSE_TRAY_LID = 53;
+  }
+
   /********************************************************************************************************
    * Configs for the drawer
    *********************************************************************************************************/
@@ -77,7 +89,7 @@ namespace module_config
   struct ModuleSetting<drawer::HOMING_SPEED>
   {
     using type = uint32_t;
-    static constexpr type default_value = 500;
+    static constexpr type default_value = 1500;
   };
 
   template <>
@@ -91,7 +103,7 @@ namespace module_config
   struct ModuleSetting<drawer::MOVING_IN_DECELERATION_DISTANCE>
   {
     using type = uint8_t;
-    static constexpr type default_value = 50;
+    static constexpr type default_value = 30;
   };
 
   template <>
@@ -106,6 +118,13 @@ namespace module_config
   {
     using type = uint8_t;
     static constexpr type default_value = 70;
+  };
+
+  template <>
+  struct ModuleSetting<drawer::MOVING_OUT_FINAL_SPEED>
+  {
+    using type = uint32_t;
+    static constexpr type default_value = 5000;
   };
 
   template <>
@@ -130,10 +149,17 @@ namespace module_config
   };
 
   template <>
+  struct ModuleSetting<drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS>
+  {
+    using type = uint32_t;
+    static constexpr type default_value = 200;
+  };
+
+  template <>
   struct ModuleSetting<drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS>
   {
     using type = uint32_t;
-    static constexpr type default_value = 350;
+    static constexpr type default_value = 600;
   };
 
   template <>
@@ -150,11 +176,27 @@ namespace module_config
     static constexpr type default_value = true;
   };
 
+  
+
+  template <>
+  struct ModuleSetting<drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL>
+  {
+    using type = uint8_t;
+    static constexpr type default_value = 3;
+  };
+
   template <>
   struct ModuleSetting<drawer::DRAWER_DEFAULT_ACCELERATION>
   {
     using type = uint8_t;
     static constexpr type default_value = 8;
+  };
+
+  template <>
+  struct ModuleSetting<drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS>
+  {
+    using type = uint32_t;
+    static constexpr type default_value = 1000;
   };
 
   /********************************************************************************************************
@@ -172,7 +214,7 @@ namespace module_config
   struct ModuleSetting<encoder::ENCODER_COUNT_DRAWER_MAX_EXTENT>
   {
     using type = uint32_t;
-    static constexpr type default_value = 83000;
+    static constexpr type default_value = 85000;
   };
 
   template <>
@@ -281,6 +323,37 @@ namespace module_config
   {
     using type = float;
     static constexpr type default_value = 0.80;
+  };
+
+  /********************************************************************************************************
+   * Configs for the tray manager
+   ********************************************************************************************************/
+  template <>
+  struct ModuleSetting<tray_manager::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID>
+  {
+    using type = float;
+    static constexpr type default_value = 0.95;
+  };
+
+  template <>
+  struct ModuleSetting<tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION>
+  {
+    using type = uint8_t;
+    static constexpr type default_value = 55;
+  };
+
+  template <>
+  struct ModuleSetting<tray_manager::DISTANCE_TO_TRAY_LID_THRESHOLD>
+  {
+    using type = uint8_t;
+    static constexpr type default_value = 30;
+  };
+
+  template <>
+  struct ModuleSetting<tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID>
+  {
+    using type = uint8_t;
+    static constexpr type default_value = 50;
   };
 
 } // namespace module_config

@@ -1,5 +1,5 @@
 from module_manager.module_repository import ModuleRepository
-from pydantic_models.submodule import Submodule
+from db_models.submodule import Submodule
 from pydantic_models.submodule_address import SubmoduleAddress
 from typing import Any
 
@@ -10,12 +10,12 @@ class ModuleManager:
 
     def is_submodule_type_mounted(self, robot_name: str, size: int) -> bool:
         submodules = self.repository.read_robot_submodules(robot_name)
-        return any(submodule.size == size for submodule in submodules)
+        return any(submodule.is_size(size) for submodule in submodules)
 
     def is_submodule_size_available(self, robot_name: str, size: int) -> bool:
         submodules = self.repository.read_robot_submodules(robot_name)
         return any(
-            submodule.size == size
+            submodule.is_size(size)
             and not submodule.reserved_for_ids
             and not submodule.reserved_for_groups
             for submodule in submodules
@@ -35,11 +35,9 @@ class ModuleManager:
         variant: str,
     ) -> bool:
         submodule = Submodule(
-            address=SubmoduleAddress(
-                robot_name=robot_name,
-                module_id=module_id,
-                submodule_id=submodule_id,
-            ),
+            robot_name=robot_name,
+            module_id=module_id,
+            submodule_id=submodule_id,
             position=position,
             size=size,
             variant=variant,
@@ -104,13 +102,13 @@ class ModuleManager:
         submodules = self.repository.read_robot_submodules(robot_name)
         for submodule in submodules:
             if (
-                submodule.size == size
+                submodule.is_size(size)
                 and not submodule.reserved_for_task
                 and not submodule.reserved_for_ids
                 and not submodule.reserved_for_groups
             ):
                 self.reserve_submodule(
-                    submodule.address,
+                    submodule.get_address(),
                     task_id,
                     user_ids,
                     user_groups,

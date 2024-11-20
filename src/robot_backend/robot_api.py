@@ -2,8 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from ros_bridge import RosBridge
 
-door_available = False
-ros_bridge = RosBridge(ip="localhost", port=9090, door_available=door_available)
+ros_bridge = RosBridge(ip="localhost", port=9090)
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -43,6 +42,21 @@ def read_robot_pos():
     return ros_bridge.robot_pos_bridge.get_robot_pos()
 
 
+@app.get("/robot_lost", tags=["Robot Status"])
+def read_robot_lost():
+    return ros_bridge.robot_pos_bridge.get_robot_lost()
+
+
+@app.get("/battery_status", tags=["Robot Status"])
+def read_battery_status():
+    return ros_bridge.robot_status_bridge.get_battery_status()
+
+
+@app.get("/emergency_stop_pressed", tags=["Robot Status"])
+def read_emergency_stop_pressed():
+    return ros_bridge.robot_status_bridge.get_emergency_stop_pressed()
+
+
 """
 =========================
 Navigation API Endpoints
@@ -51,8 +65,12 @@ Navigation API Endpoints
 
 
 @app.post("/goal_pose", tags=["Navigation"])
-def post_goal_pose(x: float, y: float, z: float):
-    return {"success": ros_bridge.nav_bridge.navigate_to_goal_pose((x, y, z))}
+def post_goal_pose(x: float, y: float, z: float, use_reorientation: bool = False):
+    return {
+        "success": ros_bridge.nav_bridge.navigate_to_goal_pose(
+            (x, y, z), use_reorientation
+        )
+    }
 
 
 @app.post("/cancel_goal", tags=["Navigation"])
@@ -60,9 +78,9 @@ def post_cancel_goal():
     return {"success": ros_bridge.nav_bridge.cancel_navigate_to_goal_pose()}
 
 
-@app.get("/is_navigating", tags=["Navigation"])
+@app.get("/is_navigation_completed", tags=["Navigation"])
 def read_is_navigating():
-    return {"is_navigating": ros_bridge.nav_bridge.is_navigating()}
+    return {"is_navigation_completed": ros_bridge.nav_bridge.is_navigation_completed()}
 
 
 @app.get("/remaining_nav_time", tags=["Navigation"])
@@ -85,6 +103,16 @@ def read_is_nav_blocked():
     return {"is_nav_blocked": ros_bridge.nav_bridge.get_is_nav_blocked()}
 
 
+@app.get("/requires_replan", tags=["Navigation"])
+def read_requires_replan():
+    return {"requires_replan": ros_bridge.nav_bridge.requires_replan()}
+
+
+@app.post("/set_initial_point", tags=["Navigation"])
+def post_set_initial_point(x: float, y: float, z: float):
+    return {"success": ros_bridge.robot_pos_bridge.set_initial_point(x, y, z)}
+
+
 """
 ======================
 Modules API Endpoints
@@ -92,18 +120,9 @@ Modules API Endpoints
 """
 
 
-@app.get("/submodules", tags=["Modules"])
-def read_submodules():
-    return ros_bridge.module_bridge.get_submodules()
-
-
-@app.get("/is_submodule_open", tags=["Modules"])
-def read_is_submodule_open(module_id: int, submodule_id: int):
-    return {
-        "is_open": ros_bridge.module_bridge.get_submodule_is_open(
-            module_id, submodule_id
-        )
-    }
+@app.get("/submodule_status", tags=["Modules"])
+def read_submodule_status(module_id: int, submodule_id: int):
+    return ros_bridge.module_bridge.get_submodule_state(module_id, submodule_id)
 
 
 @app.post("/open_submodule", tags=["Modules"])
@@ -137,23 +156,6 @@ def read_nfc_tag(timeout_in_s: int):
 
 """
 ======================
-Doors API Endpoints
-======================
-"""
-
-if door_available:
-
-    @app.post("/open_door", tags=["Doors"])
-    def post_open_door():
-        return {"success": ros_bridge.door_bridge.open_door()}
-
-    @app.post("/close_door", tags=["Doors"])
-    def post_close_door():
-        return {"success": ros_bridge.door_bridge.close_door()}
-
-
-"""
-======================
 Disinfection API Endpoints
 ======================
 """
@@ -164,3 +166,13 @@ def get_disinfection_triggered(timeout: int):
     return ros_bridge.disinfection_module_bridge.wait_for_disinfection_triggered(
         timeout
     )
+
+
+@app.get("/disinfection_module_status", tags=["Disinfection"])
+def get_disinfection_module_status():
+    return ros_bridge.disinfection_module_bridge.get_disinfection_module_status()
+
+
+@app.post("/refill_disinfection_fluid_container", tags=["Disinfection"])
+def refill_disinfection_fluid_container():
+    return ros_bridge.disinfection_module_bridge.refill_disinfection_fluid_container()

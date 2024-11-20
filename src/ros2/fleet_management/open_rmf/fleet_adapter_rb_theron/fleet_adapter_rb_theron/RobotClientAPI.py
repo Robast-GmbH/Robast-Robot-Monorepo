@@ -75,7 +75,13 @@ class RobotAPI:
             return None
 
     def navigate(
-        self, robot_name: str, cmd_id: int, pose, map_name: str, speed_limit=0.0
+        self,
+        robot_name: str,
+        cmd_id: int,
+        pose,
+        map_name: str,
+        speed_limit=0.0,
+        use_reorientation=False,
     ) -> bool:
         """Request the robot to navigate to pose:[x,y,theta] where x, y and
         and theta are in the robot's coordinate convention. This function
@@ -85,7 +91,7 @@ class RobotAPI:
             x, y = self.__transforms["rmf_to_robot"].transform([pose[0], pose[1]])
             z = pose[2] + self.__transforms["orientation_offset"]
             requests.post(
-                f"{self.__prefix}/goal_pose?robot_name={robot_name}&x={x}&y={y}&z={z}",
+                f"{self.__prefix}/goal_pose?robot_name={robot_name}&x={x}&y={y}&z={z}&use_reorientation={use_reorientation}",
                 timeout=TIMEOUT_DURATION_IN_S,
             )
             return True
@@ -94,7 +100,15 @@ class RobotAPI:
             return False
 
     def requires_replan(self, robot_name: str) -> bool:
-        return False
+        """Return True if the robot requires replanning. Else False"""
+        try:
+            response = requests.get(
+                f"{self.__prefix}/requires_replan?robot_name={robot_name}",
+                timeout=TIMEOUT_DURATION_IN_S,
+            ).json()
+            return response["requires_replan"]
+        except Exception as e:
+            return False
 
     def stop(self, robot_name: str, cmd_id: int) -> bool:
         """Command the robot to stop.
@@ -127,10 +141,10 @@ class RobotAPI:
         navigation request. Else False."""
         try:
             response = requests.get(
-                f"{self.__prefix}/is_navigating?robot_name={robot_name}",
+                f"{self.__prefix}/is_navigation_completed?robot_name={robot_name}",
                 timeout=TIMEOUT_DURATION_IN_S,
             ).json()
-            return not response["is_navigating"]
+            return response["is_navigation_completed"]
         # TODO(ane-robast): Add proper error handling -> RE-2187
         except Exception as e:
             return False
@@ -140,10 +154,10 @@ class RobotAPI:
         and 1.0. Else return None if any errors are encountered"""
         try:
             response = requests.get(
-                f"{self.__prefix}/battery_level?robot_name={robot_name}",
+                f"{self.__prefix}/battery_status?robot_name={robot_name}",
                 timeout=TIMEOUT_DURATION_IN_S,
             ).json()
-            return response["battery_level"]
+            return response["data"]["level"] / 100.0
         # TODO(ane-robast): Add proper error handling -> RE-2187
         except Exception as e:
             return None

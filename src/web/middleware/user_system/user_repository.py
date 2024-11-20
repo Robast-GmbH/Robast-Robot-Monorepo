@@ -1,13 +1,16 @@
-import sqlite3
 import uuid
-from pydantic_models.user import User
+import datetime
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from db_models.user import User
 
-DB_PATH = "users.db"
-AVAILABLE_USER_GROUPS = [
-    "admin",
-    "staff",
-    "patient",
-]
+
+DB_URL = "sqlite:///users2.db"  # Using SQLite for demonstration, but you can change to PostgreSQL or others
+AVAILABLE_USER_GROUPS = ["admin", "staff", "patient"]
+
+# Setting up the SQLAlchemy engine and session
+engine = create_engine(DB_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 class UserRepository:
@@ -23,20 +26,25 @@ class UserRepository:
             cls.__instance = super(UserRepository, cls).__new__(cls, *args, **kwargs)
         return cls.__instance
 
-    def __init__(self, db_path: str = DB_PATH) -> None:
+    def __init__(self) -> None:
         if not self.__initialized:
             self.__initialized = True
-            self.__db_path = db_path
             self.__create_table()
 
-    def auth_user(self, user_id: str) -> bool:
-        user = self.get_user(user_id)
-        if user:
-            return True
-        return False
+    def login_user(self, email: str, password: str) -> User | None:
+        session = self.__get_session()
+        try:
+            user = session.query(User).filter(User.mail == email).first()
+            if user and user.password == password:
+                return user
+            return None
+        finally:
+            session.close()
 
     def create_user(
         self,
+        nfc_id: str | None,
+        mail: str | None,
         title: str,
         first_name: str,
         last_name: str,
@@ -44,127 +52,58 @@ class UserRepository:
         room: str,
         user_groups: list[str],
     ) -> User | None:
+        session = self.__get_session()
         user_id = str(uuid.uuid4())
-        nfc_id = str(uuid.uuid4())
-        user_groups_str = ",".join(user_groups)
-        db_connection = sqlite3.connect(self.__db_path)
-        cursor = db_connection.cursor()
-        cursor.execute(
-            """
-            INSERT INTO users (user_id, nfc_id, title, first_name, last_name, station, room, user_groups) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """,
-            (
-                user_id,
-                nfc_id,
-                title,
-                first_name,
-                last_name,
-                station,
-                room,
-                user_groups_str,
-            ),
+        password = f"{first_name}-{last_name}-{datetime.datetime.now().year}"
+
+        new_user = User(
+            id=user_id,
+            nfc_id=nfc_id,
+            mail=mail,
+            title=title,
+            first_name=first_name,
+            last_name=last_name,
+            station=station,
+            room=room,
+            user_groups=user_groups,
+            password=password,
         )
-        db_connection.commit()
-        db_connection.close()
-        return self.get_user(user_id)
+
+        session.add(new_user)
+        session.commit()
+        session.refresh(new_user)
+        session.close()
+        return new_user
 
     def get_all_users(self) -> list[User]:
-        db_connection = sqlite3.connect(self.__db_path)
-        cursor = db_connection.cursor()
-        cursor.execute("SELECT * FROM users")
-        rows = cursor.fetchall()
-        db_connection.close()
-        users = []
-        for row in rows:
-            (
-                user_id,
-                nfc_id,
-                title,
-                first_name,
-                last_name,
-                station,
-                room,
-                user_groups_str,
-            ) = row
-            user_groups = user_groups_str.split(",")
-            users.append(
-                User(
-                    id=user_id,
-                    nfc_id=nfc_id,
-                    title=title,
-                    first_name=first_name,
-                    last_name=last_name,
-                    station=station,
-                    room=room,
-                    user_groups=user_groups,
-                )
-            )
-        return users
+        session = self.__get_session()
+        try:
+            users = session.query(User).all()
+            return users
+        finally:
+            session.close()
 
     def get_user(self, user_id: str) -> User | None:
-        db_connection = sqlite3.connect(self.__db_path)
-        cursor = db_connection.cursor()
-        cursor.execute("SELECT * FROM users WHERE user_id = ?", (user_id,))
-        row = cursor.fetchone()
-        db_connection.close()
-        if row:
-            (
-                user_id,
-                nfc_id,
-                title,
-                first_name,
-                last_name,
-                station,
-                room,
-                user_groups_str,
-            ) = row
-            user_groups = user_groups_str.split(",")
-            return User(
-                id=user_id,
-                nfc_id=nfc_id,
-                title=title,
-                first_name=first_name,
-                last_name=last_name,
-                station=station,
-                room=room,
-                user_groups=user_groups,
-            )
-        return None
+        session = self.__get_session()
+        try:
+            user = session.query(User).filter(User.id == user_id).first()
+            return user
+        finally:
+            session.close()
 
     def get_user_by_nfc_id(self, nfc_id: str) -> User | None:
-        db_connection = sqlite3.connect(self.__db_path)
-        cursor = db_connection.cursor()
-        cursor.execute("SELECT * FROM users WHERE nfc_id = ?", (nfc_id,))
-        row = cursor.fetchone()
-        db_connection.close()
-        if row:
-            (
-                user_id,
-                nfc_id,
-                title,
-                first_name,
-                last_name,
-                station,
-                room,
-                user_groups_str,
-            ) = row
-            user_groups = user_groups_str.split(",")
-            return User(
-                id=user_id,
-                nfc_id=nfc_id,
-                title=title,
-                first_name=first_name,
-                last_name=last_name,
-                station=station,
-                room=room,
-                user_groups=user_groups,
-            )
-        return None
+        session = self.__get_session()
+        try:
+            user = session.query(User).filter(User.nfc_id == nfc_id).first()
+            return user
+        finally:
+            session.close()
 
     def update_user(
         self,
         user_id: str,
         nfc_id: str | None = None,
+        mail: str | None = None,
         title: str | None = None,
         first_name: str | None = None,
         last_name: str | None = None,
@@ -172,87 +111,68 @@ class UserRepository:
         room: str | None = None,
         user_groups: list[str] | None = None,
     ) -> User | None:
-        if not any(
-            [
-                nfc_id,
-                title is not None,
-                first_name,
-                last_name,
-                station,
-                room,
-                user_groups,
-            ]
-        ):
-            return
+        session = self.__get_session()
+        try:
+            user = session.query(User).filter(User.id == user_id).first()
+            if user:
+                if nfc_id:
+                    user.nfc_id = nfc_id
+                if mail:
+                    user.mail = mail
+                if title is not None:
+                    user.title = title
+                if first_name:
+                    user.first_name = first_name
+                if last_name:
+                    user.last_name = last_name
+                if station:
+                    user.station = station
+                if room:
+                    user.room = room
+                if user_groups:
+                    user.user_groups = user_groups
 
-        query = "UPDATE users SET "
-        params = []
+                session.commit()
+                session.refresh(user)
+                return user
+            return None
+        finally:
+            session.close()
 
-        if nfc_id:
-            query += "nfc_id = ?, "
-            params.append(nfc_id)
-
-        if title is not None:
-            query += "title = ?, "
-            params.append(title)
-
-        if first_name:
-            query += "first_name = ?, "
-            params.append(first_name)
-
-        if last_name:
-            query += "last_name = ?, "
-            params.append(last_name)
-
-        if station:
-            query += "station = ?, "
-            params.append(station)
-
-        if room:
-            query += "room = ?, "
-            params.append(room)
-
-        if user_groups:
-            query += "user_groups = ?, "
-            params.append(",".join(user_groups))
-
-        # Remove the last comma and space
-        query = query[:-2]
-
-        query += " WHERE user_id = ?"
-        params.append(user_id)
-        db_connection = sqlite3.connect(self.__db_path)
-        cursor = db_connection.cursor()
-        cursor.execute(query, params)
-        db_connection.commit()
-        db_connection.close()
-        return self.get_user(user_id)
+    def update_user_password(
+        self, user_id: str, old_password: str, new_password: str
+    ) -> bool:
+        session = self.__get_session()
+        try:
+            user = (
+                session.query(User)
+                .filter(User.id == user_id, User.password == old_password)
+                .first()
+            )
+            if user:
+                user.password = new_password
+                session.commit()
+                return True
+            return False
+        finally:
+            session.close()
 
     def delete_user(self, user_id: str) -> bool:
-        db_connection = sqlite3.connect(self.__db_path)
-        cursor = db_connection.cursor()
-        cursor.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
-        db_connection.commit()
-        db_connection.close()
-        return self.get_user(user_id) is None
+        session = self.__get_session()
+        try:
+            user = session.query(User).filter(User.id == user_id).first()
+            if user:
+                session.delete(user)
+                session.commit()
+                return True
+            return False
+        finally:
+            session.close()
 
     def __create_table(self) -> None:
-        db_connection = sqlite3.connect(self.__db_path)
-        # Create users table if not exists
-        cursor = db_connection.cursor()
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS users (
-                user_id TEXT PRIMARY KEY,
-                nfc_id TEXT,
-                title TEXT,
-                first_name TEXT,
-                last_name TEXT,
-                station TEXT,
-                room TEXT,
-                user_groups TEXT
-            )
-        """
-        )
-        db_connection.commit()
-        db_connection.close()
+        """Create users table if it doesn't exist"""
+        User.metadata.create_all(bind=engine)
+
+    def __get_session(self):
+        """Helper function to create a new session"""
+        return SessionLocal()

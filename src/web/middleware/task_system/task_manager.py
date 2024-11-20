@@ -1,6 +1,6 @@
 from task_system.task_repository import TaskRepository
-from pydantic_models.task import Task
-from pydantic_models.sub_task import SubTask
+from pydantic_models.task_request import Task
+from db_models.subtask import Subtask
 
 
 class TaskManager:
@@ -13,19 +13,31 @@ class TaskManager:
     def read_task(self, task_id) -> Task | None:
         return self.task_repository.read_task(task_id)
 
-    def read_tasks_by_assignee(self, assignee_name) -> list[Task]:
-        return self.task_repository.read_tasks_by_assignee(assignee_name)
+    def read_tasks_by_assignee(
+        self, assignee_name: str, limit: int, offset: int
+    ) -> list[Task]:
+        return self.task_repository.read_tasks_by_assignee(assignee_name, limit, offset)
+
+    def read_finished_tasks_by_assignee(
+        self, assignee_name: str, limit: int, offset: int
+    ) -> list[Task]:
+        return self.task_repository.read_finished_tasks_by_assignee(
+            assignee_name, limit, offset
+        )
 
     def read_all_tasks(self) -> list[Task]:
         return self.task_repository.read_tasks()
 
-    def read_subtask(self, subtask_id: str) -> SubTask | None:
+    def read_unassigned_tasks(self) -> list[Task]:
+        return self.task_repository.read_unassigned_tasks()
+
+    def read_subtask(self, subtask_id: str) -> Subtask | None:
         return self.task_repository.read_subtask(subtask_id)
 
-    def read_subtasks_by_task_id(self, task_id) -> list[SubTask]:
+    def read_subtasks_by_task_id(self, task_id) -> list[Subtask]:
         return self.task_repository.read_subtasks_by_task_id(task_id)
 
-    def read_subtasks_by_subtask_ids(self, subtask_ids: list[str]) -> list[SubTask]:
+    def read_subtasks_by_subtask_ids(self, subtask_ids: list[str]) -> list[Subtask]:
         return self.task_repository.read_subtasks_by_subtask_ids(subtask_ids)
 
     def update_task(self, task) -> bool:
@@ -65,10 +77,10 @@ class TaskManager:
 
     def assign_task(self, task_id, assignee_name) -> bool:
         task = self.task_repository.read_task(task_id)
-        if task:
-            task.assignee_name = assignee_name
-            for subtask in task.subtasks:
-                subtask.assignee_name = assignee_name
-            task.status = "pending"
-            return self.task_repository.update_task(task)
-        return False
+        if not task:
+            return False
+        task.assignee_name = assignee_name
+        for subtask in task.subtasks:
+            subtask.assignee_name = assignee_name
+        task.status = "pending"
+        return self.task_repository.update_task(task)

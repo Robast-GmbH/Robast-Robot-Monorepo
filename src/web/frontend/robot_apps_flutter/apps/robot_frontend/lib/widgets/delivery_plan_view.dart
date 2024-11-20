@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
-import 'package:robot_frontend/widgets/custom_button_view.dart';
+import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
 
 class DeliveryPlanView extends StatelessWidget {
   const DeliveryPlanView({super.key});
@@ -18,7 +18,7 @@ class DeliveryPlanView extends StatelessWidget {
             children: [
               Expanded(
                   child: Text(
-                'Essen:',
+                'Abendessen:',
                 style: TextStyle(color: RobotColors.secondaryText, fontSize: 24),
               )),
               Expanded(

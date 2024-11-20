@@ -40,7 +40,6 @@ jobs:
       with:
         context: src/ros2/${{ env.Project-Name }}/
         target: devel
-        build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }} #TODO @TAlscher find a smarter way then using this token
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
         tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
@@ -50,8 +49,7 @@ jobs:
       with:
         context: src/ros2/${{ env.Project-Name }}/
         target: release
-        platforms: linux/amd64,linux/arm64/v8
-        build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
+        platforms: linux/arm64/v8
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
         tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release

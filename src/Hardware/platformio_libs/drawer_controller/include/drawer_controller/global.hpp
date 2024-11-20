@@ -3,11 +3,14 @@
 
 #include <memory>
 
+#include "config/module_hardware_config.hpp"
+#include "config/user_config.hpp"
 #include "debug/debug.hpp"
 #include "drawer/electrical_drawer.hpp"
 #include "drawer/manual_drawer.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "led/led_strip.hpp"
+#include "module_id/module_id.hpp"
 #include "motor/motor_monitor_config.hpp"
 #include "switch/switch.hpp"
 #include "utils/can_message_converter.hpp"
@@ -38,6 +41,7 @@ std::shared_ptr<drawer::ElectricalDrawerConfig> drawer_config;
 std::shared_ptr<motor::EncoderConfig> encoder_config;
 std::shared_ptr<motor::MotorConfig> motor_config;
 std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config;
+std::shared_ptr<tray::TrayManagerConfig> tray_manager_config;
 
 std::shared_ptr<switch_lib::Switch> endstop_switch;
 
@@ -48,4 +52,4 @@ std::unique_ptr<utils::ConfigManager> config_manager;
 // shared resource, so we need a mutex for this
 std::unique_ptr<utils::Queue<robast_can_msgs::CanMessage>> can_msg_queue;
 
-#endif // DRAWER_CONTROLLER_GLOBAL_HPP
+#endif   // DRAWER_CONTROLLER_GLOBAL_HPP

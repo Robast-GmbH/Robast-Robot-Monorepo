@@ -9,6 +9,7 @@
 #include "motor/enconder_config.hpp"
 #include "motor/motor_config.hpp"
 #include "motor/motor_monitor_config.hpp"
+#include "tray/tray_manager_config.hpp"
 
 namespace utils
 {
@@ -18,7 +19,8 @@ namespace utils
     ConfigManager(const std::shared_ptr<drawer::ElectricalDrawerConfig> drawer_config,
                   const std::shared_ptr<motor::EncoderConfig> encoder_config,
                   const std::shared_ptr<motor::MotorConfig> motor_config,
-                  const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config);
+                  const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config,
+                  const std::shared_ptr<tray::TrayManagerConfig> tray_manager_config);
 
     bool set_config(const uint8_t config_id, const uint32_t config_value);
 
@@ -27,6 +29,7 @@ namespace utils
     std::shared_ptr<motor::EncoderConfig> _encoder_config;
     std::shared_ptr<motor::MotorConfig> _motor_config;
     std::shared_ptr<motor::MotorMonitorConfig> _motor_monitor_config;
+    std::shared_ptr<tray::TrayManagerConfig> _tray_manager_config;
 
     void set_default_configs();
 
@@ -34,9 +37,11 @@ namespace utils
 
     void set_default_encoder_config();
 
-    void set_motor_config();
+    void set_default_motor_config();
 
     void set_default_motor_monitor_config();
+
+    void set_default_tray_manager_config();
   };
 
 }   // namespace utils

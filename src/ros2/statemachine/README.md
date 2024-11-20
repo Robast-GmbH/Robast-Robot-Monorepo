@@ -25,3 +25,13 @@ Error handle: 30
     bt_conversions: 32
     bt_plugins: 33
     drawer_sm: 34
+
+
+Cura LED infos:
+    Base:
+        start: back right
+        Count: 119 => 0,84 is factor
+        back: 30 => 100
+        left: 29 => 74,79
+        front: 31 => 50,42
+        right: 29 => 24,37%

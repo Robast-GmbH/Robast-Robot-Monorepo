@@ -35,12 +35,12 @@ namespace lock
 
   void ElectricalDrawerLock::handle_lock_control()
   {
-    // Mind that the expected lock state is changed in the handle_lock_status function when a CAN msg is received
+    // Mind that the expected lock state is changed when a CAN msg is received
     const bool change_lock_state = _expected_lock_state_current_step != _lock_state_previous_step;
 
-    const unsigned long current_timestamp = millis();
-    const unsigned long time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;
-    const unsigned long time_since_lock_was_opened = current_timestamp - _timestamp_last_lock_opening;
+    const uint32_t current_timestamp = millis();
+    const uint32_t time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;
+    const uint32_t time_since_lock_was_opened = current_timestamp - _timestamp_last_lock_opening;
     const bool has_lock_mechanism_time_passed =
       time_since_lock_state_was_changed >= _ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS;
 
@@ -58,7 +58,7 @@ namespace lock
     }
 
     if (_expected_lock_state_current_step == LockState::unlocked &&
-        time_since_lock_was_opened > _ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED_IN_MS) 
+        time_since_lock_was_opened > _ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED_IN_MS)
     {
       // Close the lock automatically after some seconds when drawer wasn't opened for safety reasons
       set_expected_lock_state_current_step(LockState::locked);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
-import 'package:robot_frontend/widgets/custom_button_view.dart';
+import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
 
 class WeatherView extends StatelessWidget {
   const WeatherView({super.key});
@@ -14,11 +14,11 @@ class WeatherView extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            buildWeatherInfo(title: 'Mi.', icon: Icons.sunny, highestTemperature: 24, lowestTemperature: 16),
+            buildWeatherInfo(title: 'Do.', icon: Icons.cloud, highestTemperature: 16, lowestTemperature: 6),
             const SizedBox(width: 32),
-            buildWeatherInfo(title: 'Do.', icon: Icons.sunny, highestTemperature: 22, lowestTemperature: 13),
+            buildWeatherInfo(title: 'Fr.', icon: Icons.cloud, highestTemperature: 17, lowestTemperature: 7),
             const SizedBox(width: 32),
-            buildWeatherInfo(title: 'Fr.', icon: Icons.cloud, highestTemperature: 19, lowestTemperature: 11),
+            buildWeatherInfo(title: 'Sa.', icon: Icons.cloud, highestTemperature: 17, lowestTemperature: 8),
           ],
         ),
       ),

@@ -27,6 +27,12 @@ class DrawerMock(Node):
         )
         self.create_subscription(
             DrawerAddress,
+            "trigger_partial_drawer_tree",
+            self.__electric_drawer_tree_callback,
+            10,
+        )
+        self.create_subscription(
+            DrawerAddress,
             "close_drawer",
             self.__close_drawer_callback,
             10,
