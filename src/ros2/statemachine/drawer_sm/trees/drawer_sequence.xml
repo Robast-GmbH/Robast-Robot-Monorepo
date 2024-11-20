@@ -50,15 +50,20 @@
         <Sequence>
           <GetBlackboardEntry key="drawer_address"
                               value="{drawer}"/>
+          <PublishStateFeedback state_feedback="opening_timed_out"
+                                state_feedback_topic="/module_state_update"
+                                drawer_address="{drawer}"/>
           <SubTree ID="LED_Default"
                    _autoremap="true"/>
           <LEDPublisherAction drawer_address="{drawer}"
                               fading_time_ms="100"
                               led_topic="/led_cmd"
                               leds="{leds}"/>
-          <PublishStateFeedback state_feedback="closed"
-                                state_feedback_topic="/module_state_update"
-                                drawer_address="{drawer}"/>
+          <Delay delay_msec="1000">
+            <PublishStateFeedback state_feedback="closed"
+                                  state_feedback_topic="/module_state_update"
+                                  drawer_address="{drawer}"/>
+          </Delay>
         </Sequence>
       </Fallback>
     </ResetDecorator>

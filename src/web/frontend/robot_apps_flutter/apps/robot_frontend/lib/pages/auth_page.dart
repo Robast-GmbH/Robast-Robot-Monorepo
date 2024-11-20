@@ -6,7 +6,6 @@ import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/pages/menu_page.dart';
 import 'package:robot_frontend/widgets/auth_view.dart';
-import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/disinfection_view.dart';
 import 'package:shared_data_models/shared_data_models.dart';

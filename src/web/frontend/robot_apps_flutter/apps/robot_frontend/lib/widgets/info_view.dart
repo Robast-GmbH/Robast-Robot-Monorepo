@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/pages/manuals_page.dart';
 import 'package:robot_frontend/pages/video_page.dart';
 import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
 import 'package:robot_frontend/widgets/video_view.dart';
@@ -68,41 +69,19 @@ class InfoView extends StatelessWidget {
             children: [
               Expanded(
                 child: CustomButtonView(
+                  header: const Text(
+                    'Anleitungen',
+                    style: TextStyle(color: RobotColors.primaryText, fontSize: 40, fontWeight: FontWeight.w400),
+                  ),
                   onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute<VideoPage>(
-                            builder: (context) => VideoPage(
-                                  path: videoPath,
-                                )));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const ManualsPage()));
                   },
-                  content: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    child: AbsorbPointer(
-                        absorbing: true,
-                        child: Stack(
-                          children: [
-                            ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: VideoView(
-                                  path: videoPath,
-                                )),
-                            const Align(
-                                alignment: Alignment.bottomRight,
-                                child: Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Icon(Icons.fullscreen, size: 48, color: RobotColors.primaryText),
-                                )),
-                          ],
-                        )),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute<VideoPage>(
-                              builder: (context) => VideoPage(
-                                    path: videoPath,
-                                  )));
-                    },
+                  content: const Center(
+                    child: Icon(
+                      Icons.book,
+                      size: 100,
+                      color: RobotColors.primaryText,
+                    ),
                   ),
                 ),
               ),

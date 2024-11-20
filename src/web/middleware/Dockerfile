@@ -14,8 +14,7 @@ ARG DEBIAN_FRONTEND=
 
 WORKDIR /workspace
 
-COPY main.py /workspace/middleware/main.py
-COPY requirements.txt /workspace/middleware/requirements.txt
+COPY . /workspace/middleware/
 
 USER robast
 

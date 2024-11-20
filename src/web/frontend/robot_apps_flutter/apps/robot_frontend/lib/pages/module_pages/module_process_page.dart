@@ -23,6 +23,7 @@ class _ModuleProcessPageState extends State<ModuleProcessPage> {
     return CustomScaffold(
       showBackButton: false,
       inactivityTimerEnabled: false,
+      collapsedTitle: true,
       child: ModuleProcessView(
         requireDesinfection: widget.requireDisinfection,
       ),
