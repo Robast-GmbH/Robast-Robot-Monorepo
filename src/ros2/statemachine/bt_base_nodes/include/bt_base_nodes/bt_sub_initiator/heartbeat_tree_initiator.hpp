@@ -40,7 +40,7 @@ namespace bt_base_nodes
       blackboard_->set<std::string>("id", msg->data);
       BT::NodeStatus status = bt_.tickWhileRunning(std::chrono::milliseconds(tree_tick_time_));
 
-      if (status == BT::NodeStatus::SUCCESS || status == BT::NodeStatus::FAILURE)
+      if (status != BT::NodeStatus::RUNNING)
       {
         bt_.haltTree();
         rclcpp::shutdown();
