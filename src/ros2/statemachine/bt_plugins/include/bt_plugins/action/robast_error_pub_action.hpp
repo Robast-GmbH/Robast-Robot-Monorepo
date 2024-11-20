@@ -1,5 +1,5 @@
-#ifndef BT_PLUGINS_ACTION_ROBAST_ERROR_PUB_ACTION_HPP
-#define BT_PLUGINS_ACTION_ROBAST_ERROR_PUB_ACTION_HPP
+#ifndef BT_PLUGINS_ACTION__ROBAST_ERROR_PUB_ACTION_HPP
+#define BT_PLUGINS_ACTION__ROBAST_ERROR_PUB_ACTION_HPP
 
 #include <rclcpp/rclcpp.hpp>
 #include <string>
@@ -36,4 +36,4 @@ namespace statemachine
 
 }   // namespace statemachine
 
-#endif   // BT_PLUGINS_ACTION_ROBAST_ERROR_PUB_ACTION_HPP
+#endif   // BT_PLUGINS_ACTION__ROBAST_ERROR_PUB_ACTION_HPP
