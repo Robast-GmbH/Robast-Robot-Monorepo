@@ -1,7 +1,4 @@
-ARG ROS_VERSION=humble
-FROM ros:${ROS_VERSION} as devel
-ARG ROS_CONTROL_VERSION=humble
-ARG MOVEIT2_TUTORIALS_VERSION=humble
+FROM moveit/moveit2:humble-humble-tutorial-source as devel
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
   echo robast:robast | chpasswd && \
@@ -62,6 +59,17 @@ RUN apt-get update && apt-get install -y \
 #   && rosdep install --from-paths /workspace_moveit2/src --ignore-src -r -y \
 #   && colcon build --parallel-workers 2 --build-base /workspace_moveit2/build --install-base /workspace_moveit2/install \
 #   && echo "if [ -f /workspace_moveit2/install/setup.bash ]; then source /workspace_moveit2/install/setup.bash; fi" >> /home/${USER}/.bashrc
+
+# Install moveit_task_constructor from source
+RUN mkdir -p /workspace_moveit_task_constructor/src && cd /workspace_moveit_task_constructor/src \
+  && git clone --recurse-submodules https://github.com/moveit/moveit_task_constructor.git -b ${ROS_DISTRO} \
+  && apt update \
+  && apt upgrade -y \
+  && . /opt/ros/${ROS_DISTRO}/setup.sh \
+  && rosdep update \
+  && rosdep install --from-paths /workspace_moveit_task_constructor/src --ignore-src -r -y \
+  && colcon build --parallel-workers 1 --build-base /workspace_moveit_task_constructor/build --install-base /workspace_moveit_task_constructor/install \
+  && echo "if [ -f /workspace_moveit_task_constructor/install/setup.bash ]; then source /workspace_moveit_task_constructor/install/setup.bash; fi" >> /home/${USER}/.bashrc
 
 # Install PlotJuggler as debugging tool to view controller_state data and so forth
 # TODO: Remove this once we left the early development phase
