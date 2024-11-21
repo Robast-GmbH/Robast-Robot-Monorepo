@@ -6,7 +6,7 @@ import 'package:robot_frontend/models/provider/robot_provider.dart';
 
 class InactivityProvider with ChangeNotifier {
   Timer? _inactivityTimer;
-  final Duration _timeoutDuration = const Duration(seconds: 20);
+  final Duration _timeoutDuration = const Duration(seconds: 600);
   final int _timeoutReactionDurationInS = 10;
   final GlobalKey<NavigatorState> _navigatorKey;
 
