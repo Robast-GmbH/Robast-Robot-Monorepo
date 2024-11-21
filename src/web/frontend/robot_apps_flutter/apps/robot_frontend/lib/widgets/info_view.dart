@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/pages/manuals_page.dart';
-import 'package:robot_frontend/pages/video_page.dart';
 import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
-import 'package:robot_frontend/widgets/video_view.dart';
 
 class InfoView extends StatelessWidget {
   const InfoView({super.key});

@@ -16,6 +16,10 @@ class InactivityProvider with ChangeNotifier {
     _inactivityTimer?.cancel();
   }
 
+  bool isActive() {
+    return _inactivityTimer?.isActive ?? false;
+  }
+
   void resetInactivityTimer() {
     _inactivityTimer?.cancel();
     _inactivityTimer = Timer(_timeoutDuration, () async => _onInactivityTimeout());

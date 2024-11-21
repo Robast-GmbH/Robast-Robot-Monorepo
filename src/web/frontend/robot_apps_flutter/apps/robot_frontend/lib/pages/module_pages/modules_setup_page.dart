@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
+import 'package:robot_frontend/pages/manuals_page.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
 import 'package:robot_frontend/widgets/dialogs/finish_module_setup_dialog.dart';
@@ -252,9 +253,11 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          width: 8,
-                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
                         Expanded(
                           child: RoundedButton(
                             onPressed: () async {
@@ -273,8 +276,32 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                             ),
                           ),
                         ),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        Expanded(
+                          child: RoundedButton(
+                            onPressed: () async {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute<ManualsPage>(
+                                  builder: (context) => const ManualsPage(
+                                    inactivityTimerEnabled: false,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                'Hilfe',
+                                style: TextStyle(fontSize: 28, color: RobotColors.primaryText),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
-                    ),
+                    )
                   ],
                 ),
               ),

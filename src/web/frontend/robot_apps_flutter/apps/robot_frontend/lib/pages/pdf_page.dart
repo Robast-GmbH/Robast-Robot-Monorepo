@@ -4,14 +4,20 @@ import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 
 class PdfPage extends StatelessWidget {
-  const PdfPage({required this.path, super.key});
+  const PdfPage({
+    required this.path,
+    this.inactivityTimerEnabled = true,
+    super.key,
+  });
 
   final String path;
+  final bool inactivityTimerEnabled;
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
       ignoreEmergencyStop: true,
+      inactivityTimerEnabled: inactivityTimerEnabled,
       title: path.split('/').last.split('.').first,
       child: PdfViewer.file(
         path,

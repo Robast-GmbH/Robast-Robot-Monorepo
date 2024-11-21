@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/provider/inactivity_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/manuals_page.dart';
 import 'package:robot_frontend/pages/setting_pages/config_page.dart';
 import 'package:robot_frontend/widgets/buttons/developer_button_view.dart';
 
 class StatusIndicatorView extends StatefulWidget {
-  const StatusIndicatorView({super.key});
+  const StatusIndicatorView({this.shouldBlockNavigation = false, super.key});
+
+  final bool shouldBlockNavigation;
 
   @override
   State<StatusIndicatorView> createState() => _StatusIndicatorViewState();
@@ -73,7 +76,21 @@ class _StatusIndicatorViewState extends State<StatusIndicatorView> {
         const SizedBox(width: 8),
         IconButton(
           padding: const EdgeInsets.all(0),
-          onPressed: () => Navigator.push(context, MaterialPageRoute<ConfigPage>(builder: (context) => const ManualsPage())),
+          onPressed: () async {
+            final robotProvider = Provider.of<RobotProvider>(context, listen: false);
+            if (widget.shouldBlockNavigation) {
+              robotProvider.blockNavigation();
+            }
+            final inactivityProvider = Provider.of<InactivityProvider>(context, listen: false);
+            final isActive = inactivityProvider.isActive();
+            await Navigator.push(context, MaterialPageRoute<ManualsPage>(builder: (context) => const ManualsPage()));
+            if (!isActive) {
+              inactivityProvider.cancelTimer();
+            }
+            if (widget.shouldBlockNavigation) {
+              robotProvider.unblockNavigation();
+            }
+          },
           color: RobotColors.primaryIcon,
           icon: const Icon(
             Icons.info_outline,

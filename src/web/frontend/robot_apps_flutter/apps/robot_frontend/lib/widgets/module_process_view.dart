@@ -201,12 +201,14 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const ManualsPage(),
+                  builder: (context) => const ManualsPage(
+                    inactivityTimerEnabled: false,
+                  ),
                 ),
               );
               isDisplayingManuals = false;
             },
-            icon: Icon(Icons.info_outline),
+            icon: const Icon(Icons.info_outline),
             color: RobotColors.primaryIcon,
             iconSize: 40,
           ),
