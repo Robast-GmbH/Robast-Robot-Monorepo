@@ -72,7 +72,7 @@
             axis_y="0"
             axis_z="1"
             lower_limit="0.0"
-            upper_limit="0.3"
+            upper_limit="0.2"
             damping="0.1"
             friction="0.3"
             ros2_control_hardware_type="${ros2_control_hardware_type}"
