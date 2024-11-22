@@ -20,5 +20,6 @@ docker run \
 	--env robot=rb_theron \
 	--env prefix="" \
 	--user robast \
-	ghcr.io/robast-gmbh/monorepo/moveit:devel-humble
+	ghcr.io/robast-gmbh/monorepo/moveit:devel-humble \
+	bash -c "cd ~/../../workspace && sudo apt-get update && sudo apt-get upgrade -y && rosdep update && rosdep install --from-paths src --ignore-src -r -y && colcon build --packages-skip get_spatial_detections_from_topic create_pose_from_spatial_detections publish_pose_to_topic setup_mtc_move_to_pose_with_constraints && bash"
 
