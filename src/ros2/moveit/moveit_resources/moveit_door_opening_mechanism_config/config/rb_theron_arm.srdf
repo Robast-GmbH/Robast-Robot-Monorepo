@@ -15,7 +15,7 @@
     </group>
 
     <group_state name="starting_position_right" group="mobile_base_arm">
-        <joint name="door_opening_mechanism_joint_y_axis_slide" value="0.4"/>
+        <joint name="door_opening_mechanism_joint_y_axis_slide" value="0.3"/>
         <joint name="door_opening_mechanism_joint_x_axis_slide" value="0.0"/>
         <joint name="door_opening_mechanism_joint_rotating_arm" value="1.57079632679"/>
         <joint name="door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
@@ -23,8 +23,8 @@
     </group_state>
 
     <group_state name="starting_position_left" group="mobile_base_arm">
-        <joint name="door_opening_mechanism_joint_y_axis_slide" value="0.4"/>
-        <joint name="door_opening_mechanism_joint_x_axis_slide" value="0.3"/>
+        <joint name="door_opening_mechanism_joint_y_axis_slide" value="0.3"/>
+        <joint name="door_opening_mechanism_joint_x_axis_slide" value="0.27"/>
         <joint name="door_opening_mechanism_joint_rotating_arm" value="1.57079632679"/>
         <joint name="door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
         <joint name="position_joint" value="0"/>
