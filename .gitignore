@@ -220,3 +220,6 @@ COLCON_IGNORE
 
 # Frontend copy
 bringups/jetson/start_scripts/robot_frontend/
+
+# Cleaning data
+cleaning_data.json

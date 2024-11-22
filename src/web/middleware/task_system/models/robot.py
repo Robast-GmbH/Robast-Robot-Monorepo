@@ -33,6 +33,7 @@ class Robot:
         self.__subtask_queue: list[str] = []
         self.__done_subtasks_ids: list[str] = []
         self.__subtask_queue_lock = threading.Lock()
+        self.is_task_queue_open = True
 
         print(
             f"Robot {self.__name} initialized at node {self.__current_node.id} -> Starting task status update timer"
@@ -55,6 +56,8 @@ class Robot:
         return subtasks
 
     def get_request_cost(self, task: Task) -> float:
+        if not self.is_task_queue_open:
+            return float("inf")
         if "required_submodule_type" in task.requirements:
             is_submodule_available = (
                 self.__submodule_manager.is_submodule_size_available(

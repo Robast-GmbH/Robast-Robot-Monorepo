@@ -12,6 +12,7 @@ import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/home_views/patient_home_view.dart';
 import 'package:robot_frontend/widgets/home_views/staff_home_view.dart';
 import 'package:robot_frontend/widgets/info_view.dart';
+import 'package:robot_frontend/widgets/notification_views/notification_view.dart';
 
 import 'package:robot_frontend/widgets/robot_map_view.dart';
 import 'package:robot_frontend/widgets/settings_views/admin_settings_view.dart';
@@ -67,6 +68,15 @@ class _MenuPageState extends State<MenuPage> {
         'ADMIN': InfoView.new,
         'STAFF': InfoView.new,
         'PATIENT': InfoView.new,
+      },
+    ),
+    SidebarMenuPoint(
+      title: 'Benachrichtigungen',
+      icon: Icons.notifications,
+      userGroupWidgets: {
+        'ADMIN': NotificationView.new,
+        'STAFF': NotificationView.new,
+        'PATIENT': NotificationView.new,
       },
     ),
     SidebarMenuPoint(

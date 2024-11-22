@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 import 'package:middleware_api_utilities/src/services/request_service.dart';
+import 'package:middleware_api_utilities/src/sub_apis/hygiene_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/manuals_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/modules_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/nfc_api.dart';
@@ -26,6 +27,7 @@ class MiddlewareApiUtilities {
     _tasks = TasksApi(prefix: prefix);
     _nfc = NFCApi(prefix: prefix);
     _manuals = ManualsApi(prefix: prefix);
+    _hygiene = HygieneApi(prefix: prefix);
   }
 
   late String _prefix;
@@ -34,6 +36,7 @@ class MiddlewareApiUtilities {
   late TasksApi _tasks;
   late NFCApi _nfc;
   late ManualsApi _manuals;
+  late HygieneApi _hygiene;
 
   String get prefix => _prefix;
   ModulesApi get modules => _modules;
@@ -41,6 +44,7 @@ class MiddlewareApiUtilities {
   TasksApi get tasks => _tasks;
   NFCApi get nfc => _nfc;
   ManualsApi get manuals => _manuals;
+  HygieneApi get hygiene => _hygiene;
 
   Future<bool> testConnection({
     required String url,

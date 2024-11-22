@@ -7,6 +7,7 @@ from user_system.user_system_router import user_system_router
 from module_manager.module_manager_router import module_manager_router
 from manuals_manager.manuals_router import manuals_router
 from task_system.task_system_router import task_system_router
+from hygiene_manager.hygiene_router import hygiene_router
 import configs.url_config as url_config
 from models.url_helper import URLHelper
 
@@ -22,6 +23,7 @@ app.include_router(user_system_router, prefix="/users")
 app.include_router(module_manager_router, prefix="/modules")
 app.include_router(manuals_router, prefix="/manuals")
 app.include_router(task_system_router, prefix="/tasks")
+app.include_router(hygiene_router, prefix="/hygiene")
 
 
 name_to_ip = url_config.ROBOT_NAME_TO_IP
