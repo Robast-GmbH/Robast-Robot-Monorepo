@@ -62,7 +62,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!isModuleUpdateActive) {
         isModuleUpdateActive = true;
-        Provider.of<ModuleProvider>(context, listen: false).startSubmodulesUpdateTimer(onModuleProcess: startModuleProcess);
+        Provider.of<ModuleProvider>(context, listen: false).startSubmodulesUpdateTimer(
+          onModuleProcess: startModuleProcess,
+        );
       }
     });
     return CustomScaffold(
@@ -75,7 +77,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             children: [
               Padding(
                 padding: EdgeInsets.all(12),
-                child: StatusIndicatorView(),
+                child: StatusIndicatorView(
+                  shouldBlockNavigation: true,
+                ),
               ),
               Expanded(child: StatusBar()),
             ],

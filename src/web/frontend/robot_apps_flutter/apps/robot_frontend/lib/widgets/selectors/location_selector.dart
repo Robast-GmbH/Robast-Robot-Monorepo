@@ -64,7 +64,7 @@ class _LocationSelectorState extends State<LocationSelector> {
                   setState(() => controller.setRoom(value ?? ''));
                   widget.onChanged?.call();
                 },
-                items: controller.station?.isEmpty ?? true ? [] : mapProvider.roomsByStations[controller.station]!.toList(),
+                items: controller.station?.isEmpty ?? true ? [] : mapProvider.roomsByStations[controller.station]?.toList() ?? [],
               ),
             ),
           ],
