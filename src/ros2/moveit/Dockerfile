@@ -50,7 +50,7 @@ RUN mkdir -p workspace_ros_control/src && cd workspace_ros_control/src \
  && vcs import --input https://raw.githubusercontent.com/ros-controls/ros2_control_ci/master/ros_controls.$ROS_DISTRO.repos \
  && rosdep update --rosdistro=$ROS_DISTRO \
  && sudo apt-get update \
- && rosdep install --from-paths src --ignore-src -r -y \
+ && rosdep install --from-paths /workspace_ros_control/src --ignore-src -r -y \
  && colcon build --parallel-workers 1 --build-base /workspace_ros_control/build --install-base /workspace_ros_control/install \
  && echo "if [ -f /workspace_ros_control/install/setup.bash ]; then source /workspace_ros_control/install/setup.bash; fi" >> /home/${USER}/.bashrc
 
