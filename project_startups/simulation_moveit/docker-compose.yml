@@ -79,7 +79,7 @@ services:
       - ../../src/ros2/ros2_control/ros2_controllers:/workspace/src/ros2_control/ros2_controllers:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ../../src/ros2/dds_configs:/workspace/dds_configs:cached
-      - ../../src/ros2/utils:/workspace/src/utils:cached
+      - ../../src/ros2/utils/launch_manager:/workspace/src/utils/launch_manager:cached
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   perception:

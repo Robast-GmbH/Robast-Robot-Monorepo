@@ -31,53 +31,60 @@ class CustomScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: BackgroundView(
-      inactivityTimerEnabled: inactivityTimerEnabled,
-      child: ignoreEmergencyStop
-          ? child
-          : Selector<RobotProvider, bool?>(
-              selector: (context, robotProvider) => robotProvider.isEmergencyStopPressed,
-              builder: (context, isEmergencyStopPressed, selectorChild) {
-                if (isEmergencyStopPressed == null) {
-                  return const Column(
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.all(12),
-                            child: StatusIndicatorView(),
-                          ),
-                          Expanded(child: StatusBar()),
-                        ],
-                      ),
-                      Expanded(
-                        child: Center(
-                            child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 256),
-                          child: Text(
-                            "Not-Aus Status konnte nicht abgerufen werden",
-                            style: TextStyle(color: RobotColors.primaryText, fontSize: 72),
-                            textAlign: TextAlign.center,
-                          ),
-                        )),
-                      ),
-                    ],
+      body: BackgroundView(
+        inactivityTimerEnabled: inactivityTimerEnabled,
+        child: ignoreEmergencyStop
+            ? TitledView(
+                title: title,
+                showBackButton: showBackButton,
+                onBackButtonPressed: onBackButtonPressed,
+                collapsedTitle: collapsedTitle,
+                child: child,
+              )
+            : Selector<RobotProvider, bool?>(
+                selector: (context, robotProvider) => robotProvider.isEmergencyStopPressed,
+                builder: (context, isEmergencyStopPressed, selectorChild) {
+                  if (isEmergencyStopPressed == null) {
+                    return const Column(
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.all(12),
+                              child: StatusIndicatorView(),
+                            ),
+                            Expanded(child: StatusBar()),
+                          ],
+                        ),
+                        Expanded(
+                          child: Center(
+                              child: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 256),
+                            child: Text(
+                              "Not-Aus Status konnte nicht abgerufen werden",
+                              style: TextStyle(color: RobotColors.primaryText, fontSize: 72),
+                              textAlign: TextAlign.center,
+                            ),
+                          )),
+                        ),
+                      ],
+                    );
+                  }
+                  if (isEmergencyStopPressed) {
+                    Navigator.of(context).popUntil((route) => route is PageRoute);
+                    return const EmergencyStopView();
+                  }
+                  return TitledView(
+                    title: title,
+                    showBackButton: showBackButton,
+                    onBackButtonPressed: onBackButtonPressed,
+                    collapsedTitle: collapsedTitle,
+                    child: child,
                   );
-                }
-                if (isEmergencyStopPressed) {
-                  Navigator.of(context).popUntil((route) => route is PageRoute);
-                  return const EmergencyStopView();
-                }
-                return TitledView(
-                  title: title,
-                  showBackButton: showBackButton,
-                  onBackButtonPressed: onBackButtonPressed,
-                  collapsedTitle: collapsedTitle,
-                  child: child,
-                );
-              },
-            ),
-    ));
+                },
+              ),
+      ),
+    );
   }
 }

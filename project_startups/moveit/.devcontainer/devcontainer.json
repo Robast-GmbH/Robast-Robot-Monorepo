@@ -14,7 +14,7 @@
 		"source=${localWorkspaceFolder}/../../src/ros2/moveit/perception,target=/workspace/src/moveit/perception,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/ros2_control/ros2_controllers,target=/workspace/src/ros2_control/ros2_controllers,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind",
-		"source=${localWorkspaceFolder}/../../src/ros2/utils,target=/workspace/src/utils,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/utils/launch_manager,target=/workspace/src/utils/launch_manager,type=bind",
 	],
 	"workspaceFolder": "/workspace",
 	"remoteUser": "robast",
