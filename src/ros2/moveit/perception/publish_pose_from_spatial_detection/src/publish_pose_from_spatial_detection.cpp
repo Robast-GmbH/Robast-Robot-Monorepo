@@ -77,7 +77,7 @@ namespace perception
     // Check if the highest confidence detection is above the threshold
     if (_use_confidence_threshold && (highest_confidence_detection.results[0].score < _confidence_threshold))
     {
-      RCLCPP_WARN(get_logger(), "No detections above the confidence threshold.");
+      RCLCPP_DEBUG(get_logger(), "No detections above the confidence threshold.");
       return;
     }
 
@@ -87,7 +87,7 @@ namespace perception
         std::abs(highest_confidence_detection.position.y) < epsilon &&
         std::abs(highest_confidence_detection.position.z) < epsilon)
     {
-      RCLCPP_WARN(get_logger(), "No valid position in the highest confidence detection.");
+      RCLCPP_DEBUG(get_logger(), "No valid position in the highest confidence detection.");
       return;
     }
 
