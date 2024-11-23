@@ -11,88 +11,35 @@ namespace door_opening_mechanism_mtc
 
   void DoorMechanismMtc::handle_node_parameter()
   {
-    declare_parameter("moveit2_planning_group_name", _DEFAULT_PLANNING_GROUP_NAME);
-    declare_parameter("planning_pipeline", _DEFAULT_PLANNING_GROUP_NAME);
+    declare_parameter<std::string>("moveit2_planning_group_name", "mobile_base_arm");
+    declare_parameter<std::string>("planning_pipeline", "ompl_humble");
+    declare_parameter<std::string>("topic_name_pose_stamped", "/stereo/door_handle_pose");
 
     _planning_group_name = get_parameter("moveit2_planning_group_name").as_string();
     _planning_pipeline = get_parameter("planning_pipeline").as_string();
+    _topic_name_pose_stamped = get_parameter("topic_name_pose_stamped").as_string();
   }
 
   void DoorMechanismMtc::create_subscriptions()
   {
-    auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
-    qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
-    qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
-    qos.avoid_ros_namespace_conventions(false);
-
-    _door_handle_position_subscription = create_subscription<depthai_ros_msgs::msg::SpatialDetectionArray>(
-      _DOOR_HANDLE_POSITION_TOPIC,
-      qos,
-      std::bind(&DoorMechanismMtc::door_handle_position_callback, this, std::placeholders::_1));
+    _door_handle_pose_subscription = create_subscription<geometry_msgs::msg::PoseStamped>(
+      _topic_name_pose_stamped,
+      10,
+      std::bind(&DoorMechanismMtc::door_handle_pose_callback, this, std::placeholders::_1));
   }
 
-  geometry_msgs::msg::PoseStamped DoorMechanismMtc::convert_pose_to_target_reference_frame(
-    const geometry_msgs::msg::PoseStamped pose_in_source_frame, const std::string target_frame)
+  void DoorMechanismMtc::door_handle_pose_callback(const geometry_msgs::msg::PoseStamped& msg)
   {
-    tf2_ros::Buffer tf_buffer(get_clock());
-    tf2_ros::TransformListener tf_listener(tf_buffer, shared_from_this());
-
-    try
-    {
-      // Wait for the transform from frame A to frame B to become available
-      tf_buffer.canTransform(
-        target_frame, pose_in_source_frame.header.frame_id, tf2::TimePointZero, tf2::durationFromSec(1.0));
-
-      // Convert the position from frame A to frame B
-      geometry_msgs::msg::PoseStamped pose_in_target_frame = tf_buffer.transform(pose_in_source_frame, target_frame);
-
-      // Print the transformed position
-      RCLCPP_INFO(_LOGGER, "Position in target frame %s:", target_frame.c_str());
-      RCLCPP_INFO(_LOGGER, "  x: %f", pose_in_target_frame.pose.position.x);
-      RCLCPP_INFO(_LOGGER, "  y: %f", pose_in_target_frame.pose.position.y);
-      RCLCPP_INFO(_LOGGER, "  z: %f", pose_in_target_frame.pose.position.z);
-
-      return pose_in_target_frame;   // TODO: return this or better return a shared_ptr?
-    }
-    catch (tf2::TransformException& ex)
-    {
-      RCLCPP_ERROR(_LOGGER, "Transform from frame A to frame B not found: %s", ex.what());
-    }
-  }
-
-  void DoorMechanismMtc::door_handle_position_callback(const depthai_ros_msgs::msg::SpatialDetectionArray& msg)
-  {
-    RCLCPP_INFO(_LOGGER,
-                "I heard from the %s topic %li detections for the frame_id %s",
-                _DOOR_HANDLE_POSITION_TOPIC.c_str(),
-                msg.detections.size(),
-                msg.header.frame_id.c_str());
+    RCLCPP_INFO(_LOGGER, "Received door handle pose message!");
 
     // Very important: We spin up the moveit interaction in new thread, otherwise
     // the current state monitor won't get any information about the robot's state.
-    std::thread{std::bind(&DoorMechanismMtc::open_door_in_simulation, this, std::placeholders::_1),
-                std::make_shared<depthai_ros_msgs::msg::SpatialDetectionArray>(msg)}
-      .detach();
+    std::thread{std::bind(&DoorMechanismMtc::open_door, this, std::placeholders::_1), msg}.detach();
   }
 
-  void DoorMechanismMtc::open_door_in_simulation(
-    const std::shared_ptr<depthai_ros_msgs::msg::SpatialDetectionArray> door_handle_poses)
+  void DoorMechanismMtc::open_door(const geometry_msgs::msg::PoseStamped door_handle_pose)
   {
-    for (uint8_t i = 0; i < door_handle_poses->detections.size(); i++)
-    {
-      RCLCPP_INFO(_LOGGER, "Target position for detection %i:", i);
-      RCLCPP_INFO(_LOGGER, "   x = %f", door_handle_poses->detections[i].position.x);
-      RCLCPP_INFO(_LOGGER, "   y = %f", door_handle_poses->detections[i].position.y);
-      RCLCPP_INFO(_LOGGER, "   z = %f", door_handle_poses->detections[i].position.z);
-    }
-
-    geometry_msgs::msg::PoseStamped pose_in_source_frame;
-    pose_in_source_frame.header = door_handle_poses->header;
-    pose_in_source_frame.pose.position = door_handle_poses->detections[0].position;
-    geometry_msgs::msg::PoseStamped target_pose =
-      convert_pose_to_target_reference_frame(pose_in_source_frame, "base_footprint");
-
-    do_task(target_pose);
+    do_task(door_handle_pose);
   }
 
   void DoorMechanismMtc::setup_planning_scene()
@@ -114,7 +61,7 @@ namespace door_opening_mechanism_mtc
     psi.applyCollisionObject(object);
   }
 
-  void DoorMechanismMtc::do_task(geometry_msgs::msg::PoseStamped target_pose)
+  void DoorMechanismMtc::do_task(const geometry_msgs::msg::PoseStamped target_pose)
   {
     _task = create_task(target_pose);
 
@@ -148,12 +95,13 @@ namespace door_opening_mechanism_mtc
     _task.introspection().publishSolution(*_task.solutions().front());
 
     RCLCPP_INFO(_LOGGER, "Executing task!");
-    auto result = _task.execute(*_task.solutions().front());
-    if (result.val != moveit_msgs::msg::MoveItErrorCodes::SUCCESS)
-    {
-      RCLCPP_ERROR(_LOGGER, "Task execution failed");
-      return;
-    }
+    // TODO: Uncomment this line to execute the task
+    // auto result = _task.execute(*_task.solutions().front());
+    // if (result.val != moveit_msgs::msg::MoveItErrorCodes::SUCCESS)
+    // {
+    //   RCLCPP_ERROR(_LOGGER, "Task execution failed");
+    //   return;
+    // }
 
     return;
   }
@@ -167,24 +115,13 @@ namespace door_opening_mechanism_mtc
     RCLCPP_INFO(_LOGGER, "  y: %f", target_pose.pose.position.y);
     RCLCPP_INFO(_LOGGER, "  z: %f", target_pose.pose.position.z);
 
-    double roll = 1.57079632679;
-    double pitch = 1.57079632679;
-    double yaw = 0.0;
-    // Create a Quaternion
-    tf2::Quaternion quaternion;
-    quaternion.setRPY(roll, pitch, yaw);
-    target_pose.pose.orientation.x = quaternion.x();
-    target_pose.pose.orientation.y = quaternion.y();
-    target_pose.pose.orientation.z = quaternion.z();
-    target_pose.pose.orientation.w = quaternion.w();
-
     mtc::Task task;
     task.stages()->setName("approach door handle task");
     task.loadRobotModel(shared_from_this());
 
     const auto& group_name = "mobile_base_arm";
     const auto& end_effector_name = "door_opening_end_effector";
-    const auto& end_effector_parent_link = "door_opening_mechanism_link_freely_rotating_hook";
+    const auto& end_effector_parent_link = "robot/door_opening_mechanism_link_freely_rotating_hook";
 
     // Set task properties
     task.setProperty("group", group_name);
