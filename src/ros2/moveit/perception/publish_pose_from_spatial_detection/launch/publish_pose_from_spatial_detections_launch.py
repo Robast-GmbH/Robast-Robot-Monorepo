@@ -26,7 +26,7 @@ def generate_launch_description():
     )
 
     declare_invert_y_axis_cmd = DeclareLaunchArgument(
-        "invert_y_axis", default_value="False", description="Invert y axis of the pose"
+        "invert_y_axis", default_value="True", description="Invert y axis of the pose"
     )
 
     declare_target_orientation_in_euler_cmd = DeclareLaunchArgument(
