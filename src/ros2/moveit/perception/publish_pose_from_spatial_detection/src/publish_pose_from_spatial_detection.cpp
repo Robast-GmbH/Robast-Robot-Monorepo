@@ -100,23 +100,23 @@ namespace perception
       _invert_y_axis ? (-1) * highest_confidence_detection.position.y : highest_confidence_detection.position.y;
     pose_stamped.pose.position.z = highest_confidence_detection.position.z;
 
-    // Set the orientation to the target orientation if provided
-    if (_target_orientation_in_euler != std::vector<double>{0.0, 0.0, 0.0})
-    {
-      tf2::Quaternion q;
-      q.setRPY(_target_orientation_in_euler[0], _target_orientation_in_euler[1], _target_orientation_in_euler[2]);
-      pose_stamped.pose.orientation.x = q.x();
-      pose_stamped.pose.orientation.y = q.y();
-      pose_stamped.pose.orientation.z = q.z();
-      pose_stamped.pose.orientation.w = q.w();
-    }
-
     // Transform the pose to the target frame
     std::optional<geometry_msgs::msg::PoseStamped> pose_stamped_transformed =
       transform_pose(pose_stamped, _taget_frame_pose_stamped);
 
     if (pose_stamped_transformed.has_value())
     {
+      // Set the orientation to the target orientation if provided
+      if (_target_orientation_in_euler != std::vector<double>{0.0, 0.0, 0.0})
+      {
+        tf2::Quaternion q;
+        q.setRPY(_target_orientation_in_euler[0], _target_orientation_in_euler[1], _target_orientation_in_euler[2]);
+        pose_stamped_transformed.value().pose.orientation.x = q.x();
+        pose_stamped_transformed.value().pose.orientation.y = q.y();
+        pose_stamped_transformed.value().pose.orientation.z = q.z();
+        pose_stamped_transformed.value().pose.orientation.w = q.w();
+      }
+
       _pose_pub->publish(pose_stamped_transformed.value());
     }
   }
