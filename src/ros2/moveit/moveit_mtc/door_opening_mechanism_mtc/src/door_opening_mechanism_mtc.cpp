@@ -39,7 +39,7 @@ namespace door_opening_mechanism_mtc
 
   void DoorMechanismMtc::door_handle_pose_callback(const geometry_msgs::msg::PoseStamped& msg)
   {
-    RCLCPP_INFO(_LOGGER, "Received door handle pose message!");
+    RCLCPP_DEBUG(_LOGGER, "Received door handle pose message!");
 
     _latest_door_handle_pose = msg;
   }
