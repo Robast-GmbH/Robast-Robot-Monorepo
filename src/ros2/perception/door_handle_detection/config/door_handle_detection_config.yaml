@@ -14,7 +14,7 @@ parent_frame: 'robot/door_opening_mechanism_link_y_axis_slide'  # Name of the pa
 # Camera position and orientation configuration
 cam_pos_x: '0.10'  # Position X of the camera with respect to the base frame.
 cam_pos_y: '0.0'  # Position Y of the camera with respect to the base frame.
-cam_pos_z: '-0.05'  # Position Z of the camera with respect to the base frame.
+cam_pos_z: '0.0'  # Position Z of the camera with respect to the base frame.
 cam_roll: '0.0'  # Roll orientation of the camera with respect to the base frame.
 cam_pitch: '0.4'  # Pitch orientation of the camera with respect to the base frame.
 cam_yaw: '-3.14159'  # Yaw orientation of the camera with respect to the base frame.
