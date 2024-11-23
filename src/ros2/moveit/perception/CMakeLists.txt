@@ -77,6 +77,7 @@ include_directories(SYSTEM
 )
 
 add_subdirectory(robast_pointcloud_octomap_updater)
+add_subdirectory(publish_pose_from_spatial_detection)
 
 install(
   TARGETS ${THIS_PACKAGE_LIBRARIES}
