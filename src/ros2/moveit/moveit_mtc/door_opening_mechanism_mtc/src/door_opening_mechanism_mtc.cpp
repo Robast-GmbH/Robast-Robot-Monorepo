@@ -14,10 +14,14 @@ namespace door_opening_mechanism_mtc
     declare_parameter<std::string>("moveit2_planning_group_name", "mobile_base_arm");
     declare_parameter<std::string>("planning_pipeline", "ompl_humble");
     declare_parameter<std::string>("topic_name_pose_stamped", "/stereo/door_handle_pose");
+    declare_parameter<std::string>("topic_name_trigger_door_opening", "/trigger_door_opening");
+    declare_parameter<double>("door_handle_pose_timeout", 2.0);
 
     _planning_group_name = get_parameter("moveit2_planning_group_name").as_string();
     _planning_pipeline = get_parameter("planning_pipeline").as_string();
     _topic_name_pose_stamped = get_parameter("topic_name_pose_stamped").as_string();
+    _topic_name_trigger_door_opening = get_parameter("topic_name_trigger_door_opening").as_string();
+    _door_handle_pose_timeout = get_parameter("door_handle_pose_timeout").as_double();
   }
 
   void DoorMechanismMtc::create_subscriptions()
@@ -26,20 +30,47 @@ namespace door_opening_mechanism_mtc
       _topic_name_pose_stamped,
       10,
       std::bind(&DoorMechanismMtc::door_handle_pose_callback, this, std::placeholders::_1));
+
+    _trigger_door_opening_subscription = create_subscription<std_msgs::msg::Empty>(
+      _topic_name_trigger_door_opening,
+      10,
+      std::bind(&DoorMechanismMtc::trigger_door_opening_callback, this, std::placeholders::_1));
   }
 
   void DoorMechanismMtc::door_handle_pose_callback(const geometry_msgs::msg::PoseStamped& msg)
   {
     RCLCPP_INFO(_LOGGER, "Received door handle pose message!");
 
-    // Very important: We spin up the moveit interaction in new thread, otherwise
-    // the current state monitor won't get any information about the robot's state.
-    std::thread{std::bind(&DoorMechanismMtc::open_door, this, std::placeholders::_1), msg}.detach();
+    _latest_door_handle_pose = msg;
   }
 
-  void DoorMechanismMtc::open_door(const geometry_msgs::msg::PoseStamped door_handle_pose)
+  void DoorMechanismMtc::trigger_door_opening_callback(const std_msgs::msg::Empty& msg)
   {
-    do_task(door_handle_pose);
+    RCLCPP_INFO(_LOGGER, "Received trigger door opening message!");
+
+    if (_latest_door_handle_pose.header.stamp.sec == 0)
+    {
+      RCLCPP_ERROR(_LOGGER, "No door handle pose received yet!");
+      return;
+    }
+
+    // Check that the latest door handle pose is not too old
+    if (now() - _latest_door_handle_pose.header.stamp >
+        rclcpp::Duration(std::chrono::duration_cast<std::chrono::nanoseconds>(
+          std::chrono::duration<double>(_door_handle_pose_timeout))))
+    {
+      RCLCPP_ERROR(_LOGGER, "Latest door handle pose is too old!");
+      return;
+    }
+
+    // Very important: We spin up the moveit interaction in new thread, otherwise
+    // the current state monitor won't get any information about the robot's state.
+    std::thread{std::bind(&DoorMechanismMtc::open_door, this)}.detach();
+  }
+
+  void DoorMechanismMtc::open_door()
+  {
+    do_task(_latest_door_handle_pose);
   }
 
   void DoorMechanismMtc::setup_planning_scene()

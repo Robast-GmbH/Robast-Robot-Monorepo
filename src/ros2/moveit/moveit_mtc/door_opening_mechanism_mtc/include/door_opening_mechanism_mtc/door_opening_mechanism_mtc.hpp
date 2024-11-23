@@ -11,6 +11,7 @@
 
 #include <moveit_msgs/msg/workspace_parameters.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/empty.hpp>
 #include <tf2_eigen/tf2_eigen.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
@@ -30,9 +31,15 @@ namespace door_opening_mechanism_mtc
     std::string _planning_pipeline;
 
     std::string _topic_name_pose_stamped;
+    std::string _topic_name_trigger_door_opening;
+
+    double _door_handle_pose_timeout;
 
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr _door_handle_pose_subscription;
+    rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _trigger_door_opening_subscription;
     mtc::Task _task;
+
+    geometry_msgs::msg::PoseStamped _latest_door_handle_pose;
 
     void handle_node_parameter();
 
@@ -46,7 +53,9 @@ namespace door_opening_mechanism_mtc
 
     void door_handle_pose_callback(const geometry_msgs::msg::PoseStamped& msg);
 
-    void open_door(const geometry_msgs::msg::PoseStamped door_handle_pose);
+    void trigger_door_opening_callback(const std_msgs::msg::Empty& msg);
+
+    void open_door();
   };
 }   // namespace door_opening_mechanism_mtc
 
