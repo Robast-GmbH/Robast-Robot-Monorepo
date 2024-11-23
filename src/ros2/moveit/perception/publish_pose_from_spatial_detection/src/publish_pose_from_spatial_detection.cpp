@@ -81,6 +81,16 @@ namespace perception
       return;
     }
 
+    // Check that the highest confidence detection has a valid position
+    const double epsilon = 1e-6;
+    if (std::abs(highest_confidence_detection.position.x) < epsilon &&
+        std::abs(highest_confidence_detection.position.y) < epsilon &&
+        std::abs(highest_confidence_detection.position.z) < epsilon)
+    {
+      RCLCPP_WARN(get_logger(), "No valid position in the highest confidence detection.");
+      return;
+    }
+
     // Create the pose from the highest confidence detection
     geometry_msgs::msg::PoseStamped pose_stamped;
     pose_stamped.header = msg->header;
@@ -102,13 +112,16 @@ namespace perception
     }
 
     // Transform the pose to the target frame
-    const geometry_msgs::msg::PoseStamped pose_stamped_transformed =
+    std::optional<geometry_msgs::msg::PoseStamped> pose_stamped_transformed =
       transform_pose(pose_stamped, _taget_frame_pose_stamped);
 
-    _pose_pub->publish(pose_stamped_transformed);
+    if (pose_stamped_transformed.has_value())
+    {
+      _pose_pub->publish(pose_stamped_transformed.value());
+    }
   }
 
-  geometry_msgs::msg::PoseStamped PublishPoseFromSpatialDetection::transform_pose(
+  std::optional<geometry_msgs::msg::PoseStamped> PublishPoseFromSpatialDetection::transform_pose(
     const geometry_msgs::msg::PoseStamped &pose_stamped, const std::string &target_frame)
   {
     geometry_msgs::msg::PoseStamped transformed_pose;
@@ -126,16 +139,18 @@ namespace perception
       }
       catch (tf2::TransformException &ex)
       {
-        RCLCPP_WARN(get_logger(), "Transform error: %s", ex.what());
         rclcpp::sleep_for(
           std::chrono::milliseconds(200));   // most of the time the transform is not available yet, so wait a bit
         retry_count++;
       }
     }
+
     if (retry_count == max_retry)
     {
       RCLCPP_ERROR(get_logger(), "Failed to transform pose after %d retries", max_retry);
+      return std::nullopt;
     }
+
     return transformed_pose;
   }
 

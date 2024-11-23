@@ -7,6 +7,7 @@
 
 #include <depthai_ros_msgs/msg/spatial_detection_array.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
+#include <optional>
 #include <rclcpp/rclcpp.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
@@ -26,8 +27,8 @@ namespace perception
 
     void handle_spatial_detection(const depthai_ros_msgs::msg::SpatialDetectionArray::SharedPtr msg);
 
-    geometry_msgs::msg::PoseStamped transform_pose(const geometry_msgs::msg::PoseStamped &pose_stamped,
-                                                   const std::string &target_frame);
+    std::optional<geometry_msgs::msg::PoseStamped> transform_pose(const geometry_msgs::msg::PoseStamped &pose_stamped,
+                                                                  const std::string &target_frame);
 
     rclcpp::Subscription<depthai_ros_msgs::msg::SpatialDetectionArray>::SharedPtr _spatial_detections_sub;
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr _pose_pub;
