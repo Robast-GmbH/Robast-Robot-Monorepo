@@ -7,11 +7,14 @@ from moveit_configs_utils import MoveItConfigsBuilder
 
 def generate_launch_description():
     urdf_launch_arguments = {
-        "ros2_control_hardware_type": "gz_ros2_control",
+        "ros_distro": os.environ["ROS_DISTRO"],
+        "prefix": "robot/",
+        "ros2_control_hardware_type": "dryve_d1",
         "position_joint_type": "prismatic",
         "model_door_opening_mechanism": "true",
-        "ros2_control_hardware_type": "mock_components",
-        "ros2_control_hardware_type_positon_joint": "mock_components",
+        "model_module_cage": "false",
+        "model_sensors": "false",
+        "ros2_control_hardware_type_positon_joint": "real_life",
     }
 
     ros_distro = os.environ["ROS_DISTRO"]
