@@ -45,7 +45,7 @@ def generate_launch_description():
     door_opening_mechanism_mtc_node = Node(
         package="door_opening_mechanism_mtc",
         executable="door_opening_mechanism_mtc",
-        name="door_opening_mechanism_mtc",
+        name="door_opening_mechanism_mtc_node",
         parameters=[
             {"moveit2_planning_group_name": "mobile_base_arm"},
             {"use_sim_time": True},

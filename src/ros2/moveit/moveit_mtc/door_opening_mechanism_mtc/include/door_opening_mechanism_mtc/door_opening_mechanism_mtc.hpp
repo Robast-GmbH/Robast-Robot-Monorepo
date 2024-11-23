@@ -5,6 +5,7 @@
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit/task_constructor/solvers.h>
 #include <moveit/task_constructor/stages.h>
+#include <moveit/task_constructor/stages/modify_planning_scene.h>
 #include <moveit/task_constructor/task.h>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
@@ -22,7 +23,7 @@ namespace door_opening_mechanism_mtc
   class DoorMechanismMtc : public rclcpp::Node
   {
    public:
-    DoorMechanismMtc();
+    DoorMechanismMtc(const rclcpp::NodeOptions& options);
 
    private:
     const rclcpp::Logger _LOGGER = rclcpp::get_logger("dom_mtc");
