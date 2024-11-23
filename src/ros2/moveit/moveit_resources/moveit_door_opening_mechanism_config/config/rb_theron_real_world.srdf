@@ -28,6 +28,14 @@
         <joint name="position_joint" value="0"/>
     </group_state>
 
+    <group_state name="starting_position_middle" group="mobile_base_arm">
+        <joint name="robot/door_opening_mechanism_joint_y_axis_slide" value="0.2"/>
+        <joint name="robot/door_opening_mechanism_joint_x_axis_slide" value="0.135"/>
+        <joint name="robot/door_opening_mechanism_joint_rotating_arm" value="1.57079632679"/>
+        <joint name="robot/door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
+        <joint name="position_joint" value="0"/>
+    </group_state>
+
     <group_state name="starting_position_left" group="mobile_base_arm">
         <joint name="robot/door_opening_mechanism_joint_y_axis_slide" value="0.2"/>
         <joint name="robot/door_opening_mechanism_joint_x_axis_slide" value="0.27"/>
@@ -99,6 +107,8 @@
     <disable_collisions link1="robot/base_link" link2="robot/left_wheel_tire_link" reason="Never"/>
     <disable_collisions link1="robot/base_link" link2="robot/right_wheel_tire_link" reason="Never"/>
     <disable_collisions link1="robot/base_link" link2="robot/odom" reason="Never"/>
+
+    <disable_collisions link1="robot/right_wheel_tire_link" link2="robot/right_wheel_link" reason="Never"/>
 
      <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/alu_profile_link_left" reason="Never"/>
