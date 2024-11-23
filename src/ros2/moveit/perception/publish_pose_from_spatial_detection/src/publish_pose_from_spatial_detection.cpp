@@ -19,7 +19,7 @@ namespace perception
     declare_parameter<double>("confidence_threshold", 0.5);
     declare_parameter<bool>("invert_y_axis", false);
     declare_parameter<std::vector<double>>("target_orientation_in_euler", {0.0, 0.0, 1.57079632679});
-    declare_parameter<std::string>("target_frame_pose_stamped", "base_footprint");
+    declare_parameter<std::string>("target_frame_pose_stamped", "robot/base_footprint");
     declare_parameter<std::string>("topic_name_spatial_detections", "/stereo/door_handle_position");
     declare_parameter<std::string>("topic_name_pose_stamped", "/stereo/door_handle_pose");
   }
