@@ -7,6 +7,7 @@ Panels:
         - /MotionPlanning1
         - /MarkerArray1
         - /Motion Planning Tasks1
+        - /Pose3
       Splitter Ratio: 0.5
     Tree Height: 70
   - Class: rviz_common/Help
@@ -22,8 +23,8 @@ Panels:
     Name: Motion Planning Tasks
     Tasks View:
       property_splitter:
-        - 154
-        - 94
+        - 136
+        - 85
       solution_sorting:
         column: 0
         order: 1
@@ -92,12 +93,12 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          ? rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_rgb_camera_optical_frame
-          : Alpha: 1
+          rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_rgb_camera_optical_frame:
+            Alpha: 1
             Show Axes: false
             Show Trail: false
-          ? rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_right_camera_optical_frame
-          : Alpha: 1
+          rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_right_camera_optical_frame:
+            Alpha: 1
             Show Axes: false
             Show Trail: false
           robot/alu_profile_link_bottom:
@@ -325,12 +326,12 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          ? rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_rgb_camera_optical_frame
-          : Alpha: 1
+          rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_rgb_camera_optical_frame:
+            Alpha: 1
             Show Axes: false
             Show Trail: false
-          ? rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_right_camera_optical_frame
-          : Alpha: 1
+          rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_right_camera_optical_frame:
+            Alpha: 1
             Show Axes: false
             Show Trail: false
           robot/alu_profile_link_bottom:
@@ -516,7 +517,8 @@ Visualization Manager:
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
       Name: MarkerArray
-      Namespaces: {}
+      Namespaces:
+        {}
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -584,12 +586,12 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          ? rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_rgb_camera_optical_frame
-          : Alpha: 1
+          rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_rgb_camera_optical_frame:
+            Alpha: 1
             Show Axes: false
             Show Trail: false
-          ? rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_right_camera_optical_frame
-          : Alpha: 1
+          rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_right_camera_optical_frame:
+            Alpha: 1
             Show Axes: false
             Show Trail: false
           robot/alu_profile_link_bottom:
@@ -783,8 +785,29 @@ Visualization Manager:
       Show Trail: false
       State Display Time: 0.05 s
       Task Solution Topic: /solution
-      Tasks: {}
+      Tasks:
+        {}
       Trail Step Size: 1
+      Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz_default_plugins/Pose
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.10000000149011612
+      Head Radius: 0.10000000149011612
+      Name: Pose
+      Shaft Length: 0.15000000596046448
+      Shaft Radius: 0.05000000074505806
+      Shape: Arrow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /stereo/door_handle_pose
       Value: true
   Enabled: true
   Global Options:
@@ -804,30 +827,30 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 3.5246834754943848
+      Distance: 2.758695602416992
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.1691455841064453
-        Y: 0.21079063415527344
-        Z: 0.360914409160614
+        X: -0.7948485016822815
+        Y: 0.07865294814109802
+        Z: 0.34542107582092285
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.4750000238418579
+      Pitch: 0.45000049471855164
       Target Frame: robot/base_footprint
       Value: Orbit (rviz_default_plugins)
-      Yaw: 4.26015567779541
+      Yaw: 5.685152053833008
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 1043
+  Height: 1016
   Help:
     collapsed: false
   Hide Left Dock: false
@@ -840,9 +863,9 @@ Window Geometry:
     collapsed: false
   MotionPlanning - Trajectory Slider:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000002b4000003bdfc0200000008fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000003f00fffffffb000000100044006900730070006c006100790073010000003b000000c7000000c700fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e00670100000108000001740000016900fffffffb0000000800480065006c0070000000029a0000006e0000006e00fffffffb0000000a0056006900650077007301000002f9000000b30000000000000000fb00000024005200760069007a00560069007300750061006c0054006f006f006c007300470075006901000002820000003f0000003f00fffffffb0000003c004d006f00740069006f006e00200050006c0061006e006e0069006e00670020005400610073006b00730020002d00200053006c00690064006500720000000000ffffffff0000003f00fffffffb0000002a004d006f00740069006f006e00200050006c0061006e006e0069006e00670020005400610073006b007301000002c700000131000000e300ffffff000004c6000003bd00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000100000000000002b4000003a2fc0200000008fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000003f00fffffffb000000100044006900730070006c006100790073010000003b000000c7000000c700fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e00670100000108000001740000016900fffffffb0000000800480065006c0070000000029a0000006e0000006e00fffffffb0000000a0056006900650077007301000002f9000000b30000000000000000fb00000024005200760069007a00560069007300750061006c0054006f006f006c007300470075006901000002820000003f0000003f00fffffffb0000003c004d006f00740069006f006e00200050006c0061006e006e0069006e00670020005400610073006b00730020002d00200053006c00690064006500720000000000ffffffff0000003f00fffffffb0000002a004d006f00740069006f006e00200050006c0061006e006e0069006e00670020005400610073006b007301000002c700000116000000e300ffffff00000480000003a200000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   RvizVisualToolsGui:
     collapsed: false
-  Width: 1920
-  X: 3440
-  Y: 360
+  Width: 1850
+  X: 70
+  Y: 27
