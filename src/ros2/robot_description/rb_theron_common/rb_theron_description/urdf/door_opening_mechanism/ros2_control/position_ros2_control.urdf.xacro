@@ -31,7 +31,7 @@
                     <xacro:if value="${ros2_control_hardware_type_positon_joint == 'real_life'}">
                     <plugin>ros2_control_base_movement/BaseMovementSystemHardware</plugin>
                     <param name="odom_topic">/diff_drive_base_controller/odom</param>
-                    <param name="enable_state_feedback">false</param>
+                    <param name="enable_state_feedback">true</param>
                     <param name="reset_position_state_after_each_trajectory">true</param>
                 </xacro:if>
             </hardware>
