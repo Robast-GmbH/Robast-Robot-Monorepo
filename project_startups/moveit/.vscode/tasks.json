@@ -45,6 +45,28 @@
         },
         {
             "type": "shell",
+            "label": "start door_opening_mechanism_mtc",
+            "command": "source /workspace/install/setup.bash; ros2 launch door_opening_mechanism_mtc door_opening_mechanism_mtc_launch.py",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+                "focus": false,
+                "group": "default_start"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "start publish_pose_from_spatial_detection",
+            "command": "source /workspace/install/setup.bash; ros2 launch publish_pose_from_spatial_detection publish_pose_from_spatial_detections_launch.py",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+                "focus": false,
+                "group": "default_start"
+            }
+        },
+        {
+            "type": "shell",
             "label": "start moveit_door_opening_mechanism in standalone rviz simulation",
             "command": "source /workspace/install/setup.bash; ros2 launch moveit_door_opening_mechanism_config moveit_rviz_simulation_launch.py",
             "problemMatcher": [],
