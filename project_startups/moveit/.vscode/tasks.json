@@ -67,6 +67,17 @@
         },
         {
             "type": "shell",
+            "label": "trigger door_opening mtc task",
+            "command": "source /workspace/install/setup.bash; ros2 topic pub /trigger_door_opening std_msgs/msg/Empty '{}' --once",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+                "focus": false,
+                "group": "default_start"
+            }
+        },
+        {
+            "type": "shell",
             "label": "start moveit_door_opening_mechanism in standalone rviz simulation",
             "command": "source /workspace/install/setup.bash; ros2 launch moveit_door_opening_mechanism_config moveit_rviz_simulation_launch.py",
             "problemMatcher": [],
