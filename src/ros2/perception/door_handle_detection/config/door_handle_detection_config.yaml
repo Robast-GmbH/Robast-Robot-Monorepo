@@ -37,7 +37,7 @@ syncNN: True  # Synchronize preview image with detections.
 
 # Neural network configuration
 detectionClassesCount: 1  # Number of classes the neural network contains.
-nnName: 'yolov5_v3.blob'  # Name of the neural network blob being used to load.
+nnName: 'yolov5_v2.blob'  # Name of the neural network blob being used to load.
 
 # Stereo camera configuration
 stereo_fps: 30  # Frames per second of the cameras used in the stereo setup.
