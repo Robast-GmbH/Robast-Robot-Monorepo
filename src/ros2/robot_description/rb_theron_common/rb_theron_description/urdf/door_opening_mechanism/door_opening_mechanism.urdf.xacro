@@ -92,7 +92,7 @@
             r="1"
             g="0"
             b="0">
-            <origin xyz="-0.075 -0.225 -0.1" rpy="0 0 0"/>
+            <origin xyz="-0.075 -0.225 0.0" rpy="0 0 0"/>
         </xacro:basic_joint>
 
         <xacro:basic_joint 
