@@ -3,12 +3,16 @@
 
 #include <cstdint>
 
+#include "debug/debug.hpp"
+
 namespace drawer
 {
   class ElectricalDrawerConfig
   {
    public:
     ElectricalDrawerConfig() = default;
+
+    void print_all_configs() const;
 
     void set_drawer_max_speed(const uint32_t max_speed);
     void set_drawer_homing_speed(const uint32_t homing_speed);

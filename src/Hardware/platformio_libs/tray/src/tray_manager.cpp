@@ -129,6 +129,16 @@ namespace tray
         _tray_manager_config->get_speed_deviation_in_percentage_for_stall_when_closing_lid());
 
       _reduced_speed_for_tray_lid[tray_id - 1] = true;
+
+      debug_printf_green(
+        "[TrayManager]: Reduced speed for tray lid %d because distance to tray lid is %u and threshold is %u and "
+        "_speed_deviation_in_percentage_for_stall_before_reduced_speed is %f and _target_speed_before_reduced_speed is "
+        "%u\n",
+        tray_id,
+        distance_to_tray_lid,
+        threshold,
+        _speed_deviation_in_percentage_for_stall_before_reduced_speed,
+        _target_speed_before_reduced_speed);
     }
     else if (distance_to_tray_lid > threshold)
     {
@@ -137,6 +147,15 @@ namespace tray
       _e_drawer->set_target_speed_and_direction(_target_speed_before_reduced_speed, true);
       _reduced_speed_for_tray_lid[tray_id - 1] = false;
       _electrical_tray_locks[tray_id - 1]->set_is_drawer_opening_in_progress(false);
+      debug_printf_green(
+        "[TrayManager]: Restored speed for tray lid %d because distance to tray lid is %u and threshold is %u and "
+        "_speed_deviation_in_percentage_for_stall_before_reduced_speed is %f and _target_speed_before_reduced_speed is "
+        "%u\n",
+        tray_id,
+        distance_to_tray_lid,
+        threshold,
+        _speed_deviation_in_percentage_for_stall_before_reduced_speed,
+        _target_speed_before_reduced_speed);
     }
   }
 }   // namespace tray

@@ -56,13 +56,12 @@ void receive_can_msg_task_loop(void* pvParameters)
     {
       if (xSemaphoreTake(can_queue_mutex, pdMS_TO_TICKS(500)) == pdTRUE)
       {
-        debug_println("[Main]: Received CAN message and adding it to the queue.");
         can_msg_queue->enqueue(received_message.value());
         xSemaphoreGive(can_queue_mutex);
       }
       else
       {
-        Serial.println("[Main]: Error: Could not take the mutex. This should not occur.");
+        serial_println_error("[Main]: Error: Could not take the mutex. This should not occur.");
       }
     }
   }
@@ -80,7 +79,7 @@ void process_can_msgs_task_loop(void* pvParameters)
     }
     else
     {
-      Serial.println("[Main]: Error: Could not take the mutex. This should not occur.");
+      serial_println_error("[Main]: Error: Could not take the mutex. This should not occur.");
     }
 
     if (received_message.has_value())
@@ -139,7 +138,17 @@ void process_can_msgs_task_loop(void* pvParameters)
                                          .get_data());
           if (!config_set_successfully)
           {
-            Serial.println("[Main]: Warning - Tried to set config for invalid config id!");
+            serial_println_warning("[Main]: Warning - Tried to set config for invalid config id!");
+          }
+          else
+          {
+            serial_printf_green("[Main]: Successfully set config with id %d to value %d\n",
+                                received_message->get_can_signals()
+                                  .at(robast_can_msgs::can_signal::id::module_config::CONFIG_ID)
+                                  .get_data(),
+                                received_message->get_can_signals()
+                                  .at(robast_can_msgs::can_signal::id::module_config::CONFIG_VALUE)
+                                  .get_data());
           }
         }
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_MOTOR_CONTROL:
@@ -154,7 +163,7 @@ void process_can_msgs_task_loop(void* pvParameters)
           i_drawer->set_motor_driver_state(enable_motor, motor_id);
         }
         default:
-          debug_println("[Main]: Received unsupported CAN message.");
+          serial_println_warning("[Main]: Received unsupported CAN message.");
           break;
       }
     }
@@ -179,7 +188,7 @@ void process_can_msgs_task_loop(void* pvParameters)
 void setup()
 {
   Serial.begin(115200);
-  debug_printf("[Main]: Start the module with the module id: %d\n", MODULE_ID);
+  debug_printf_green("[Main]: Start the module with the module id: %d\n", MODULE_ID);
 
   // TODO: In the hardware design of v1 the pins of SDA and SCL are mixed up unfortunately for the port expander
   // TODO: In order to use the hardware anyway, we need to create two instances of the bus with different pin init
@@ -223,6 +232,7 @@ void setup()
     drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config, heartbeat_config);
   config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                              USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
+  config_manager->print_all_configs();
 
   heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, heartbeat_config);
 
@@ -305,7 +315,7 @@ void setup()
                           &Task2,                     /* Task handle to keep track of created task */
                           1);                         /* pin task to core 1 */
 
-  debug_println("[Main]: Finished setup()!");
+  debug_printf_green("[Main]: Finished setup()!\n");
 }
 
 void loop()

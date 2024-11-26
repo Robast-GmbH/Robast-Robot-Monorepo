@@ -3,12 +3,16 @@
 
 #include <cstdint>
 
+#include "debug/debug.hpp"
+
 namespace motor
 {
   class EncoderConfig
   {
    public:
     EncoderConfig() = default;
+
+    void print_all_configs() const;
 
     void set_open_loop_count_drawer_max_extent(const uint32_t open_loop_count_drawer_max_extent);
     void set_encoder_count_drawer_max_extent(const uint32_t encoder_count_drawer_max_extent);

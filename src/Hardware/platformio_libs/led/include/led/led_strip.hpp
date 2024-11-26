@@ -31,7 +31,7 @@ namespace led
   template <uint8_t led_pixel_pin, uint8_t num_of_leds>
   class LedStrip
   {
-  public:
+   public:
     LedStrip(const bool use_color_fading);
 
     void handle_led_control();
@@ -47,7 +47,8 @@ namespace led
 
     LedAnimation _target_led_animation;   // the current target led animation, which is applied withing fading time
 
-    const std::unique_ptr<utils::Queue<LedAnimation>> _led_animations_queue = std::make_unique<utils::Queue<LedAnimation>>();
+    const std::unique_ptr<utils::Queue<LedAnimation>> _led_animations_queue =
+      std::make_unique<utils::Queue<LedAnimation>>();
 
     LedAnimation _new_target_led_animation;   // the new target led animation that is successively filled by can msgs
 
@@ -55,7 +56,7 @@ namespace led
 
     CRGBArray<num_of_leds> _leds;
 
-    unsigned long _previous_millis = 0; // makes sure that applying led animations is not done more then required
+    unsigned long _previous_millis = 0;   // makes sure that applying led animations is not done more then required
 
     const bool _use_color_fading;
 
@@ -122,7 +123,7 @@ namespace led
     for (uint8_t i = 0; i < num_of_leds; ++i)
     {
       _new_target_led_animation.target_led_states.push_back(
-          LedState(LED_INIT_RED, LED_INIT_GREEN, LED_INIT_BLUE, LED_INIT_BRIGHTNESS));
+        LedState(LED_INIT_RED, LED_INIT_GREEN, LED_INIT_BLUE, LED_INIT_BRIGHTNESS));
     }
     LedAnimation initial_led_animation = LedAnimation(_new_target_led_animation.target_led_states,
                                                       LED_INIT_ANIMATION_FADE_TIME_IN_MS / 100,
@@ -134,8 +135,8 @@ namespace led
   template <uint8_t led_pixel_pin, uint8_t num_of_leds>
   void LedStrip<led_pixel_pin, num_of_leds>::init_fading(const uint8_t new_fade_time_in_hundreds_of_ms)
   {
-    debug_printf("[LedStrip]: Init fading with new_fade_time_in_hundreds_of_ms = %d \n",
-                 new_fade_time_in_hundreds_of_ms);
+    // debug_printf("[LedStrip]: Init fading with new_fade_time_in_hundreds_of_ms = %d \n",
+    //              new_fade_time_in_hundreds_of_ms);
     _is_fading_in_progress = true;
     timer::set_max_counter_value(new_fade_time_in_hundreds_of_ms, timer::TIMER_FACTOR);
     timer::enable_timer();
@@ -174,7 +175,7 @@ namespace led
   template <uint8_t led_pixel_pin, uint8_t num_of_leds>
   void LedStrip<led_pixel_pin, num_of_leds>::set_current_led_states_to_target_led_states()
   {
-    debug_println("[LedStrip]: Setting current led states to target led states...");
+    // debug_println("[LedStrip]: Setting current led states to target led states...");
     timer::disable_timer();
     _is_fading_in_progress = false;
     for (uint16_t i = 0; i < num_of_leds; ++i)
@@ -209,13 +210,12 @@ namespace led
           // TODO@Jacob: Find a way to not need the linear interpolation as this is computationally expensive
           if (_use_color_fading)
           {
-            _current_led_states[i].red =
-                linear_interpolation(_starting_led_states[i].red, _target_led_animation.target_led_states[i].red,
-                                     progress);
+            _current_led_states[i].red = linear_interpolation(
+              _starting_led_states[i].red, _target_led_animation.target_led_states[i].red, progress);
             _current_led_states[i].green = linear_interpolation(
-                _starting_led_states[i].green, _target_led_animation.target_led_states[i].green, progress);
+              _starting_led_states[i].green, _target_led_animation.target_led_states[i].green, progress);
             _current_led_states[i].blue = linear_interpolation(
-                _starting_led_states[i].blue, _target_led_animation.target_led_states[i].blue, progress);
+              _starting_led_states[i].blue, _target_led_animation.target_led_states[i].blue, progress);
           }
           else
           {
@@ -227,7 +227,7 @@ namespace led
             }
           }
           _current_led_states[i].brightness = linear_interpolation(
-              _starting_led_states[i].brightness, _target_led_animation.target_led_states[i].brightness, progress);
+            _starting_led_states[i].brightness, _target_led_animation.target_led_states[i].brightness, progress);
         }
       }
       else
@@ -257,12 +257,13 @@ namespace led
   template <uint8_t led_pixel_pin, uint8_t num_of_leds>
   void LedStrip<led_pixel_pin, num_of_leds>::initialize_led_state_change(LedHeader led_header)
   {
-    debug_printf(
-      "[LedStrip]: Initialized led state change for %d num of leds with start index %d and fade_time_in_hundreds_of_ms "
-      "%d!\n",
-      led_header.num_of_led_states_to_change,
-      led_header.start_index_of_leds_to_change,
-      led_header.fade_time_in_hundreds_of_ms);
+    // debug_printf(
+    //   "[LedStrip]: Initialized led state change for %d num of leds with start index %d and
+    //   fade_time_in_hundreds_of_ms "
+    //   "%d!\n",
+    //   led_header.num_of_led_states_to_change,
+    //   led_header.start_index_of_leds_to_change,
+    //   led_header.fade_time_in_hundreds_of_ms);
 
     set_num_of_leds_to_change_to_value_within_bounds(led_header.num_of_led_states_to_change,
                                                      led_header.start_index_of_leds_to_change);
@@ -279,14 +280,9 @@ namespace led
 
     if (all_leds_already_set)
     {
-      debug_println("Warning! I received more led states then the header specified!");
+      debug_printf_warning("Warning! I received more led states then the header specified!\n");
       return;
     }
-    debug_printf("[LedStrip]: Adding requested led state (red = %d, green = %d, blue = %d) change with index %d!\n",
-                 state.red,
-                 state.green,
-                 state.blue,
-                 _current_index_led_states);
     _new_target_led_animation.target_led_states[_current_index_led_states] = state;
     ++_current_index_led_states;
 

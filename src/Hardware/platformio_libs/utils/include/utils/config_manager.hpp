@@ -26,6 +26,8 @@ namespace utils
 
     bool set_config(const uint8_t config_id, const uint32_t config_value);
 
+    void print_all_configs() const;
+
    private:
     const std::shared_ptr<drawer::ElectricalDrawerConfig> _drawer_config;
     const std::shared_ptr<motor::EncoderConfig> _encoder_config;

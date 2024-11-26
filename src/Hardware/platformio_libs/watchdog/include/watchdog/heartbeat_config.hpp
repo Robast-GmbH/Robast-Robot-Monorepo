@@ -3,12 +3,16 @@
 
 #include <cstdint>
 
+#include "debug/debug.hpp"
+
 namespace watchdog
 {
   class HeartbeatConfig
   {
    public:
     HeartbeatConfig() = default;
+
+    void print_all_configs() const;
 
     void set_heartbeat_interval_in_ms(const uint16_t heartbeat_interval_in_ms);
 

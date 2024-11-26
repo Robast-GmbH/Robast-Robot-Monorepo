@@ -74,7 +74,7 @@ void add_can_msg_to_queue(std::optional<robast_can_msgs::CanMessage>& received_m
   }
   else
   {
-    Serial.println("[Main]: Error: Could not take the mutex. This should not occur.");
+    serial_println_error("[Main]: Error: Could not take the mutex. This should not occur.");
   }
 }
 
@@ -157,7 +157,7 @@ void process_can_msgs_task_loop(void* pvParameters)
     }
     else
     {
-      Serial.println("Error: Could not take the mutex. This should not occur.");
+      serial_println_error("[Main]: Error: Could not take the mutex. This should not occur.");
     }
 
     if (received_message.has_value())
@@ -199,7 +199,7 @@ void process_can_msgs_task_loop(void* pvParameters)
                                          .get_data());
           if (!config_set_successfully)
           {
-            Serial.println("[Main]: Warning - Tried to set config for invalid config id!");
+            serial_println_warning("[Main]: Warning - Tried to set config for invalid config id!");
           }
         }
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_MOTOR_CONTROL:
@@ -214,7 +214,7 @@ void process_can_msgs_task_loop(void* pvParameters)
           i_drawer->set_motor_driver_state(enable_motor, motor_id);
         }
         default:
-          debug_println("[Main]: Received unsupported CAN message.");
+          serial_println_warning("[Main]: Received unsupported CAN message.");
           break;
       }
     }
@@ -240,7 +240,7 @@ void process_can_msgs_task_loop(void* pvParameters)
 void setup()
 {
   Serial.begin(115200);
-  debug_printf("[Main]: Start the module with the module id: %d\n", MODULE_ID);
+  debug_printf_green("[Main]: Start the module with the module id: %d\n", MODULE_ID);
 
   std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(1);
   wire_port_expander->begin(peripherals::i2c::I2C_SDA, peripherals::i2c::I2C_SCL);
@@ -353,7 +353,7 @@ void setup()
                           &Task2,                     /* Task handle to keep track of created task */
                           1);                         /* pin task to core 1 */
 
-  debug_println("[Main]: Finished setup()!");
+  debug_printf_green("[Main]: Finished setup()!\n");
 }
 
 void loop()
