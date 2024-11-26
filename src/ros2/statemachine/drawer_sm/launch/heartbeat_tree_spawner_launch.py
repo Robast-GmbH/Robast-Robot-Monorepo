@@ -5,7 +5,7 @@ from launch_ros.actions import Node
 def generate_launch_description():
     bt_node = Node(
         package="drawer_sm",
-        executable="heartbeat_tree_spawner",
+        executable="executable_heartbeat_tree_spawner",
         name="heartbeat_tree_spawner_node",
         output="screen",
     )
