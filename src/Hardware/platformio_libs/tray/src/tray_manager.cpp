@@ -140,7 +140,8 @@ namespace tray
         _speed_deviation_in_percentage_for_stall_before_reduced_speed,
         _target_speed_before_reduced_speed);
     }
-    else if (distance_to_tray_lid > threshold)
+
+    if (_reduced_speed_for_tray_lid[tray_id - 1] && distance_to_tray_lid > threshold)
     {
       _motor_monitor_config->set_speed_deviation_in_percentage_for_stall(
         _speed_deviation_in_percentage_for_stall_before_reduced_speed);
