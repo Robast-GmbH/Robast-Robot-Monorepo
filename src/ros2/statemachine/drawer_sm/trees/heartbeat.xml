@@ -3,7 +3,7 @@
   <BehaviorTree ID="default_heartbeat_drawer_tree">
     <ReactiveFallback>
       <KeepRunningUntilFailure>
-        <HeartbeatCondition topic="/heartbeat" timeouts_until_failure="3" id="{id}"/>
+        <HeartbeatCondition topic="/heartbeat" timeouts_until_failure="3" latency_tolerance_in_ms="100" id="{id}"/>
       </KeepRunningUntilFailure>
       <RobastErrorPub topic="/robast_error" error_code="50304" error_data="{id}" error_description="Heartbeat timeout occured for module."/>
     </ReactiveFallback>
