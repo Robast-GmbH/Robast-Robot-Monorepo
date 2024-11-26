@@ -22,9 +22,6 @@ namespace statemachine
     {
       DrawerAddress drawer_address = _nfc_key_to_DrawerAddress[nfc_user];
       blackboard_->set<DrawerAddress>("drawer_address", drawer_address);
-      blackboard_->set<std::chrono::steady_clock::time_point>(
-          "transition_time",
-          std::chrono::steady_clock::now());
       return BT::NodeStatus::SUCCESS;
     }
     else
@@ -35,9 +32,6 @@ namespace statemachine
 
   BT::NodeStatus NFCToDrawer::onRunning()
   {
-    blackboard_->set<std::chrono::steady_clock::time_point>(
-        "transition_time",
-        std::chrono::steady_clock::now());
     return BT::NodeStatus::SUCCESS;
   }
 

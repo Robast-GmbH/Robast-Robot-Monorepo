@@ -42,6 +42,16 @@ namespace drawer_bridge
     {
       return rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
     };
+
+    rclcpp::QoS get_qos_heartbeat()
+    {
+      rclcpp::QoS qos_heartbeat_msgs = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
+      qos_heartbeat_msgs.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
+      qos_heartbeat_msgs.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+      qos_heartbeat_msgs.avoid_ros_namespace_conventions(false);
+
+      return qos_heartbeat_msgs;
+    };
   };
 }   // namespace drawer_bridge
 

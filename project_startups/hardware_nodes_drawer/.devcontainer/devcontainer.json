@@ -28,6 +28,7 @@
 		"ms-azuretools.vscode-docker",
 		"ms-iot.vscode-ros",
 		"ms-python.python",
+		"ms-python.black-formatter",
 		"ms-vscode.cpptools",
 		"redhat.vscode-yaml",
 		"smilerobotics.urdf",

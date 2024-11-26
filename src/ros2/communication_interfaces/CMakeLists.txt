@@ -22,7 +22,6 @@ find_package(nav_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 
-
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/ChangeFootprint.action"
   "action/ChangeFootprintPadding.action"
@@ -41,6 +40,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/DrawerStatus.msg"
   "msg/DrawerTask.msg"
   "msg/ElectricalDrawerStatus.msg"
+  "msg/Heartbeat.msg"
   "msg/Led.msg"
   "msg/LedCmd.msg"
   "msg/NfcReadStatus.msg"

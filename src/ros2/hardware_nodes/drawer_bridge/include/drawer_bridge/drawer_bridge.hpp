@@ -34,6 +34,7 @@
 #include "communication_interfaces/msg/drawer_task.hpp"
 #include "communication_interfaces/msg/electrical_drawer_status.hpp"
 #include "communication_interfaces/msg/error_base_msg.hpp"
+#include "communication_interfaces/msg/heartbeat.hpp"
 #include "communication_interfaces/msg/led.hpp"
 #include "communication_interfaces/msg/led_cmd.hpp"
 #include "communication_interfaces/msg/tray_task.hpp"
@@ -82,6 +83,7 @@ namespace drawer_bridge
     using ElectricalDrawerStatus = communication_interfaces::msg::ElectricalDrawerStatus;
     using ErrorBaseMsg = communication_interfaces::msg::ErrorBaseMsg;
     using TrayTask = communication_interfaces::msg::TrayTask;
+    using Heartbeat = communication_interfaces::msg::Heartbeat;
     using CanMessage = can_msgs::msg::Frame;
 
     using ElectricalDrawerMotorControl = communication_interfaces::action::ElectricalDrawerMotorControl;
@@ -101,6 +103,7 @@ namespace drawer_bridge
     rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr _push_to_close_triggered;
     rclcpp::Publisher<ErrorBaseMsg>::SharedPtr _error_msg_publisher;
     rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr _can_msg_publisher;
+    rclcpp::Publisher<Heartbeat>::SharedPtr _heartbeat_publisher;
 
     // Subscriptions
     rclcpp::Subscription<DrawerAddress>::SharedPtr _open_drawer_subscription;
@@ -143,7 +146,7 @@ namespace drawer_bridge
 
     void receive_can_msg_callback(const CanMessage can_msg);
 
-    void publish_drawer_status(const robast_can_msgs::CanMessage drawer_feedback_can_msg);
+    void handle_drawer_status(const robast_can_msgs::CanMessage drawer_feedback_can_msg);
 
     void handle_e_drawer_feedback(const robast_can_msgs::CanMessage electrical_drawer_feedback_can_msg);
 
@@ -160,6 +163,8 @@ namespace drawer_bridge
     void publish_drawer_status(const DrawerAddress drawer_address,
                                const bool is_endstop_switch_pushed,
                                const bool is_lock_switch_pushed);
+
+    void publish_heartbeat(const robast_can_msgs::CanMessage heartbeat_msg);
 
     void set_module_config(const std::shared_ptr<rclcpp_action::ServerGoalHandle<ModuleConfig>> goal_handle);
 
