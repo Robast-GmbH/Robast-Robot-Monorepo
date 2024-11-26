@@ -64,32 +64,19 @@ else()
     message(STATUS "Boost coroutines disabled by CMake option.")
 endif()
 
-set(executable_heartbeat_tree_spawner heartbeat_tree_spawner)
+add_executable(executable_heartbeat_tree_spawner
+  src/heartbeat_tree_spawner.cpp)
 
-add_executable(${executable_heartbeat_tree_spawner}
-  src/heartbeat_tree_spawner_main.cpp)
 
-set(library_heartbeat_tree_spawner ${executable_heartbeat_tree_spawner}_core)
-
-add_library(${library_heartbeat_tree_spawner} SHARED
-  src/heartbeat_tree_spawner.cpp
-)
-
-ament_target_dependencies(${executable_heartbeat_tree_spawner}
-  ${dependencies}
-)
-target_link_libraries(${executable_heartbeat_tree_spawner} ${library_heartbeat_tree_spawner})
-
-ament_target_dependencies(${library_heartbeat_tree_spawner}
+ament_target_dependencies(executable_heartbeat_tree_spawner
   ${dependencies}
 )
 
-target_include_directories(${executable_heartbeat_tree_spawner} PUBLIC
+target_include_directories(executable_heartbeat_tree_spawner PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
-ament_target_dependencies(
-  drawer_sm_startup_debug
+ament_target_dependencies(drawer_sm_startup_debug
   ${dependencies}
 )
 
@@ -101,24 +88,13 @@ target_include_directories(drawer_sm_startup_debug
 
 install(TARGETS
   drawer_sm_startup_debug
-  ${executable_heartbeat_tree_spawner}
+  executable_heartbeat_tree_spawner
   DESTINATION lib/${PROJECT_NAME}
-)
-
-install(TARGETS
-  ${library_heartbeat_tree_spawner}
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
 )
 
 install(DIRECTORY
   config
   trees
-  DESTINATION share/${PROJECT_NAME}
-)
-
-install(DIRECTORY
   launch
   DESTINATION share/${PROJECT_NAME}
 )
@@ -129,8 +105,6 @@ if(BUILD_TESTING)
   find_package(ament_cmake_xmllint REQUIRED)
   ament_xmllint()
 endif()
-
-ament_export_libraries(${library_heartbeat_tree_spawner})
 
 ament_export_include_directories(include)
 
