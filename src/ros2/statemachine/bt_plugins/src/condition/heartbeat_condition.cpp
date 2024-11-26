@@ -12,6 +12,7 @@ namespace statemachine
 
     getInput("timeouts_until_failure", _timeouts_until_failure);
     getInput("topic", _topic_name);
+    getInput("latency_tolerance_in_ms", _latency_tolerance_in_ms);
 
     if (_topic_name == "")
     {
@@ -42,22 +43,35 @@ namespace statemachine
       return BT::NodeStatus::RUNNING;
     }
 
-    const std::chrono::milliseconds time_since_last_heartbeat_ms =
+    const std::chrono::milliseconds time_since_last_heartbeat_in_ms =
         convert_to_milliseconds(_node->now()) - convert_to_milliseconds(_last_heartbeat_timestamp);
-    const std::chrono::milliseconds failure_timeout_duration_in_ms(_heartbeat_interval_in_ms * _timeouts_until_failure);
+    const std::chrono::milliseconds failure_timeout_in_ms(_heartbeat_interval_in_ms * _timeouts_until_failure);
 
-    if (time_since_last_heartbeat_ms > failure_timeout_duration_in_ms)
+    if (time_since_last_heartbeat_in_ms > failure_timeout_in_ms)
     {
-      RCLCPP_INFO(
+      RCLCPP_ERROR(
           rclcpp::get_logger("HeartbeatCondition"),
           "HeartbeatCondition FAILURE. Timeout for id %s occurred! Last heartbeat was %ld ms ago. Timeout is %ld ms.",
           _id.c_str(),
-          time_since_last_heartbeat_ms.count(),
-          failure_timeout_duration_in_ms.count());
+          time_since_last_heartbeat_in_ms.count(),
+          failure_timeout_in_ms.count());
 
       setOutput("id", _id);
       _first_heartbeat_received = false;
       return BT::NodeStatus::FAILURE;
+    }
+
+    const std::chrono::milliseconds acceptable_heartbeat_delay_in_ms(_heartbeat_interval_in_ms +
+                                                                     _latency_tolerance_in_ms);
+    if (time_since_last_heartbeat_in_ms > acceptable_heartbeat_delay_in_ms)
+    {
+      RCLCPP_WARN(
+          rclcpp::get_logger("HeartbeatCondition"),
+          "HeartbeatCondition WARNING. Single timeout for id %s occurred! Last heartbeat was %ld ms ago. Acceptable "
+          "delay is %ld ms.",
+          _id.c_str(),
+          time_since_last_heartbeat_in_ms.count(),
+          acceptable_heartbeat_delay_in_ms.count());
     }
 
     return BT::NodeStatus::SUCCESS;

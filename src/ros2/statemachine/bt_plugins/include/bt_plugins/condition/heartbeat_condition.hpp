@@ -21,6 +21,7 @@ namespace statemachine
     {
       return {BT::InputPort<std::string>("topic", "/heartbeat"),
               BT::InputPort<uint8_t>("timeouts_until_failure", "3"),
+              BT::InputPort<uint16_t>("latency_tolerance_in_ms", "100"),
               BT::OutputPort<std::string>("id", "1")};
     }
 
@@ -37,6 +38,7 @@ namespace statemachine
     std::string _topic_name;
     std::string _id;
     uint8_t _timeouts_until_failure;
+    uint16_t _latency_tolerance_in_ms;
     uint16_t _heartbeat_interval_in_ms;
     builtin_interfaces::msg::Time _last_heartbeat_timestamp;
 
