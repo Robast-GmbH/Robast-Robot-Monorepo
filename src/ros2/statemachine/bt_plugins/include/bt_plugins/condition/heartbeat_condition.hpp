@@ -43,6 +43,7 @@ namespace statemachine
     builtin_interfaces::msg::Time _last_heartbeat_timestamp;
 
     bool _first_heartbeat_received = false;
+    bool _printed_single_timeout_warning = false;
 
     void _callback_heartbeat(const communication_interfaces::msg::Heartbeat::SharedPtr msg);
   };

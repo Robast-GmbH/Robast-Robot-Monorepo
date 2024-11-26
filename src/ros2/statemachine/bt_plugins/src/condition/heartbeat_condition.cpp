@@ -9,6 +9,7 @@ namespace statemachine
     _blackboard = config.blackboard;
     _callback_group = _node->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive, false);
     _callback_group_executor.add_callback_group(_callback_group, _node->get_node_base_interface());
+    _printed_single_timeout_warning = false;
 
     getInput("timeouts_until_failure", _timeouts_until_failure);
     getInput("topic", _topic_name);
@@ -63,7 +64,7 @@ namespace statemachine
 
     const std::chrono::milliseconds acceptable_heartbeat_delay_in_ms(_heartbeat_interval_in_ms +
                                                                      _latency_tolerance_in_ms);
-    if (time_since_last_heartbeat_in_ms > acceptable_heartbeat_delay_in_ms)
+    if (!_printed_single_timeout_warning && time_since_last_heartbeat_in_ms > acceptable_heartbeat_delay_in_ms)
     {
       RCLCPP_WARN(
           rclcpp::get_logger("HeartbeatCondition"),
@@ -72,6 +73,7 @@ namespace statemachine
           _id.c_str(),
           time_since_last_heartbeat_in_ms.count(),
           acceptable_heartbeat_delay_in_ms.count());
+      _printed_single_timeout_warning = true;
     }
 
     return BT::NodeStatus::SUCCESS;
@@ -86,6 +88,7 @@ namespace statemachine
       _heartbeat_interval_in_ms = msg->interval_in_ms;
       _last_heartbeat_timestamp = msg->stamp;
       _first_heartbeat_received = true;
+      _printed_single_timeout_warning = false;
 
       RCLCPP_DEBUG(rclcpp::get_logger("HeartbeatCondition"),
                    "Received heartbeat from %s. I am %s, my interval is %d ms and the "
