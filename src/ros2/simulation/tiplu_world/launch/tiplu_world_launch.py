@@ -38,6 +38,7 @@ def launch_robot_state_publisher(context, *args, **settings):
             "ros2_control_hardware_type_positon_joint": "gz_ros2_control",
             "ros_distro": settings["ros_distro"],
             "position_joint_type": position_joint_type,
+            "robot_type": settings["robot_type"],
         },
     ).toxml()
 
@@ -112,7 +113,8 @@ def generate_launch_description():
     init_yaw = os.environ["init_yaw"]
     prefix = os.environ["prefix"]
     robot = os.environ["robot"]
-
+    robot_type = os.environ.get("robot_type", "cura")
+    
     if gz_version == "fortress":
         pkg_ros_gz_sim = get_package_share_directory("ros_ign_gazebo")
         gz_sim_launch = os.path.join(pkg_ros_gz_sim, "launch", "ign_gazebo.launch.py")
@@ -227,6 +229,7 @@ def generate_launch_description():
             "robot": robot,
             "prefix": prefix,
             "ros_distro": ros_distro,
+            "robot_type": robot_type,
         },
     )
 
