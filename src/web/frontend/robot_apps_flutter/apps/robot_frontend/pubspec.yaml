@@ -25,6 +25,8 @@ dependencies:
   media_kit_video: ^1.2.5 # For video rendering.
   media_kit_libs_video: ^1.0.5 # Native video dependencies.
   zoom_widget: ^2.0.1
+  path_provider: ^2.1.5
+  pdfrx: ^1.0.88
 
 dev_dependencies:
   bloc_test: ^9.1.6

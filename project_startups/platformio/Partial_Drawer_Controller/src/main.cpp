@@ -4,8 +4,9 @@
 #include "drawer/electrical_drawer.hpp"
 #include "drawer_controller/global.hpp"
 #include "gpio/gpio_wrapper_pca9535.hpp"
-#include "lock/tray_manager.hpp"
 #include "peripherals/gpio_defines.hpp"
+#include "peripherals/pinout_defines.hpp"
+#include "tray/tray_manager.hpp"
 
 // These are the very basic top level configurations for the drawer controller you need to set.
 constexpr config::UserConfig USER_CONFIG{.module_version = config::version::CURA,
@@ -25,7 +26,7 @@ std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWAR
 
 std::shared_ptr<drawer::ElectricalDrawer> e_drawer;
 
-std::shared_ptr<partial_drawer_controller::TrayManager> tray_manager;
+std::shared_ptr<tray::TrayManager> tray_manager;
 
 std::unique_ptr<can_toolbox::CanController> can_controller;
 
@@ -162,7 +163,9 @@ void process_can_msgs_task_loop(void* pvParameters)
 
     e_drawer->update_state();
 
-    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = e_drawer->can_out();
+    heartbeat->generate_heartbeat();
+
+    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = can_utils->get_element_from_feedback_msg_queue();
 
     if (to_be_sent_message.has_value())
     {
@@ -196,44 +199,9 @@ void setup()
                                                         USER_CONFIG.endstop_switch_type,
                                                         SWITCH_WEIGHT_NEW_VALUES);
 
-  std::vector<partial_drawer_controller::TrayPinConfig> tray_pin_config = {
-    {peripherals::pin_id::LOCK_1_OPEN_CONTROL,
-     peripherals::pin_id::LOCK_1_CLOSE_CONTROL,
-     peripherals::pin_id::SENSE_INPUT_LID_1_CLOSED},
-    {peripherals::pin_id::LOCK_2_OPEN_CONTROL,
-     peripherals::pin_id::LOCK_2_CLOSE_CONTROL,
-     peripherals::pin_id::SENSE_INPUT_LID_2_CLOSED},
-    {peripherals::pin_id::LOCK_3_OPEN_CONTROL,
-     peripherals::pin_id::LOCK_3_CLOSE_CONTROL,
-     peripherals::pin_id::SENSE_INPUT_LID_3_CLOSED},
-    {peripherals::pin_id::LOCK_4_OPEN_CONTROL,
-     peripherals::pin_id::LOCK_4_CLOSE_CONTROL,
-     peripherals::pin_id::SENSE_INPUT_LID_4_CLOSED},
-    {peripherals::pin_id::LOCK_5_OPEN_CONTROL,
-     peripherals::pin_id::LOCK_5_CLOSE_CONTROL,
-     peripherals::pin_id::SENSE_INPUT_LID_5_CLOSED},
-    {peripherals::pin_id::LOCK_6_OPEN_CONTROL,
-     peripherals::pin_id::LOCK_6_CLOSE_CONTROL,
-     peripherals::pin_id::SENSE_INPUT_LID_6_CLOSED},
-    {peripherals::pin_id::LOCK_7_OPEN_CONTROL,
-     peripherals::pin_id::LOCK_7_CLOSE_CONTROL,
-     peripherals::pin_id::SENSE_INPUT_LID_7_CLOSED},
-    {peripherals::pin_id::LOCK_8_OPEN_CONTROL,
-     peripherals::pin_id::LOCK_8_CLOSE_CONTROL,
-     peripherals::pin_id::SENSE_INPUT_LID_8_CLOSED}};
-
-  tray_manager = std::make_shared<partial_drawer_controller::TrayManager>(
-    tray_pin_config, gpio_wrapper, wire_onboard_led_driver, SWITCH_PRESSED_THRESHOLD, SWITCH_WEIGHT_NEW_VALUES);
-
-  auto set_led_driver_enable_pin_high = []()
-  {
-    gpio_wrapper->set_pin_mode(peripherals::pin_id::ENABLE_ONBOARD_LED_VDD, interfaces::gpio::IS_OUTPUT);
-    gpio_wrapper->digital_write(peripherals::pin_id::ENABLE_ONBOARD_LED_VDD, true);
-  };
-  tray_manager->init(set_led_driver_enable_pin_high);
-
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   can_message_converter = std::make_unique<utils::CanMessageConverter>();
+  can_utils = std::make_shared<can_toolbox::CanUtils>(can_db);
 
   led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.num_of_leds>>(
     USER_CONFIG.use_color_fade);
@@ -248,17 +216,21 @@ void setup()
   encoder_config = std::make_shared<motor::EncoderConfig>();
   motor_config = std::make_shared<motor::MotorConfig>();
   motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
+  tray_manager_config = std::make_shared<tray::TrayManagerConfig>();
+  heartbeat_config = std::make_shared<watchdog::HeartbeatConfig>();
 
-  config_manager =
-    std::make_unique<utils::ConfigManager>(drawer_config, encoder_config, motor_config, motor_monitor_config);
+  config_manager = std::make_unique<utils::ConfigManager>(
+    drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config, heartbeat_config);
   config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                              USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
+
+  heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, heartbeat_config);
 
   e_drawer = std::make_shared<drawer::ElectricalDrawer>(
     MODULE_ID,
     USER_CONFIG.lock_id,
-    can_db,
     gpio_wrapper,
+    can_utils,
     stepper_1_pin_id_config,
     MODULE_HARDWARE_CONFIG.use_encoder,
     gpio_wrapper->get_gpio_num_for_pin_id(peripherals::pin_id::STEPPER_1_ENCODER_A),
@@ -270,6 +242,47 @@ void setup()
     drawer_config,
     encoder_config,
     motor_monitor_config);
+
+  std::vector<tray::TrayPinConfig> tray_pin_config = {{peripherals::pin_id::LOCK_1_OPEN_CONTROL,
+                                                       peripherals::pin_id::LOCK_1_CLOSE_CONTROL,
+                                                       peripherals::pin_id::SENSE_INPUT_LID_1_CLOSED},
+                                                      {peripherals::pin_id::LOCK_2_OPEN_CONTROL,
+                                                       peripherals::pin_id::LOCK_2_CLOSE_CONTROL,
+                                                       peripherals::pin_id::SENSE_INPUT_LID_2_CLOSED},
+                                                      {peripherals::pin_id::LOCK_3_OPEN_CONTROL,
+                                                       peripherals::pin_id::LOCK_3_CLOSE_CONTROL,
+                                                       peripherals::pin_id::SENSE_INPUT_LID_3_CLOSED},
+                                                      {peripherals::pin_id::LOCK_4_OPEN_CONTROL,
+                                                       peripherals::pin_id::LOCK_4_CLOSE_CONTROL,
+                                                       peripherals::pin_id::SENSE_INPUT_LID_4_CLOSED},
+                                                      {peripherals::pin_id::LOCK_5_OPEN_CONTROL,
+                                                       peripherals::pin_id::LOCK_5_CLOSE_CONTROL,
+                                                       peripherals::pin_id::SENSE_INPUT_LID_5_CLOSED},
+                                                      {peripherals::pin_id::LOCK_6_OPEN_CONTROL,
+                                                       peripherals::pin_id::LOCK_6_CLOSE_CONTROL,
+                                                       peripherals::pin_id::SENSE_INPUT_LID_6_CLOSED},
+                                                      {peripherals::pin_id::LOCK_7_OPEN_CONTROL,
+                                                       peripherals::pin_id::LOCK_7_CLOSE_CONTROL,
+                                                       peripherals::pin_id::SENSE_INPUT_LID_7_CLOSED},
+                                                      {peripherals::pin_id::LOCK_8_OPEN_CONTROL,
+                                                       peripherals::pin_id::LOCK_8_CLOSE_CONTROL,
+                                                       peripherals::pin_id::SENSE_INPUT_LID_8_CLOSED}};
+
+  tray_manager = std::make_shared<tray::TrayManager>(tray_pin_config,
+                                                     gpio_wrapper,
+                                                     wire_onboard_led_driver,
+                                                     e_drawer,
+                                                     motor_monitor_config,
+                                                     tray_manager_config,
+                                                     SWITCH_PRESSED_THRESHOLD,
+                                                     SWITCH_WEIGHT_NEW_VALUES);
+
+  auto set_led_driver_enable_pin_high = []()
+  {
+    gpio_wrapper->set_pin_mode(peripherals::pin_id::ENABLE_ONBOARD_LED_VDD, interfaces::gpio::IS_OUTPUT);
+    gpio_wrapper->digital_write(peripherals::pin_id::ENABLE_ONBOARD_LED_VDD, true);
+  };
+  tray_manager->init(set_led_driver_enable_pin_high);
 
   // Initialize CAN Controller right before can task receive loop is started, otherwise rx_queue might overflow
   can_controller->initialize_can_controller();

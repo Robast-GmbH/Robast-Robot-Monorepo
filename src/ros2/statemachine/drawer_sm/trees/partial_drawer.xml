@@ -69,7 +69,7 @@
                                 upper_bound="100.0"
                                 LEDs_colored="{leds}"/>
             <LEDPublisherAction drawer_address="{drawer}"
-                                fading_time_ms="500"
+                                fading_time_ms="700"
                                 led_topic="/led_cmd"
                                 leds="{leds}"/>
             <PartialColorizeLED LEDs="{leds}"
@@ -80,13 +80,13 @@
                                 red="236"
                                 upper_bound="100.0"
                                 LEDs_colored="{leds}"/>
-            <Delay delay_msec="500">
+            <Delay delay_msec="700">
               <LEDPublisherAction drawer_address="{drawer}"
-                                  fading_time_ms="500"
+                                  fading_time_ms="700"
                                   led_topic="/led_cmd"
                                   leds="{leds}"/>
             </Delay>
-            <Sleep msec="500"/>
+            <Sleep msec="700"/>
           </Sequence>
         </KeepRunningUntilFailure>
       </Parallel>
@@ -164,7 +164,7 @@
                             upper_bound="100.0"
                             LEDs_colored="{leds}"/>
         <LEDPublisherAction drawer_address="{drawer}"
-                            fading_time_ms="500"
+                            fading_time_ms="700"
                             led_topic="/led_cmd"
                             leds="{leds}"/>
         <PartialColorizeLED LEDs="{leds}"
@@ -175,13 +175,13 @@
                             red="236"
                             upper_bound="100.0"
                             LEDs_colored="{leds}"/>
-        <Delay delay_msec="500">
+        <Delay delay_msec="700">
           <LEDPublisherAction drawer_address="{drawer}"
-                              fading_time_ms="500"
+                              fading_time_ms="700"
                               led_topic="/led_cmd"
                               leds="{leds}"/>
         </Delay>
-        <Sleep msec="500"/>
+        <Sleep msec="700"/>
       </Sequence>
     </KeepRunningUntilFailure>
   </BehaviorTree>
@@ -237,7 +237,7 @@
                               move_electric_drawer_topic="/electrical_drawer_task"
                               speed="200"
                               stall_guard_value="80"
-                              target_position="251"/>
+                              target_position="254"/>
         </Delay>
         <ReactiveIfThenElse>
           <Inverter>

@@ -18,7 +18,6 @@ from module_manager.module_manager import ModuleManager
 from module_manager.module_repository import ModuleRepository
 from user_system.auth_session_manager import AuthSessionManager
 from pydantic_models.submodule_process_request import SubmoduleProcessRequest
-from pydantic_models.submodule_status import SubmoduleStatus
 from db_models.submodule import Submodule
 from configs.url_config import ROBOT_NAME_TO_IP, ROBOT_API_PORT
 from threading import Timer
@@ -91,7 +90,10 @@ class ModuleProcessManager:
         requests.post(
             f"http://{self.fleet_ip_config[address.robot_name]}:{self.robot_api_port}/open_submodule?module_id={address.module_id}&submodule_id={address.submodule_id}"
         )
-        if submodule.module_process_status == "waiting_for_opening":
+        if (
+            submodule.module_process_status == "waiting_for_opening"
+            or submodule.module_process_status == "opening_timed_out"
+        ):
             submodule.module_process_status = "opening"
             self.repository.update_submodule(submodule)
         return True
@@ -158,7 +160,12 @@ class ModuleProcessManager:
     def __trigger_periodic_module_status_polling(self) -> None:
         for robot in self.fleet_ip_config.keys():
             for submodule in self.repository.read_robot_submodules(robot):
-                if submodule.module_process_status not in ["idle", "auth", "waiting_for_opening"]:
+                if submodule.module_process_status not in [
+                    "idle",
+                    "auth",
+                    "waiting_for_opening",
+                    "opening_timed_out",
+                ]:
                     self.__poll_submodule_status(
                         SubmoduleAddress(
                             robot_name=robot,

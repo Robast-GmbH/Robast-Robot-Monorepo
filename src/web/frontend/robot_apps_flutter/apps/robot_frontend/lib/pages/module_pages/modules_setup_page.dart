@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
+import 'package:robot_frontend/pages/manuals_page.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
+import 'package:robot_frontend/widgets/dialogs/finish_module_setup_dialog.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 
 class ModulesSetupPage extends StatefulWidget {
@@ -48,9 +50,20 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    final submodules = Provider.of<ModuleProvider>(context, listen: false).submodules;
+    updateSlots(submodules);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      showBackButton: true,
+      inactivityTimerEnabled: false,
+      showBackButton: slotOccupancy.every((slot) => slot),
+      onBackButtonPressed: () {
+        showDialog(context: context, builder: (context) => const FinishModuleSetupDialog());
+      },
       title: 'Modul Setup',
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -227,6 +240,9 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                               isPartial = false;
 
                               await moduleProvider.fetchModules();
+                              if (slotOccupancy.every((slot) => slot)) {
+                                setState(() {});
+                              }
                             },
                             child: const Padding(
                               padding: EdgeInsets.all(8.0),
@@ -237,9 +253,11 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          width: 8,
-                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
                         Expanded(
                           child: RoundedButton(
                             onPressed: () async {
@@ -258,8 +276,32 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                             ),
                           ),
                         ),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        Expanded(
+                          child: RoundedButton(
+                            onPressed: () async {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute<ManualsPage>(
+                                  builder: (context) => const ManualsPage(
+                                    inactivityTimerEnabled: false,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text(
+                                'Hilfe',
+                                style: TextStyle(fontSize: 28, color: RobotColors.primaryText),
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
-                    ),
+                    )
                   ],
                 ),
               ),

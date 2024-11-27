@@ -50,6 +50,8 @@ namespace drawer_bridge
       create_publisher<std_msgs::msg::Bool>("push_to_close_triggered", _qos_config.get_qos_open_drawer());
 
     _error_msg_publisher = create_publisher<ErrorBaseMsg>("robast_error", _qos_config.get_qos_error_msgs());
+
+    _heartbeat_publisher = create_publisher<Heartbeat>("heartbeat", _qos_config.get_qos_heartbeat());
   }
 
   void DrawerBridge::setup_action_server()
@@ -75,7 +77,7 @@ namespace drawer_bridge
     uint32_t module_id = msg.module_id;
     uint8_t drawer_id = msg.drawer_id;
 
-    RCLCPP_INFO(
+    RCLCPP_DEBUG(
       get_logger(), "I heard from open_drawer topic the module_id: '%i' drawer_id: '%d ", module_id, drawer_id);
 
     if (module_id != 0)
@@ -91,11 +93,12 @@ namespace drawer_bridge
     uint8_t drawer_id = msg.drawer_address.drawer_id;
     uint8_t target_pos = msg.target_position;
 
-    RCLCPP_INFO(get_logger(),
-                "I heard from electrical_drawer_task topic the module_id: '%i' drawer_id: '%d with target position: %d",
-                module_id,
-                drawer_id,
-                target_pos);
+    RCLCPP_DEBUG(
+      get_logger(),
+      "I heard from electrical_drawer_task topic the module_id: '%i' drawer_id: '%d with target position: %d",
+      module_id,
+      drawer_id,
+      target_pos);
 
     const CanMessage can_msg = _can_message_creator.create_can_msg_drawer_task(msg);
     send_can_msg(can_msg);
@@ -105,15 +108,15 @@ namespace drawer_bridge
   {
     uint16_t num_of_leds = msg.leds.size();
 
-    RCLCPP_INFO(get_logger(),
-                "I heard from the /led_cmd topic the module id %i and the number of led states = %i. The states for "
-                "the first led are red = %i, green = %i, blue = %i, brightness = %i",
-                msg.drawer_address.module_id,
-                num_of_leds,
-                msg.leds[0].red,
-                msg.leds[0].green,
-                msg.leds[0].blue,
-                msg.leds[0].brightness);
+    RCLCPP_DEBUG(get_logger(),
+                 "I heard from the /led_cmd topic the module id %i and the number of led states = %i. The states for "
+                 "the first led are red = %i, green = %i, blue = %i, brightness = %i",
+                 msg.drawer_address.module_id,
+                 num_of_leds,
+                 msg.leds[0].red,
+                 msg.leds[0].green,
+                 msg.leds[0].blue,
+                 msg.leds[0].brightness);
 
     const CanMessage can_msg = _can_message_creator.create_can_msg_led_header(msg);
     send_can_msg(can_msg);
@@ -138,7 +141,7 @@ namespace drawer_bridge
     }
   }
 
-  void DrawerBridge::publish_drawer_status(const robast_can_msgs::CanMessage drawer_feedback_can_msg)
+  void DrawerBridge::handle_drawer_status(const robast_can_msgs::CanMessage drawer_feedback_can_msg)
   {
     std::vector<robast_can_msgs::CanSignal> can_signals = drawer_feedback_can_msg.get_can_signals();
 
@@ -190,7 +193,7 @@ namespace drawer_bridge
   void DrawerBridge::handle_e_drawer_motor_control_feedback(
     const robast_can_msgs::CanMessage e_drawer_motor_control_can_msg)
   {
-    RCLCPP_INFO(get_logger(), "Received e_drawer_motor_control feedback message!");
+    RCLCPP_DEBUG(get_logger(), "Received e_drawer_motor_control feedback message!");
 
     std::vector<robast_can_msgs::CanSignal> can_signals = e_drawer_motor_control_can_msg.get_can_signals();
 
@@ -282,9 +285,22 @@ namespace drawer_bridge
     }
   }
 
+  void DrawerBridge::publish_heartbeat(const robast_can_msgs::CanMessage heartbeat_can_msg)
+  {
+    std::vector<robast_can_msgs::CanSignal> can_signals = heartbeat_can_msg.get_can_signals();
+
+    Heartbeat heartbeat_msg = Heartbeat();
+    heartbeat_msg.stamp = this->now();
+    heartbeat_msg.id = std::to_string(can_signals.at(robast_can_msgs::can_signal::id::heartbeat::MODULE_ID).get_data());
+    heartbeat_msg.interval_in_ms =
+      can_signals.at(robast_can_msgs::can_signal::id::heartbeat::INTERVAL_IN_MS).get_data();
+
+    _heartbeat_publisher->publish(heartbeat_msg);
+  }
+
   void DrawerBridge::receive_can_msg_callback(CanMessage can_msg)
   {
-    RCLCPP_INFO(this->get_logger(), "Received CAN message: id:'%d' dlc:'%d' \n ", can_msg.id, can_msg.dlc);
+    RCLCPP_DEBUG(this->get_logger(), "Received CAN message: id:'%d' dlc:'%d' \n ", can_msg.id, can_msg.dlc);
 
     const std::optional<robast_can_msgs::CanMessage> decoded_msg = _can_encoder_decoder.decode_msg(can_msg);
 
@@ -293,7 +309,7 @@ namespace drawer_bridge
       switch (can_msg.id)
       {
         case robast_can_msgs::can_id::DRAWER_FEEDBACK:
-          publish_drawer_status(decoded_msg.value());
+          handle_drawer_status(decoded_msg.value());
           break;
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_FEEDBACK:
           handle_e_drawer_feedback(decoded_msg.value());
@@ -304,13 +320,16 @@ namespace drawer_bridge
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_MOTOR_CONTROL:
           handle_e_drawer_motor_control_feedback(decoded_msg.value());
           break;
+        case robast_can_msgs::can_id::HEARTBEAT:
+          publish_heartbeat(decoded_msg.value());
+          break;
       }
     }
   }
 
   void DrawerBridge::send_can_msg(const CanMessage can_msg)
   {
-    RCLCPP_INFO(this->get_logger(), "Sending can message with id '%d'!\n ", can_msg.id);
+    RCLCPP_DEBUG(this->get_logger(), "Sending can message with id '%d'!\n ", can_msg.id);
 
     _can_msg_publisher->publish(can_msg);
   }
@@ -318,7 +337,7 @@ namespace drawer_bridge
   rclcpp_action::GoalResponse DrawerBridge::handle_electrical_drawer_motor_control_goal(
     const rclcpp_action::GoalUUID& uuid, std::shared_ptr<const ElectricalDrawerMotorControl::Goal> goal)
   {
-    RCLCPP_INFO(this->get_logger(), "Received electrical drawer motor control goal request!");
+    RCLCPP_DEBUG(this->get_logger(), "Received electrical drawer motor control goal request!");
 
     return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
   }
@@ -326,7 +345,7 @@ namespace drawer_bridge
   rclcpp_action::CancelResponse DrawerBridge::handle_electrical_drawer_motor_control_cancel(
     const std::shared_ptr<rclcpp_action::ServerGoalHandle<ElectricalDrawerMotorControl>> goal_handle)
   {
-    RCLCPP_INFO(this->get_logger(), "Received electrical drawer motor control cancel request!");
+    RCLCPP_DEBUG(this->get_logger(), "Received electrical drawer motor control cancel request!");
 
     return rclcpp_action::CancelResponse::ACCEPT;
   }
@@ -334,7 +353,7 @@ namespace drawer_bridge
   void DrawerBridge::handle_electrical_drawer_motor_control_accepted(
     const std::shared_ptr<rclcpp_action::ServerGoalHandle<ElectricalDrawerMotorControl>> goal_handle)
   {
-    RCLCPP_INFO(this->get_logger(), "Received electrical drawer motor control accepted request!");
+    RCLCPP_DEBUG(this->get_logger(), "Received electrical drawer motor control accepted request!");
 
     // this needs to return quickly to avoid blocking the executor, so spin up a new thread
     std::thread{std::bind(&DrawerBridge::set_electrical_drawer_motor_control, this, std::placeholders::_1), goal_handle}
@@ -365,11 +384,11 @@ namespace drawer_bridge
     const CanMessage can_msg = _can_message_creator.create_can_msg_e_drawer_motor_control(goal);
     send_can_msg(can_msg);
 
-    RCLCPP_INFO(this->get_logger(),
-                "Sending motor control message with module_id: '%i', motor_id: '%d' and enable_motor: '%d'",
-                goal->module_address.module_id,
-                goal->motor_id,
-                goal->enable_motor);
+    RCLCPP_DEBUG(this->get_logger(),
+                 "Sending motor control message with module_id: '%i', motor_id: '%d' and enable_motor: '%d'",
+                 goal->module_address.module_id,
+                 goal->motor_id,
+                 goal->enable_motor);
 
     wait_for_motor_control_change();
 
@@ -396,7 +415,7 @@ namespace drawer_bridge
   rclcpp_action::GoalResponse DrawerBridge::handle_module_config_goal(const rclcpp_action::GoalUUID& uuid,
                                                                       std::shared_ptr<const ModuleConfig::Goal> goal)
   {
-    RCLCPP_INFO(this->get_logger(), "Received module config goal request!");
+    RCLCPP_DEBUG(this->get_logger(), "Received module config goal request!");
 
     return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
   }
@@ -404,7 +423,7 @@ namespace drawer_bridge
   rclcpp_action::CancelResponse DrawerBridge::handle_module_config_cancel(
     const std::shared_ptr<rclcpp_action::ServerGoalHandle<ModuleConfig>> goal_handle)
   {
-    RCLCPP_INFO(this->get_logger(), "Received module config cancel request!");
+    RCLCPP_DEBUG(this->get_logger(), "Received module config cancel request!");
 
     return rclcpp_action::CancelResponse::ACCEPT;
   }
@@ -412,7 +431,7 @@ namespace drawer_bridge
   void DrawerBridge::handle_module_config_accepted(
     const std::shared_ptr<rclcpp_action::ServerGoalHandle<ModuleConfig>> goal_handle)
   {
-    RCLCPP_INFO(this->get_logger(), "Received module config accepted request!");
+    RCLCPP_DEBUG(this->get_logger(), "Received module config accepted request!");
     uint32_t module_id = goal_handle->get_goal()->module_address.module_id;
     uint8_t config_id = goal_handle->get_goal()->config_id;
     uint32_t config_value = goal_handle->get_goal()->config_value;

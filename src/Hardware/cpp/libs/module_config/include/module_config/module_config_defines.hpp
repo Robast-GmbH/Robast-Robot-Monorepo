@@ -66,6 +66,20 @@ namespace module_config
     constexpr uint8_t SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL = 43;
   } // namespace motor_monitor
 
+  namespace tray_manager
+  {
+    constexpr uint8_t SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID = 50;
+    constexpr uint8_t POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION = 51;
+    constexpr uint8_t DISTANCE_TO_TRAY_LID_THRESHOLD = 52;
+    constexpr uint8_t TARGET_SPEED_TO_CLOSE_TRAY_LID = 53;
+  } // namespace tray_manager
+
+  namespace watchdog
+  {
+    constexpr uint8_t HEARTBEAT_INTERVAL_IN_MS = 60;    
+  } // namespace watchdog
+  
+
   /********************************************************************************************************
    * Configs for the drawer
    *********************************************************************************************************/
@@ -151,7 +165,7 @@ namespace module_config
   struct ModuleSetting<drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS>
   {
     using type = uint32_t;
-    static constexpr type default_value = 700;
+    static constexpr type default_value = 600;
   };
 
   template <>
@@ -206,7 +220,7 @@ namespace module_config
   struct ModuleSetting<encoder::ENCODER_COUNT_DRAWER_MAX_EXTENT>
   {
     using type = uint32_t;
-    static constexpr type default_value = 83000;
+    static constexpr type default_value = 85000;
   };
 
   template <>
@@ -315,6 +329,47 @@ namespace module_config
   {
     using type = float;
     static constexpr type default_value = 0.80;
+  };
+
+  /********************************************************************************************************
+   * Configs for the tray manager
+   ********************************************************************************************************/
+  template <>
+  struct ModuleSetting<tray_manager::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID>
+  {
+    using type = float;
+    static constexpr type default_value = 0.95;
+  };
+
+  template <>
+  struct ModuleSetting<tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION>
+  {
+    using type = uint8_t;
+    static constexpr type default_value = 55;
+  };
+
+  template <>
+  struct ModuleSetting<tray_manager::DISTANCE_TO_TRAY_LID_THRESHOLD>
+  {
+    using type = uint8_t;
+    static constexpr type default_value = 30;
+  };
+
+  template <>
+  struct ModuleSetting<tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID>
+  {
+    using type = uint8_t;
+    static constexpr type default_value = 50;
+  };
+
+  /********************************************************************************************************
+   * Configs for the watchdog
+   ********************************************************************************************************/
+  template <>
+  struct ModuleSetting<watchdog::HEARTBEAT_INTERVAL_IN_MS>
+  {
+    using type = uint16_t;
+    static constexpr type default_value = 1000;
   };
 
 } // namespace module_config

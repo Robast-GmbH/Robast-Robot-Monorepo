@@ -1,5 +1,5 @@
-#ifndef PARTIAL_DRAWER_CONTROLLER_LP503x_HPP
-#define PARTIAL_DRAWER_CONTROLLER_LP503x_HPP
+#ifndef LED_LP503x_HPP
+#define LED_LP503x_HPP
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -150,4 +150,4 @@ namespace lp503x
   };
 }   // namespace lp503x
 
-#endif   // PARTIAL_DRAWER_CONTROLLER_LP503x_HPP
+#endif   // LED_LP503x_HPP

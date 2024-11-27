@@ -99,6 +99,12 @@ namespace robast_can_msgs
                  CanSignal(can_signal::bit_start::electrical_drawer_motor_control::MOTOR_ID, can_signal::bit_length::electrical_drawer_motor_control::MOTOR_ID, 0),
                  CanSignal(can_signal::bit_start::electrical_drawer_motor_control::ENABLE_MOTOR, can_signal::bit_length::electrical_drawer_motor_control::ENABLE_MOTOR, 0),
                  CanSignal(can_signal::bit_start::electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE, can_signal::bit_length::electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE, 0)}),
+            CanMessage(
+                can_id::HEARTBEAT,
+                can_dlc::HEARTBEAT,
+                {CanSignal(can_signal::bit_start::heartbeat::MODULE_ID, can_signal::bit_length::heartbeat::MODULE_ID, 0),
+                 CanSignal(can_signal::bit_start::heartbeat::INTERVAL_IN_MS, can_signal::bit_length::heartbeat::INTERVAL_IN_MS, 0)}
+            )
         };
     };
 } // namespace robast_can_msgs

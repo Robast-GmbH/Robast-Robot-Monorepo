@@ -4,8 +4,8 @@ namespace drawer
 {
   ElectricalDrawer::ElectricalDrawer(const uint32_t module_id,
                                      const uint8_t id,
-                                     const std::shared_ptr<robast_can_msgs::CanDb> can_db,
                                      const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
+                                     const std::shared_ptr<can_toolbox::CanUtils> can_utils,
                                      const stepper_motor::StepperPinIdConfig &stepper_pin_id_config,
                                      const bool use_encoder,
                                      const uint8_t encoder_pin_a,
@@ -20,9 +20,9 @@ namespace drawer
       : _module_id{module_id},
         _id{id},
         _gpio_wrapper{gpio_wrapper},
+        _can_utils{can_utils},
         _stepper_pin_id_config{stepper_pin_id_config},
         _encoder{std::make_shared<motor::Encoder>(use_encoder, encoder_pin_a, encoder_pin_b, encoder_config)},
-        _can_utils{std::make_unique<can_toolbox::CanUtils>(can_db)},
         _motor{std::make_shared<stepper_motor::Motor>(
           motor_driver_address, _gpio_wrapper, _stepper_pin_id_config, motor_config)},
         _endstop_switch{endstop_switch},
@@ -60,11 +60,6 @@ namespace drawer
     }
   }
 
-  std::optional<robast_can_msgs::CanMessage> ElectricalDrawer::can_out()
-  {
-    return _can_utils->get_element_from_feedback_msg_queue();
-  }
-
   void ElectricalDrawer::update_state()
   {
     if (_drawer_lock.has_value())
@@ -83,6 +78,34 @@ namespace drawer
     {
       handle_drawer_active_state();
     }
+  }
+
+  bool ElectricalDrawer::is_drawer_moving_in() const
+  {
+    return !_is_drawer_moving_out && !_is_idling;
+  }
+
+  uint8_t ElectricalDrawer::get_current_position() const
+  {
+    return _encoder->get_normed_current_position();
+  }
+
+  uint8_t ElectricalDrawer::get_target_position() const
+  {
+    return _target_position_uint8;
+  }
+
+  uint8_t ElectricalDrawer::get_target_speed() const
+  {
+    return get_normed_target_speed_uint8(_motor->get_target_speed());
+  }
+
+  void ElectricalDrawer::set_target_speed_with_decelerating_ramp(uint8_t target_speed)
+  {
+    _motor->set_target_speed_with_decelerating_ramp(
+      get_normed_target_speed_uint32(target_speed),
+      _encoder->convert_uint8_position_to_drawer_position_scale(_config->get_drawer_moving_in_deceleration_distance()),
+      _encoder->get_current_position());
   }
 
   void ElectricalDrawer::handle_drawer_idle_state()
@@ -173,7 +196,7 @@ namespace drawer
                                                 _id,
                                                 _endstop_switch->is_switch_pressed(),
                                                 LOCK_SWITCH_IS_NOT_PUSHED,
-                                                is_stall_guard_triggered(),
+                                                get_is_stall_guard_triggered(),
                                                 _encoder->get_normed_current_position(),
                                                 PUSH_TO_CLOSE_NOT_TRIGGERED);
       return;
@@ -465,7 +488,7 @@ namespace drawer
         _id,
         _endstop_switch->is_switch_pressed(),
         _drawer_lock.has_value() ? _drawer_lock.value()->is_lock_switch_pushed() : false,
-        is_stall_guard_triggered(),
+        get_is_stall_guard_triggered(),
         _encoder->get_normed_current_position(),
         PUSH_TO_CLOSE_NOT_TRIGGERED);
 
@@ -548,7 +571,7 @@ namespace drawer
                                               _id,
                                               ENDSTOP_SWITCH_IS_PUSHED,
                                               LOCK_SWITCH_IS_NOT_PUSHED,
-                                              is_stall_guard_triggered(),
+                                              get_is_stall_guard_triggered(),
                                               _encoder->get_normed_current_position(),
                                               PUSH_TO_CLOSE_NOT_TRIGGERED);
 
@@ -564,7 +587,7 @@ namespace drawer
     }
   }
 
-  bool ElectricalDrawer::is_stall_guard_triggered() const
+  bool ElectricalDrawer::get_is_stall_guard_triggered() const
   {
     return _is_motor_monitor_stall_guard_triggered || _is_tmc_stall_guard_triggered;
   }
