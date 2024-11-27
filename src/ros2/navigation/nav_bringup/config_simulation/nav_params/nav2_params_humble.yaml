@@ -551,7 +551,7 @@ collision_monitor:
     # to be ignored in circular case.
 
     #"[ [0.35, 0.30], [0.35, -0.3], [-0.35, -0.30], [-0.35, 0.3] ]" # rb_theron footprint
-    polygons: ["PolygonStop", "FootprintApproach"]
+    polygons: ["PolygonStop", "PolygonSlowMinor"]
     FootprintApproach:
       type: "polygon"
       action_type: "approach"
@@ -563,27 +563,20 @@ collision_monitor:
       enabled: True
     PolygonStop:
       type: "polygon"
-      points: [0.45, 0.4, 0.45, -0.4, 0.0, -0.4, 0.0, 0.4]
+      points: [0.5, 0.4, 0.5, -0.4, 0.0, -0.4, 0.0, 0.4]
       action_type: "stop"
       min_points: 4
       visualize: True
       polygon_pub_topic: "polygon_stop"
-    PolygonSlowHard:
-      type: "polygon"
-      points: [0.6, 0.5, 0.6, -0.5, -0.6, -0.5, -0.6, 0.5]
-      action_type: "slowdown"
-      min_points: 4
-      slowdown_ratio: 0.3
-      visualize: True
-      polygon_pub_topic: "polygon_slowdown_hard"
     PolygonSlowMinor:
       type: "polygon"
       points: [0.8, 0.5, 0.8, -0.5, -0.2, -0.6, -0.2, 0.6]
       action_type: "slowdown"
       min_points: 4
-      slowdown_ratio: 0.7
+      slowdown_ratio: 0.5
       visualize: True
       polygon_pub_topic: "polygon_slowdown_minor"
+    #TODO: @TAlscher - Add limits later on when a) limit is backported to humble or b) we have a jazzy release
     ShortLimit:
       type: "polygon"
       points: [0.9, 0.9, 0.9, -0.9, -0.9, -0.9, -0.9, 0.9]
