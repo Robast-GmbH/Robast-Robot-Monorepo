@@ -19,18 +19,17 @@ RUN apt-get update && \
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp && \
     rm -rf /var/lib/apt/lists/*
 
-USER robast
 RUN . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
     colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 WORKDIR /robast/${ROS_BUILD_DISTRO}/
-RUN echo "source /robast/${ROS_DISTRO}/setup.bash" >> /root/.bashrc
 
+USER robast
+RUN echo "source /robast/${ROS_DISTRO}/setup.bash" >> /home/${USER}/.bashrc
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
-
 
 CMD ["bash", "-c", "source /robast/${ROS_DISTRO}/setup.bash && ros2 launch ira_laser_tools laserscan_multi_merger.launch.py"]
 
