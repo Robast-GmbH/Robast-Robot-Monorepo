@@ -20,7 +20,7 @@ def generate_launch_description():
     world_posegraph = LaunchConfiguration("world_posegraph")
 
     if is_simulation == 'True':
-        world_model = os.path.join(nav_bringup_dir, "maps", "6OG", "small_sim_map")
+        world_model = os.path.join(nav_bringup_dir, "maps", "6OG_duallaser_sim", "multi_laser_tiplu")
     else:
         world_model = os.path.join(nav_bringup_dir, "maps", "Tiplu_6OG", "6_OG_24_5")
 
