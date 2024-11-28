@@ -1,10 +1,10 @@
-ARG IMAGE_NAME=dustynv/ros:humble-ros-base-l4t-r36.2.0
+ARG IMAGE_NAME=dustynv/ros:humble-ros-base-l4t-r36.3.0
 
 FROM ${IMAGE_NAME}
 
 ARG ZED_SDK_MAJOR=4
-ARG ZED_SDK_MINOR=1
-ARG ZED_SDK_PATCH=3
+ARG ZED_SDK_MINOR=2
+ARG ZED_SDK_PATCH=2
 ARG L4T_MAJOR=36
 ARG L4T_MINOR=3
 
@@ -18,10 +18,6 @@ ARG GEOGRAPHIC_INFO_VERSION=1.0.4
 ARG ROBOT_LOCALIZATION_VERSION=3.4.2
 
 ENV DEBIAN_FRONTEND=noninteractive
-
-# Enable required NVIDIA drivers
-#ENV NVIDIA_DRIVER_CAPABILITIES \
-#  ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}compute,video,utility
 
 # Disable apt-get warnings
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 42D5A192B819C5DA || true && \
@@ -48,6 +44,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone &
   usbutils && \    
   wget \
   jq \
+  schedtool \
   zstd && \
   echo "# R${L4T_MAJOR} (release), REVISION: ${L4T_MINOR}" > /etc/nv_tegra_release && \
   apt-get update -y || true && \
@@ -83,19 +80,24 @@ RUN wget https://github.com/ros/xacro/archive/refs/tags/${XACRO_VERSION}.tar.gz 
 # Check that all the dependencies are satisfied
 WORKDIR /root/ros2_ws
 RUN apt-get update -y || true && rosdep update && \
-  rosdep install --from-paths src --ignore-src -r -y && \
-  rm -rf /var/lib/apt/lists/*
+    dpkg --remove --force-all opencv-dev opencv-libs && \
+    dpkg --remove --force-all opencv-main && \
+    dpkg --remove --force-all opencv-licenses && \
+    apt --fix-broken install && \
+    rosdep install --from-paths src --ignore-src -r -y && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install cython
 RUN python3 -m pip install --upgrade cython
 
 # Build the dependencies and the ZED ROS2 Wrapper
-RUN /bin/bash -c "source /opt/ros/$ROS_DISTRO/install/setup.bash && \
+RUN /bin/bash -c "source /opt/ros/$ROS_DISTRO/setup.bash && \
   colcon build --parallel-workers $(nproc) --symlink-install \
   --event-handlers console_direct+ --base-paths src \
   --cmake-args ' -DCMAKE_BUILD_TYPE=Release' \
   ' -DCMAKE_LIBRARY_PATH=/usr/local/cuda/lib64/stubs' \
   ' -DCMAKE_CXX_FLAGS="-Wl,--allow-shlib-undefined"' \
+  ' -DCMAKE_PREFIX_PATH=/opt/ros/humble' \
   ' --no-warn-unused-cli' "
 
 WORKDIR /root/ros2_ws
