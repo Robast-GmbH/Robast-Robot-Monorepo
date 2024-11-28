@@ -331,6 +331,7 @@ namespace stepper_motor
     debug_printf("[Motor]: Setting target speed instantly to %u\n", target_speed);
     set_active_speed(target_speed);
     _target_speed = target_speed;
+    _speed_ramp_in_progress = false;
   }
 
   uint32_t Motor::get_target_speed() const
