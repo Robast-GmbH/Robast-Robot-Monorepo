@@ -362,7 +362,7 @@ namespace drawer
     // Before we add a new task to the queue, we need to check if the drawer was homed once
     if (!_drawer_was_homed_once)
     {
-      debug_println("[ElectricalDrawer]: Drawer was not homed once yet, so add homing task to queue!");
+      debug_printf_warning("[ElectricalDrawer]: Drawer was not homed once yet, so add homing task to queue!");
       _e_drawer_task_queue->enqueue({DRAWER_TARGET_HOMING_POSITION,
                                      get_normed_target_speed_uint8(_config->get_drawer_initial_homing_speed()),
                                      STALL_GUARD_DISABLED,

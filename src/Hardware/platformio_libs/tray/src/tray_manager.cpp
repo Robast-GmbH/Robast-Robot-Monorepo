@@ -51,7 +51,7 @@ namespace tray
 
   void TrayManager::unlock_lock(uint8_t tray_id)
   {
-    debug_printf("[TrayManager]: Unlocking lock for tray %d\n", tray_id);
+    debug_printf_green("[TrayManager]: Unlocking lock for tray %d\n", tray_id);
     _electrical_tray_locks[tray_id - 1]->unlock();
     _timestamp_last_tray_lock_opening[tray_id - 1] = millis();
   }
