@@ -7,6 +7,7 @@ sys.path.append(os.path.join(workspace_dir, "build", "can"))  # Add the build di
 import can_db_defines_bindings as can_db_defines
 
 from can_msgs.msg import Frame
+from communication_interfaces.msg import LedCmd
 
 
 def construct_e_drawer_motor_control_feedback_can_frame(electrical_drawer_motor_control_goal):
@@ -159,4 +160,111 @@ def construct_can_data_heartbeat(module_id, interval_in_ms):
         )
     )
 
+    return data_uint64.to_bytes(8, byteorder="big")
+
+
+def construct_can_data_led_header(
+    module_id, fade_time_in_hundreds_of_ms, num_of_led_state_msgs, num_of_led_header_received
+):
+    start_index = 0
+    if num_of_led_header_received > 0:
+        # loop through num_of_led_state_msgs and add them up to num_of_led_header_received
+        for i in range(num_of_led_header_received):
+            start_index += num_of_led_state_msgs[i]
+        start_index -= 1  # as we index starting from 0 and not 1 we need to subtract 1
+
+    num_of_leds = num_of_led_state_msgs[num_of_led_header_received]
+
+    data_uint64 = (
+        (
+            module_id
+            << (
+                can_db_defines.CAN_STD_MSG_DLC_MAXIMUM * 8
+                - can_db_defines.can_signal.bit_length.LED_HEADER_MODULE_ID
+                - can_db_defines.can_signal.bit_start.LED_HEADER_MODULE_ID
+            )
+        )
+        | (
+            start_index
+            << (
+                can_db_defines.CAN_STD_MSG_DLC_MAXIMUM * 8
+                - can_db_defines.can_signal.bit_length.LED_HEADER_START_INDEX
+                - can_db_defines.can_signal.bit_start.LED_HEADER_START_INDEX
+            )
+        )
+        | (
+            num_of_leds
+            << (
+                can_db_defines.CAN_STD_MSG_DLC_MAXIMUM * 8
+                - can_db_defines.can_signal.bit_length.LED_HEADER_NUM_OF_LEDS
+                - can_db_defines.can_signal.bit_start.LED_HEADER_NUM_OF_LEDS
+            )
+        )
+        | (
+            fade_time_in_hundreds_of_ms
+            << (
+                can_db_defines.CAN_STD_MSG_DLC_MAXIMUM * 8
+                - can_db_defines.can_signal.bit_length.LED_HEADER_FADE_TIME_IN_HUNDREDS_OF_MS
+                - can_db_defines.can_signal.bit_start.LED_HEADER_FADE_TIME_IN_HUNDREDS_OF_MS
+            )
+        )
+    )
+    return data_uint64.to_bytes(8, byteorder="big")
+
+
+def construct_can_data_led_state(module_id, led_state, num_of_expected_led_states):
+    is_group_state = 0
+    if num_of_expected_led_states > 1:
+        is_group_state = 1
+
+    data_uint64 = (
+        (
+            module_id
+            << (
+                can_db_defines.CAN_STD_MSG_DLC_MAXIMUM * 8
+                - can_db_defines.can_signal.bit_length.HEARTBEAT_MODULE_ID
+                - can_db_defines.can_signal.bit_start.HEARTBEAT_MODULE_ID
+            )
+        )
+        | (
+            led_state.red
+            << (
+                can_db_defines.CAN_STD_MSG_DLC_MAXIMUM * 8
+                - can_db_defines.can_signal.bit_length.LED_STATE_RED
+                - can_db_defines.can_signal.bit_start.LED_STATE_RED
+            )
+        )
+        | (
+            led_state.green
+            << (
+                can_db_defines.CAN_STD_MSG_DLC_MAXIMUM * 8
+                - can_db_defines.can_signal.bit_length.LED_STATE_GREEN
+                - can_db_defines.can_signal.bit_start.LED_STATE_GREEN
+            )
+        )
+        | (
+            led_state.blue
+            << (
+                can_db_defines.CAN_STD_MSG_DLC_MAXIMUM * 8
+                - can_db_defines.can_signal.bit_length.LED_STATE_BLUE
+                - can_db_defines.can_signal.bit_start.LED_STATE_BLUE
+            )
+        )
+        | (
+            led_state.brightness
+            << (
+                can_db_defines.CAN_STD_MSG_DLC_MAXIMUM * 8
+                - can_db_defines.can_signal.bit_length.LED_STATE_BRIGHTNESS
+                - can_db_defines.can_signal.bit_start.LED_STATE_BRIGHTNESS
+            )
+        )
+        | (
+            is_group_state
+            << (
+                can_db_defines.CAN_STD_MSG_DLC_MAXIMUM * 8
+                - can_db_defines.can_signal.bit_length.LED_STATE_IS_GROUP_STATE
+                - can_db_defines.can_signal.bit_start.LED_STATE_IS_GROUP_STATE
+            )
+        )
+    )
     return data_uint64.to_bytes(8, byteorder="big")

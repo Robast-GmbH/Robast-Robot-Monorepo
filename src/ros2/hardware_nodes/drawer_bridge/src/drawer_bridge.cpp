@@ -106,27 +106,56 @@ namespace drawer_bridge
 
   void DrawerBridge::led_cmd_topic_callback(const LedCmd& msg)
   {
-    uint16_t num_of_leds = msg.leds.size();
+    const uint16_t num_of_leds = msg.leds.size();
+    const uint32_t module_id = msg.drawer_address.module_id;
+    const uint8_t fade_time_in_hundreds_of_ms = msg.fade_time_in_ms / 100;
 
     RCLCPP_DEBUG(get_logger(),
-                 "I heard from the /led_cmd topic the module id %i and the number of led states = %i. The states for "
-                 "the first led are red = %i, green = %i, blue = %i, brightness = %i",
+                 "I heard from the /led_cmd topic the module id %i and the number of led states = %i",
                  msg.drawer_address.module_id,
-                 num_of_leds,
-                 msg.leds[0].red,
-                 msg.leds[0].green,
-                 msg.leds[0].blue,
-                 msg.leds[0].brightness);
+                 num_of_leds);
 
-    const CanMessage can_msg = _can_message_creator.create_can_msg_led_header(msg);
-    send_can_msg(can_msg);
+    uint16_t num_of_led_states_in_group = 1;
+    uint16_t start_index = 0;
 
+    // We want loop through all leds and check how many consecutive leds have the same color and brightness
+    // Then we want to send a message for all leds with the same color and brightness in one message
     for (uint16_t i = 0; i < num_of_leds; i++)
     {
-      const CanMessage can_msg =
-        _can_message_creator.create_can_msg_set_single_led_state(msg.leds[i], msg.drawer_address);
-      send_can_msg(can_msg);
+      if (are_consecutive_leds_same(msg.leds, i, i + 1))
+      {
+        ++num_of_led_states_in_group;
+        continue;
+      }
+      else
+      {
+        const CanMessage can_msg_led_header = _can_message_creator.create_can_msg_led_header(
+          module_id, start_index, num_of_led_states_in_group, fade_time_in_hundreds_of_ms);
+        send_can_msg(can_msg_led_header);
+
+        const bool is_group_state = num_of_led_states_in_group > 1;
+
+        const CanMessage can_msg_led_state =
+          _can_message_creator.create_can_msg_set_led_state(msg.leds[i], module_id, is_group_state);
+        send_can_msg(can_msg_led_state);
+
+        start_index = i;
+        num_of_led_states_in_group = 1;
+      }
     }
+  }
+
+  bool DrawerBridge::are_consecutive_leds_same(const std::vector<communication_interfaces::msg::Led>& leds,
+                                               uint16_t index_1,
+                                               uint16_t index_2)
+  {
+    if (index_1 >= leds.size() || index_2 >= leds.size())
+    {
+      return false;
+    }
+
+    return leds[index_1].red == leds[index_2].red && leds[index_1].green == leds[index_2].green &&
+           leds[index_1].blue == leds[index_2].blue && leds[index_1].brightness == leds[index_2].brightness;
   }
 
   void DrawerBridge::tray_task_topic_callback(const TrayTask& msg)

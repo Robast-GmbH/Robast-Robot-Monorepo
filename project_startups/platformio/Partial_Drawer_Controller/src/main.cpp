@@ -107,7 +107,7 @@ void process_can_msgs_task_loop(void* pvParameters)
           led_strip->initialize_led_state_change(led_header);
         }
         break;
-        case robast_can_msgs::can_id::SINGLE_LED_STATE:
+        case robast_can_msgs::can_id::LED_STATE:
         {
           const led::LedState led_state = can_message_converter->convert_to_led_state(received_message.value());
           led_strip->set_led_state(led_state);

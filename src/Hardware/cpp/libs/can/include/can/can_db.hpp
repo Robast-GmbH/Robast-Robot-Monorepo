@@ -71,14 +71,15 @@ namespace robast_can_msgs
                  CanSignal(
                      can_signal::bit_start::led_header::FADE_TIME_IN_HUNDREDS_OF_MS, can_signal::bit_length::led_header::FADE_TIME_IN_HUNDREDS_OF_MS, 0)}),
             CanMessage(
-                can_id::SINGLE_LED_STATE,
-                can_dlc::SINGLE_LED_STATE,
-                {CanSignal(can_signal::bit_start::single_led::MODULE_ID, can_signal::bit_length::single_led::MODULE_ID, 0),
-                 CanSignal(can_signal::bit_start::single_led::LED_STATE_RED, can_signal::bit_length::single_led::LED_STATE_RED, 0),
-                 CanSignal(can_signal::bit_start::single_led::LED_STATE_GREEN, can_signal::bit_length::single_led::LED_STATE_GREEN, 0),
-                 CanSignal(can_signal::bit_start::single_led::LED_STATE_BLUE, can_signal::bit_length::single_led::LED_STATE_BLUE, 0),
-                 CanSignal(
-                     can_signal::bit_start::single_led::LED_STATE_BRIGHTNESS, can_signal::bit_length::single_led::LED_STATE_BRIGHTNESS, 0)}),
+                can_id::LED_STATE,
+                can_dlc::LED_STATE,
+                {CanSignal(can_signal::bit_start::led_state::MODULE_ID, can_signal::bit_length::led_state::MODULE_ID, 0),
+                 CanSignal(can_signal::bit_start::led_state::LED_STATE_RED, can_signal::bit_length::led_state::LED_STATE_RED, 0),
+                 CanSignal(can_signal::bit_start::led_state::LED_STATE_GREEN, can_signal::bit_length::led_state::LED_STATE_GREEN, 0),
+                 CanSignal(can_signal::bit_start::led_state::LED_STATE_BLUE, can_signal::bit_length::led_state::LED_STATE_BLUE, 0),
+                 CanSignal(can_signal::bit_start::led_state::LED_STATE_BRIGHTNESS, can_signal::bit_length::led_state::LED_STATE_BRIGHTNESS, 0),
+                 CanSignal(can_signal::bit_start::led_state::IS_GROUP_STATE, can_signal::bit_length::led_state::IS_GROUP_STATE, 0),
+                  }),
             CanMessage(
                 can_id::TRAY_LED_BRIGHTNESS,
                 can_dlc::TRAY_LED_BRIGHTNESS,

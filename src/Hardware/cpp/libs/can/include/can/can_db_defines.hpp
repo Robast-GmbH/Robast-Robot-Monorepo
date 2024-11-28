@@ -19,7 +19,7 @@ namespace robast_can_msgs
     constexpr uint16_t ELECTRICAL_DRAWER_FEEDBACK = 0x004;
     constexpr uint16_t ERROR_FEEDBACK = 0x005;
     constexpr uint16_t LED_HEADER = 0x006;
-    constexpr uint16_t SINGLE_LED_STATE = 0x007;
+    constexpr uint16_t LED_STATE = 0x007;
     constexpr uint16_t TRAY_LED_BRIGHTNESS = 0x008;
     constexpr uint16_t MODULE_CONFIG = 0x009;
     constexpr uint16_t ELECTRICAL_DRAWER_MOTOR_CONTROL = 0x00A;
@@ -34,7 +34,7 @@ namespace robast_can_msgs
     constexpr uint8_t ELECTRICAL_DRAWER_FEEDBACK = 6;
     constexpr uint8_t ERROR_FEEDBACK = 5;
     constexpr uint8_t LED_HEADER = 8;
-    constexpr uint8_t SINGLE_LED_STATE = 7;
+    constexpr uint8_t LED_STATE = 8;
     constexpr uint8_t TRAY_LED_BRIGHTNESS = 6;
     constexpr uint8_t MODULE_CONFIG = 8;
     constexpr uint8_t ELECTRICAL_DRAWER_MOTOR_CONTROL = 4;
@@ -53,7 +53,7 @@ namespace robast_can_msgs
     constexpr uint8_t ELECTRICAL_DRAWER_FEEDBACK = 3;
     constexpr uint8_t ERROR_FEEDBACK = 4;
     constexpr uint8_t LED_HEADER = 5;
-    constexpr uint8_t SINGLE_LED_STATE = 6;
+    constexpr uint8_t LED_STATE = 6;
     constexpr uint8_t TRAY_LED_BRIGHTNESS = 7;
     constexpr uint8_t MODULE_CONFIG = 8;
     constexpr uint8_t ELECTRICAL_DRAWER_MOTOR_CONTROL = 9;
@@ -113,14 +113,15 @@ namespace robast_can_msgs
         constexpr uint8_t FADE_TIME_IN_HUNDREDS_OF_MS = 3;
       }   // namespace led_header
 
-      namespace single_led
+      namespace led_state
       {
         constexpr uint8_t MODULE_ID = 0;
         constexpr uint8_t LED_STATE_RED = 1;
         constexpr uint8_t LED_STATE_GREEN = 2;
         constexpr uint8_t LED_STATE_BLUE = 3;
         constexpr uint8_t LED_STATE_BRIGHTNESS = 4;
-      }   // namespace single_led
+        constexpr uint8_t IS_GROUP_STATE = 5;
+      }   // namespace led_state
 
       namespace tray_led_brightness
       {
@@ -204,14 +205,15 @@ namespace robast_can_msgs
         constexpr uint8_t FADE_TIME_IN_HUNDREDS_OF_MS = 56;
       }   // namespace led_header
 
-      namespace single_led
+      namespace led_state
       {
         constexpr uint8_t MODULE_ID = 0;
         constexpr uint8_t LED_STATE_RED = 24;
         constexpr uint8_t LED_STATE_GREEN = 32;
         constexpr uint8_t LED_STATE_BLUE = 40;
         constexpr uint8_t LED_STATE_BRIGHTNESS = 48;
-      }   // namespace single_led
+        constexpr uint8_t IS_GROUP_STATE = 56;
+      }   // namespace led_state
 
       namespace tray_led_brightness
       {
@@ -295,14 +297,15 @@ namespace robast_can_msgs
         constexpr uint8_t FADE_TIME_IN_HUNDREDS_OF_MS = 8;
       }   // namespace led_header
 
-      namespace single_led
+      namespace led_state
       {
         constexpr uint8_t MODULE_ID = 24;
         constexpr uint8_t LED_STATE_RED = 8;
         constexpr uint8_t LED_STATE_GREEN = 8;
         constexpr uint8_t LED_STATE_BLUE = 8;
         constexpr uint8_t LED_STATE_BRIGHTNESS = 8;
-      }   // namespace single_led
+        constexpr uint8_t IS_GROUP_STATE = 1;
+      }   // namespace led_state
 
       namespace tray_led_brightness
       {
@@ -345,6 +348,7 @@ namespace robast_can_msgs
     constexpr uint64_t DISABLE_MOTOR = 0;
     constexpr uint64_t ENABLE_MOTOR = 1;
     constexpr uint64_t CONTROL_CHANGE_CONFIRMED = 1;
+    constexpr uint64_t IS_LED_GROUP_STATE = 1;
 
     namespace error_code
     {
