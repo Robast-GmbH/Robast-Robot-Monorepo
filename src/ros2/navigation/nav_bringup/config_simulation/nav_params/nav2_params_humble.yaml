@@ -214,7 +214,7 @@ local_costmap:
         enabled: True
         observation_sources: scan
         scan:
-          topic: /merged_laser/scan
+          topic: /robot/merged_laser/scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -246,7 +246,7 @@ local_costmap:
         lidar2d_marking:
           enabled: true
           data_type: LaserScan
-          topic: /merged_laser/scan
+          topic: /robot/merged_laser/scan
           marking: true
           clearing: true
           obstacle_range: 5.0
@@ -267,7 +267,7 @@ local_costmap:
         lidar2d_clearing:
           enabled: true
           data_type: LaserScan
-          topic: /merged_laser/scan
+          topic: /robot/merged_laser/scan
           marking: false
           clearing: true
           obstacle_range: 5.0
@@ -338,7 +338,7 @@ global_costmap:
         enabled: True
         observation_sources: scan
         scan:
-          topic: /merged_laser/scan
+          topic: /robot/merged_laser/scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -371,7 +371,7 @@ global_costmap:
         lidar2d_marking:
           enabled: true
           data_type: LaserScan
-          topic: /merged_laser/scan
+          topic: /robot/merged_laser/scan
           marking: true
           clearing: false
           obstacle_range: 5.0
@@ -392,7 +392,7 @@ global_costmap:
         lidar2d_clearing:
           enabled: true
           data_type: LaserScan
-          topic: /merged_laser/scan
+          topic: /robot/merged_laser/scan
           marking: false
           clearing: true
           obstacle_range: 5.0
@@ -538,11 +538,11 @@ collision_monitor:
     base_frame_id: "base_footprint"
     odom_frame_id: "odom"
     cmd_vel_in_topic: "cmd_vel_smoothed"
-    cmd_vel_out_topic: "cmd_vel"
+    cmd_vel_out_topic: "/robot/robotnik_base_control/cmd_vel_unsafe"
     state_topic: "collision_monitor_state"
     transform_tolerance: 0.2
     source_timeout: 2.0
-    base_shift_correction: False
+    # base_shift_correction: False
     stop_pub_timeout: 2.0
     # Polygons represent zone around the robot for "stop", "slowdown" and "limit" action types,
     # and robot footprint for "approach" action type.
@@ -551,48 +551,60 @@ collision_monitor:
     # to be ignored in circular case.
 
     #"[ [0.35, 0.30], [0.35, -0.3], [-0.35, -0.30], [-0.35, 0.3] ]" # rb_theron footprint
-    polygons: ["PolygonStop", "PolygonSlowMinor", PolygonSlowHard]
-    PolygonStop:
-      type: "polygon"
-      points: [0.45, 0.4, 0.45, -0.4, 0.0, -0.4, 0.0, 0.4]
-      action_type: "stop"
-      min_points: 4
-      visualize: True
-      polygon_pub_topic: "polygon_stop"
-    PolygonSlowHard:
-      type: "polygon"
-      points: [0.6, 0.5, 0.6, -0.5, -0.6, -0.5, -0.6, 0.5]
-      action_type: "slowdown"
-      min_points: 4
-      slowdown_ratio: 0.3
-      visualize: True
-      polygon_pub_topic: "polygon_slowdown_hard"
-    PolygonSlowMinor:
-      type: "polygon"
-      points: [0.8, 0.5, 0.8, -0.5, -0.2, -0.6, -0.2, 0.6]
-      action_type: "slowdown"
-      min_points: 4
-      slowdown_ratio: 0.7
-      visualize: True
-      polygon_pub_topic: "polygon_slowdown_minor"
-    PolygonLimit:
-      type: "polygon"
-      points: [0.9, 0.9, 0.9, -0.9, -0.9, -0.9, -0.9, 0.9]
-      action_type: "limit"
-      min_points: 4
-      linear_limit: 0.2
-      angular_limit: 0.4
-      visualize: True
-      polygon_pub_topic: "polygon_limit"
+    polygons: ["PolygonStop", "PolygonSlowMinor"]
     FootprintApproach:
       type: "polygon"
       action_type: "approach"
       footprint_topic: "/local_costmap/published_footprint"
       time_before_collision: 2.0
       simulation_time_step: 0.1
-      min_points: 6
+      max_points: 5
       visualize: True
+      enabled: True
+    PolygonStop:
+      type: "polygon"
+      points: [0.5, 0.4, 0.5, -0.4, 0.0, -0.4, 0.0, 0.4]
+      action_type: "stop"
+      min_points: 4
+      visualize: True
+      polygon_pub_topic: "polygon_stop"
+    PolygonSlowMinor:
+      type: "polygon"
+      points: [0.8, 0.5, 0.8, -0.5, -0.2, -0.6, -0.2, 0.6]
+      action_type: "slowdown"
+      min_points: 4
+      slowdown_ratio: 0.5
+      visualize: True
+      polygon_pub_topic: "polygon_slowdown_minor"
+    #TODO: @TAlscher - Add limits later on when a) limit is backported to humble or b) we have a jazzy release
+    ShortLimit:
+      type: "polygon"
+      points: [0.9, 0.9, 0.9, -0.9, -0.9, -0.9, -0.9, 0.9]
+      action_type: "limit"
+      min_points: 4
+      linear_limit: 0.01
+      angular_limit: 0.3
+      visualize: True
+      polygon_pub_topic: "short_limit"
+    MiddleLimit:
+      type: "polygon"
+      points: [0.9, 0.9, 0.9, -0.9, -0.9, -0.9, -0.9, 0.9]
+      action_type: "limit"
+      min_points: 4
+      linear_limit: 0.199
+      angular_limit: 0.7
+      visualize: True
+      polygon_pub_topic: "middle_limit"
+    LargeLimit:
+      type: "polygon"
+      points: [1.7, 0.9, 1.7, -0.9, -0.9, -0.9, -0.9, 0.9]
+      action_type: "limit"
+      min_points: 4
+      linear_limit: 0.499
+      angular_limit: 1.8
+      visualize: True
+      polygon_pub_topic: "large_limit"
     observation_sources: ["scan"]
     scan:
       type: "scan"
-      topic: "/front_laser/scan"
+      topic: "/robot/merged_laser/scan"
