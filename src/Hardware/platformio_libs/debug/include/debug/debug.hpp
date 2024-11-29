@@ -1,7 +1,9 @@
 #ifndef DRAWER_CONTROLLER_DEBUG_HPP
 #define DRAWER_CONTROLLER_DEBUG_HPP
 
+#ifndef RUNNING_TESTS
 #include <Arduino.h>
+#endif
 
 // #define DEBUG
 
@@ -143,6 +145,7 @@
   Serial.print(ANSI_COLOR_RESET)
 #endif
 
+#ifndef RUNNING_TESTS
 inline void serial_setup(unsigned long baudrate)
 {
   debug_begin(115200);   // Init serial port and set baudrate
@@ -150,5 +153,6 @@ inline void serial_setup(unsigned long baudrate)
   {
   }
 }
+#endif
 
 #endif   // DRAWER_CONTROLLER_DEBUG_HPP
