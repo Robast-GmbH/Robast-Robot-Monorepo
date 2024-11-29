@@ -226,7 +226,9 @@ void process_can_msgs_task_loop(void* pvParameters)
       i_drawer->update_state();
     }
 
-    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = i_drawer->can_out();
+    heartbeat->generate_heartbeat();
+
+    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = can_utils->get_element_from_feedback_msg_queue();
 
     if (to_be_sent_message.has_value())
     {
@@ -263,6 +265,7 @@ void setup()
 
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   can_message_converter = std::make_unique<utils::CanMessageConverter>();
+  can_utils = std::make_shared<can_toolbox::CanUtils>(can_db);
 
   led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.num_of_leds>>(
     USER_CONFIG.use_color_fade);
@@ -295,19 +298,22 @@ void setup()
   motor_config = std::make_shared<motor::MotorConfig>();
   motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
   tray_manager_config = std::make_shared<tray::TrayManagerConfig>();
+  heartbeat_config = std::make_shared<watchdog::HeartbeatConfig>();
 
   config_manager = std::make_unique<utils::ConfigManager>(
-    drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config);
+    drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config, heartbeat_config);
   config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                              USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
+
+  heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, heartbeat_config);
 
   if (MODULE_HARDWARE_CONFIG.is_electrical_drawer)
   {
     i_drawer = std::make_shared<drawer::ElectricalDrawer>(
       MODULE_ID,
       USER_CONFIG.lock_id,
-      can_db,
       gpio_wrapper,
+      can_utils,
       stepper_1_pin_id_config,
       MODULE_HARDWARE_CONFIG.use_encoder,
       gpio_wrapper->get_gpio_num_for_pin_id(gpio_defines::pin_id::STEPPER_1_ENCODER_A),
@@ -323,7 +329,7 @@ void setup()
   else
   {
     i_drawer =
-      std::make_shared<drawer::ManualDrawer>(MODULE_ID, USER_CONFIG.lock_id, can_db, endstop_switch, drawer_lock);
+      std::make_shared<drawer::ManualDrawer>(MODULE_ID, USER_CONFIG.lock_id, can_utils, endstop_switch, drawer_lock);
   }
 
   // Initialize CAN Controller right before can task receive loop is started, otherwise rx_queue might overflow

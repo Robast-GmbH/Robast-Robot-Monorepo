@@ -14,13 +14,6 @@ namespace interfaces
     virtual ~IDrawer() = default;
 
     /**
-     * Returns CAN messages of the drawer that should be sent via the CAN bus.
-     *
-     * @return None, if no CAN message is available. Otherwise returns a CAN message.
-     */
-    virtual std::optional<robast_can_msgs::CanMessage> can_out() = 0;
-
-    /**
      * Update all states of drawer.
      */
     virtual void update_state() = 0;
