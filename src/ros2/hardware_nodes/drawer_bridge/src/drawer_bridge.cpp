@@ -74,13 +74,7 @@ namespace drawer_bridge
 
   void DrawerBridge::open_drawer_topic_callback(const DrawerAddress& msg)
   {
-    uint32_t module_id = msg.module_id;
-    uint8_t drawer_id = msg.drawer_id;
-
-    RCLCPP_DEBUG(
-      get_logger(), "I heard from open_drawer topic the module_id: '%i' drawer_id: '%d ", module_id, drawer_id);
-
-    if (module_id != 0)
+    if (msg.module_id != 0)
     {
       const CanMessage can_msg = _can_message_creator.create_can_msg_drawer_unlock(msg);
       send_can_msg(can_msg);
@@ -89,17 +83,6 @@ namespace drawer_bridge
 
   void DrawerBridge::electrical_drawer_task_topic_callback(const DrawerTask& msg)
   {
-    uint32_t module_id = msg.drawer_address.module_id;
-    uint8_t drawer_id = msg.drawer_address.drawer_id;
-    uint8_t target_pos = msg.target_position;
-
-    RCLCPP_DEBUG(
-      get_logger(),
-      "I heard from electrical_drawer_task topic the module_id: '%i' drawer_id: '%d with target position: %d",
-      module_id,
-      drawer_id,
-      target_pos);
-
     const CanMessage can_msg = _can_message_creator.create_can_msg_drawer_task(msg);
     send_can_msg(can_msg);
   }
