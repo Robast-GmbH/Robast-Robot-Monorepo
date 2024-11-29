@@ -306,6 +306,7 @@ void setup()
     drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config, heartbeat_config);
   config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                              USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
+  config_manager->print_all_configs();
 
   heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, heartbeat_config);
 
