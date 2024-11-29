@@ -79,7 +79,7 @@ class TestProcessOutput(unittest.TestCase):
     def setUp(self):
         # Create a ROS node for tests
         self.__node = rclpy.create_node("drawer_bridge_tester")
-        self.__to_can_node = rclpy.create_node("can_receiver")
+        self.__can_node = rclpy.create_node("can_receiver")
         self.__received_drawer_feedback_topic = False
         self.__received_drawer_error_feedback_topic = False
         self.__received_heartbeat_topic = False
@@ -113,7 +113,7 @@ class TestProcessOutput(unittest.TestCase):
         self.setup_action_clients()
 
     def setup_subscribers(self):
-        self.__to_can_bus_subscriber = self.__node.create_subscription(
+        self.__to_can_bus_subscriber = self.__can_node.create_subscription(
             Frame,
             "to_can_bus",
             self.to_can_bus_callback,
@@ -145,7 +145,7 @@ class TestProcessOutput(unittest.TestCase):
         self.__led_cmd_publisher = self.__node.create_publisher(
             LedCmd, "led_cmd", qos_profile=self.__qos_profile_led_cmd
         )
-        self.__can_in_publisher = self.__to_can_node.create_publisher(
+        self.__can_in_publisher = self.__can_node.create_publisher(
             Frame, "from_can_bus", qos_profile=self.__qos_can_msg
         )
 
@@ -169,21 +169,34 @@ class TestProcessOutput(unittest.TestCase):
         with open(INPUT_DATA_PATH) as f:
             data = yaml.safe_load(f)
 
-        led_msg = Led()
-        led_msg.red = data["led"]["red"]
-        led_msg.blue = data["led"]["blue"]
-        led_msg.green = data["led"]["green"]
-        led_msg.brightness = data["led"]["brightness"]
+        led_state_1_msg = Led()
+        led_state_1_msg.red = data["led_state_1"]["red"]
+        led_state_1_msg.blue = data["led_state_1"]["blue"]
+        led_state_1_msg.green = data["led_state_1"]["green"]
+        led_state_1_msg.brightness = data["led_state_1"]["brightness"]
 
-        led_cmd_msg = LedCmd()
-        led_cmd_msg.drawer_address.module_id = data["led_cmd"]["drawer_address"]["module_id"]
-        led_cmd_msg.drawer_address.drawer_id = data["led_cmd"]["drawer_address"]["drawer_id"]
-        led_cmd_msg.leds = [led_msg, led_msg]
-        led_cmd_msg.start_index = data["led_cmd"]["start_index"]
+        led_state_2_msg = Led()
+        led_state_2_msg.red = data["led_state_2"]["red"]
+        led_state_2_msg.blue = data["led_state_2"]["blue"]
+        led_state_2_msg.green = data["led_state_2"]["green"]
+        led_state_2_msg.brightness = data["led_state_2"]["brightness"]
 
-        self.__led_cmd_publisher.publish(led_cmd_msg)
+        self.__led_states = [led_state_1_msg, led_state_2_msg, led_state_1_msg, led_state_2_msg]
+        self.__num_of_led_state_msgs = [1, 2, 3, 4]
+
+        self.__led_cmd_msg = LedCmd()
+        self.__led_cmd_msg.drawer_address.module_id = data["led_cmd"]["drawer_address"]["module_id"]
+        self.__led_cmd_msg.drawer_address.drawer_id = data["led_cmd"]["drawer_address"]["drawer_id"]
+        self.__led_cmd_msg.start_index = data["led_cmd"]["start_index"]
+        self.__led_cmd_msg.fade_time_in_ms = data["led_cmd"]["fade_time_in_ms"]
+
+        for i, num_msgs in enumerate(self.__num_of_led_state_msgs):
+            for _ in range(num_msgs):
+                self.__led_cmd_msg.leds.append(self.__led_states[i])
+
+        self.__led_cmd_publisher.publish(self.__led_cmd_msg)
         self.__node.get_logger().info(
-            'Publishing to led_cmd topic for module_id: "%i"' % led_cmd_msg.drawer_address.module_id
+            'Publishing to led_cmd topic for module_id: "%i"' % self.__led_cmd_msg.drawer_address.module_id
         )
 
         self.__open_drawer_msg = DrawerAddress()
@@ -364,6 +377,9 @@ class TestProcessOutput(unittest.TestCase):
         self.__expected_data_error_feedback_error_code = data["error_feedback"]["error_code"]
         self.__expected_data_error_feedback_error_data = data["error_feedback"]["error_data"]
 
+        self.__num_of_led_header_received = 0
+        self.__num_of_led_states_received = 0
+
     def check_to_can_bus_data(self):
         # Loop through the received data on the can bus topic and check if the expected data is in the received data
         for msg in self.__received_data_from_can:
@@ -397,6 +413,25 @@ class TestProcessOutput(unittest.TestCase):
                     self.__heartbeat_module_id, self.__heartbeat_interval_in_ms
                 )
 
+            if msg.id == can_db_defines.can_id.LED_HEADER:
+                self.assertEqual(msg.dlc, can_db_defines.can_dlc.LED_HEADER)
+                expected_data_bytes = can_data_helpers.construct_can_data_led_header(
+                    self.__led_cmd_msg.drawer_address.module_id,
+                    int(self.__led_cmd_msg.fade_time_in_ms / 100),
+                    self.__num_of_led_state_msgs,
+                    self.__num_of_led_header_received,
+                )
+                self.__num_of_led_header_received += 1
+
+            if msg.id == can_db_defines.can_id.LED_STATE:
+                self.assertEqual(msg.dlc, can_db_defines.can_dlc.LED_STATE)
+                expected_data_bytes = can_data_helpers.construct_can_data_led_state(
+                    self.__led_cmd_msg.drawer_address.module_id,
+                    self.__led_states[self.__num_of_led_states_received],
+                    self.__num_of_led_state_msgs[self.__num_of_led_states_received],
+                )
+                self.__num_of_led_states_received += 1
+
             if expected_data_bytes is not None:
                 self.__node.get_logger().info('Checking data bytes for can_id: "%s"' % msg.id)
                 # Compare each data byte
@@ -405,10 +440,10 @@ class TestProcessOutput(unittest.TestCase):
 
     def test_dut_output(self):
         # Create an executor and add to_can_node to spin it in separate thread to receive data from the can bus and proceed with the test
-        self.executor = rclpy.executors.MultiThreadedExecutor()
-        self.executor.add_node(self.__to_can_node)
-        self.spin_thread = threading.Thread(target=self.executor.spin, daemon=True)
-        self.spin_thread.start()
+        self.__executor = rclpy.executors.SingleThreadedExecutor()
+        self.__executor.add_node(self.__can_node)
+        self.__spin_thread = threading.Thread(target=self.__executor.spin, daemon=True)
+        self.__spin_thread.start()
 
         self.get_expected_results()
 
@@ -463,6 +498,9 @@ class TestProcessOutput(unittest.TestCase):
 
             self.check_to_can_bus_data()
 
+            self.assertEqual(self.__num_of_led_header_received, len(self.__num_of_led_state_msgs))
+            self.assertEqual(self.__num_of_led_states_received, len(self.__num_of_led_state_msgs))
+
         finally:
             self.__node.destroy_publisher(self.__can_in_publisher)
             self.__node.destroy_publisher(self.__open_drawer_publisher)
@@ -472,4 +510,10 @@ class TestProcessOutput(unittest.TestCase):
             self.__node.destroy_subscription(self.__heartbeat_subscriber)
             self.__node.destroy_client(self.__module_config_service_client)
             self.__node.destroy_client(self.__electrical_drawer_motor_control_service_client)
-            self.__to_can_node.destroy_subscription(self.__to_can_bus_subscriber)
+            self.__can_node.destroy_subscription(self.__to_can_bus_subscriber)
+
+            self.__executor.shutdown()  # Shutdown the executor
+            self.__spin_thread.join()  # Wait for the thread to finish
+
+            self.__can_node.destroy_node()
+            self.__node.destroy_node()

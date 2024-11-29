@@ -16,7 +16,7 @@ PYBIND11_MODULE(can_db_defines_bindings, m)
   can_id.attr("ELECTRICAL_DRAWER_FEEDBACK") = robast_can_msgs::can_id::ELECTRICAL_DRAWER_FEEDBACK;
   can_id.attr("ERROR_FEEDBACK") = robast_can_msgs::can_id::ERROR_FEEDBACK;
   can_id.attr("LED_HEADER") = robast_can_msgs::can_id::LED_HEADER;
-  can_id.attr("SINGLE_LED_STATE") = robast_can_msgs::can_id::SINGLE_LED_STATE;
+  can_id.attr("LED_STATE") = robast_can_msgs::can_id::LED_STATE;
   can_id.attr("TRAY_LED_BRIGHTNESS") = robast_can_msgs::can_id::TRAY_LED_BRIGHTNESS;
   can_id.attr("MODULE_CONFIG") = robast_can_msgs::can_id::MODULE_CONFIG;
   can_id.attr("ELECTRICAL_DRAWER_MOTOR_CONTROL") = robast_can_msgs::can_id::ELECTRICAL_DRAWER_MOTOR_CONTROL;
@@ -30,7 +30,7 @@ PYBIND11_MODULE(can_db_defines_bindings, m)
   can_dlc.attr("ELECTRICAL_DRAWER_FEEDBACK") = robast_can_msgs::can_dlc::ELECTRICAL_DRAWER_FEEDBACK;
   can_dlc.attr("ERROR_FEEDBACK") = robast_can_msgs::can_dlc::ERROR_FEEDBACK;
   can_dlc.attr("LED_HEADER") = robast_can_msgs::can_dlc::LED_HEADER;
-  can_dlc.attr("SINGLE_LED_STATE") = robast_can_msgs::can_dlc::SINGLE_LED_STATE;
+  can_dlc.attr("LED_STATE") = robast_can_msgs::can_dlc::LED_STATE;
   can_dlc.attr("TRAY_LED_BRIGHTNESS") = robast_can_msgs::can_dlc::TRAY_LED_BRIGHTNESS;
   can_dlc.attr("MODULE_CONFIG") = robast_can_msgs::can_dlc::MODULE_CONFIG;
   can_dlc.attr("ELECTRICAL_DRAWER_MOTOR_CONTROL") = robast_can_msgs::can_dlc::ELECTRICAL_DRAWER_MOTOR_CONTROL;
@@ -80,11 +80,12 @@ PYBIND11_MODULE(can_db_defines_bindings, m)
   id.attr("LED_HEADER_FADE_TIME_IN_HUNDREDS_OF_MS") =
     robast_can_msgs::can_signal::id::led_header::FADE_TIME_IN_HUNDREDS_OF_MS;
 
-  id.attr("SINGLE_LED_MODULE_ID") = robast_can_msgs::can_signal::id::single_led::MODULE_ID;
-  id.attr("SINGLE_LED_LED_STATE_RED") = robast_can_msgs::can_signal::id::single_led::LED_STATE_RED;
-  id.attr("SINGLE_LED_LED_STATE_GREEN") = robast_can_msgs::can_signal::id::single_led::LED_STATE_GREEN;
-  id.attr("SINGLE_LED_LED_STATE_BLUE") = robast_can_msgs::can_signal::id::single_led::LED_STATE_BLUE;
-  id.attr("SINGLE_LED_LED_STATE_BRIGHTNESS") = robast_can_msgs::can_signal::id::single_led::LED_STATE_BRIGHTNESS;
+  id.attr("LED_MODULE_ID") = robast_can_msgs::can_signal::id::led_state::MODULE_ID;
+  id.attr("LED_STATE_RED") = robast_can_msgs::can_signal::id::led_state::LED_STATE_RED;
+  id.attr("LED_STATE_GREEN") = robast_can_msgs::can_signal::id::led_state::LED_STATE_GREEN;
+  id.attr("LED_STATE_BLUE") = robast_can_msgs::can_signal::id::led_state::LED_STATE_BLUE;
+  id.attr("LED_STATE_BRIGHTNESS") = robast_can_msgs::can_signal::id::led_state::LED_STATE_BRIGHTNESS;
+  id.attr("LED_STATE_IS_GROUP_STATE") = robast_can_msgs::can_signal::id::led_state::IS_GROUP_STATE;
 
   id.attr("TRAY_LED_BRIGHTNESS_MODULE_ID") = robast_can_msgs::can_signal::id::tray_led_brightness::MODULE_ID;
   id.attr("TRAY_LED_BRIGHTNESS_TRAY_ID") = robast_can_msgs::can_signal::id::tray_led_brightness::TRAY_ID;
@@ -151,12 +152,13 @@ PYBIND11_MODULE(can_db_defines_bindings, m)
   bit_start.attr("LED_HEADER_FADE_TIME_IN_HUNDREDS_OF_MS") =
     robast_can_msgs::can_signal::bit_start::led_header::FADE_TIME_IN_HUNDREDS_OF_MS;
 
-  bit_start.attr("SINGLE_LED_MODULE_ID") = robast_can_msgs::can_signal::bit_start::single_led::MODULE_ID;
-  bit_start.attr("SINGLE_LED_LED_STATE_RED") = robast_can_msgs::can_signal::bit_start::single_led::LED_STATE_RED;
-  bit_start.attr("SINGLE_LED_LED_STATE_GREEN") = robast_can_msgs::can_signal::bit_start::single_led::LED_STATE_GREEN;
-  bit_start.attr("SINGLE_LED_LED_STATE_BLUE") = robast_can_msgs::can_signal::bit_start::single_led::LED_STATE_BLUE;
-  bit_start.attr("SINGLE_LED_LED_STATE_BRIGHTNESS") =
-    robast_can_msgs::can_signal::bit_start::single_led::LED_STATE_BRIGHTNESS;
+  bit_start.attr("LED_MODULE_ID") = robast_can_msgs::can_signal::bit_start::led_state::MODULE_ID;
+  bit_start.attr("LED_STATE_RED") = robast_can_msgs::can_signal::bit_start::led_state::LED_STATE_RED;
+  bit_start.attr("LED_STATE_GREEN") = robast_can_msgs::can_signal::bit_start::led_state::LED_STATE_GREEN;
+  bit_start.attr("LED_STATE_BLUE") = robast_can_msgs::can_signal::bit_start::led_state::LED_STATE_BLUE;
+  bit_start.attr("LED_STATE_BRIGHTNESS") =
+    robast_can_msgs::can_signal::bit_start::led_state::LED_STATE_BRIGHTNESS;
+  bit_start.attr("LED_STATE_IS_GROUP_STATE") = robast_can_msgs::can_signal::bit_start::led_state::IS_GROUP_STATE;
 
   bit_start.attr("TRAY_LED_BRIGHTNESS_MODULE_ID") =
     robast_can_msgs::can_signal::bit_start::tray_led_brightness::MODULE_ID;
@@ -226,12 +228,13 @@ PYBIND11_MODULE(can_db_defines_bindings, m)
   bit_length.attr("LED_HEADER_FADE_TIME_IN_HUNDREDS_OF_MS") =
     robast_can_msgs::can_signal::bit_length::led_header::FADE_TIME_IN_HUNDREDS_OF_MS;
 
-  bit_length.attr("SINGLE_LED_MODULE_ID") = robast_can_msgs::can_signal::bit_length::single_led::MODULE_ID;
-  bit_length.attr("SINGLE_LED_LED_STATE_RED") = robast_can_msgs::can_signal::bit_length::single_led::LED_STATE_RED;
-  bit_length.attr("SINGLE_LED_LED_STATE_GREEN") = robast_can_msgs::can_signal::bit_length::single_led::LED_STATE_GREEN;
-  bit_length.attr("SINGLE_LED_LED_STATE_BLUE") = robast_can_msgs::can_signal::bit_length::single_led::LED_STATE_BLUE;
-  bit_length.attr("SINGLE_LED_LED_STATE_BRIGHTNESS") =
-    robast_can_msgs::can_signal::bit_length::single_led::LED_STATE_BRIGHTNESS;
+  bit_length.attr("LED_MODULE_ID") = robast_can_msgs::can_signal::bit_length::led_state::MODULE_ID;
+  bit_length.attr("LED_STATE_RED") = robast_can_msgs::can_signal::bit_length::led_state::LED_STATE_RED;
+  bit_length.attr("LED_STATE_GREEN") = robast_can_msgs::can_signal::bit_length::led_state::LED_STATE_GREEN;
+  bit_length.attr("LED_STATE_BLUE") = robast_can_msgs::can_signal::bit_length::led_state::LED_STATE_BLUE;
+  bit_length.attr("LED_STATE_BRIGHTNESS") =
+    robast_can_msgs::can_signal::bit_length::led_state::LED_STATE_BRIGHTNESS;
+  bit_length.attr("LED_STATE_IS_GROUP_STATE") = robast_can_msgs::can_signal::bit_length::led_state::IS_GROUP_STATE;
 
   bit_length.attr("TRAY_LED_BRIGHTNESS_MODULE_ID") =
     robast_can_msgs::can_signal::bit_length::tray_led_brightness::MODULE_ID;

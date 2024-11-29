@@ -15,6 +15,7 @@ namespace config
     bool is_shaft_direction_inverted;
     switch_lib::Switch::SwitchType endstop_switch_type;
     bool use_color_fade;
+    bool allow_partial_led_changes;
   };
 }   // namespace config
 

@@ -17,6 +17,7 @@ namespace motor
     const uint32_t current_timestamp_ms = millis();
 
     const uint32_t active_motor_speed = _motor->get_active_speed();
+    const float active_motor_speed_float = static_cast<float>(active_motor_speed);
 
     const uint32_t position_difference = abs(current_position - _last_position);
     const uint32_t time_difference_in_ms = current_timestamp_ms - _last_timestamp_ms;
@@ -25,7 +26,8 @@ namespace motor
     {
       if (position_difference == 0)
       {
-        debug_println("[MotorMonitor]: Stall guard is triggered because the position difference is 0!");
+        debug_printf_color(ANSI_COLOR_MAGENTA,
+                           "[MotorMonitor]: Stall guard is triggered because the position difference is 0!");
         return true;
       }
 
@@ -35,21 +37,20 @@ namespace motor
 
       if (encoder_speed > active_speed_threshold && active_motor_speed > active_speed_threshold)
       {
-        const uint32_t active_motor_speed_normed_to_encoder_speed =
-          static_cast<uint32_t>(std::round(active_motor_speed * _FACTOR_BETWEEN_SPEEDS));
+        const float active_motor_speed_normed_to_encoder_speed = active_motor_speed_float * _FACTOR_BETWEEN_SPEEDS;
 
-        float speed_deviation = _motor_monitor_config->get_speed_deviation_in_percentage_for_stall();
+        const float speed_deviation = _motor_monitor_config->get_speed_deviation_in_percentage_for_stall();
 
         const uint32_t lower_speed_limit =
-          static_cast<uint32_t>(std::round(active_motor_speed_normed_to_encoder_speed * (1 - speed_deviation)));
+          static_cast<uint32_t>(active_motor_speed_normed_to_encoder_speed * (1.0f - speed_deviation));
 
         if (encoder_speed < lower_speed_limit)
         {
-          debug_printf(
+          debug_printf_color(
+            ANSI_COLOR_MAGENTA,
             "[MotorMonitor]: Motor is stalled! Target motor speed: %u. Active motor speed: %u, Active Motor Speed "
-            "normed to encoder speed: %u, "
-            "Encoder Speed: %u. Deviation is higher than "
-            "%.1f%%. Time difference between encoder measurements in ms: %d. Max time diff: %d. Position difference: "
+            "normed to encoder speed: %f, Encoder Speed: %u. Deviation is higher than %f percent. Time difference "
+            "between encoder measurements in ms: %d. Max time diff: %d. Position difference: "
             "%d. Current position: %d. Last Position: %d. lower_speed_limit: %u\n",
             _motor->get_target_speed(),
             active_motor_speed,

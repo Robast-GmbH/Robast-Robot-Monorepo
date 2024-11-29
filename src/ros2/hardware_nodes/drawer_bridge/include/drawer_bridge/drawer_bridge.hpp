@@ -175,6 +175,10 @@ namespace drawer_bridge
 
     void reset_motor_control_change_flag();
 
+    bool are_consecutive_leds_same(const std::vector<communication_interfaces::msg::Led>& leds,
+                                   uint16_t index_1,
+                                   uint16_t index_2);
+
     // Action Server Callbacks
     rclcpp_action::GoalResponse handle_module_config_goal(const rclcpp_action::GoalUUID& uuid,
                                                           std::shared_ptr<const ModuleConfig::Goal> goal);

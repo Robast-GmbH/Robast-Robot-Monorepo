@@ -25,10 +25,14 @@ namespace drawer_bridge
 
     can_msgs::msg::Frame create_can_msg_drawer_task(const DrawerTask& msg) const;
 
-    can_msgs::msg::Frame create_can_msg_led_header(const LedCmd& msg) const;
+    can_msgs::msg::Frame create_can_msg_led_header(const uint32_t module_id,
+                                                   const uint16_t start_index,
+                                                   const uint16_t num_of_leds,
+                                                   const uint8_t fade_time_in_hundreds_of_ms) const;
 
-    can_msgs::msg::Frame create_can_msg_set_single_led_state(const Led& led_state,
-                                                             const DrawerAddress& drawer_address) const;
+    can_msgs::msg::Frame create_can_msg_set_led_state(const Led& led_state,
+                                                      const uint32_t module_id,
+                                                      const bool is_group_state) const;
 
     can_msgs::msg::Frame create_can_msg_tray_led_brightness(const DrawerAddress& drawer_address,
                                                             const uint8_t led_row,

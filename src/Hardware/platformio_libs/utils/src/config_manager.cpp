@@ -254,6 +254,16 @@ namespace utils
     return true;
   }
 
+  void ConfigManager::print_all_configs() const
+  {
+    _drawer_config->print_all_configs();
+    _encoder_config->print_all_configs();
+    _motor_config->print_all_configs();
+    _motor_monitor_config->print_all_configs();
+    _tray_manager_config->print_all_configs();
+    _heartbeat_config->print_all_configs();
+  }
+
   void ConfigManager::set_default_configs()
   {
     set_default_drawer_config();
