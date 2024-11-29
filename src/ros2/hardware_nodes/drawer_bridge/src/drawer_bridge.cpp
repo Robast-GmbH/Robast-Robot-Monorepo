@@ -139,7 +139,7 @@ namespace drawer_bridge
           _can_message_creator.create_can_msg_set_led_state(msg.leds[i], module_id, is_group_state);
         send_can_msg(can_msg_led_state);
 
-        start_index = i;
+        start_index = i + 1;
         num_of_led_states_in_group = 1;
       }
     }
