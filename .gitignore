@@ -221,5 +221,9 @@ COLCON_IGNORE
 # Frontend copy
 bringups/jetson/start_scripts/robot_frontend/
 
+## Middleware files
 # Cleaning data
 cleaning_data.json
+# Fire alarm data
+fire_alarm_triggered.txt
+
