@@ -26,14 +26,15 @@ constexpr config::UserConfig USER_CONFIG{.module_version = config::version::CURA
                                          .lock_id = 1,
                                          .is_shaft_direction_inverted = true,
                                          .endstop_switch_type = switch_lib::Switch::normally_open,
-                                         .use_color_fade = false};
+                                         .use_color_fade = false,
+                                         .allow_partial_led_changes = false};
 
 constexpr config::ModuleHardwareConfig MODULE_HARDWARE_CONFIG =
   config::get_module_hardware_config<USER_CONFIG.module_version>(USER_CONFIG.module_prefix);
 
 constexpr uint32_t MODULE_ID = module_id::generate_module_id(USER_CONFIG.module_prefix, USER_CONFIG.unique_module_id);
 
-std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.num_of_leds>> led_strip;
+std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.total_num_of_leds>> led_strip;
 
 // Initialize can_controller based on HARDWARE_VERSION
 #if HARDWARE_VERSION == 3
@@ -267,8 +268,9 @@ void setup()
   can_message_converter = std::make_unique<utils::CanMessageConverter>();
   can_utils = std::make_shared<can_toolbox::CanUtils>(can_db);
 
-  led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.num_of_leds>>(
-    USER_CONFIG.use_color_fade);
+  led_strip =
+    std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.total_num_of_leds>>(
+      USER_CONFIG.use_color_fade, USER_CONFIG.allow_partial_led_changes);
 
   // Very important to initialize this before the can_controller is created
   can_queue_mutex = xSemaphoreCreateMutex();
