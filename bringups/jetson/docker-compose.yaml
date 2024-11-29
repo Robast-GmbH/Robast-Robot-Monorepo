@@ -1,6 +1,6 @@
 services:
-  zed_camera:
-    image: ghcr.io/robast-gmbh/monorepo/zed_camera:release431
+  zed_camera_dev:
+    image: ghcr.io/robast-gmbh/monorepo/zed_camera:release422
     build: 
       context: ./zed_setup
       dockerfile: Dockerfile
@@ -25,7 +25,7 @@ services:
     healthcheck:
       test: [ "CMD", "/healthchecks/zed_check.sh" ]
       interval: 30s
-      timeout: 2s
+      timeout: 5s
       retries: 3
       start_period: 30s
     command: /bin/sh -c "/start_scripts/ping_and_wait.sh && /start_scripts/jetson_start.sh"
@@ -74,7 +74,7 @@ services:
     healthcheck:
       test: [ "CMD", "/healthchecks/statemachine_check.sh" ]
       interval: 30s
-      timeout: 2s
+      timeout: 5s
       retries: 3
       start_period: 30s
     command: /bin/sh -c "/start_scripts/ping_and_wait.sh && /start_scripts/statemachine_start.sh"

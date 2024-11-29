@@ -17,6 +17,18 @@ services:
     network_mode: "host"
     command: /bin/sh -c "/start_scripts/ping_and_wait.sh && /start_scripts/nav_start.sh"
 
+  laser_fusion:
+    image: ghcr.io/robast-gmbh/monorepo/sensors/ira_laser_tools:humble
+    environment:
+      - ROS_DOMAIN_ID=23
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - UID=1000
+    volumes:
+      - ./DDS/:/robast/dds_configs/:ro
+    stop_signal: SIGINT
+    restart: unless-stopped
+    network_mode: "host"
+
   robot_backend:
     image: ghcr.io/robast-gmbh/monorepo/robot_backend:release-humble
     environment:
@@ -29,7 +41,7 @@ services:
     restart: unless-stopped
     pull_policy: always
     network_mode: "host"
-    command: /bin/sh -c "/start_scripts/ping_and_wait.sh && /start_scripts/backend_start.sh"
+    entrypoint: ["/bin/sh", "-c", "sudo chmod -R 777 /home/robast/log && /start_scripts/ping_and_wait.sh && /start_scripts/backend_start.sh"]
 
   middleware:
     image: ghcr.io/robast-gmbh/monorepo/middleware:profi

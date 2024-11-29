@@ -98,10 +98,10 @@ controller_server:
       vx_std: 0.3
       vy_std: 0.0
       wz_std: 0.4
-      vx_max: 0.6
+      vx_max: 0.499
       vx_min: -0.2
       vy_max: 0.0
-      wz_max: 1.9
+      wz_max: 1.7
       iteration_count: 1
       prune_distance: 1.7
       transform_tolerance: 0.1
@@ -570,7 +570,7 @@ collision_monitor:
       polygon_pub_topic: "polygon_stop"
     PolygonSlowMinor:
       type: "polygon"
-      points: [0.8, 0.5, 0.8, -0.5, -0.2, -0.6, -0.2, 0.6]
+      points: [0.8, 0.5, 0.8, -0.5, -0.2, -0.5, -0.2, 0.5]
       action_type: "slowdown"
       min_points: 4
       slowdown_ratio: 0.5
