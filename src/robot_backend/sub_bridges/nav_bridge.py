@@ -108,7 +108,7 @@ class NavBridge(BaseBridge):
                 return self.context["/goal_status"]["data"] == "SUCCEEDED"
             return False
         except KeyError:
-            return False
+            return True
 
     def __get_quaternion_from_euler(self, yaw: float) -> dict[str, float]:
         """
