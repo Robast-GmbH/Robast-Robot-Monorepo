@@ -108,7 +108,6 @@ namespace drawer_bridge
       if (are_consecutive_leds_same(msg.leds, i, i + 1))
       {
         ++num_of_led_states_in_group;
-        continue;
       }
       else
       {
