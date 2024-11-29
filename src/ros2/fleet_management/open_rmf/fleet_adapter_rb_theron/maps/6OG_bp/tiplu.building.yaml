@@ -36,20 +36,6 @@ crowd_sim:
 graphs: {}
 levels:
   Tiplu:
-    doors:
-      - [
-          60,
-          61,
-          {
-            motion_axis: [1, start],
-            motion_degrees: [3, 90],
-            motion_direction: [2, 1],
-            name: [1, "example_door"],
-            plugin: [1, normal],
-            right_left_ratio: [3, 1],
-            type: [1, hinged],
-          },
-        ]
     drawing:
       filename: 6OG_bp.png
     elevation: 0
