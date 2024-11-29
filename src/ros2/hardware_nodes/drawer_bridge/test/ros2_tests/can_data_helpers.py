@@ -171,7 +171,6 @@ def construct_can_data_led_header(
         # loop through num_of_led_state_msgs and add them up to num_of_led_header_received
         for i in range(num_of_led_header_received):
             start_index += num_of_led_state_msgs[i]
-        start_index -= 1  # as we index starting from 0 and not 1 we need to subtract 1
 
     num_of_leds = num_of_led_state_msgs[num_of_led_header_received]
 
