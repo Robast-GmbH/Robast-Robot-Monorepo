@@ -151,4 +151,14 @@ class ModuleProvider extends ChangeNotifier {
   int getSubmodulePosition(Submodule submodule) {
     return _modules.indexWhere((element) => element.contains(submodule)) + 1;
   }
+
+  Future<void> cancelAllActiveModuleProcesses() async {
+    for (final submodule in submodules) {
+      if (submodule.moduleProcess.status != ModuleProcessStatus.idle) {
+        await closeSubmodule(submodule);
+        await cancelSubmoduleProcess(submodule);
+      }
+      isInSubmoduleProcess = false;
+    }
+  }
 }

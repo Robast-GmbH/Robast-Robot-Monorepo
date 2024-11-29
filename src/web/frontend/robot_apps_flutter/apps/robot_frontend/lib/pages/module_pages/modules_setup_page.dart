@@ -240,6 +240,8 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                               isPartial = false;
 
                               await moduleProvider.fetchModules();
+
+                              updateSlots(moduleProvider.submodules);
                               if (slotOccupancy.every((slot) => slot)) {
                                 setState(() {});
                               }
@@ -269,6 +271,9 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                                 );
                               }
                               selectedSlots.fillRange(0, selectedSlots.length, false);
+                              await modulesProvider.fetchModules();
+                              updateSlots(modulesProvider.submodules);
+                              setState(() {});
                             },
                             child: const Padding(
                               padding: EdgeInsets.all(8.0),

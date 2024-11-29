@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/provider/fire_alarm_provider.dart';
 import 'package:robot_frontend/models/provider/hygiene_provider.dart';
 import 'package:robot_frontend/models/provider/inactivity_provider.dart';
 import 'package:robot_frontend/models/provider/map_provider.dart';
@@ -45,10 +46,13 @@ void main() {
           create: (_) => MapProvider(),
         ),
         ChangeNotifierProvider(
+          create: (_) => HygieneProvider(),
+        ),
+        ChangeNotifierProvider(
           create: (_) => InactivityProvider(navigatorKey),
         ),
         ChangeNotifierProvider(
-          create: (_) => HygieneProvider(),
+          create: (_) => FireAlarmProvider(navigatorKey),
         ),
       ],
       child: RobotFrontend(

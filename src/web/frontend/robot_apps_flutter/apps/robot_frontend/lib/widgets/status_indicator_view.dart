@@ -57,11 +57,6 @@ class _StatusIndicatorViewState extends State<StatusIndicatorView> {
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Icon(
-          Icons.link,
-          size: 40,
-        ),
-        const SizedBox(width: 8),
         RotatedBox(
           quarterTurns: 1,
           child: Selector<RobotProvider, double?>(

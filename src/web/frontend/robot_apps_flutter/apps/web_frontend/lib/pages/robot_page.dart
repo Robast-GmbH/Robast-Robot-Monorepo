@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 import 'package:web_frontend/models/provider/fleet_provider.dart';
-import 'package:web_frontend/widgets/modules_overview.dart';
+import 'package:web_frontend/widgets/robot_info_view.dart';
 import 'package:web_frontend/widgets/robot_map_view.dart';
-import 'package:web_frontend/widgets/robot_task_view.dart';
+import 'package:web_frontend/widgets/robot_settings_view.dart';
 
 class RobotPage extends StatefulWidget {
   const RobotPage({required this.robot, super.key});
@@ -26,9 +26,9 @@ class _RobotPageState extends State<RobotPage> {
 
   Widget getWidgetOption(int index) {
     final widgetOptions = <Widget>[
-      RobotTaskView(robotName: widget.robot.name),
+      RobotInfoView(robotName: widget.robot.name),
       RobotMapView(robotName: widget.robot.name),
-      ModulesOverview(robotName: widget.robot.name),
+      RobotSettingsView(robotName: widget.robot.name),
     ];
     return widgetOptions[index];
   }
@@ -57,16 +57,16 @@ class _RobotPageState extends State<RobotPage> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.assignment),
-            label: 'Aufträge',
+            icon: Icon(Icons.info),
+            label: 'Infos',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.map),
             label: 'Karte',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.extension),
-            label: 'Module',
+            icon: Icon(Icons.settings),
+            label: 'Einstellungen',
           ),
         ],
         currentIndex: _selectedIndex,

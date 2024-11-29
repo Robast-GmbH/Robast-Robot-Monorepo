@@ -8,7 +8,7 @@ class HygieneApi {
   final String prefix;
 
   /// Set the cleaning cycle for a robot in hours.
-  Future<bool> setCycle({required String robotName, required int cycleTimeInH}) async {
+  Future<bool> setCycle({required String robotName, required double cycleTimeInH}) async {
     final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/hygiene/set_cycle/$robotName?cycle=$cycleTimeInH'),
     );
@@ -16,12 +16,12 @@ class HygieneApi {
   }
 
   /// Get the cleaning cycle for a robot.
-  Future<int?> getCycle({required String robotName}) async {
+  Future<double?> getCycle({required String robotName}) async {
     final response = await RequestService.tryGet(
       uri: Uri.parse('$prefix/hygiene/get_cycle/$robotName'),
     );
     if (response != null && response.statusCode == 200) {
-      return (jsonDecode(response.body) as Map<String, dynamic>)['cycle'] as int;
+      return (jsonDecode(response.body) as Map<String, dynamic>)['cycle'] as double;
     } else {
       return null;
     }
@@ -55,6 +55,38 @@ class HygieneApi {
     );
     if (response != null && response.statusCode == 200) {
       return (jsonDecode(response.body) as Map<String, dynamic>)['requires_cleaning'] as bool;
+    } else {
+      return null;
+    }
+  }
+
+  /// Get the next cleaning timestamp for a robot based on the cycle and last cleaning timestamp.
+  Future<DateTime?> getNextCleaning({required String robotName}) async {
+    final response = await RequestService.tryGet(
+      uri: Uri.parse('$prefix/hygiene/requires_cleaning/$robotName'),
+    );
+    if (response != null && response.statusCode == 200) {
+      final nextCleaning = (jsonDecode(response.body) as Map<String, dynamic>)['next_cleaning_due'] as String;
+      final timeZoneOffset = DateTime.now().timeZoneOffset;
+      return DateTime.parse(nextCleaning).add(Duration(hours: timeZoneOffset.inHours));
+    } else {
+      return null;
+    }
+  }
+
+  Future<bool> setRequiresDisinfectionAfterUsage({required String robotName, required bool requiresDisinfection}) async {
+    final response = await RequestService.tryPost(
+      uri: Uri.parse('$prefix/hygiene/set_requires_disinfection_after_usage/$robotName?requires_disinfection=$requiresDisinfection'),
+    );
+    return RequestService.wasRequestSuccessful(response: response);
+  }
+
+  Future<bool?> getRequiresDisinfectionAfterUsage({required String robotName}) async {
+    final response = await RequestService.tryGet(
+      uri: Uri.parse('$prefix/hygiene/get_requires_disinfection_after_usage/$robotName'),
+    );
+    if (response != null && response.statusCode == 200) {
+      return (jsonDecode(response.body) as Map<String, dynamic>)['requires_disinfection_after_usage'] as bool;
     } else {
       return null;
     }

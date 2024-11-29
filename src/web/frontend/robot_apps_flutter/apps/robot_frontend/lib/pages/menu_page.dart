@@ -2,10 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/provider/hygiene_provider.dart';
 import 'package:robot_frontend/models/provider/inactivity_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/models/sidebar_menu_point.dart';
+import 'package:robot_frontend/pages/disinfection_page.dart';
 import 'package:robot_frontend/widgets/caire_ai_card_view.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
@@ -71,7 +73,7 @@ class _MenuPageState extends State<MenuPage> {
       },
     ),
     SidebarMenuPoint(
-      title: 'Benachrichtigungen',
+      title: 'Meldungen',
       icon: Icons.notifications,
       userGroupWidgets: {
         'ADMIN': NotificationView.new,
@@ -156,6 +158,10 @@ class _MenuPageState extends State<MenuPage> {
                               InkWell(
                                 onTap: () {
                                   Navigator.pop(context);
+                                  final hygieneProvider = Provider.of<HygieneProvider>(context, listen: false);
+                                  if (hygieneProvider.requiresDisinfectionAfterUsage) {
+                                    Navigator.push(context, MaterialPageRoute<void>(builder: (context) => const DisinfectionPage()));
+                                  }
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.only(bottom: 16),
