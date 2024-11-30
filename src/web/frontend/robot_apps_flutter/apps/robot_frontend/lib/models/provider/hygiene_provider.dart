@@ -12,8 +12,7 @@ class HygieneProvider extends ChangeNotifier {
   void startPeriodicHygieneDataUpdate() {
     _hygieneDataUpdateTimer?.cancel();
     _hygieneDataUpdateTimer = Timer.periodic(const Duration(seconds: 10), (timer) async {
-      await updateRequiresCleaning(robotName: 'rb_theron');
-      await updateRequiresDisinfectionAfterUsage(robotName: 'rb_theron');
+      await updateHygieneData(robotName: 'rb_theron');
     });
   }
 
@@ -39,14 +38,18 @@ class HygieneProvider extends ChangeNotifier {
 
   Future<void> updateRequiresCleaning({required String robotName}) async {
     requiresCleaning = await _middlewareApiUtilities.hygiene.getRequiresCleaning(robotName: robotName);
-    notifyListeners();
   }
 
   Future<void> updateRequiresDisinfectionAfterUsage({required String robotName}) async {
     final result = await _middlewareApiUtilities.hygiene.getRequiresDisinfectionAfterUsage(robotName: robotName);
     if (result != null) {
       requiresDisinfectionAfterUsage = result;
-      notifyListeners();
     }
+  }
+
+  Future<void> updateHygieneData({required String robotName}) async {
+    await updateRequiresCleaning(robotName: robotName);
+    await updateRequiresDisinfectionAfterUsage(robotName: robotName);
+    notifyListeners();
   }
 }

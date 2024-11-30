@@ -26,6 +26,7 @@ class FinishCleaningDialog extends StatelessWidget {
             final hygieneProvider = Provider.of<HygieneProvider>(context, listen: false);
             await hygieneProvider.setLastCleaning(robotName: "rb_theron");
             await hygieneProvider.getLastCleaning(robotName: "rb_theron");
+            await hygieneProvider.updateHygieneData(robotName: "rb_theron");
             Navigator.pop(context);
             Navigator.pop(context);
           },
