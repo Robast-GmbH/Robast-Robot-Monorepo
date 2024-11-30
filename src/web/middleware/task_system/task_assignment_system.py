@@ -13,6 +13,7 @@ import json
 
 class TaskAssignmentSystem:
     TASK_ASSIGNMENT_TRIGGER_INTERVAL_IN_S = 10
+    ROBOT_NOT_FOUND_MESSAGE = {"status": "failure", "message": "Robot not found."}
 
     def __init__(
         self,
@@ -28,20 +29,20 @@ class TaskAssignmentSystem:
 
     def get_robot_tasks(self, robot_name: str) -> dict[str, Any]:
         if robot_name not in self.__robots:
-            return {"status": "failure", "message": "Robot not found."}
+            return TaskAssignmentSystem.ROBOT_NOT_FOUND_MESSAGE
         return {"status": "success", "tasks": self.__robots[robot_name].get_subtasks()}
 
     def set_robot_is_task_queue_open(
         self, robot_name: str, is_open: bool
     ) -> dict[str, Any]:
         if robot_name not in self.__robots:
-            return {"status": "failure", "message": "Robot not found."}
+            return TaskAssignmentSystem.ROBOT_NOT_FOUND_MESSAGE
         self.__robots[robot_name].is_task_queue_open = is_open
         return {"status": "success", "message": "Task queue status updated."}
 
     def get_robot_is_task_queue_open(self, robot_name: str) -> dict[str, Any]:
         if robot_name not in self.__robots:
-            return {"status": "failure", "message": "Robot not found."}
+            return TaskAssignmentSystem.ROBOT_NOT_FOUND_MESSAGE
         return {
             "status": "success",
             "is_open": self.__robots[robot_name].is_task_queue_open,
