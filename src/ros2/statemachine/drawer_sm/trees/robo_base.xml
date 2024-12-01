@@ -29,8 +29,6 @@
                                 LEDs_colored="{leds}"/>
             <SubTree ID="E-Stop"
                      _autoremap="true"/>
-            <SubTree ID="safety_stop"
-                     _autoremap="true"/>
             <IfThenElse>
               <LEDChangedCondition led_vector="{leds}"/>
               <LEDPublisherAction drawer_address="{drawer}"
@@ -57,7 +55,7 @@
                           red="255"
                           upper_bound="100"
                           LEDs_colored="{leds}"/>
-      <SubTree ID="blinker"
+      <SubTree ID="safety_stop"
                _autoremap="true"/>
     </IfThenElse>
   </BehaviorTree>
