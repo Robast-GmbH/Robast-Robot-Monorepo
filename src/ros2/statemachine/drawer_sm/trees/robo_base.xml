@@ -171,36 +171,46 @@
     <IfThenElse>
       <BoolTopicCondition target_value="true"
                           topic="/robot/safety_module/safety_stop"/>
-      <IfThenElse>
-        <CheckSafetyRegister key="REAR_LASER_SAFE_ZONE_FREE"
-                             topic="/robot/safety_module/raw_registers"/>
-        <Sequence>
-          <PartialColorizeLED LEDs="{leds}"
-                              blue="0"
-                              brightness="100"
-                              green="0"
-                              lower_bound="70.4"
-                              red="255"
-                              upper_bound="100.0"
-                              LEDs_colored="{leds}"/>
-          <PartialColorizeLED LEDs="{leds}"
-                              blue="0"
-                              brightness="100"
-                              green="0"
-                              lower_bound="0.0"
-                              red="255"
-                              upper_bound="4.0"
-                              LEDs_colored="{leds}"/>
-        </Sequence>
+      <Sequence>
         <PartialColorizeLED LEDs="{leds}"
                             blue="0"
                             brightness="100"
-                            green="0"
-                            lower_bound="20.0"
+                            green="50"
+                            lower_bound="0.0"
                             red="255"
-                            upper_bound="54.0"
+                            upper_bound="100.0"
                             LEDs_colored="{leds}"/>
-      </IfThenElse>
+        <IfThenElse>
+          <CheckSafetyRegister key="REAR_LASER_SAFE_ZONE_FREE"
+                               topic="/robot/safety_module/raw_registers"/>
+          <Sequence>
+            <PartialColorizeLED LEDs="{leds}"
+                                blue="0"
+                                brightness="100"
+                                green="0"
+                                lower_bound="70.4"
+                                red="255"
+                                upper_bound="100.0"
+                                LEDs_colored="{leds}"/>
+            <PartialColorizeLED LEDs="{leds}"
+                                blue="0"
+                                brightness="100"
+                                green="0"
+                                lower_bound="0.0"
+                                red="255"
+                                upper_bound="4.0"
+                                LEDs_colored="{leds}"/>
+          </Sequence>
+          <PartialColorizeLED LEDs="{leds}"
+                              blue="0"
+                              brightness="100"
+                              green="0"
+                              lower_bound="20.0"
+                              red="255"
+                              upper_bound="54.0"
+                              LEDs_colored="{leds}"/>
+        </IfThenElse>
+      </Sequence>
       <SubTree ID="blinker"
                _autoremap="true"/>
     </IfThenElse>
