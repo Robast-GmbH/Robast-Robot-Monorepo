@@ -24,6 +24,7 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_eigen REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(nav2_util REQUIRED)
+find_package(rclcpp_action REQUIRED)
 
 
 set(dependencies
@@ -42,6 +43,7 @@ set(dependencies
   tf2_geometry_msgs
   tf2_ros
   nav2_util
+  rclcpp_action
 )
 include_directories(
   include
@@ -137,6 +139,9 @@ list(APPEND plugin_libs publish_drawer_status_action_bt_node)
 
 add_library(partial_drawer_leds_action_bt_node SHARED src/action/partial_drawer_leds_action.cpp)
 list(APPEND plugin_libs partial_drawer_leds_action_bt_node)
+
+add_library(lock_partial_drawer_action_bt_node SHARED src/action/lock_partial_drawer_action.cpp)
+list(APPEND plugin_libs lock_partial_drawer_action_bt_node)
 
 add_library(import_environment_led_color_action_bt_node SHARED src/action/import_environment_led_color_action.cpp)
 list(APPEND plugin_libs import_environment_led_color_action_bt_node)
