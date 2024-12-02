@@ -22,8 +22,8 @@ class Logger:
             max_file_size (int): Maximum size of a log file before rotation (in bytes).
             backup_count (int): Number of backup files to keep.
         """
-        self.logger = logging.getLogger(name)
-        self.logger.setLevel(log_level)
+        self.__logger = logging.getLogger(name)
+        self.__logger.setLevel(log_level)
 
         formatter = TimezoneFormatter(
             fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -34,28 +34,28 @@ class Logger:
             log_file, maxBytes=max_file_size, backupCount=backup_count
         )
         file_handler.setFormatter(formatter)
-        self.logger.addHandler(file_handler)
+        self.__logger.addHandler(file_handler)
 
         console_handler = logging.StreamHandler()
         console_handler.setFormatter(formatter)
-        self.logger.addHandler(console_handler)
+        self.__logger.addHandler(console_handler)
 
     def debug(self, message: str):
         """Log a debug-level message."""
-        self.logger.debug(message)
+        self.__logger.debug(message)
 
     def info(self, message: str):
         """Log an info-level message."""
-        self.logger.info(message)
+        self.__logger.info(message)
 
     def warning(self, message: str):
         """Log a warning-level message."""
-        self.logger.warning(message)
+        self.__logger.warning(message)
 
     def error(self, message: str):
         """Log an error-level message."""
-        self.logger.error(message)
+        self.__logger.error(message)
 
     def critical(self, message: str):
         """Log a critical-level message."""
-        self.logger.critical(message)
+        self.__logger.critical(message)
