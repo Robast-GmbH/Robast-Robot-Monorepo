@@ -64,16 +64,19 @@
 
   <BehaviorTree ID="blinker">
     <Sequence>
-      <EvaluateDriveDirection path_topic="plan"
+      <EvaluateDriveDirection global_path_topic="plan"
+                              local_path_topic="local_plan"
                               prediction_horizon="50"
                               global_frame="map"
                               base_frame="robot/base_link"
                               direction="{direction}"/>
-      <Switch4 case_1="standing"
-               case_2="left"
-               case_3="right"
-               case_4="forward"
+      <Switch5 case_1="sleeping"
+               case_2="standing"
+               case_3="left"
+               case_4="right"
+               case_5="forward"
                variable="{direction}">
+        <AlwaysSuccess/>
         <AlwaysSuccess/>
         <Sequence>
           <PartialColorizeLED LEDs="{leds}"
@@ -163,7 +166,7 @@
         </Sequence>
         <AlwaysSuccess/>
         <AlwaysSuccess/>
-      </Switch4>
+      </Switch5>
     </Sequence>
   </BehaviorTree>
 
@@ -255,8 +258,10 @@
     </Condition>
     <Action ID="EvaluateDriveDirection"
             editable="true">
-      <input_port name="path_topic"
-                  default="path"/>
+      <input_port name="global_path_topic"
+                  default="plan"/>
+      <input_port name="local_path_topic"
+                  default="local_plan"/>
       <input_port name="prediction_horizon"
                   default="60">nav2 plan steps. approx 5cm per step</input_port>
       <input_port name="global_frame"
@@ -264,7 +269,7 @@
       <input_port name="base_frame"
                   default="base_link"/>
       <output_port name="direction"
-                   default="standing">standing, left, right, forward</output_port>
+                   default="standing">sleeping, standing, left, right, forward</output_port>
     </Action>
     <Action ID="GetBlackboardEntry">
       <input_port name="key"
