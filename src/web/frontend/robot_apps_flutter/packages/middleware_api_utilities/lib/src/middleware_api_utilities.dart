@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:middleware_api_utilities/src/services/request_service.dart';
 import 'package:middleware_api_utilities/src/sub_apis/fire_alarm_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/hygiene_api.dart';
+import 'package:middleware_api_utilities/src/sub_apis/logs_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/manuals_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/modules_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/nfc_api.dart';
@@ -30,6 +31,7 @@ class MiddlewareApiUtilities {
     _manuals = ManualsApi(prefix: prefix);
     _hygiene = HygieneApi(prefix: prefix);
     _fireAlarm = FireAlarmApi(prefix: prefix);
+    _logs = LogsApi(prefix: prefix);
   }
 
   late String _prefix;
@@ -40,6 +42,7 @@ class MiddlewareApiUtilities {
   late ManualsApi _manuals;
   late HygieneApi _hygiene;
   late FireAlarmApi _fireAlarm;
+  late LogsApi _logs;
 
   String get prefix => _prefix;
   ModulesApi get modules => _modules;
@@ -49,6 +52,7 @@ class MiddlewareApiUtilities {
   ManualsApi get manuals => _manuals;
   HygieneApi get hygiene => _hygiene;
   FireAlarmApi get fireAlarm => _fireAlarm;
+  LogsApi get logs => _logs;
 
   Future<bool> testConnection({
     required String url,
