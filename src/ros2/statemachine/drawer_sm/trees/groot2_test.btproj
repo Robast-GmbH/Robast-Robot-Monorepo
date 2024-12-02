@@ -86,6 +86,10 @@
             <input_port name="led_topic" default="/drawer_leds"/>
             <input_port name="leds" default="{leds}"/>
         </Action>
+        <Action ID="LockPartialDrawer" editable="true">
+            <input_port name="module_address" default="{drawer}"/>
+            <input_port name="lock" default="true"/>
+        </Action>
         <Action ID="MoveElectricDrawer">
             <input_port name="drawer_address" default="{drawer}"/>
             <input_port name="move_electric_drawer_topic" default="/move_electric_drawer"/>
