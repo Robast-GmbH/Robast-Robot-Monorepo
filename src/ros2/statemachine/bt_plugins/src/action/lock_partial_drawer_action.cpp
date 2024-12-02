@@ -48,53 +48,55 @@ namespace statemachine
 
   BT::NodeStatus LockPartialDrawer::onRunning()
   {
-    if (!_goal_handle)
-    {
-      // Check if the goal has been accepted
-      auto status = _goal_future.wait_for(std::chrono::milliseconds(0));
-      if (status == std::future_status::ready)
-      {
-        _goal_handle = _goal_future.get();
-        if (!_goal_handle)
-        {
-          RCLCPP_ERROR(_node->get_logger(), "Goal was rejected by the action server");
-          return BT::NodeStatus::FAILURE;
-        }
+    // TODO @Tobi: check if this is the correct way to handle the future. seems like its stuck on the wait for result
+    //  if (!_goal_handle)
+    //  {
+    //    // Check if the goal has been accepted
+    //    auto status = _goal_future.wait_for(std::chrono::milliseconds(0));
+    //    if (status == std::future_status::ready)
+    //    {
+    //      _goal_handle = _goal_future.get();
+    //      if (!_goal_handle)
+    //      {
+    //        RCLCPP_ERROR(_node->get_logger(), "Goal was rejected by the action server");
+    //        return BT::NodeStatus::FAILURE;
+    //      }
 
-        // Start getting the result
-        _result_future = _lock_action_client->async_get_result(_goal_handle);
-      }
-      else
-      {
-        // Goal not yet accepted, keep waiting
-        return BT::NodeStatus::RUNNING;
-      }
-    }
+    //     // Start getting the result
+    //     _result_future = _lock_action_client->async_get_result(_goal_handle);
+    //   }
+    //   else
+    //   {
+    //     // Goal not yet accepted, keep waiting
+    //     return BT::NodeStatus::RUNNING;
+    //   }
+    // }
 
-    if (_result_future.valid())
-    {
-      // Check if the result is ready
-      auto result_status = _result_future.wait_for(std::chrono::milliseconds(0));
-      if (result_status == std::future_status::ready)
-      {
-        auto result = _result_future.get();
+    // if (_result_future.valid())
+    // {
+    //   // Check if the result is ready
+    //   auto result_status = _result_future.wait_for(std::chrono::milliseconds(0));
+    //   if (result_status == std::future_status::ready)
+    //   {
+    //     auto result = _result_future.get();
 
-        // Check the result code and return the corresponding node status
-        if (result.code == rclcpp_action::ResultCode::SUCCEEDED)
-        {
-          RCLCPP_INFO(_node->get_logger(), "Drawer locked successfully");
-          return BT::NodeStatus::SUCCESS;
-        }
-        else
-        {
-          RCLCPP_ERROR(_node->get_logger(), "Failed to lock drawer");
-          return BT::NodeStatus::FAILURE;
-        }
-      }
-    }
+    //     // Check the result code and return the corresponding node status
+    //     if (result.code == rclcpp_action::ResultCode::SUCCEEDED)
+    //     {
+    //       RCLCPP_INFO(_node->get_logger(), "Drawer locked successfully");
+    //       return BT::NodeStatus::SUCCESS;
+    //     }
+    //     else
+    //     {
+    //       RCLCPP_ERROR(_node->get_logger(), "Failed to lock drawer");
+    //       return BT::NodeStatus::FAILURE;
+    //     }
+    //   }
+    // }
 
-    // Action is still running
-    return BT::NodeStatus::RUNNING;
+    // // Action is still running
+    // return BT::NodeStatus::RUNNING;
+    return BT::NodeStatus::SUCCESS;
   }
 
   void LockPartialDrawer::onHalted()
