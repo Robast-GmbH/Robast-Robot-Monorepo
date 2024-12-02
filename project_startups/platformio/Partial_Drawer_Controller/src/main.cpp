@@ -161,7 +161,7 @@ void process_can_msgs_task_loop(void* pvParameters)
           const uint8_t motor_id = received_message->get_can_signals()
                                      .at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::MOTOR_ID)
                                      .get_data();
-          i_drawer->set_motor_driver_state(enable_motor, motor_id);
+          e_drawer->set_motor_driver_state(enable_motor, motor_id);
         }
         default:
           serial_println_warning("[Main]: Received unsupported CAN message.");
