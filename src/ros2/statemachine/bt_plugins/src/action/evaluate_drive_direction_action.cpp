@@ -2,61 +2,87 @@
 
 namespace statemachine
 {
-  EvaluateDriveDirection::EvaluateDriveDirection(
-      const std::string &name,
-      const BT::NodeConfig &config)
+  EvaluateDriveDirection::EvaluateDriveDirection(const std::string &name, const BT::NodeConfig &config)
       : BT::SyncActionNode(name, config)
   {
-    getInput("path_topic", _topic_name);
+    getInput("global_path_topic", _global_path_topic_name);
+    getInput("local_path_topic", _local_path_topic_name);
     getInput("prediction_horizon", _prediction_horizon);
     getInput("global_frame", _global_frame);
     getInput("base_frame", _base_frame);
+
     _node = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
     _callback_group = _node->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive, false);
     _callback_group_executor.add_callback_group(_callback_group, _node->get_node_base_interface());
 
     rclcpp::SubscriptionOptions sub_option;
     sub_option.callback_group = _callback_group;
-    _drawer_open_sub = _node->create_subscription<nav_msgs::msg::Path>(
-        _topic_name,
+
+    _global_path_sub = _node->create_subscription<nav_msgs::msg::Path>(
+        _global_path_topic_name,
         10,
-        std::bind(&EvaluateDriveDirection::callbackPathReceived, this, std::placeholders::_1),
+        std::bind(&EvaluateDriveDirection::global_path_callback, this, std::placeholders::_1),
         sub_option);
+    _local_path_sub = _node->create_subscription<nav_msgs::msg::Path>(
+        _local_path_topic_name,
+        10,
+        std::bind(&EvaluateDriveDirection::local_path_callback, this, std::placeholders::_1),
+        sub_option);
+
+    _timestamp_last_local_path = _node->now();
+
     _tf = std::make_shared<tf2_ros::Buffer>(_node->get_clock());
-    auto timer_interface = std::make_shared<tf2_ros::CreateTimerROS>(
-        _node->get_node_base_interface(),
-        _node->get_node_timers_interface());
+    auto timer_interface =
+        std::make_shared<tf2_ros::CreateTimerROS>(_node->get_node_base_interface(), _node->get_node_timers_interface());
     _tf->setCreateTimerInterface(timer_interface);
     _transform_listener = std::make_shared<tf2_ros::TransformListener>(*_tf);
   }
 
-  void EvaluateDriveDirection::callbackPathReceived(const nav_msgs::msg::Path::SharedPtr msg)
+  void EvaluateDriveDirection::global_path_callback(const nav_msgs::msg::Path::SharedPtr msg)
   {
     RCLCPP_INFO(rclcpp::get_logger("EvaluateDriveDirection"), "path received");
-    _path = *msg;
+    _global_path = *msg;
+  }
+
+  void EvaluateDriveDirection::local_path_callback(const nav_msgs::msg::Path::SharedPtr msg)
+  {
+    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "Local path received. Setting timestamp.");
+    _timestamp_last_local_path = _node->now();
   }
 
   void EvaluateDriveDirection::exposeDriveDirection()
   {
+    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "path size: %d", _global_path.poses.size());
 
-    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "path size: %d", _path.poses.size());
+    const builtin_interfaces::msg::Time current_time = _node->now();
+
+    if (is_robot_sleeping(current_time))
+    {
+      return;
+    }
+
+    if (is_robot_standing(current_time))
+    {
+      return;
+    }
+
     if (!nav2_util::getCurrentPose(_global_pose, *_tf, _global_frame, _base_frame, 0.2) ||
-        !(_path.poses.size() > 0))
+        !(_global_path.poses.size() > 0))
     {
       RCLCPP_WARN(rclcpp::get_logger("EvaluateDriveDirection"), "Could not get current pose");
       return;
     }
 
-    _current_path_index = getCurrentIndex(_global_pose.pose, _path);
-    _path.poses.erase(_path.poses.begin(), _path.poses.begin() + _current_path_index);
-    if (_path.poses.size() > _prediction_horizon)
+    _current_path_index = getCurrentIndex(_global_pose.pose, _global_path);
+    _global_path.poses.erase(_global_path.poses.begin(), _global_path.poses.begin() + _current_path_index);
+    if (_global_path.poses.size() > _prediction_horizon)
     {
-      auto start_pose = _path.poses[0].pose;
-      auto end_pose = _path.poses[_prediction_horizon].pose;
+      auto start_pose = _global_path.poses[0].pose;
+      auto end_pose = _global_path.poses[_prediction_horizon].pose;
 
       _direction = utils::DirectionToString(utils::calculateDirection(start_pose, end_pose));
     }
-    //TODO @TAlscher add something to handle the case where the path is too short
+    // TODO @TAlscher add something to handle the case where the path is too short
     else
     {
       _direction = "standing";
@@ -65,17 +91,46 @@ namespace statemachine
     setOutput("direction", _direction);
   }
 
-  int EvaluateDriveDirection::getCurrentIndex(const geometry_msgs::msg::Pose &current_pose, const nav_msgs::msg::Path &path)
+  bool EvaluateDriveDirection::is_robot_standing(const builtin_interfaces::msg::Time current_time)
+  {
+    if (current_time.sec - _timestamp_last_local_path.sec > STANDING_THRESHOLD_IN_S)
+    {
+      RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"),
+                   "Local path is outdated for over %d seconds",
+                   STANDING_THRESHOLD_IN_S);
+      setOutput("direction", "standing");
+      return true;
+    }
+    return false;
+  }
+
+  bool EvaluateDriveDirection::is_robot_sleeping(const builtin_interfaces::msg::Time current_time)
+  {
+    if (current_time.sec - _timestamp_last_local_path.sec > SLEEPING_THRESHOLD_IN_S)
+    {
+      RCLCPP_INFO(rclcpp::get_logger("EvaluateDriveDirection"),
+                  "Local path is outdated for over %d seconds so entering state sleep",
+                  SLEEPING_THRESHOLD_IN_S);
+      setOutput("direction", "sleep");
+      return true;
+    }
+    return false;
+  }
+
+  int EvaluateDriveDirection::getCurrentIndex(const geometry_msgs::msg::Pose &current_pose,
+                                              const nav_msgs::msg::Path &path)
   {
     int closest_index = -1;
     double min_distance = std::numeric_limits<double>::max();
-    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "current pose: %f %f", current_pose.position.x, current_pose.position.y);
+    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"),
+                 "current pose: %f %f",
+                 current_pose.position.x,
+                 current_pose.position.y);
 
     for (size_t i = 0; i < path.poses.size(); ++i)
     {
-      double distance = std::hypot(
-          current_pose.position.x - path.poses[i].pose.position.x,
-          current_pose.position.y - path.poses[i].pose.position.y);
+      double distance = std::hypot(current_pose.position.x - path.poses[i].pose.position.x,
+                                   current_pose.position.y - path.poses[i].pose.position.y);
 
       if (distance < min_distance)
       {
@@ -95,7 +150,7 @@ namespace statemachine
     return BT::NodeStatus::SUCCESS;
   }
 
-}
+}   // namespace statemachine
 
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
