@@ -70,14 +70,15 @@
                               global_frame="map"
                               base_frame="robot/base_link"
                               direction="{direction}"/>
+      <PublishStringTopic topic="/direction"
+                          message="{direction}"/>
       <Switch5 case_1="sleeping"
                case_2="standing"
                case_3="left"
                case_4="right"
                case_5="forward"
                variable="{direction}">
-        <PublishStringTopic topic="/direction"
-                            message="{direction}"/>
+        <AlwaysSuccess/>
         <AlwaysSuccess/>
         <Sequence>
           <PartialColorizeLED LEDs="{leds}"
@@ -326,7 +327,8 @@
       <output_port name="LEDs_colored"
                    default="{leds}"/>
     </Action>
-    <Action ID="PublishStringTopic">
+    <Action ID="PublishStringTopic"
+            editable="true">
       <input_port name="topic"
                   default="/topic">string</input_port>
       <input_port name="message"
