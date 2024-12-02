@@ -3,13 +3,6 @@
       main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
     <Sequence>
-      <IfThenElse>
-        <StringTopicCondition name="IsRobotSleeping"
-                              topic="/direction"
-                              target_value="sleeping"/>
-        <Wait wait_duration="2"/>
-        <AlwaysSuccess/>
-      </IfThenElse>
       <RecoveryNode name="NavigateRecovery"
                     number_of_retries="7">
         <PipelineSequence name="NavigateWithReplanning">
@@ -31,6 +24,13 @@
                                   service_name="global_costmap/clear_entirely_global_costmap"/>
             </RecoveryNode>
           </RateController>
+          <IfThenElse>
+            <StringTopicCondition name="IsRobotSleeping"
+                                  topic="/direction"
+                                  target_value="sleeping"/>
+            <Wait wait_duration="2"/>
+            <AlwaysSuccess/>
+          </IfThenElse>
           <RecoveryNode name="FollowPath"
                         number_of_retries="2">
             <FollowPath path="{path}"
