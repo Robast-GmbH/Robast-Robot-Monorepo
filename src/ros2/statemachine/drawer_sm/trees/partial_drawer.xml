@@ -147,6 +147,9 @@
                           red="0"
                           upper_bound="100.0"
                           LEDs_colored="{leds}"/>
+      <PublishStateFeedback state_feedback="opening"
+                            state_feedback_topic="/module_state_update"
+                            drawer_address="{drawer}"/>
     </Sequence>
   </BehaviorTree>
 
