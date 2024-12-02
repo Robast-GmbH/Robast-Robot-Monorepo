@@ -4,23 +4,33 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 import json
 
+from models.logger import Logger
+
+
 hygiene_router = APIRouter()
+hygiene_logger = Logger("hygiene_manager", "log/hygiene_manager.log")
 
 DEFAULT_CYCLE = 4.0
 TIMEZONE = ZoneInfo("Europe/Berlin")
 DATA_FILE = Path("./cleaning_data.json")
 
 if not DATA_FILE.exists():
+    initial_data = {
+        "rb_theron": {
+            "cycle": DEFAULT_CYCLE,
+            "last_cleaning": None,
+            "requires_disinfection_after_usage": False,
+        }
+    }
     with open(DATA_FILE, "w") as f:
         json.dump(
-            {
-                "rb_theron": {
-                    "cycle": DEFAULT_CYCLE,
-                    "last_cleaning": None,
-                    "requires_disinfection_after_usage": False,
-                }
-            },
+            initial_data,
             f,
+        )
+    for robot_name in initial_data:
+        hygiene_logger.info(
+            f"Initialized hygiene data for {robot_name} with cycle: {initial_data[robot_name]['cycle']} \
+and requires_disinfection_after_usage: {initial_data[robot_name]['requires_disinfection_after_usage']}."
         )
 
 
@@ -54,6 +64,7 @@ def set_cycle(robot_name: str, cycle: float):
 
     data[robot_name]["cycle"] = cycle
     write_data(data)
+    hygiene_logger.info(f"Cleaning cycle updated for {robot_name} to {cycle}.")
     return {"message": f"Cleaning cycle updated for {robot_name}.", "cycle": cycle}
 
 
@@ -84,6 +95,9 @@ def set_last_cleaning(robot_name: str):
 
     data[robot_name]["last_cleaning"] = datetime.now(tz=TIMEZONE).isoformat()
     write_data(data)
+    hygiene_logger.info(
+        f"Last cleaning updated for {robot_name} to {data[robot_name]['last_cleaning']}."
+    )
     return {
         "message": f"Last cleaning timestamp updated for {robot_name}.",
         "last_cleaning": data[robot_name]["last_cleaning"],
@@ -154,6 +168,9 @@ def set_requires_disinfection_after_usage(
         ] = requires_disinfection_after_usage
 
     write_data(data)
+    hygiene_logger.info(
+        f"requires_disinfection_after_usage updated for {robot_name} to {requires_disinfection_after_usage}."
+    )
     return {
         "message": f"Disinfection requirement updated for {robot_name}.",
         "requires_disinfection_after_usage": requires_disinfection_after_usage,

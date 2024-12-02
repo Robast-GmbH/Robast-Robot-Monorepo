@@ -2,8 +2,11 @@ from fastapi import APIRouter, File, UploadFile, HTTPException
 from fastapi.responses import FileResponse
 import os
 from pathlib import Path
+from models.logger import Logger
+
 
 manuals_router = APIRouter()
+manuals_logger = Logger("manuals_manager", "log/manuals_manager.log")
 
 UPLOAD_FOLDER = "./uploaded_files"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
