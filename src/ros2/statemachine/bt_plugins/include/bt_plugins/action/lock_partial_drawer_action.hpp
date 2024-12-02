@@ -23,7 +23,7 @@ namespace statemachine
     static BT::PortsList providedPorts()
     {
       return {
-          BT::InputPort<communication_interfaces::msg::DrawerAddress>("drawer_address",
+          BT::InputPort<communication_interfaces::msg::DrawerAddress>("module_address",
                                                                       "Address of the drawer to lock"),
           BT::InputPort<bool>("lock", "Lock the drawer"),
       };
