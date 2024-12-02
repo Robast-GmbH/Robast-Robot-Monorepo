@@ -5,6 +5,7 @@ import 'package:web_frontend/constants/web_colors.dart';
 import 'package:web_frontend/models/provider/task_provider.dart';
 import 'package:web_frontend/pages/tasks_history_page.dart';
 import 'package:web_frontend/widgets/expandable_subtask_tile.dart';
+import 'package:web_frontend/widgets/rounded_container.dart';
 
 class RobotTaskView extends StatefulWidget {
   const RobotTaskView({required this.robotName, super.key});
@@ -30,109 +31,115 @@ class _RobotTaskViewState extends State<RobotTaskView> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: FutureBuilder<RobotTaskStatus?>(
-        future: fetchRobotTasks,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const CircularProgressIndicator();
-          }
-          if (snapshot.data == null) {
-            return const Text('Fail not handled');
-          }
-          final robotTaskStatus = snapshot.data!;
-          final activeTask = robotTaskStatus.activeTask;
-          final queuedTasks = robotTaskStatus.queuedTasks;
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 8, top: 16),
-                  child: Text(
-                    'Aktiv',
-                    style: TextStyle(fontSize: 24, color: WebColors.primaryText),
-                  ),
-                ),
-                if (activeTask != null)
-                  ExpandableSubtaskTile(
-                    subtask: activeTask,
-                  )
-                else
-                  const Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Text(
-                      'Kein Auftrag aktiv',
-                      style: TextStyle(color: WebColors.secondaryText, fontSize: 20),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: RoundedContainer(
+        color: Colors.white.withOpacity(0.2),
+        child: Center(
+          child: FutureBuilder<RobotTaskStatus?>(
+            future: fetchRobotTasks,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const CircularProgressIndicator();
+              }
+              if (snapshot.data == null) {
+                return const Text('Fail not handled');
+              }
+              final robotTaskStatus = snapshot.data!;
+              final activeTask = robotTaskStatus.activeTask;
+              final queuedTasks = robotTaskStatus.queuedTasks;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(left: 8, top: 16),
+                      child: Text(
+                        'Aktiv',
+                        style: TextStyle(fontSize: 24, color: WebColors.secondaryText),
+                      ),
                     ),
-                  ),
-                const Padding(
-                  padding: EdgeInsets.only(left: 8, top: 16),
-                  child: Text(
-                    'In Warteschlange',
-                    style: TextStyle(fontSize: 24, color: WebColors.primaryText),
-                  ),
-                ),
-                if (queuedTasks.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Text(
-                      'Keine Aufträge in Warteschlange',
-                      style: TextStyle(color: WebColors.secondaryText, fontSize: 20),
+                    if (activeTask != null)
+                      ExpandableSubtaskTile(
+                        subtask: activeTask,
+                      )
+                    else
+                      const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          'Kein Auftrag aktiv',
+                          style: TextStyle(color: WebColors.secondaryText, fontSize: 20),
+                        ),
+                      ),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 8, top: 16),
+                      child: Text(
+                        'In Warteschlange',
+                        style: TextStyle(fontSize: 24, color: WebColors.secondaryText),
+                      ),
                     ),
-                  )
-                else
-                  Expanded(
-                    child: ListView(
-                      children: List.generate(
-                        queuedTasks.length,
-                        (index) => Column(
-                          children: [
-                            ExpandableSubtaskTile(
-                              subtask: queuedTasks[index],
+                    if (queuedTasks.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          'Keine Aufträge in Warteschlange',
+                          style: TextStyle(color: WebColors.secondaryText, fontSize: 20),
+                        ),
+                      )
+                    else
+                      Expanded(
+                        child: ListView(
+                          children: List.generate(
+                            queuedTasks.length,
+                            (index) => Column(
+                              children: [
+                                ExpandableSubtaskTile(
+                                  subtask: queuedTasks[index],
+                                ),
+                                const SizedBox(height: 8),
+                              ],
                             ),
-                            const SizedBox(height: 8),
+                          ),
+                        ),
+                      ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<TasksHistoryPage>(
+                            builder: (context) => TasksHistoryPage(
+                              robotName: widget.robotName,
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 8, top: 16, bottom: 16),
+                        child: Row(
+                          children: [
+                            Text(
+                              'Vergangene Aufträge',
+                              style: TextStyle(fontSize: 24, color: WebColors.secondaryText),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Icon(
+                              Icons.arrow_forward,
+                              size: 24,
+                              color: WebColors.secondaryIcon,
+                            ),
                           ],
                         ),
                       ),
                     ),
-                  ),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute<TasksHistoryPage>(
-                        builder: (context) => TasksHistoryPage(
-                          robotName: widget.robotName,
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 8, top: 16, bottom: 16),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Vergangene Aufträge',
-                          style: TextStyle(fontSize: 24, color: WebColors.primaryText),
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Icon(
-                          Icons.arrow_forward,
-                          size: 24,
-                          color: WebColors.primaryIcon,
-                        ),
-                      ],
-                    ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          );
-        },
+              );
+            },
+          ),
+        ),
       ),
     );
   }

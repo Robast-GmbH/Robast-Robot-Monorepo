@@ -28,7 +28,7 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   void startTimeoutTimer() {
-    timeoutTimer = Timer(const Duration(seconds: 5), onTimeout);
+    timeoutTimer = Timer(const Duration(seconds: 10), onTimeout);
   }
 
   @override

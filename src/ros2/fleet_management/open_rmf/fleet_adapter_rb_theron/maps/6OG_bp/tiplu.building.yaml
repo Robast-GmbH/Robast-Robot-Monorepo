@@ -1,481 +1,72 @@
 coordinate_system: reference_image
 crowd_sim:
   agent_groups:
-    - {
-        agents_name: [rb_theron],
-        agents_number: 1,
-        group_id: 0,
-        profile_selector: external_agent,
-        state_selector: external_static,
-        x: 0,
-        y: 0,
-      }
+    - {agents_name: [rb_theron], agents_number: 1, group_id: 0, profile_selector: external_agent, state_selector: external_static, x: 0, y: 0}
   agent_profiles:
-    - {
-        ORCA_tau: 1,
-        ORCA_tauObst: 0.40000000000000002,
-        class: 1,
-        max_accel: 0,
-        max_angle_vel: 0,
-        max_neighbors: 10,
-        max_speed: 0,
-        name: external_agent,
-        neighbor_dist: 5,
-        obstacle_set: 1,
-        pref_speed: 0,
-        r: 0.25,
-      }
+    - {ORCA_tau: 1, ORCA_tauObst: 0.40000000000000002, class: 1, max_accel: 0, max_angle_vel: 0, max_neighbors: 10, max_speed: 0, name: external_agent, neighbor_dist: 5, obstacle_set: 1, pref_speed: 0, r: 0.25}
   enable: 0
   goal_sets: []
   model_types: []
-  obstacle_set: { class: 1, file_name: Tiplu_navmesh.nav, type: nav_mesh }
+  obstacle_set: {class: 1, file_name: Tiplu_navmesh.nav, type: nav_mesh}
   states:
-    - { final: 1, goal_set: -1, name: external_static, navmesh_file_name: "" }
+    - {final: 1, goal_set: -1, name: external_static, navmesh_file_name: ""}
   transitions: []
   update_time_step: 0.10000000000000001
-graphs: {}
+graphs:
+  {}
 levels:
   Tiplu:
-    doors:
-      - [
-          60,
-          61,
-          {
-            motion_axis: [1, start],
-            motion_degrees: [3, 90],
-            motion_direction: [2, 1],
-            name: [1, "example_door"],
-            plugin: [1, normal],
-            right_left_ratio: [3, 1],
-            type: [1, hinged],
-          },
-        ]
     drawing:
       filename: 6OG_bp.png
     elevation: 0
     floors:
-      - parameters:
-          {
-            ceiling_scale: [3, 1],
-            ceiling_texture: [1, blue_linoleum],
-            indoor: [2, 0],
-            texture_name: [1, blue_linoleum],
-            texture_rotation: [3, 0],
-            texture_scale: [3, 1],
-          }
+      - parameters: {ceiling_scale: [3, 1], ceiling_texture: [1, blue_linoleum], indoor: [2, 0], texture_name: [1, blue_linoleum], texture_rotation: [3, 0], texture_scale: [3, 1]}
         vertices: [22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 20]
-      - parameters:
-          {
-            ceiling_scale: [3, 1],
-            ceiling_texture: [1, blue_linoleum],
-            indoor: [2, 0],
-            texture_name: [1, blue_linoleum],
-            texture_rotation: [3, 0],
-            texture_scale: [3, 1],
-          }
+      - parameters: {ceiling_scale: [3, 1], ceiling_texture: [1, blue_linoleum], indoor: [2, 0], texture_name: [1, blue_linoleum], texture_rotation: [3, 0], texture_scale: [3, 1]}
         vertices: [32, 35, 36, 37]
     lanes:
-      - [
-          0,
-          1,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          1,
-          2,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          2,
-          3,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          3,
-          4,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          4,
-          5,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          5,
-          6,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          6,
-          7,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          7,
-          8,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          8,
-          9,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          9,
-          10,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          10,
-          11,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          11,
-          12,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          12,
-          13,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          13,
-          14,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          14,
-          15,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          15,
-          16,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          17,
-          12,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          15,
-          8,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-    layers: {}
+      - [0, 1, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [1, 2, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [2, 3, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [3, 4, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [4, 5, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [5, 6, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [6, 7, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [7, 8, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [8, 9, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [9, 10, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [10, 11, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [11, 12, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [12, 13, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [13, 14, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [14, 15, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [15, 16, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [17, 12, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [15, 60, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [60, 8, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+    layers:
+      {}
     measurements:
-      - [18, 19, { distance: [3, 9.1999999999999993] }]
+      - [18, 19, {distance: [3, 9.1999999999999993]}]
     vertices:
-      - [
-          1598.1279999999999,
-          682.43499999999995,
-          0,
-          darts,
-          {
-            is_charger: [4, true],
-            is_parking_spot: [4, true],
-            spawn_robot_name: [1, rb_theron],
-          },
-        ]
-      - [
-          1598.6110000000001,
-          757.61000000000001,
-          0,
-          robast_door_1,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          2037.0809999999999,
-          757.61000000000001,
-          0,
-          robast_door_2,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          2149.3200000000002,
-          753.79399999999998,
-          0,
-          kenny,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          2233.681,
-          693.37,
-          0,
-          jo,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          2233.0839999999998,
-          541.59299999999996,
-          0,
-          marketing,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          2162.2190000000001,
-          484.05099999999999,
-          0,
-          sales,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          2052.5259999999998,
-          476.44299999999998,
-          0,
-          showers,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          1184.3889999999999,
-          488.14699999999999,
-          0,
-          floor,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          907.97900000000004,
-          494.82100000000003,
-          0,
-          toilets,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          803.77200000000005,
-          497.16300000000001,
-          0,
-          kitchen,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          598.75699999999995,
-          495.05700000000002,
-          0,
-          mensa_side_entry,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          593.17200000000003,
-          621.63400000000001,
-          0,
-          mensa_main_entry,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          593.17200000000003,
-          748.21000000000004,
-          0,
-          tt,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          881.69200000000001,
-          748.21000000000004,
-          0,
-          storage,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          1183.242,
-          753.79399999999998,
-          0,
-          printer,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          1378.6659999999999,
-          753.58199999999999,
-          0,
-          server,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
-      - [
-          445.30700000000002,
-          616.46100000000001,
-          0,
-          mensa,
-          {
-            dropoff_ingestor: [1, drawer_ingestor],
-            pickup_dispenser: [1, drawer_dispenser],
-          },
-        ]
+      - [1598.1279999999999, 682.43499999999995, 0, darts, {is_charger: [4, true], is_parking_spot: [4, false], spawn_robot_name: [1, rb_theron]}]
+      - [1595, 753, 0, robast_door_1, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [2037.0809999999999, 757.61000000000001, 0, robast_door_2, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [2154, 749, 0, kenny, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [2233.681, 693.37, 0, jo, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [2233.0839999999998, 541.59299999999996, 0, marketing, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [2163, 493, 0, sales, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [2054, 480, 0, showers, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [1173, 499, 0, floor, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [909, 497, 0, toilets, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [802, 499, 0, kitchen, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [598.75699999999995, 495.05700000000002, 0, mensa_side_entry, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [593.17200000000003, 621.63400000000001, 0, mensa_main_entry, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [593.17200000000003, 748.21000000000004, 0, tt, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [881.69200000000001, 748.21000000000004, 0, storage, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [1177, 749, 0, printer, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [1366, 756, 0, server, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [445.30700000000002, 616.46100000000001, 0, mensa, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
       - [1521.5319999999999, 958.85599999999999, 0, ""]
       - [2113.5050000000001, 960.19799999999998, 0, ""]
       - [663.43299999999999, 435.73399999999998, 0, ""]
@@ -518,427 +109,46 @@ levels:
       - [1486.682, 531.86800000000005, 0, ""]
       - [2109.4490000000001, 526.70699999999999, 0, ""]
       - [2185.145, 551.65200000000004, 0, ""]
-      - [1037.181, 723.62300000000005, 0, ""]
-      - [1037.2360000000001, 781.55899999999997, 0, ""]
+      - [1174, 624, 0, bar, {dropoff_ingestor: [1, drawer_ingestor], is_parking_spot: [4, true], pickup_dispenser: [1, drawer_dispenser]}]
     walls:
-      - [
-          20,
-          21,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          21,
-          22,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          22,
-          23,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          23,
-          24,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          24,
-          25,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          25,
-          26,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          26,
-          27,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          27,
-          28,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          28,
-          29,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          29,
-          30,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          30,
-          31,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          31,
-          32,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          32,
-          33,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          33,
-          34,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          33,
-          35,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          35,
-          36,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          36,
-          37,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          37,
-          20,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          38,
-          39,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          39,
-          40,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          39,
-          41,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          42,
-          43,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          44,
-          45,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          45,
-          46,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          46,
-          47,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          47,
-          48,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          48,
-          49,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          49,
-          50,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          50,
-          51,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          51,
-          52,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          52,
-          53,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          53,
-          54,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          54,
-          55,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          54,
-          56,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          56,
-          57,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          47,
-          58,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          58,
-          59,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
-      - [
-          59,
-          44,
-          {
-            alpha: [3, 1],
-            texture_height: [3, 2.5],
-            texture_name: [1, default],
-            texture_scale: [3, 1],
-            texture_width: [3, 1],
-          },
-        ]
+      - [20, 21, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [21, 22, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [22, 23, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [23, 24, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [24, 25, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [25, 26, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [26, 27, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [27, 28, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [28, 29, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [29, 30, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [30, 31, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [31, 32, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [32, 33, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [33, 34, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [33, 35, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [35, 36, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [36, 37, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [37, 20, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [38, 39, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [39, 40, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [39, 41, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [42, 43, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [44, 45, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [45, 46, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [46, 47, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [47, 48, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [48, 49, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [49, 50, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [50, 51, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [51, 52, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [52, 53, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [53, 54, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [54, 55, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [54, 56, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [56, 57, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [47, 58, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [58, 59, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+      - [59, 44, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
 lifts: {}
 name: tiplu
 parameters:

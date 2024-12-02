@@ -52,6 +52,7 @@ class RobotProvider extends ChangeNotifier {
   }
 
   void startPeriodicIsEmergencyStopPressedUpdate() {
+    stopPeriodicIsEmergencyStopPressedUpdate();
     startPeriodicUpdate(
       timerRef: _isEmergencyStopPressedUpdateTimer,
       callback: updateEmergencyStopPressed,
