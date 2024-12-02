@@ -111,7 +111,7 @@ namespace statemachine
       RCLCPP_INFO(rclcpp::get_logger("EvaluateDriveDirection"),
                   "Local path is outdated for over %d seconds so entering state sleep",
                   SLEEPING_THRESHOLD_IN_S);
-      setOutput("direction", "sleep");
+      setOutput("direction", "sleeping");
       return true;
     }
     return false;
