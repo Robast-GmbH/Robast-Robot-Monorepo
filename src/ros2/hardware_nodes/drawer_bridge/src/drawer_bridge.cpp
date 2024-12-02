@@ -214,7 +214,17 @@ namespace drawer_bridge
         can_signals.at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE)
           .get_data() == robast_can_msgs::can_data::CONTROL_CHANGE_CONFIRMED;
     }
-    _motor_control_cv.notify_one();
+
+    // Please mind: Because the request to change the motor control and the confirmation are in the same msg id,
+    // This callback is triggered twice:
+    // 1. When the request is sent (and the confirmation bit is false)
+    // 2. When the confirmation from the drawer controller is received (and the confirmation bit is true)
+    // Therefore, we need to notify the waiting thread only when the confirmation bit is true
+    if (_is_motor_control_change_confirmed)
+    {
+      RCLCPP_DEBUG(get_logger(), "Motor control change confirmed! Notifying waiting thread!");
+      _motor_control_cv.notify_all();
+    }
   }
 
   void DrawerBridge::publish_push_to_close_triggered(const bool is_push_to_close_triggered)
