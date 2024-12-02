@@ -4,6 +4,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include "behaviortree_cpp/condition_node.h"
+#include "bt_plugins/utils/time_conversions.hpp"
 #include "builtin_interfaces/msg/time.hpp"
 #include "communication_interfaces/msg/heartbeat.hpp"
 
@@ -24,8 +25,6 @@ namespace statemachine
               BT::InputPort<uint16_t>("latency_tolerance_in_ms", "100"),
               BT::OutputPort<std::string>("id", "1")};
     }
-
-    static std::chrono::milliseconds convert_to_milliseconds(const builtin_interfaces::msg::Time &time);
 
    private:
     rclcpp::Node::SharedPtr _node;
