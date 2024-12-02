@@ -222,7 +222,8 @@ namespace drawer_bridge
     // Therefore, we need to notify the waiting thread only when the confirmation bit is true
     if (_is_motor_control_change_confirmed)
     {
-      _motor_control_cv.notify_one();
+      RCLCPP_DEBUG(get_logger(), "Motor control change confirmed! Notifying waiting thread!");
+      _motor_control_cv.notify_all();
     }
   }
 
