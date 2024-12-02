@@ -6,7 +6,7 @@ namespace statemachine
       : BT::SyncActionNode(name, config)
   {
     getInput("global_path_topic", _global_path_topic_name);
-    getInput("local_path_topic", _local_path_topic_name);
+    getInput("cmd_vel_topic", _cmd_vel_topic);
     getInput("prediction_horizon", _prediction_horizon);
     getInput("global_frame", _global_frame);
     getInput("base_frame", _base_frame);
@@ -19,21 +19,22 @@ namespace statemachine
     sub_option.callback_group = _callback_group;
 
     _global_path_sub = _node->create_subscription<nav_msgs::msg::Path>(
-        _global_path_topic_name,
-        10,
-        std::bind(&EvaluateDriveDirection::global_path_callback, this, std::placeholders::_1),
-        sub_option);
-    _local_path_sub = _node->create_subscription<nav_msgs::msg::Path>(
-        _local_path_topic_name,
-        10,
-        std::bind(&EvaluateDriveDirection::local_path_callback, this, std::placeholders::_1),
-        sub_option);
+      _global_path_topic_name,
+      10,
+      std::bind(&EvaluateDriveDirection::global_path_callback, this, std::placeholders::_1),
+      sub_option);
+
+    _cmd_vel_sub = _node->create_subscription<geometry_msgs::msg::Twist>(
+      _cmd_vel_topic,
+      10,
+      std::bind(&EvaluateDriveDirection::cmd_vel_callback, this, std::placeholders::_1),
+      sub_option);
 
     _timestamp_last_local_path = _node->now();
 
     _tf = std::make_shared<tf2_ros::Buffer>(_node->get_clock());
     auto timer_interface =
-        std::make_shared<tf2_ros::CreateTimerROS>(_node->get_node_base_interface(), _node->get_node_timers_interface());
+      std::make_shared<tf2_ros::CreateTimerROS>(_node->get_node_base_interface(), _node->get_node_timers_interface());
     _tf->setCreateTimerInterface(timer_interface);
     _transform_listener = std::make_shared<tf2_ros::TransformListener>(*_tf);
   }
@@ -44,9 +45,9 @@ namespace statemachine
     _global_path = *msg;
   }
 
-  void EvaluateDriveDirection::local_path_callback(const nav_msgs::msg::Path::SharedPtr msg)
+  void EvaluateDriveDirection::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg)
   {
-    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "Local path received. Setting timestamp.");
+    RCLCPP_INFO(rclcpp::get_logger("EvaluateDriveDirection"), "Cmd vel received. Setting timestamp.");
     _timestamp_last_local_path = _node->now();
   }
 
@@ -96,7 +97,7 @@ namespace statemachine
     if (current_time.sec - _timestamp_last_local_path.sec > STANDING_THRESHOLD_IN_S)
     {
       RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"),
-                   "Local path is outdated for over %d seconds",
+                   "Cmd vel is outdated for over %d seconds",
                    STANDING_THRESHOLD_IN_S);
       setOutput("direction", "standing");
       return true;
@@ -109,7 +110,7 @@ namespace statemachine
     if (current_time.sec - _timestamp_last_local_path.sec > SLEEPING_THRESHOLD_IN_S)
     {
       RCLCPP_INFO(rclcpp::get_logger("EvaluateDriveDirection"),
-                  "Local path is outdated for over %d seconds so entering state sleep",
+                  "Cmd vel is outdated for over %d seconds so entering state sleep",
                   SLEEPING_THRESHOLD_IN_S);
       setOutput("direction", "sleeping");
       return true;

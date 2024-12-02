@@ -43,8 +43,8 @@ namespace statemachine
      */
     static BT::PortsList providedPorts()
     {
-      return {BT::InputPort<std::string>("global_path_topic", "plan"),
-              BT::InputPort<std::string>("local_path_topic", "local_plan"),
+      return {BT::InputPort<std::string>("global_path_topic", GLOBAL_PLAN_DEFAULT_TOPIC),
+              BT::InputPort<std::string>("cmd_vel_topic", CMD_VEL_DEFAULT_TOPIC),
               BT::InputPort<uint16_t>("prediction_horizon", "prediction_horizon"),
               BT::InputPort<std::string>("global_frame", "map"),
               BT::InputPort<std::string>("base_frame", "base_link"),
@@ -52,16 +52,19 @@ namespace statemachine
     }
 
    private:
+    static constexpr const char *GLOBAL_PLAN_DEFAULT_TOPIC = "plan";
+    static constexpr const char *CMD_VEL_DEFAULT_TOPIC = "cmd_vel_nav";
+
     rclcpp::Node::SharedPtr _node;
 
-    std::string _global_path_topic_name = "plan";
-    std::string _local_path_topic_name = "local_plan";
+    std::string _global_path_topic_name = GLOBAL_PLAN_DEFAULT_TOPIC;
+    std::string _cmd_vel_topic = CMD_VEL_DEFAULT_TOPIC;
 
     rclcpp::CallbackGroup::SharedPtr _callback_group;
     rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
 
     rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr _global_path_sub;
-    rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr _local_path_sub;
+    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr _cmd_vel_sub;
 
     nav_msgs::msg::Path _global_path = nav_msgs::msg::Path();
 
@@ -78,7 +81,7 @@ namespace statemachine
 
     void exposeDriveDirection();
     void global_path_callback(const nav_msgs::msg::Path::SharedPtr msg);
-    void local_path_callback(const nav_msgs::msg::Path::SharedPtr msg);
+    void cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg);
     int getCurrentIndex(const geometry_msgs::msg::Pose &current_pose, const nav_msgs::msg::Path &path);
 
     bool is_robot_standing(const builtin_interfaces::msg::Time current_time);

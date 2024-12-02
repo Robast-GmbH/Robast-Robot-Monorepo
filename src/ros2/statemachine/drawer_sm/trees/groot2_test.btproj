@@ -44,8 +44,8 @@
             <input_port name="use_stallguard" default="false"/>
         </Condition>
         <Action ID="EvaluateDriveDirection" editable="true">
-            <input_port name="global_path_topic" default="plan"/>
-            <input_port name="local_path_topic" default="local_plan"/>
+            <input_port name="global_path_topic" default="/plan"/>
+            <input_port name="cmd_vel_topic" default="/cmd_vel_nav"/>
             <input_port name="prediction_horizon" default="60">nav2 plan steps. approx 5cm per step</input_port>
             <input_port name="global_frame" default="map"/>
             <input_port name="base_frame" default="base_link"/>
