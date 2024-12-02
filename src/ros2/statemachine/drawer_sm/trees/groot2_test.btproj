@@ -125,6 +125,10 @@
             <input_port name="state_feedback_topic" default="/state_feedback"/>
             <input_port name="drawer_address" default="{drawer}"/>
         </Action>
+        <Action ID="PublishStringTopic">
+            <input_port name="topic" default="/topic">string</input_port>
+            <input_port name="message" default="message">string</input_port>
+        </Action>
         <Control ID="ReactiveIfThenElse" editable="true"/>
         <Decorator ID="ResetDecorator">
             <input_port name="topic" default="/tree_reset"/>

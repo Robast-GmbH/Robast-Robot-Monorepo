@@ -76,7 +76,8 @@
                case_4="right"
                case_5="forward"
                variable="{direction}">
-        <AlwaysSuccess/>
+        <PublishStringTopic topic="/direction"
+                            message="{direction}"/>
         <AlwaysSuccess/>
         <Sequence>
           <PartialColorizeLED LEDs="{leds}"
@@ -324,6 +325,12 @@
                   default="0.0">double</input_port>
       <output_port name="LEDs_colored"
                    default="{leds}"/>
+    </Action>
+    <Action ID="PublishStringTopic">
+      <input_port name="topic"
+                  default="/topic">string</input_port>
+      <input_port name="message"
+                  default="message">string</input_port>
     </Action>
     <Action ID="SetDefaultLEDColor"
             editable="true">
