@@ -20,7 +20,7 @@ def launch_setup(context, *args, **settings):
 
     params = {
         "bt_path": os.path.join(bringup_dir, "trees", "heartbeat.xml"),
-        "plugins": ["heartbeat_condition_node", "robast_error_pub_node"],
+        "plugins": ["heartbeat_condition_node", "robast_error_pub_node", "publish_string_topic_action_node"],
         "trigger_topic": "trigger_heartbeat_tree",
         "main_tree": "default_heartbeat_drawer_tree",
         "tree_tick_time": 10,
