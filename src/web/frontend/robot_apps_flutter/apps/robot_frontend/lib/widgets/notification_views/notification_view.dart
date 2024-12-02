@@ -17,7 +17,7 @@ class NotificationView extends StatelessWidget {
         child: Padding(
             padding: const EdgeInsets.all(16),
             child: ListView(
-              children: [if (hygieneProvider.requiresCleaning ?? false) NotificationTile()],
+              children: [if (hygieneProvider.requiresCleaning ?? false) const NotificationTile()],
             )),
       ),
     );
