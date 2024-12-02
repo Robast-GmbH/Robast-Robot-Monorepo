@@ -68,7 +68,7 @@ namespace statemachine
 
     nav_msgs::msg::Path _global_path = nav_msgs::msg::Path();
 
-    builtin_interfaces::msg::Time _timestamp_last_local_path;
+    builtin_interfaces::msg::Time _timestamp_last_cmd_vel;
 
     std::string _direction;
     geometry_msgs::msg::PoseStamped _global_pose;
