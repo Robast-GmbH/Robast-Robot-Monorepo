@@ -159,6 +159,9 @@ list(APPEND plugin_libs reactive_if_then_else_node)
 add_library(heartbeat_condition_node SHARED src/condition/heartbeat_condition.cpp)
 list(APPEND plugin_libs heartbeat_condition_node)
 
+add_library(path_topic_condition_node SHARED src/condition/path_topic_condition.cpp)
+list(APPEND plugin_libs path_topic_condition_node)
+
 add_library(robast_error_pub_node SHARED src/action/robast_error_pub_action.cpp)
 list(APPEND plugin_libs robast_error_pub_node)
 

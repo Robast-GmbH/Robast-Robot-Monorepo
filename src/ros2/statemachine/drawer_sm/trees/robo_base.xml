@@ -78,7 +78,70 @@
                case_4="right"
                case_5="forward"
                variable="{direction}">
-        <AlwaysSuccess/>
+        <IfThenElse>
+          <PathTopicCondition topic="/plan"
+                              valid_path_age_in_ms="2000"/>
+          <Sequence>
+            <PartialColorizeLED LEDs="{leds}"
+                                blue="0"
+                                brightness="255"
+                                green="80"
+                                lower_bound="0"
+                                red="255"
+                                upper_bound="100"
+                                LEDs_colored="{leds}"/>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="100"
+                                led_topic="/led_cmd"
+                                leds="{leds}"/>
+            <Delay delay_msec="500">
+              <PartialColorizeLED LEDs="{leds}"
+                                  blue="{blue}"
+                                  brightness="{brightness}"
+                                  green="{green}"
+                                  lower_bound="0.0"
+                                  red="{red}"
+                                  upper_bound="100.0"
+                                  LEDs_colored="{leds}"/>
+            </Delay>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="300"
+                                led_topic="/led_cmd"
+                                leds="{leds}"/>
+            <Delay delay_msec="500">
+              <PartialColorizeLED LEDs="{leds}"
+                                  blue="0"
+                                  brightness="255"
+                                  green="80"
+                                  lower_bound="0"
+                                  red="255"
+                                  upper_bound="100"
+                                  LEDs_colored="{leds}"/>
+            </Delay>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="100"
+                                led_topic="/led_cmd"
+                                leds="{leds}"/>
+            <Delay delay_msec="500">
+              <PartialColorizeLED LEDs="{leds}"
+                                  blue="{blue}"
+                                  brightness="{brightness}"
+                                  green="{green}"
+                                  lower_bound="0.0"
+                                  red="{red}"
+                                  upper_bound="100.0"
+                                  LEDs_colored="{leds}"/>
+            </Delay>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="300"
+                                led_topic="/led_cmd"
+                                leds="{leds}"/>
+            <Delay delay_msec="550">
+              <AlwaysSuccess/>
+            </Delay>
+          </Sequence>
+          <AlwaysSuccess/>
+        </IfThenElse>
         <AlwaysSuccess/>
         <Sequence>
           <PartialColorizeLED LEDs="{leds}"
@@ -327,6 +390,12 @@
       <output_port name="LEDs_colored"
                    default="{leds}"/>
     </Action>
+    <Condition ID="PathTopicCondition">
+      <input_port name="topic"
+                  default="/plan"/>
+      <input_port name="valid_path_age_in_ms"
+                  default="2000">uint16</input_port>
+    </Condition>
     <Action ID="PublishStringTopic"
             editable="true">
       <input_port name="topic"
