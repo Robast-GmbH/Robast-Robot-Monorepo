@@ -162,8 +162,8 @@ list(APPEND plugin_libs heartbeat_condition_node)
 add_library(robast_error_pub_node SHARED src/action/robast_error_pub_action.cpp)
 list(APPEND plugin_libs robast_error_pub_node)
 
-add_library(publish_string_topic_node SHARED src/action/publish_string_topic.cpp)
-list(APPEND plugin_libs publish_string_topic_node)
+add_library(publish_string_topic_action_node SHARED src/action/publish_string_topic.cpp)
+list(APPEND plugin_libs publish_string_topic_action_node)
 
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})
