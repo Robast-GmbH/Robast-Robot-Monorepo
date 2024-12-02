@@ -30,7 +30,7 @@ namespace statemachine
       std::bind(&EvaluateDriveDirection::cmd_vel_callback, this, std::placeholders::_1),
       sub_option);
 
-    _timestamp_last_cmd_vel = _node->now();
+    _timestamp_last_cmd_vel = rclcpp::Time(0);
 
     _tf = std::make_shared<tf2_ros::Buffer>(_node->get_clock());
     auto timer_interface =
@@ -107,11 +107,18 @@ namespace statemachine
 
   bool EvaluateDriveDirection::is_robot_sleeping(const builtin_interfaces::msg::Time current_time)
   {
+    if (_timestamp_last_cmd_vel.sec == 0)
+    {
+      RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "Cmd vel has not been received yet");
+      setOutput("direction", "sleeping");
+      return true;
+    }
+
     if (current_time.sec - _timestamp_last_cmd_vel.sec > SLEEPING_THRESHOLD_IN_S)
     {
-      RCLCPP_INFO(rclcpp::get_logger("EvaluateDriveDirection"),
-                  "Cmd vel is outdated for over %d seconds so entering state sleep",
-                  SLEEPING_THRESHOLD_IN_S);
+      RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"),
+                   "Cmd vel is outdated for over %d seconds so entering state sleep",
+                   SLEEPING_THRESHOLD_IN_S);
       setOutput("direction", "sleeping");
       return true;
     }
