@@ -25,20 +25,17 @@ class Logger:
         self.logger = logging.getLogger(name)
         self.logger.setLevel(log_level)
 
-        # Formatter for log messages
         formatter = TimezoneFormatter(
             fmt="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
+            datefmt="%d-%m-%Y %H:%M:%S",
         )
 
-        # File handler with rotation
         file_handler = RotatingFileHandler(
             log_file, maxBytes=max_file_size, backupCount=backup_count
         )
         file_handler.setFormatter(formatter)
         self.logger.addHandler(file_handler)
 
-        # Console handler (optional)
         console_handler = logging.StreamHandler()
         console_handler.setFormatter(formatter)
         self.logger.addHandler(console_handler)
