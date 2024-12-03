@@ -38,7 +38,7 @@ jobs:
         context: src/ros2/${{ env.Project-Name }}/
         platforms: linux/arm64/v8
         build-args: |
-          GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
+          GIT_TOKEN=${{ secrets.GITHUB_TOKEN }}
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
         tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release
