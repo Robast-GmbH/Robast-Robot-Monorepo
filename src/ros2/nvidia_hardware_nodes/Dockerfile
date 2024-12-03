@@ -1,7 +1,9 @@
+ARG ROS_BUILD_DISTRO=humble
 FROM ghcr.io/robast-gmbh/monorepo/building-docker:${ROS_BUILD_DISTRO} AS build
 FROM nvcr.io/nvidia/l4t-base:r36.2.0
 
-ENV ROS_DISTRO=humble
+ARG ROS_BUILD_DISTRO
+ENV ROS_DISTRO=${ROS_BUILD_DISTRO}
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
