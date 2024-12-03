@@ -122,6 +122,7 @@
         <Condition ID="PathTopicCondition">
             <input_port name="topic" default="/plan"/>
             <input_port name="valid_path_age_in_ms" default="2000">uint16</input_port>
+            <input_port name="num_of_minimal_poses" default="10">uint16</input_port>
         </Condition>
         <Action ID="PublishDrawerStatus" editable="true">
             <input_port name="topic_name" default="/bt_drawer_open"/>
