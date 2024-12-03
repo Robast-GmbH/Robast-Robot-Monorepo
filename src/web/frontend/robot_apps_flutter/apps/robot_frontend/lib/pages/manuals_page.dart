@@ -32,6 +32,7 @@ class _ManualsPageState extends State<ManualsPage> {
   Widget build(BuildContext context) {
     return CustomScaffold(
       inactivityTimerEnabled: widget.inactivityTimerEnabled,
+      ignoreMissingEmergencyStopData: true,
       title: 'Anleitungen',
       child: FutureBuilder<void>(
           future: _updateManuals,

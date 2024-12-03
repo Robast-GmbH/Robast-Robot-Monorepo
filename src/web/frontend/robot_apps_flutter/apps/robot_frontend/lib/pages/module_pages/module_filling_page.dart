@@ -68,10 +68,10 @@ class _ModuleFillingPageState extends State<ModuleFillingPage> {
                   }
                 },
                 child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  padding: EdgeInsets.symmetric(vertical: 32, horizontal: 16),
                   child: Text(
                     'Bestätigen',
-                    style: TextStyle(fontSize: 30, color: RobotColors.primaryText),
+                    style: TextStyle(fontSize: 32, color: RobotColors.primaryText),
                   ),
                 ),
               ),
