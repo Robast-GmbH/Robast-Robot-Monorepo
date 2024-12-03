@@ -13,6 +13,8 @@ robot_tree_initiator:
       - publish_state_feedback_action_bt_node
       - set_default_led_color_action_bt_node
       - check_safety_register_condition_node
+      - publish_string_topic_action_node
+      - path_topic_condition_node
     bt_path: "/workspace/src/statemachine/drawer_sm/trees/Robo_base.xml"
     trigger_topic: "trigger_base_tree"
     main_tree: "BehaviorTree"

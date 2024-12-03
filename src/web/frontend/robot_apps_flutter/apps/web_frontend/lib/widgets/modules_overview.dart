@@ -51,7 +51,7 @@ class ModulesOverview extends StatelessWidget {
             moduleIDsBySubmodules[moduleID]!.add(submodule);
           }
 
-          return ListView(
+          return Column(
             children: [
               ...List.generate(moduleIDsBySubmodules.keys.length, (index) {
                 final moduleID = moduleIDsBySubmodules.keys.elementAt(index);

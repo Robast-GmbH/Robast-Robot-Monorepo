@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 import 'package:web_frontend/models/provider/fleet_provider.dart';
 import 'package:web_frontend/pages/robot_page.dart';
+import 'package:web_frontend/widgets/next_cleaning_view.dart';
 
 class RobotListView extends StatelessWidget {
   const RobotListView({super.key});
@@ -19,6 +20,7 @@ class RobotListView extends StatelessWidget {
               margin: const EdgeInsets.all(16),
               child: ListTile(
                 title: Text(robots[index].name),
+                subtitle: NextCleaningView(robotName: robots[index].name),
                 onTap: () {
                   Navigator.push(
                     context,

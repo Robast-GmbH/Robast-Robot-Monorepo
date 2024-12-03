@@ -5,7 +5,6 @@ from roslibpy import Ros
 class ModuleBridge(BaseBridge):
     DRAWER_STATUS_MSG = "communication_interfaces/msg/DrawerStatus"
     DRAWER_ADDRESS_MSG = "communication_interfaces/msg/DrawerAddress"
-    E_DRAWER_STATUS_MSG = "communication_interfaces/msg/ElectricalDrawerStatus"
     MODULE_STATE_UPDATE_MSG = "communication_interfaces/msg/StateFeedback"
 
     MODULE_UNIQUE_ID_LENGTH = 16

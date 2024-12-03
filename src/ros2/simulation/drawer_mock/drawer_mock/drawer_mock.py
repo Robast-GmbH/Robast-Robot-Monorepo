@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from communication_interfaces.msg import DrawerAddress, DrawerStatus
+from communication_interfaces.msg import DrawerAddress, StateFeedback
 
 MANUAL_DRAWER_OPEN_TIME_IN_S = 3
 
@@ -9,8 +9,8 @@ class DrawerMock(Node):
     def __init__(self) -> None:
         super().__init__("drawer_mock")
 
-        self.__bt_drawer_open_publisher = self.create_publisher(
-            DrawerStatus, "bt_drawer_open", 10
+        self.__state_feedback_publisher = self.create_publisher(
+            StateFeedback, "/module_state_update", 10
         )
 
         self.create_subscription(
@@ -49,7 +49,7 @@ class DrawerMock(Node):
             msg = self.__create_drawer_status_msg(
                 module_id, drawer_id, drawer_is_open=True
             )
-            self.__bt_drawer_open_publisher.publish(msg)
+            self.__state_feedback_publisher.publish(msg)
             self.__timer = self.create_timer(
                 MANUAL_DRAWER_OPEN_TIME_IN_S,
                 lambda: self.__manual_close_mock_callback(module_id, drawer_id),
@@ -61,7 +61,7 @@ class DrawerMock(Node):
         msg = self.__create_drawer_status_msg(
             module_id, drawer_id, drawer_is_open=False
         )
-        self.__bt_drawer_open_publisher.publish(msg)
+        self.__state_feedback_publisher.publish(msg)
         self.__is_any_drawer_open = False
 
     def __electric_drawer_tree_callback(self, msg: DrawerAddress) -> None:
@@ -72,7 +72,7 @@ class DrawerMock(Node):
             msg = self.__create_drawer_status_msg(
                 module_id, drawer_id, drawer_is_open=True
             )
-            self.__bt_drawer_open_publisher.publish(msg)
+            self.__state_feedback_publisher.publish(msg)
 
     def __close_drawer_callback(self, msg: DrawerAddress) -> None:
         if self.__is_any_drawer_open:
@@ -81,7 +81,7 @@ class DrawerMock(Node):
             msg = self.__create_drawer_status_msg(
                 module_id, drawer_id, drawer_is_open=False
             )
-            self.__bt_drawer_open_publisher.publish(msg)
+            self.__state_feedback_publisher.publish(msg)
             self.__is_any_drawer_open = False
 
     def __read_drawer_address(self, msg: DrawerAddress) -> tuple[int, int]:
@@ -89,11 +89,11 @@ class DrawerMock(Node):
 
     def __create_drawer_status_msg(
         self, module_id: int, drawer_id: int, drawer_is_open: bool
-    ) -> DrawerStatus:
-        msg = DrawerStatus()
+    ) -> StateFeedback:
+        msg = StateFeedback()
         msg.drawer_address.module_id = module_id
         msg.drawer_address.drawer_id = drawer_id
-        msg.drawer_is_open = drawer_is_open
+        msg.state = "open" if drawer_is_open else "closed"
         return msg
 
 

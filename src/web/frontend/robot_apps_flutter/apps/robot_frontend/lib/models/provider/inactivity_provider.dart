@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/provider/hygiene_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
+import 'package:robot_frontend/pages/disinfection_page.dart';
 
 class InactivityProvider with ChangeNotifier {
   Timer? _inactivityTimer;
@@ -75,6 +77,10 @@ class InactivityProvider with ChangeNotifier {
                 onPressed: () {
                   isBarrierDismissed = false;
                   Navigator.popUntil(context, (route) => route.isFirst);
+                  final hygieneProvider = Provider.of<HygieneProvider>(context, listen: false);
+                  if (hygieneProvider.requiresDisinfectionAfterUsage) {
+                    Navigator.push(context, MaterialPageRoute<void>(builder: (context) => const DisinfectionPage()));
+                  }
                 },
                 child: const Text(
                   'Abmelden',

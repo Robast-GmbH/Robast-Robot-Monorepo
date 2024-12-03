@@ -41,6 +41,7 @@ namespace drawer
 
   void ElectricalDrawer::set_motor_driver_state(const bool enabled, const uint8_t motor_id) const
   {
+    debug_printf_warning("[ElectricalDrawer]: Setting motor driver state to %d\n", enabled);
     // TODO@Jacob: Once we have more then one motor, we need to change this to a switch case and use the motor_id
     enabled ? _motor->enable_driver() : _motor->disable_driver();
 
