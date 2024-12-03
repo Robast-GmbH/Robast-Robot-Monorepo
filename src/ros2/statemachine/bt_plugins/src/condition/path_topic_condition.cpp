@@ -13,6 +13,7 @@ namespace statemachine
     uint16_t valid_path_age_in_ms = 0;
     getInput("topic", _topic_name);
     getInput("valid_path_age_in_ms", valid_path_age_in_ms);
+    getInput("num_of_minimal_poses", _num_of_minimal_poses);
 
     if (_topic_name == "")
     {
@@ -80,7 +81,17 @@ namespace statemachine
   void PathTopicCondition::_callback_path(const nav_msgs::msg::Path::SharedPtr msg)
   {
     RCLCPP_DEBUG(rclcpp::get_logger("PathTopicCondition"), "Path received");
-    _last_path_timestamp = msg->header.stamp;
+
+    if (msg->poses.size() > _num_of_minimal_poses)
+    {
+      _last_path_timestamp = msg->header.stamp;
+    }
+    else
+    {
+      RCLCPP_DEBUG(rclcpp::get_logger("PathTopicCondition"),
+                   "Path has less than %d poses. Not updating timestamp.",
+                   _num_of_minimal_poses);
+    }
   }
 }   // namespace statemachine
 

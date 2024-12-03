@@ -22,7 +22,8 @@ namespace statemachine
     static BT::PortsList providedPorts()
     {
       return {BT::InputPort<std::string>("topic", "/path"),
-              BT::InputPort<uint16_t>("valid_path_age_in_ms", std::to_string(DEFAULT_VALID_PATH_AGE_IN_MS))};
+              BT::InputPort<uint16_t>("valid_path_age_in_ms", std::to_string(DEFAULT_VALID_PATH_AGE_IN_MS)),
+              BT::InputPort<uint16_t>("num_of_minimal_poses", "10")};
     }
 
    private:
@@ -38,6 +39,8 @@ namespace statemachine
     std::chrono::milliseconds _valid_path_age_in_ms;
 
     builtin_interfaces::msg::Time _last_path_timestamp;
+
+    uint16_t _num_of_minimal_poses;
 
     bool _received_path_once_within_valid_age = false;
 
