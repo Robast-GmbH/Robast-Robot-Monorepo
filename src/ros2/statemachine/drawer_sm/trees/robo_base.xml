@@ -63,7 +63,7 @@
   <BehaviorTree ID="blinker">
     <Sequence>
       <EvaluateDriveDirection global_path_topic="/plan"
-                              cmd_vel_topic="/cmd_vel_nav"
+                              cmd_vel_topic="/robot/robotnik_base_control/cmd_vel_unsafe"
                               prediction_horizon="50"
                               global_frame="map"
                               base_frame="robot/base_link"
@@ -339,7 +339,7 @@
       <input_port name="global_path_topic"
                   default="/plan"/>
       <input_port name="cmd_vel_topic"
-                  default="/cmd_vel_nav"/>
+                  default="/robot/robotnik_base_control/cmd_vel_unsafe"/>
       <input_port name="prediction_horizon"
                   default="60">nav2 plan steps. approx 5cm per step</input_port>
       <input_port name="global_frame"
