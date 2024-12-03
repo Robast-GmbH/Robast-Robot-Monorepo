@@ -41,13 +41,13 @@ namespace statemachine
 
   void EvaluateDriveDirection::global_path_callback(const nav_msgs::msg::Path::SharedPtr msg)
   {
-    RCLCPP_INFO(rclcpp::get_logger("EvaluateDriveDirection"), "path received");
+    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "path received");
     _global_path = *msg;
   }
 
   void EvaluateDriveDirection::cmd_vel_callback(const geometry_msgs::msg::Twist::SharedPtr msg)
   {
-    RCLCPP_INFO(rclcpp::get_logger("EvaluateDriveDirection"), "Cmd vel received. Setting timestamp.");
+    RCLCPP_DEBUG(rclcpp::get_logger("EvaluateDriveDirection"), "Cmd vel received. Setting timestamp.");
     _timestamp_last_cmd_vel = _node->now();
   }
 
