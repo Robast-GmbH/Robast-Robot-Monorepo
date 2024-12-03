@@ -78,7 +78,8 @@
                variable="{direction}">
         <IfThenElse>
           <PathTopicCondition topic="/plan"
-                              valid_path_age_in_ms="2000"/>
+                              valid_path_age_in_ms="2000"
+                              num_of_minimal_poses="10"/>
           <Sequence>
             <PartialColorizeLED LEDs="{leds}"
                                 blue="0"
@@ -408,6 +409,8 @@
                   default="/plan"/>
       <input_port name="valid_path_age_in_ms"
                   default="2000">uint16</input_port>
+      <input_port name="num_of_minimal_poses"
+                  default="10">uint16</input_port>                  
     </Condition>
     <Action ID="PublishStringTopic"
             editable="true">
