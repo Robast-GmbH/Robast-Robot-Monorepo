@@ -55,16 +55,16 @@ namespace statemachine
       // Makes sure that path is only considered once for the condition
       if (_received_path_once_within_valid_age)
       {
-        RCLCPP_INFO(rclcpp::get_logger("PathTopicCondition"),
-                    "Path already received once within valid age of %ld ms",
-                    _valid_path_age_in_ms.count());
+        RCLCPP_DEBUG(rclcpp::get_logger("PathTopicCondition"),
+                     "Path already received once within valid age of %ld ms",
+                     _valid_path_age_in_ms.count());
         return BT::NodeStatus::FAILURE;
       }
 
-      RCLCPP_INFO(rclcpp::get_logger("PathTopicCondition"),
-                  "Received path within %ld, which is within valid age of %ld ms",
-                  time_since_last_path_in_ms.count(),
-                  _valid_path_age_in_ms.count());
+      RCLCPP_DEBUG(rclcpp::get_logger("PathTopicCondition"),
+                   "Received path within %ld, which is within valid age of %ld ms",
+                   time_since_last_path_in_ms.count(),
+                   _valid_path_age_in_ms.count());
       _received_path_once_within_valid_age = true;
       return BT::NodeStatus::SUCCESS;
     }
@@ -79,7 +79,7 @@ namespace statemachine
 
   void PathTopicCondition::_callback_path(const nav_msgs::msg::Path::SharedPtr msg)
   {
-    RCLCPP_INFO(rclcpp::get_logger("PathTopicCondition"), "Path received");
+    RCLCPP_DEBUG(rclcpp::get_logger("PathTopicCondition"), "Path received");
     _last_path_timestamp = msg->header.stamp;
   }
 }   // namespace statemachine
