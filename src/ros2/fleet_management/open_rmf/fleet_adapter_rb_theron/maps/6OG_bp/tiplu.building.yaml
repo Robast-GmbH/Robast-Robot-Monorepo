@@ -62,7 +62,7 @@ levels:
       - [802, 499, 0, kitchen, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
       - [598.75699999999995, 495.05700000000002, 0, mensa_side_entry, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
       - [593.17200000000003, 621.63400000000001, 0, mensa_main_entry, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
-      - [593.17200000000003, 748.21000000000004, 0, tt, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
+      - [596, 716, 0, tt, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
       - [881.69200000000001, 748.21000000000004, 0, storage, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
       - [1177, 749, 0, printer, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
       - [1366, 756, 0, server, {dropoff_ingestor: [1, drawer_ingestor], pickup_dispenser: [1, drawer_dispenser]}]
