@@ -14,15 +14,15 @@ namespace drawer_sm
     qos_heartbeat_msgs.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
     qos_heartbeat_msgs.avoid_ros_namespace_conventions(false);
 
-    heartbeat_sub_ = create_subscription<communication_interfaces::msg::Heartbeat>(
-      "/heartbeat",
-      qos_heartbeat_msgs,
-      std::bind(&HeartbeatTreeSpawner::callback_heartbeat, this, std::placeholders::_1));
+    _heartbeat_sub = create_subscription<communication_interfaces::msg::Heartbeat>(
+        "/heartbeat",
+        qos_heartbeat_msgs,
+        std::bind(&HeartbeatTreeSpawner::callback_heartbeat, this, std::placeholders::_1));
 
-    heartbeat_timeouts_sub_ = create_subscription<std_msgs::msg::String>(
-      "/heartbeat_timeout",
-      10,
-      std::bind(&HeartbeatTreeSpawner::callback_heartbeat_timeout, this, std::placeholders::_1));
+    _heartbeat_timeouts_sub = create_subscription<std_msgs::msg::String>(
+        "/heartbeat_timeout",
+        10,
+        std::bind(&HeartbeatTreeSpawner::callback_heartbeat_timeout, this, std::placeholders::_1));
   }
 
   void HeartbeatTreeSpawner::callback_heartbeat(const communication_interfaces::msg::Heartbeat::SharedPtr msg)
@@ -32,7 +32,7 @@ namespace drawer_sm
   }
 
   void HeartbeatTreeSpawner::handle_launching_of_new_heartbeat_trees(
-    const communication_interfaces::msg::Heartbeat::SharedPtr msg)
+      const communication_interfaces::msg::Heartbeat::SharedPtr msg)
   {
     // Go through all living devices and check if the new device is already in the list
     if (_living_devices.find(msg->id) != _living_devices.end())
@@ -47,35 +47,35 @@ namespace drawer_sm
     RCLCPP_INFO(get_logger(), "Creating new tree for %s", msg->id.c_str());
 
     std::thread(
-      [this, msg]()
-      {
-        try
+        [this, msg]()
         {
-          const std::string command = "ros2 launch drawer_sm heartbeat_launch.py id:=" + msg->id;
-          std::system(command.c_str());
-        }
-        catch (const std::exception &e)
-        {
-          RCLCPP_ERROR(this->get_logger(), "Failed to launch process: %s", e.what());
-        }
-      })
-      .detach();
+          try
+          {
+            const std::string command = "ros2 launch drawer_sm heartbeat_launch.py id:=" + msg->id;
+            std::system(command.c_str());
+          }
+          catch (const std::exception &e)
+          {
+            RCLCPP_ERROR(this->get_logger(), "Failed to launch process: %s", e.what());
+          }
+        })
+        .detach();
 
     std::thread(
-      [this, msg]()
-      {
-        try
+        [this, msg]()
         {
-          const std::string command =
-            "ros2 topic pub /trigger_heartbeat_tree std_msgs/msg/String \"data: '" + msg->id + "'\" --once";
-          std::system(command.c_str());
-        }
-        catch (const std::exception &e)
-        {
-          RCLCPP_ERROR(this->get_logger(), "Failed to launch process: %s", e.what());
-        }
-      })
-      .detach();
+          try
+          {
+            const std::string command =
+                "ros2 topic pub /trigger_heartbeat_tree std_msgs/msg/String \"data: '" + msg->id + "'\" --once";
+            std::system(command.c_str());
+          }
+          catch (const std::exception &e)
+          {
+            RCLCPP_ERROR(this->get_logger(), "Failed to launch process: %s", e.what());
+          }
+        })
+        .detach();
   }
 
   void HeartbeatTreeSpawner::callback_heartbeat_timeout(const std_msgs::msg::String::SharedPtr msg)

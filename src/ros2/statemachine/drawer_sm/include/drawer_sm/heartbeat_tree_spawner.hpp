@@ -16,9 +16,9 @@ namespace drawer_sm
     HeartbeatTreeSpawner();
 
    private:
-    rclcpp::Subscription<communication_interfaces::msg::Heartbeat>::SharedPtr heartbeat_sub_;
+    rclcpp::Subscription<communication_interfaces::msg::Heartbeat>::SharedPtr _heartbeat_sub;
 
-    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr heartbeat_timeouts_sub_;
+    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr _heartbeat_timeouts_sub;
 
     void setup_subscriptions();
 
