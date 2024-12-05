@@ -22,6 +22,10 @@ class DisinfectionPublisher(Node):
         self.__read_counter = 0
         self.__average_switch_reading = 0
         self.__timer_is_active = False
+        self.__timer = self.create_timer(
+            self.__timer_period_in_sec, self.__evaluate_disinfection_switch
+        )
+        self.__timer.cancel()
 
     def destroy_node(self) -> None:
         super().destroy_node()
@@ -79,9 +83,8 @@ class DisinfectionPublisher(Node):
                 f"Disinfection switch triggered on channel {channel}. "
                 f"Evaluate disinfection switch for {self.__read_counter_limit} times."
             )
-            self.__timer = self.create_timer(
-                self.__timer_period_in_sec, self.__evaluate_disinfection_switch
-            )
+            self.__timer.reset()
+
 
     def __evaluate_disinfection_switch(self):
         self.__timer_is_active = True
