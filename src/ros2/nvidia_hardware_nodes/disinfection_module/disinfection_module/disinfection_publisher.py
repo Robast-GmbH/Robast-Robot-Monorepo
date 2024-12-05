@@ -95,7 +95,7 @@ class DisinfectionPublisher(Node):
             if self.__is_disinfection_switch_triggered():
                 self.__publish_disinfection_triggered_with_stamp()
             else:
-                self.get_logger().info(
+                self.get_logger().warn(
                     f"False positive detected with running average: {self.__average_switch_reading}"
                 )
 
