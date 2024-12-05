@@ -14,10 +14,15 @@ namespace drawer_sm
     qos_heartbeat_msgs.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
     qos_heartbeat_msgs.avoid_ros_namespace_conventions(false);
 
-    heartbeat_sub_ = create_subscription<communication_interfaces::msg::Heartbeat>(
+    _heartbeat_sub = create_subscription<communication_interfaces::msg::Heartbeat>(
         "/heartbeat",
         qos_heartbeat_msgs,
         std::bind(&HeartbeatTreeSpawner::callback_heartbeat, this, std::placeholders::_1));
+
+    _heartbeat_timeouts_sub = create_subscription<std_msgs::msg::String>(
+        "/heartbeat_timeout",
+        10,
+        std::bind(&HeartbeatTreeSpawner::callback_heartbeat_timeout, this, std::placeholders::_1));
   }
 
   void HeartbeatTreeSpawner::callback_heartbeat(const communication_interfaces::msg::Heartbeat::SharedPtr msg)
@@ -29,12 +34,14 @@ namespace drawer_sm
   void HeartbeatTreeSpawner::handle_launching_of_new_heartbeat_trees(
       const communication_interfaces::msg::Heartbeat::SharedPtr msg)
   {
-    std::vector<std::string> node_names = this->get_node_graph_interface()->get_node_names();
-
-    const std::string target_node_name = "/heartbeat_tree_initiator_" + msg->id;
-    if (std::find(node_names.begin(), node_names.end(), target_node_name) != node_names.end())
+    // Go through all living devices and check if the new device is already in the list
+    if (_living_devices.find(msg->id) != _living_devices.end())
     {
-      return;   // tree already exists
+      return;   // device already exists
+    }
+    else
+    {
+      _living_devices.insert(msg->id);
     }
 
     RCLCPP_INFO(get_logger(), "Creating new tree for %s", msg->id.c_str());
@@ -71,6 +78,11 @@ namespace drawer_sm
         .detach();
   }
 
+  void HeartbeatTreeSpawner::callback_heartbeat_timeout(const std_msgs::msg::String::SharedPtr msg)
+  {
+    _living_devices.erase(msg->data);
+    RCLCPP_WARN(get_logger(), "Device with id %s timed out. Removed it from living devices.", msg->data.c_str());
+  }
 }   // namespace drawer_sm
 
 int main(int argc, char *argv[])
