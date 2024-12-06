@@ -80,6 +80,9 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
     REQUIRE(encoder_config->get_drawer_push_in_threshold_in_percent_of_max_extent() ==
             module_config::ModuleSetting<
               module_config::encoder::DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>::default_value);
+    REQUIRE(encoder_config->get_drawer_pulled_out_threshold_in_percent_of_max_extent() ==
+            module_config::ModuleSetting<
+              module_config::encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>::default_value);
   }
 
   SECTION("Check if default configs are set correctlx for the motor config.")
