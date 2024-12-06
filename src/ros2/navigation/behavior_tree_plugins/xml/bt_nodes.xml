@@ -33,6 +33,11 @@
       <input_port name="target_state">Target state the data field value is checked for</input_port>
     </Condition>
 
+    <Condition ID="StringTopicCondition">
+      <input_port name="topic">Name of the topic, whose data field is checked for target value</input_port>
+      <input_port name="target_value">Target value the data field value is checked for</input_port>
+    </Condition>
+
     <Condition ID="IsIncremented">
       <input_port name="variable_name">name of the state bool in the Blackboard</input_port>
     </Condition>

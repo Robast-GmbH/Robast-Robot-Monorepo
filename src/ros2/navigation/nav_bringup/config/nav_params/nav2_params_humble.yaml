@@ -58,6 +58,7 @@ bt_navigator:
       - nav2_back_up_cancel_bt_node
       - nav2_assisted_teleop_cancel_bt_node
       - nav2_drive_on_heading_cancel_bt_node
+      - string_topic_condition_bt_node
     # - check_topic_state_condition_bt_node
     # - change_footprint_action_bt_node
     # - change_footprint_padding_action_bt_node
@@ -469,32 +470,32 @@ global_costmap:
           topic: /zed/zed_node/point_cloud/cloud_registered
           marking: true
           clearing: true
-          obstacle_range: 5.0          # meters
-          min_obstacle_height: 0.3     # default 0, meters
-          max_obstacle_height: 2.0     # default 3, meters
-          expected_update_rate: 0.10   # default 0, if not updating at this rate at least, remove from buffer
+          obstacle_range: 5.0 # meters
+          min_obstacle_height: 0.3 # default 0, meters
+          max_obstacle_height: 2.0 # default 3, meters
+          expected_update_rate: 0.10 # default 0, if not updating at this rate at least, remove from buffer
           observation_persistence: 1.0 # default 0, use all measurements taken during now-value, 0=latest
-          inf_is_valid: false          # default false, for laser scans
-          filter: "voxel"        # default passthrough, apply "voxel", "passthrough", or no filter to sensor data, recommend on 
-          voxel_min_points: 0          # default 0, minimum points per voxel for voxel filter
-          clear_after_reading: false    # default false, clear the buffer after the layer gets readings from it
-          vertical_fov_angle: 0.8745  # default 0.7, radians
+          inf_is_valid: false # default false, for laser scans
+          filter: "voxel" # default passthrough, apply "voxel", "passthrough", or no filter to sensor data, recommend on
+          voxel_min_points: 0 # default 0, minimum points per voxel for voxel filter
+          clear_after_reading: false # default false, clear the buffer after the layer gets readings from it
+          vertical_fov_angle: 0.8745 # default 0.7, radians
           horizontal_fov_angle: 1.048 # default 1.04, radians
-          decay_acceleration: 10.0     # default 0, 1/s^2. If laser scanner MUST be 0
-          max_z: 1.5                  # default 0, meters
-          min_z: 0.1                  # default 10, meters
-          model_type: 0 
+          decay_acceleration: 10.0 # default 0, 1/s^2. If laser scanner MUST be 0
+          max_z: 1.5 # default 0, meters
+          min_z: 0.1 # default 10, meters
+          model_type: 0
         zed_clearing:
           data_type: PointCloud2
           topic: /zed/zed_node/point_cloud/cloud_registered
           marking: false
           clearing: true
-          max_z: 7.0                  # default 0, meters
-          min_z: 0.1                  # default 10, meters
-          vertical_fov_angle: 0.8745  # default 0.7, radians
+          max_z: 7.0 # default 0, meters
+          min_z: 0.1 # default 10, meters
+          vertical_fov_angle: 0.8745 # default 0.7, radians
           horizontal_fov_angle: 1.048 # default 1.04, radians
-          decay_acceleration: 5.0     # default 0, 1/s^2. If laser scanner MUST be 0
-          model_type: 0                # default 0, model type for frustum. 0=depth camera, 1=3d lidar like VLP16 or similar
+          decay_acceleration: 5.0 # default 0, 1/s^2. If laser scanner MUST be 0
+          model_type: 0 # default 0, model type for frustum. 0=depth camera, 1=3d lidar like VLP16 or similar
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 4.0
@@ -532,7 +533,7 @@ planner_server:
       minimum_turning_radius: 0.27651 # For Hybrid/Lattice nodes: minimum turning radius in m of path / vehicle
       reverse_penalty: 3.1 # For Reeds-Shepp model: penalty to apply if motion is reversing, must be => 1
       change_penalty: 0.5 # For Hybrid nodes: penalty to apply if motion is changing directions, must be >= 0
-     #there is still a lot of tuning potential in this file # lattice_filepath: "/workspace/src/navigation/nav_bringup/config_simulation/nav_params/diff__tr0_4__res0_05.json" # For Lattice nodes: path to the lattice file to load
+      #there is still a lot of tuning potential in this file # lattice_filepath: "/workspace/src/navigation/nav_bringup/config_simulation/nav_params/diff__tr0_4__res0_05.json" # For Lattice nodes: path to the lattice file to load
       non_straight_penalty: 1.20 # For Hybrid nodes: penalty to apply if motion is non-straight, must be => 1
       cost_penalty: 1.8 # For Hybrid nodes: penalty to apply to higher cost areas when adding into the obstacle map dynamic programming distance expansion heuristic. This drives the robot more towards the center of passages. A value between 1.3 - 3.5 is reasonable.
       retrospective_penalty: 0.05 # For Hybrid/Lattice nodes: penalty to prefer later maneuvers before earlier along the path. Saves search time since earlier nodes are not expanded until it is necessary. Must be >= 0.0 and <= 1.0

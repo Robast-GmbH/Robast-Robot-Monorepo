@@ -6,6 +6,7 @@
 
 #include "bt_base_nodes/bt_sub_initiator/heartbeat_tree_initiator.hpp"
 #include "communication_interfaces/msg/heartbeat.hpp"
+#include "std_msgs/msg/string.hpp"
 
 namespace drawer_sm
 {
@@ -15,13 +16,19 @@ namespace drawer_sm
     HeartbeatTreeSpawner();
 
    private:
-    rclcpp::Subscription<communication_interfaces::msg::Heartbeat>::SharedPtr heartbeat_sub_;
+    rclcpp::Subscription<communication_interfaces::msg::Heartbeat>::SharedPtr _heartbeat_sub;
+
+    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr _heartbeat_timeouts_sub;
 
     void setup_subscriptions();
 
     void callback_heartbeat(const communication_interfaces::msg::Heartbeat::SharedPtr msg);
 
     void handle_launching_of_new_heartbeat_trees(const communication_interfaces::msg::Heartbeat::SharedPtr msg);
+
+    void callback_heartbeat_timeout(const std_msgs::msg::String::SharedPtr msg);
+
+    std::unordered_set<std::string> _living_devices;
   };
 
 }   // namespace drawer_sm
