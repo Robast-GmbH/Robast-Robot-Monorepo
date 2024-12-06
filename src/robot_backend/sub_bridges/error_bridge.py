@@ -2,12 +2,14 @@ from sub_bridges.base_bridge import BaseBridge
 from roslibpy import Ros
 from threading import Timer
 from typing import Any, Dict
+import error_definitions_pybind
 
 
 class ErrorBridge(BaseBridge):
     ERROR_MSG = "communication_interfaces/error_msgs/ErrorBaseMsg"
     ERROR_INVALIDATION_TIME_IN_S = 2.0
     DRAWER_NOT_OPENED_ERROR_CODE = 50301
+    HEARTBEAT_TIMEOUT_ERROR_CODE = 50304
 
     def __init__(self, ros: Ros) -> None:
         super().__init__(ros)
@@ -22,6 +24,12 @@ class ErrorBridge(BaseBridge):
 
     def received_drawer_not_opened_error(self) -> bool:
         return self.DRAWER_NOT_OPENED_ERROR_CODE in self.__error_clear_timers
+
+    def received_heartbeat_timeout_error(self) -> bool:
+        return (
+            error_definitions_pybind.ERROR_CODES_HEARTBEAT_TIMEOUT
+            in self.__error_clear_timers
+        )
 
     def __on_error(self, msg: Dict[str, Any]) -> None:
         error_code = msg["error_code"]
