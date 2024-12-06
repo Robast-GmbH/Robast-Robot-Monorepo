@@ -1,0 +1,13 @@
+#include <pybind11/pybind11.h>
+#include "error_utils/error_definitions.hpp"
+
+namespace py = pybind11;
+
+PYBIND11_MODULE(error_definitions_pybind, m) {
+    m.doc() = "Bindings for error codes";
+
+    m.attr("ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED") = ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED;
+    m.attr("ERROR_CODES_DRAWER_CLOSED_IN_IDLE_STATE") = ERROR_CODES_DRAWER_CLOSED_IN_IDLE_STATE;
+    m.attr("ERROR_CODES_MOTOR_DRIVER_CONTROL_NOT_SUPPORTED_BY_MODULE") = ERROR_CODES_MOTOR_DRIVER_CONTROL_NOT_SUPPORTED_BY_MODULE;
+    m.attr("ERROR_CODES_HEARTBEAT_TIMEOUT") = ERROR_CODES_HEARTBEAT_TIMEOUT;
+}

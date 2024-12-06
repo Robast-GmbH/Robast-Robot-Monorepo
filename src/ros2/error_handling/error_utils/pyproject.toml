@@ -1,0 +1,19 @@
+[build-system]
+# Specify the build system requirements
+requires = ["setuptools", "wheel", "pybind11"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# This is where you define the basic information for your project
+name = "error_utils"  # Replace with your package name
+version = "0.1.0"  # Replace with the version you're working with
+description = "C++ bindings for error definitions using pybind11"
+authors = [{ name = "Your Name", email = "youremail@example.com" }]
+license = { text = "MIT" }  # Replace with your actual license
+
+[tool.package-data]
+# Ensures that the .so files are included in the package
+"error_definitions_pybind" = ["*.so"]
+
+
+
