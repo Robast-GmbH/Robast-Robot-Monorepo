@@ -14,6 +14,11 @@ namespace drawer_sm
     qos_heartbeat_msgs.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
     qos_heartbeat_msgs.avoid_ros_namespace_conventions(false);
 
+    rclcpp::QoS qos_living_devices = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
+    qos_living_devices.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+    qos_living_devices.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+    qos_living_devices.avoid_ros_namespace_conventions(false);
+
     _heartbeat_sub = create_subscription<communication_interfaces::msg::Heartbeat>(
         "/heartbeat",
         qos_heartbeat_msgs,
@@ -23,6 +28,8 @@ namespace drawer_sm
         "/heartbeat_timeout",
         10,
         std::bind(&HeartbeatTreeSpawner::callback_heartbeat_timeout, this, std::placeholders::_1));
+
+    _living_devices_pub = create_publisher<std_msgs::msg::String>("/living_devices", qos_living_devices);
   }
 
   void HeartbeatTreeSpawner::callback_heartbeat(const communication_interfaces::msg::Heartbeat::SharedPtr msg)
@@ -42,6 +49,7 @@ namespace drawer_sm
     else
     {
       _living_devices.insert(msg->id);
+      publish_living_devices();
     }
 
     RCLCPP_INFO(get_logger(), "Creating new tree for %s", msg->id.c_str());
@@ -82,6 +90,30 @@ namespace drawer_sm
   {
     _living_devices.erase(msg->data);
     RCLCPP_WARN(get_logger(), "Device with id %s timed out. Removed it from living devices.", msg->data.c_str());
+    publish_living_devices();
+  }
+
+  void HeartbeatTreeSpawner::publish_living_devices()
+  {
+    std_msgs::msg::String msg;
+    msg.data = "";
+
+    uint16_t count = 0;
+    // Copy _living_devices to a vector and sort it
+    std::vector<std::string> devices(_living_devices.begin(), _living_devices.end());
+    std::sort(devices.begin(), devices.end());
+
+    for (const auto &device : devices)
+    {
+      if (count != 0 && count != devices.size())
+      {
+        msg.data += ",";
+      }
+      msg.data += device;
+      count++;
+    }
+
+    _living_devices_pub->publish(msg);
   }
 }   // namespace drawer_sm
 

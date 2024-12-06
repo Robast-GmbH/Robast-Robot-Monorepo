@@ -20,6 +20,8 @@ namespace drawer_sm
 
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr _heartbeat_timeouts_sub;
 
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr _living_devices_pub;
+
     void setup_subscriptions();
 
     void callback_heartbeat(const communication_interfaces::msg::Heartbeat::SharedPtr msg);
@@ -27,6 +29,8 @@ namespace drawer_sm
     void handle_launching_of_new_heartbeat_trees(const communication_interfaces::msg::Heartbeat::SharedPtr msg);
 
     void callback_heartbeat_timeout(const std_msgs::msg::String::SharedPtr msg);
+
+    void publish_living_devices();
 
     std::unordered_set<std::string> _living_devices;
   };
