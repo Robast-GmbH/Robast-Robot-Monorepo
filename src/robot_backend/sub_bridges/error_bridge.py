@@ -1,15 +1,15 @@
 from sub_bridges.base_bridge import BaseBridge
+from models.robast_error import RobastError
 from roslibpy import Ros
 from threading import Timer
-from typing import Any, Dict
+from typing import Any, Dict, List
+from collections import defaultdict
 import error_definitions_pybind
 
 
 class ErrorBridge(BaseBridge):
     ERROR_MSG = "communication_interfaces/error_msgs/ErrorBaseMsg"
     ERROR_INVALIDATION_TIME_IN_S = 2.0
-    DRAWER_NOT_OPENED_ERROR_CODE = 50301
-    HEARTBEAT_TIMEOUT_ERROR_CODE = 50304
 
     def __init__(self, ros: Ros) -> None:
         super().__init__(ros)
@@ -20,31 +20,35 @@ class ErrorBridge(BaseBridge):
             on_msg_callback=self.__on_error,
         )
 
-        self.__error_clear_timers: Dict[int, Timer] = {}
+        self.__error_by_id: Dict[int, Dict[str, RobastError]] = defaultdict(dict)
 
-    def received_drawer_not_opened_error(self) -> bool:
-        return self.DRAWER_NOT_OPENED_ERROR_CODE in self.__error_clear_timers
+    def get_drawer_not_opened_errors(self) -> List[Dict[str, Any]]:
+        return self.__get_errors_by_code(
+            error_definitions_pybind.ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED
+        )
 
-    def received_heartbeat_timeout_error(self) -> bool:
-        return (
+    def get_heartbeat_timeout_errors(self) -> List[Dict[str, Any]]:
+        return self.__get_errors_by_code(
             error_definitions_pybind.ERROR_CODES_HEARTBEAT_TIMEOUT
-            in self.__error_clear_timers
         )
 
     def __on_error(self, msg: Dict[str, Any]) -> None:
-        error_code = msg["error_code"]
-
-        if error_code in self.__error_clear_timers:
-            self.__error_clear_timers[error_code].cancel()
-
-        timer = Timer(
+        error = RobastError.from_dict(msg)
+        self.__error_by_id[error.code][error.id] = error
+        Timer(
             ErrorBridge.ERROR_INVALIDATION_TIME_IN_S,
             self.__invalidate_error,
-            [error_code],
-        )
-        self.__error_clear_timers[error_code] = timer
-        timer.start()
+            [error.code, error.id],
+        ).start()
 
-    def __invalidate_error(self, error_code: int) -> None:
-        if error_code in self.__error_clear_timers:
-            del self.__error_clear_timers[error_code]
+    def __invalidate_error(self, error_code: str, error_id: str) -> None:
+        if (
+            error_code in self.__error_by_id
+            and error_id in self.__error_by_id[error_code]
+        ):
+            del self.__error_by_id[error_code][error_id]
+
+    def __get_errors_by_code(self, error_code: str) -> List[Dict[str, Any]]:
+        if error_code not in self.__error_by_id:
+            return []
+        return [error.to_dict() for error in self.__error_by_id[error_code].values()]

@@ -176,3 +176,20 @@ def get_disinfection_module_status():
 @app.post("/refill_disinfection_fluid_container", tags=["Disinfection"])
 def refill_disinfection_fluid_container():
     return ros_bridge.disinfection_module_bridge.refill_disinfection_fluid_container()
+
+
+"""
+======================
+Error API Endpoints
+======================
+"""
+
+
+@app.get("/drawer_not_opened_errors", tags=["Errors"])
+def get_drawer_not_opened_errors():
+    return ros_bridge.error_bridge.get_drawer_not_opened_errors()
+
+
+@app.get("/heartbeat_timeout_errors", tags=["Errors"])
+def get_heartbeat_timeout_errors():
+    return ros_bridge.error_bridge.get_heartbeat_timeout_errors()

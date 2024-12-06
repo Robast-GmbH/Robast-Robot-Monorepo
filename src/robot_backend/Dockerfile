@@ -54,6 +54,7 @@ RUN git clone -b ros2-devel https://github.com/RobotnikAutomation/robotnik_msgs.
 #TODO @TAlscher: this is just temporary to get this docker do be deployable
 WORKDIR /release
 COPY --from=build /monorepo/src/ros2/communication_interfaces /release/src/ros2/communication_interfaces
+COPY --from=build /monorepo/src/ros2/error_handling /release/src/ros2/error_handling
 COPY --from=build /monorepo/src/ros2/dds_configs /dds_configs
 COPY --from=build /monorepo/src/robot_backend /release/src/robot_backend
 
@@ -61,7 +62,8 @@ RUN pip install -r src/robot_backend/requirements.txt && \
   rosdep update && \
   rosdep install --from-paths /release/src --ignore-src -r -y && \
   . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
-  colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
+  colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release && \
+  bash /release/src/ros2/error_handling/error_utils/install_py_module.sh
 
 WORKDIR /workspace
 USER robast
