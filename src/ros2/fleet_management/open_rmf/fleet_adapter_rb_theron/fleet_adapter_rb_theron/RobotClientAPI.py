@@ -91,7 +91,7 @@ class RobotAPI:
             x, y = self.__transforms["rmf_to_robot"].transform([pose[0], pose[1]])
             z = pose[2] + self.__transforms["orientation_offset"]
             requests.post(
-                f"{self.__prefix}/goal_pose?robot_name={robot_name}&x={x}&y={y}&z={z}&use_reorientation={use_reorientation}",
+                f"{self.__prefix}/goal_pose?robot_name={robot_name}&x={x}&y={y}&z={z}&use_reorientation={False}",
                 timeout=TIMEOUT_DURATION_IN_S,
             )
             return True
