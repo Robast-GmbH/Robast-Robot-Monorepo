@@ -120,6 +120,10 @@ Modules API Endpoints
 """
 
 
+@app.get("/living_devices", tags=["Modules"])
+def read_living_devices():
+    return ros_bridge.module_bridge.get_living_devices()
+
 @app.get("/submodule_status", tags=["Modules"])
 def read_submodule_status(module_id: int, submodule_id: int):
     return ros_bridge.module_bridge.get_submodule_state(module_id, submodule_id)
