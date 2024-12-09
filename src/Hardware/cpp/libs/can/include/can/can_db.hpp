@@ -6,22 +6,23 @@
 #include "can/can_db_defines.hpp"
 #include "can/can_message.hpp"
 
+// clang-format off
 namespace robast_can_msgs
 {
-    class CanDb
-    {
-    public:
-        /**
-         * @brief A constructor for robast_can_msgs::CanDb class
-         */
-        CanDb() = default;
+  class CanDb
+  {
+   public:
+    /**
+     * @brief A constructor for robast_can_msgs::CanDb class
+     */
+    CanDb() = default;
 
-        /**
-         * @brief A destructor for robast_can_msgs::CanDb class
-         */
-        ~CanDb() = default;
+    /**
+     * @brief A destructor for robast_can_msgs::CanDb class
+     */
+    ~CanDb() = default;
 
-        // Vector that contains all the CAN messages stored in the CanDb
+    // Vector that contains all the CAN messages stored in the CanDb
         const std::vector<CanMessage> can_messages = {
             CanMessage(can_id::DRAWER_UNLOCK,
                        can_dlc::DRAWER_UNLOCK,
@@ -79,6 +80,7 @@ namespace robast_can_msgs
                  CanSignal(can_signal::bit_start::led_state::LED_STATE_BLUE, can_signal::bit_length::led_state::LED_STATE_BLUE, 0),
                  CanSignal(can_signal::bit_start::led_state::LED_STATE_BRIGHTNESS, can_signal::bit_length::led_state::LED_STATE_BRIGHTNESS, 0),
                  CanSignal(can_signal::bit_start::led_state::IS_GROUP_STATE, can_signal::bit_length::led_state::IS_GROUP_STATE, 0),
+                 CanSignal(can_signal::bit_start::led_state::ACK_REQUESTED, can_signal::bit_length::led_state::ACK_REQUESTED, 0),
                   }),
             CanMessage(
                 can_id::TRAY_LED_BRIGHTNESS,
@@ -101,13 +103,19 @@ namespace robast_can_msgs
                  CanSignal(can_signal::bit_start::electrical_drawer_motor_control::ENABLE_MOTOR, can_signal::bit_length::electrical_drawer_motor_control::ENABLE_MOTOR, 0),
                  CanSignal(can_signal::bit_start::electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE, can_signal::bit_length::electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE, 0)}),
             CanMessage(
+                can_id::ACKNOWLEDGMENT,
+                can_dlc::ACKNOWLEDGMENT,
+                {CanSignal(can_signal::bit_start::acknowledgment::MODULE_ID, can_signal::bit_length::acknowledgment::MODULE_ID, 0),
+                 CanSignal(can_signal::bit_start::acknowledgment::REFERENCED_MSG_ID, can_signal::bit_length::acknowledgment::REFERENCED_MSG_ID, 0)}),
+            CanMessage(
                 can_id::HEARTBEAT,
                 can_dlc::HEARTBEAT,
                 {CanSignal(can_signal::bit_start::heartbeat::MODULE_ID, can_signal::bit_length::heartbeat::MODULE_ID, 0),
                  CanSignal(can_signal::bit_start::heartbeat::INTERVAL_IN_MS, can_signal::bit_length::heartbeat::INTERVAL_IN_MS, 0)}
             )
-        };
-    };
-} // namespace robast_can_msgs
+  };
+};
+// clang-format off
+}   // namespace robast_can_msgs
 
-#endif // CAN__CAN_DB_HPP_
+#endif   // CAN__CAN_DB_HPP_

@@ -101,7 +101,7 @@ namespace drawer_bridge
     uint16_t num_of_led_states_in_group = 1;
     uint16_t start_index = 0;
 
-    // We want loop through all leds and check how many consecutive leds have the same color and brightness
+    // We want to loop through all leds and check how many consecutive leds have the same color and brightness
     // Then we want to send a message for all leds with the same color and brightness in one message
     for (uint16_t i = 0; i < num_of_leds; i++)
     {

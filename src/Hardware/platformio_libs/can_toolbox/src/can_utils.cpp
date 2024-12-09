@@ -68,6 +68,11 @@ namespace can_toolbox
     _feedback_can_msg_queue->enqueue(create_heartbeat_msg(module_id, interval_in_ms));
   }
 
+  void CanUtils::enqueue_acknowledgement_msg(const uint32_t module_id, const uint16_t reference_msg_id) const
+  {
+    _feedback_can_msg_queue->enqueue(create_acknowledgement_msg(module_id, reference_msg_id));
+  }
+
   CanMessage CanUtils::create_error_feedback_msg(const uint32_t module_id,
                                                  const uint8_t drawer_id,
                                                  const uint8_t error_code) const
@@ -162,5 +167,18 @@ namespace can_toolbox
     can_msg_heartbeat.set_can_signals(can_signals_heartbeat);
 
     return can_msg_heartbeat;
+  }
+
+  CanMessage CanUtils::create_acknowledgement_msg(const uint32_t module_id, const uint16_t reference_msg_id) const
+  {
+    CanMessage can_msg_ack = _can_db->can_messages.at(robast_can_msgs::can_msg::ACKNOWLEDGMENT);
+    std::vector can_signals_ack = can_msg_ack.get_can_signals();
+
+    can_signals_ack.at(robast_can_msgs::can_signal::id::acknowledgment::MODULE_ID).set_data(module_id);
+    can_signals_ack.at(robast_can_msgs::can_signal::id::acknowledgment::REFERENCED_MSG_ID).set_data(reference_msg_id);
+
+    can_msg_ack.set_can_signals(can_signals_ack);
+
+    return can_msg_ack;
   }
 }   // namespace can_toolbox
