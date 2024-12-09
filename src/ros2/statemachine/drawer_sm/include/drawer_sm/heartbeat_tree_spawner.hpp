@@ -12,7 +12,7 @@
 
 namespace drawer_sm
 {
-  constexpr uint8_t TIMEOUT_TREE_TERMINATION_IN_SEC = 10;
+  constexpr uint8_t TIMEOUT_TREE_TERMINATION_IN_SEC = 2;
 
   class HeartbeatTreeSpawner : public rclcpp::Node
   {
