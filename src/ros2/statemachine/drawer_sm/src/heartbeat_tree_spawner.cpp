@@ -52,7 +52,7 @@ namespace drawer_sm
       publish_living_devices();
     }
 
-    RCLCPP_INFO(get_logger(), "Creating new tree for %s", msg->id.c_str());
+    RCLCPP_INFO(get_logger(), "Creating new tree for device ID: %s", msg->id.c_str());
 
     try
     {
@@ -89,7 +89,7 @@ namespace drawer_sm
   void HeartbeatTreeSpawner::callback_heartbeat_timeout(const std_msgs::msg::String::SharedPtr msg)
   {
     _living_devices.erase(msg->data);
-    RCLCPP_WARN(get_logger(), "Device with id %s timed out. Removed it from living devices.", msg->data.c_str());
+    RCLCPP_WARN(get_logger(), "Device with device ID %s timed out. Removed it from living devices.", msg->data.c_str());
     publish_living_devices();
 
     // To the termination in a separate thread to avoid blocking the executor
@@ -98,25 +98,21 @@ namespace drawer_sm
 
   void HeartbeatTreeSpawner::terminate_tree(const std::string &id)
   {
-    auto it = _child_processes.find(id);
+    std::unordered_map<std::string, boost::process::child>::iterator it = _child_processes.find(id);
     if (it != _child_processes.end())
     {
       if (it->second.running())
       {
-        // Specify the timeout duration
-        auto timeout = std::chrono::seconds(2);   // TODO: Store this somewhere else
-
-        // Wait for the process to terminate with a timeout
-        if (!it->second.wait_for(timeout))
+        if (!it->second.wait_for(std::chrono::seconds(TIMEOUT_TREE_TERMINATION_IN_SEC)))
         {
           RCLCPP_WARN(get_logger(),
-                      "Process for ID %s did not terminate within the timeout period. Forcing termination.",
+                      "Process for device ID %s did not terminate within the timeout period. Forcing termination.",
                       id.c_str());
           it->second.terminate();
         }
       }
       _child_processes.erase(it);
-      RCLCPP_INFO(get_logger(), "Terminated process for ID: %s", id.c_str());
+      RCLCPP_INFO(get_logger(), "Terminated process for device ID: %s", id.c_str());
     }
   }
 
