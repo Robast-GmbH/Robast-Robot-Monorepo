@@ -54,20 +54,20 @@ namespace drawer_sm
 
     RCLCPP_INFO(get_logger(), "Creating new tree for %s", msg->id.c_str());
 
-    std::thread(
-        [this, msg]()
-        {
-          try
-          {
-            const std::string command = "ros2 launch drawer_sm heartbeat_launch.py id:=" + msg->id;
-            std::system(command.c_str());
-          }
-          catch (const std::exception &e)
-          {
-            RCLCPP_ERROR(this->get_logger(), "Failed to launch process: %s", e.what());
-          }
-        })
-        .detach();
+    try
+    {
+      const std::string command = "ros2 launch drawer_sm heartbeat_launch.py id:=" + msg->id;
+
+      // Start the process
+      boost::process::child c(command);
+
+      // Store the child process if you need to manage it later
+      _child_processes[msg->id] = std::move(c);
+    }
+    catch (const std::exception &e)
+    {
+      RCLCPP_ERROR(this->get_logger(), "Failed to launch process: %s", e.what());
+    }
 
     std::thread(
         [this, msg]()
@@ -91,6 +91,33 @@ namespace drawer_sm
     _living_devices.erase(msg->data);
     RCLCPP_WARN(get_logger(), "Device with id %s timed out. Removed it from living devices.", msg->data.c_str());
     publish_living_devices();
+
+    // To the termination in a separate thread to avoid blocking the executor
+    std::thread{std::bind(&HeartbeatTreeSpawner::terminate_tree, this, msg->data)}.detach();
+  }
+
+  void HeartbeatTreeSpawner::terminate_tree(const std::string &id)
+  {
+    auto it = _child_processes.find(id);
+    if (it != _child_processes.end())
+    {
+      if (it->second.running())
+      {
+        // Specify the timeout duration
+        auto timeout = std::chrono::seconds(2);   // TODO: Store this somewhere else
+
+        // Wait for the process to terminate with a timeout
+        if (!it->second.wait_for(timeout))
+        {
+          RCLCPP_WARN(get_logger(),
+                      "Process for ID %s did not terminate within the timeout period. Forcing termination.",
+                      id.c_str());
+          it->second.terminate();
+        }
+      }
+      _child_processes.erase(it);
+      RCLCPP_INFO(get_logger(), "Terminated process for ID: %s", id.c_str());
+    }
   }
 
   void HeartbeatTreeSpawner::publish_living_devices()

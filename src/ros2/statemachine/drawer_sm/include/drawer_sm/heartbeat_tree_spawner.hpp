@@ -1,8 +1,10 @@
 #ifndef DRAWER_SM_HEARTBEAT_TREE_SPAWNER_HPP
 #define DRAWER_SM_HEARTBEAT_TREE_SPAWNER_HPP
 
+#include <boost/process.hpp>
 #include <cstdlib>
 #include <rclcpp/rclcpp.hpp>
+#include <unordered_map>
 
 #include "bt_base_nodes/bt_sub_initiator/heartbeat_tree_initiator.hpp"
 #include "communication_interfaces/msg/heartbeat.hpp"
@@ -32,7 +34,11 @@ namespace drawer_sm
 
     void publish_living_devices();
 
+    void terminate_tree(const std::string &id);
+
     std::unordered_set<std::string> _living_devices;
+
+    std::unordered_map<std::string, boost::process::child> _child_processes;
   };
 
 }   // namespace drawer_sm
