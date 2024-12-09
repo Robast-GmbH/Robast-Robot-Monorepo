@@ -89,15 +89,71 @@ namespace drawer_bridge
 
   void DrawerBridge::led_cmd_topic_callback(const LedCmd& msg)
   {
-    const uint16_t num_of_leds = msg.leds.size();
     const uint32_t module_id = msg.drawer_address.module_id;
+    const uint16_t num_of_leds = msg.leds.size();
     const uint8_t fade_time_in_hundreds_of_ms = msg.fade_time_in_ms / 100;
+    const bool ack_requested = msg.ack_requested;
 
     RCLCPP_DEBUG(get_logger(),
                  "I heard from the /led_cmd topic the module id %i and the number of led states = %i",
                  msg.drawer_address.module_id,
                  num_of_leds);
 
+    if (ack_requested)
+    {
+      // detach this thread to not block the main thread when we wait for the acknowledgment
+      std::thread{&DrawerBridge::send_led_cmd_msg_to_can_bus_with_ack,
+                  this,
+                  module_id,
+                  num_of_leds,
+                  fade_time_in_hundreds_of_ms,
+                  msg.leds}
+        .detach();
+    }
+    else
+    {
+      send_led_cmd_msg_to_can_bus(module_id, num_of_leds, fade_time_in_hundreds_of_ms, msg.leds);
+    }
+  }
+
+  void DrawerBridge::send_led_cmd_msg_to_can_bus_with_ack(const uint32_t module_id,
+                                                          const uint16_t num_of_leds,
+                                                          const uint8_t fade_time_in_hundreds_of_ms,
+                                                          const std::vector<communication_interfaces::msg::Led>& leds)
+  {
+    send_led_cmd_msg_to_can_bus(module_id, num_of_leds, fade_time_in_hundreds_of_ms, leds);
+
+    wait_for_led_cmd_ack();
+
+    if (_is_led_cmd_ack_received)
+    {
+      RCLCPP_INFO(get_logger(), "Sent LED command and received acknowledgment");
+      _is_led_cmd_ack_received = false;
+      _led_cmd_attempts = 0;
+    }
+    else
+    {
+      ++_led_cmd_attempts;
+      if (_led_cmd_attempts >= MAX_LED_CMD_ATTEMPTS)
+      {
+        RCLCPP_ERROR(
+          get_logger(), "Sent LED command but did not receive acknowledgment after %i attempts.", MAX_LED_CMD_ATTEMPTS);
+        _led_cmd_attempts = 0;
+        return;
+      }
+      RCLCPP_WARN(
+        get_logger(),
+        "Sent LED command but did not receive acknowledgment. Sending led cmd again. This is now attempt number %i",
+        _led_cmd_attempts);
+      send_led_cmd_msg_to_can_bus_with_ack(module_id, num_of_leds, fade_time_in_hundreds_of_ms, leds);
+    }
+  }
+
+  void DrawerBridge::send_led_cmd_msg_to_can_bus(const uint32_t module_id,
+                                                 const uint16_t num_of_leds,
+                                                 const uint8_t fade_time_in_hundreds_of_ms,
+                                                 const std::vector<communication_interfaces::msg::Led>& leds)
+  {
     uint16_t num_of_led_states_in_group = 1;
     uint16_t start_index = 0;
 
@@ -105,7 +161,7 @@ namespace drawer_bridge
     // Then we want to send a message for all leds with the same color and brightness in one message
     for (uint16_t i = 0; i < num_of_leds; i++)
     {
-      if (are_consecutive_leds_same(msg.leds, i, i + 1))
+      if (are_consecutive_leds_same(leds, i, i + 1))
       {
         ++num_of_led_states_in_group;
       }
@@ -118,7 +174,7 @@ namespace drawer_bridge
         const bool is_group_state = num_of_led_states_in_group > 1;
 
         const CanMessage can_msg_led_state =
-          _can_message_creator.create_can_msg_set_led_state(msg.leds[i], module_id, is_group_state);
+          _can_message_creator.create_can_msg_set_led_state(leds[i], module_id, is_group_state, NO_ACK_REQUESTED);
         send_can_msg(can_msg_led_state);
 
         start_index = i + 1;
@@ -225,6 +281,32 @@ namespace drawer_bridge
       RCLCPP_DEBUG(get_logger(), "Motor control change confirmed! Notifying waiting thread!");
       _motor_control_cv.notify_all();
     }
+  }
+
+  void DrawerBridge::handle_can_acknowledgment(const robast_can_msgs::CanMessage acknowledgment_msg)
+  {
+    std::vector<robast_can_msgs::CanSignal> can_signals = acknowledgment_msg.get_can_signals();
+
+    const uint16_t referenced_msg_id =
+      can_signals.at(robast_can_msgs::can_signal::id::acknowledgment::REFERENCED_MSG_ID).get_data();
+
+    switch (referenced_msg_id)
+    {
+      case robast_can_msgs::can_id::LED_STATE:
+        handle_led_state_acknowledgment();
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  void DrawerBridge::handle_led_state_acknowledgment()
+  {
+    std::scoped_lock lock(_led_cmd_ack_mutex);
+    _is_led_cmd_ack_received = true;
+    RCLCPP_DEBUG(get_logger(), "Received acknowledgment for LED state change!");
+    _led_cmd_ack_cv.notify_all();
   }
 
   void DrawerBridge::publish_push_to_close_triggered(const bool is_push_to_close_triggered)
@@ -341,6 +423,9 @@ namespace drawer_bridge
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_MOTOR_CONTROL:
           handle_e_drawer_motor_control_feedback(decoded_msg.value());
           break;
+        case robast_can_msgs::can_id::ACKNOWLEDGMENT:
+          handle_can_acknowledgment(decoded_msg.value());
+          break;
         case robast_can_msgs::can_id::HEARTBEAT:
           publish_heartbeat(decoded_msg.value());
           break;
@@ -390,6 +475,17 @@ namespace drawer_bridge
                                {
                                  return _is_motor_control_change_confirmed;
                                });
+  }
+
+  void DrawerBridge::wait_for_led_cmd_ack()
+  {
+    std::unique_lock<std::mutex> lock(_motor_control_mutex);
+    _led_cmd_ack_cv.wait_for(lock,
+                             MAX_WAIT_TIME_FOR_LED_CMD_ACK_IN_S,
+                             [this]
+                             {
+                               return _is_led_cmd_ack_received;
+                             });
   }
 
   void DrawerBridge::reset_motor_control_change_flag()
