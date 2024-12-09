@@ -63,6 +63,7 @@ RUN mkdir -p /ws/src/ros2/; mkdir -p /robast/src/BT; \
   && mv /monorepo/src/ros2/dds_configs /robast/dds_configs
 
 RUN apt-get update && \
+  apt-get install -y libboost-dev && \
   rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y \
   . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
