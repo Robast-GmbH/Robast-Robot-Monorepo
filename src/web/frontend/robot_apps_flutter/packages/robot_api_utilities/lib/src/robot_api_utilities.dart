@@ -156,7 +156,7 @@ class RobotApiUtilities {
     }
   }
 
-  Future<double?> getBatteryLevel() async {
+  Future<BatteryStatus?> getBatteryStatus() async {
     try {
       final headers = {
         'Content-Type': 'application/json',
@@ -168,7 +168,7 @@ class RobotApiUtilities {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
         if (data['status'] == 'success') {
-          return (data['data'] as Map<String, dynamic>)['level'] as double;
+          return BatteryStatus.fromJson(data['data'] as Map<String, dynamic>);
         }
       }
       return null;
