@@ -86,6 +86,9 @@ namespace statemachine
 
   void HeartbeatCondition::_callback_heartbeat(const communication_interfaces::msg::Heartbeat::SharedPtr msg)
   {
+    RCLCPP_DEBUG(
+        rclcpp::get_logger("HeartbeatCondition"), "Received heartbeat from %s. I am %s.", msg->id.c_str(), _id.c_str());
+
     _id = _blackboard->get<std::string>("id");
 
     if (msg->id == _id)
