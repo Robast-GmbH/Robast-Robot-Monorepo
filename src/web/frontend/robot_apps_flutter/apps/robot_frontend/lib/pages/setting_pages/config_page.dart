@@ -8,6 +8,7 @@ import 'package:robot_frontend/models/provider/fire_alarm_provider.dart';
 import 'package:robot_frontend/models/provider/hygiene_provider.dart';
 import 'package:robot_frontend/models/provider/map_provider.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
+import 'package:robot_frontend/models/provider/notification_provider.dart';
 
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/home_page.dart';
@@ -39,7 +40,9 @@ class _ConfigPageState extends State<ConfigPage> {
     required String middlewareAddress,
   }) async {
     Provider.of<RobotProvider>(context, listen: false).initRobotAPI(prefix: robotBackendAddress);
+    Provider.of<NotificationProvider>(context, listen: false).initRobotAPI(prefix: robotBackendAddress);
     Provider.of<RobotProvider>(context, listen: false).startPeriodicIsEmergencyStopPressedUpdate();
+    Provider.of<NotificationProvider>(context, listen: false).startPeriodicHeartbeatTimeoutsUpdate();
     Provider.of<FireAlarmProvider>(context, listen: false).startPeriodicFireAlarmUpdate();
     MiddlewareApiUtilities().setPrefix(prefix: middlewareAddress);
     unawaited(Provider.of<MapProvider>(context, listen: false).fetchBuildingMap());

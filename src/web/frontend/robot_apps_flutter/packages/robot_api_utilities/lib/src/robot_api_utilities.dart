@@ -156,7 +156,7 @@ class RobotApiUtilities {
     }
   }
 
-  Future<double?> getBatteryLevel() async {
+  Future<BatteryStatus?> getBatteryStatus() async {
     try {
       final headers = {
         'Content-Type': 'application/json',
@@ -168,7 +168,7 @@ class RobotApiUtilities {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
         if (data['status'] == 'success') {
-          return (data['data'] as Map<String, dynamic>)['level'] as double;
+          return BatteryStatus.fromJson(data['data'] as Map<String, dynamic>);
         }
       }
       return null;
@@ -228,6 +228,50 @@ class RobotApiUtilities {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
         return data['data'] as bool;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<Set<int>?> getHeartbeatTimeoutErrors() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(
+        Uri.parse('$prefix/heartbeat_timeout_errors'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as List<dynamic>;
+        return data
+            .map(
+              (e) => int.parse(
+                (e as Map<String, dynamic>)['error_data'] as String,
+              ),
+            )
+            .toSet();
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<Set<int>?> getLivingDevices() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(
+        Uri.parse('$prefix/living_devices'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as List<dynamic>;
+        return data.map((e) => e as int).toSet();
       }
       return null;
     } catch (e) {

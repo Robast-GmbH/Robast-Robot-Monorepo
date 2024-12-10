@@ -303,7 +303,6 @@ class RobotCommandHandle(adpt.RobotCommandHandle):
                             [x, y, theta],
                             self.map_name,
                             speed_limit,
-                            len(self.remaining_waypoints) == 1,
                         )
 
                         if response:
