@@ -28,10 +28,15 @@ namespace statemachine
     rclcpp::SubscriptionOptions sub_option;
     sub_option.callback_group = _callback_group;
     _heartbeat_sub = _node->create_subscription<communication_interfaces::msg::Heartbeat>(
-      _topic_name,
-      qos_heartbeat_msgs,
-      std::bind(&HeartbeatCondition::_callback_heartbeat, this, std::placeholders::_1),
-      sub_option);
+        _topic_name,
+        qos_heartbeat_msgs,
+        std::bind(&HeartbeatCondition::_callback_heartbeat, this, std::placeholders::_1),
+        sub_option);
+
+    RCLCPP_INFO(_node->get_logger(),
+                "HeartbeatCondition constructor finished for id %s and topic %s",
+                _id.c_str(),
+                _topic_name.c_str());
   }
 
   BT::NodeStatus HeartbeatCondition::tick()
@@ -40,22 +45,22 @@ namespace statemachine
 
     if (!_first_heartbeat_received)
     {
-      RCLCPP_DEBUG(rclcpp::get_logger("HeartbeatCondition"), "Waiting for first heartbeat...");
+      RCLCPP_DEBUG(rclcpp::get_logger("HeartbeatCondition"), "Waiting for first heartbeat of id %s", _id.c_str());
       return BT::NodeStatus::RUNNING;
     }
 
     const std::chrono::milliseconds time_since_last_heartbeat_in_ms =
-      utils::convert_to_milliseconds(_node->now()) - utils::convert_to_milliseconds(_last_heartbeat_timestamp);
+        utils::convert_to_milliseconds(_node->now()) - utils::convert_to_milliseconds(_last_heartbeat_timestamp);
     const std::chrono::milliseconds failure_timeout_in_ms(_heartbeat_interval_in_ms * _timeouts_until_failure);
 
     if (time_since_last_heartbeat_in_ms > failure_timeout_in_ms)
     {
       RCLCPP_ERROR(
-        rclcpp::get_logger("HeartbeatCondition"),
-        "HeartbeatCondition FAILURE. Timeout for id %s occurred! Last heartbeat was %ld ms ago. Timeout is %ld ms.",
-        _id.c_str(),
-        time_since_last_heartbeat_in_ms.count(),
-        failure_timeout_in_ms.count());
+          rclcpp::get_logger("HeartbeatCondition"),
+          "HeartbeatCondition FAILURE. Timeout for id %s occurred! Last heartbeat was %ld ms ago. Timeout is %ld ms.",
+          _id.c_str(),
+          time_since_last_heartbeat_in_ms.count(),
+          failure_timeout_in_ms.count());
 
       setOutput("id", _id);
       _first_heartbeat_received = false;
@@ -67,12 +72,12 @@ namespace statemachine
     if (!_printed_single_timeout_warning && time_since_last_heartbeat_in_ms > acceptable_heartbeat_delay_in_ms)
     {
       RCLCPP_WARN(
-        rclcpp::get_logger("HeartbeatCondition"),
-        "HeartbeatCondition WARNING. Single timeout for id %s occurred! Last heartbeat was %ld ms ago. Acceptable "
-        "delay is %ld ms.",
-        _id.c_str(),
-        time_since_last_heartbeat_in_ms.count(),
-        acceptable_heartbeat_delay_in_ms.count());
+          rclcpp::get_logger("HeartbeatCondition"),
+          "HeartbeatCondition WARNING. Single timeout for id %s occurred! Last heartbeat was %ld ms ago. Acceptable "
+          "delay is %ld ms.",
+          _id.c_str(),
+          time_since_last_heartbeat_in_ms.count(),
+          acceptable_heartbeat_delay_in_ms.count());
       _printed_single_timeout_warning = true;
     }
 
