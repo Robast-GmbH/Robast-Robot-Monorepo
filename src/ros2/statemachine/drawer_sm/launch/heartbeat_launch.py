@@ -33,6 +33,7 @@ def launch_setup(context, *args, **settings):
         name=node_name,
         output="screen",
         parameters=[params],
+        arguments=['--ros-args', '--log-level', 'info'],
     )
 
     return [bt_node]
