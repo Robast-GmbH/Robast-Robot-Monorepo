@@ -156,8 +156,8 @@ levels:
     - - 9.218610269545465
       - -9.660944171839914
       - {dropoff_ingestor: drawer_ingestor, name: mensa_main_entry, pickup_dispenser: drawer_dispenser}
-    - - 9.218610269545465
-      - -11.628088294418166
+    - - 9.262560809763604
+      - -11.127505939246209
       - {dropoff_ingestor: drawer_ingestor, name: tt, pickup_dispenser: drawer_dispenser}
     - - 13.702560009198141
       - -11.628088294418166

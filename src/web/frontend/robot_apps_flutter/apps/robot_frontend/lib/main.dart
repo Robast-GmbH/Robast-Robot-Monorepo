@@ -9,6 +9,7 @@ import 'package:robot_frontend/models/provider/hygiene_provider.dart';
 import 'package:robot_frontend/models/provider/inactivity_provider.dart';
 import 'package:robot_frontend/models/provider/map_provider.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
+import 'package:robot_frontend/models/provider/notification_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
@@ -47,6 +48,9 @@ void main() {
         ),
         ChangeNotifierProvider(
           create: (_) => HygieneProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => NotificationProvider(),
         ),
         ChangeNotifierProvider(
           create: (_) => InactivityProvider(navigatorKey),

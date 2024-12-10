@@ -192,25 +192,28 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
         ),
         Align(
           alignment: Alignment.topLeft,
-          child: IconButton(
-            onPressed: () async {
-              isDisplayingManuals = true;
-              waitingForFinish = false;
-              finishedTimer?.cancel();
-              openingFailedTimer?.cancel();
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ManualsPage(
-                    inactivityTimerEnabled: false,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16.0, top: 8),
+            child: IconButton(
+              onPressed: () async {
+                isDisplayingManuals = true;
+                waitingForFinish = false;
+                finishedTimer?.cancel();
+                openingFailedTimer?.cancel();
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ManualsPage(
+                      inactivityTimerEnabled: false,
+                    ),
                   ),
-                ),
-              );
-              isDisplayingManuals = false;
-            },
-            icon: const Icon(Icons.info_outline),
-            color: RobotColors.primaryIcon,
-            iconSize: 40,
+                );
+                isDisplayingManuals = false;
+              },
+              icon: const Icon(Icons.info_outline),
+              color: RobotColors.primaryIcon,
+              iconSize: 64,
+            ),
           ),
         )
       ],

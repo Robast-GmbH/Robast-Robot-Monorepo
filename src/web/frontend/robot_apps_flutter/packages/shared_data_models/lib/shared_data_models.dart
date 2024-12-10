@@ -9,6 +9,7 @@ export 'src/controller/submodule_size_controller.dart';
 export 'src/controller/user_groups_selection_controller.dart';
 export 'src/controller/user_name_controller.dart';
 export 'src/controller/user_selection_controller.dart';
+export 'src/models/battery_status.dart';
 export 'src/models/building_map.dart';
 export 'src/models/module_process.dart';
 export 'src/models/pose.dart';

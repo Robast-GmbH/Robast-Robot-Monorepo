@@ -141,7 +141,8 @@ class ModuleProcessManager:
         try:
             robot_base_url = f"http://{self.fleet_ip_config[address.robot_name]}:{self.robot_api_port}"
             response = requests.get(
-                f"{robot_base_url}/submodule_status?module_id={address.module_id}&submodule_id={address.submodule_id}"
+                f"{robot_base_url}/submodule_status?module_id={address.module_id}&submodule_id={address.submodule_id}",
+                timeout=0.1,
             )
             if response.status_code == 200 and response.json()["status"] == "success":
                 submodule_status = response.json()["data"]
@@ -153,7 +154,9 @@ class ModuleProcessManager:
         self, address: SubmoduleAddress, status: str
     ) -> None | Submodule:
         submodule = self.repository.read_submodule(address)
-        if submodule:
+        if submodule and not (
+            submodule.module_process_status == "idle" and status == "closed"
+        ):
             submodule.module_process_status = status
             return self.repository.update_submodule(submodule)
 

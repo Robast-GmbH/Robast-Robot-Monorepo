@@ -135,6 +135,10 @@ namespace drawer
 
     void start_next_e_drawer_task();
 
+    void check_if_push_to_close_is_triggered();
+
+    void check_if_drawer_is_pulled_out();
+
     void start_normal_drawer_movement(const uint8_t target_speed, const bool use_acceleration_ramp);
 
     void start_homing_movement(const uint8_t target_speed);
