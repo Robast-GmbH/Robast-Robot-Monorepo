@@ -20,9 +20,9 @@ namespace led
 {
   constexpr uint16_t LED_INIT_ANIMATION_FADE_TIME_IN_MS = 3000;
   constexpr uint8_t LED_INIT_ANIMATION_START_INDEX = 0;
-  constexpr uint8_t LED_INIT_RED = 0;
-  constexpr uint8_t LED_INIT_GREEN = 155;
-  constexpr uint8_t LED_INIT_BLUE = 155;
+  constexpr uint8_t LED_INIT_RED = 255;
+  constexpr uint8_t LED_INIT_GREEN = 0;
+  constexpr uint8_t LED_INIT_BLUE = 0;
   constexpr uint8_t LED_INIT_BRIGHTNESS = 25;
   constexpr uint8_t LED_MAX_BRIGHTNESS = 255;
   constexpr float FULL_PROGRESS_LED_FADING = 1.0;

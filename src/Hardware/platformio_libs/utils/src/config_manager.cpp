@@ -155,6 +155,11 @@ namespace utils
             config_value));
         break;
 
+      case module_config::encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT:
+        _encoder_config->set_drawer_pulled_out_threshold_in_percent_of_max_extent(
+          std::bit_cast<module_config::ModuleSetting<
+            module_config::encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>::type>(config_value));
+
       case module_config::motor::IS_SHAFT_DIRECTION_INVERTED:
         _motor_config->set_is_shaft_direction_inverted(
           static_cast<module_config::ModuleSetting<module_config::motor::IS_SHAFT_DIRECTION_INVERTED>::type>(
@@ -380,6 +385,11 @@ namespace utils
       module_config::encoder::DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS,
       std::bit_cast<uint32_t>(
         module_config::ModuleSetting<module_config::encoder::DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS>::default_value));
+
+    set_config(module_config::encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT,
+               std::bit_cast<uint32_t>(
+                 module_config::ModuleSetting<
+                   module_config::encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>::default_value));
   }
 
   void ConfigManager::set_default_motor_config()

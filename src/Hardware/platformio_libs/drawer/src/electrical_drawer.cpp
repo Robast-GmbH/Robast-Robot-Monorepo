@@ -114,6 +114,38 @@ namespace drawer
   {
     reset_encoder_if_endstop_is_pushed();
 
+    check_if_push_to_close_is_triggered();
+
+    check_if_drawer_is_pulled_out();
+
+    // In very rare cases, when the stall guard is triggerd very close before closing, we might close the drawer
+    // by hand without push to close triggering. In this case, we need to catch the drawer closing.
+    if (_is_drawer_opening_in_progress)
+    {
+      handle_finished_moving_in_drawer();
+    }
+
+    start_next_e_drawer_task();
+  }
+
+  void ElectricalDrawer::check_if_drawer_is_pulled_out()
+  {
+    if (!_is_drawer_opening_in_progress)
+    {
+      if (_encoder_monitor->check_if_drawer_is_pulled_out())
+      {
+        add_e_drawer_task_to_queue({DRAWER_TARGET_HOMING_POSITION,
+                                    _config->get_drawer_push_in_auto_close_speed(),
+                                    _config->get_drawer_push_in_auto_close_stall_guard_value(),
+                                    IS_NOT_HOMING,
+                                    DO_NOT_USE_ACCELERATION_RAMP});
+        // TODO: Do we need to send a feedback message here?
+      }
+    }
+  }
+
+  void ElectricalDrawer::check_if_push_to_close_is_triggered()
+  {
     // if the drawer is not moving, we need to check if the drawer is pushed in
     // but make sure to wait a certain amount of time if the stall guard was triggered
     const uint32_t wait_time_in_ms_after_stall_guard_triggered =
@@ -143,15 +175,6 @@ namespace drawer
         _encoder->get_normed_current_position(),
         PUSH_TO_CLOSE_TRIGGERED);
     }
-
-    // In very rare cases, when the stall guard is triggerd very close before closing, we might close the drawer
-    // by hand without push to close triggering. In this case, we need to catch the drawer closing.
-    if (_is_drawer_opening_in_progress)
-    {
-      handle_finished_moving_in_drawer();
-    }
-
-    start_next_e_drawer_task();
   }
 
   void ElectricalDrawer::start_next_e_drawer_task()
@@ -281,7 +304,8 @@ namespace drawer
         _config->get_drawer_stall_guard_wait_time_after_movement_started_in_ms())
     {
       debug_printf_warning(
-        "[ElectricalDrawer]: Since the movement started, %u ms passed! We need to wait %u ms until we start detecting "
+        "[ElectricalDrawer]: Since the movement started, %u ms passed! We need to wait %u ms until we start "
+        "detecting "
         "a stall guard!\n",
         millis() - _timestamp_movement_started_in_ms,
         _config->get_drawer_stall_guard_wait_time_after_movement_started_in_ms());

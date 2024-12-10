@@ -9,9 +9,9 @@ namespace motor
 
   bool EncoderMonitor::check_if_drawer_is_pushed_in()
   {
-    uint32_t current_timestamp_ms = millis();
+    const uint32_t current_timestamp_ms = millis();
 
-    int32_t current_position_int32 = _encoder->get_current_position();
+    const int32_t current_position_int32 = _encoder->get_current_position();
 
     if (is_position_update_pending(current_timestamp_ms, current_position_int32))
     {
@@ -20,8 +20,8 @@ namespace motor
 
     if (current_timestamp_ms - _last_timestamp_ms > _config->get_drawer_push_in_encoder_check_interval_ms())
     {
-      int32_t position_difference = _last_position_int32 - current_position_int32;
-      int32_t threshold_for_pos_diff =
+      const int32_t position_difference = _last_position_int32 - current_position_int32;
+      const int32_t threshold_for_pos_diff =
         _config->get_drawer_push_in_threshold_in_percent_of_max_extent() * _encoder->get_count_drawer_max_extent();
 
       if (position_difference > threshold_for_pos_diff)
@@ -42,6 +42,16 @@ namespace motor
       }
     }
     return false;
+  }
+
+  bool EncoderMonitor::check_if_drawer_is_pulled_out()
+  {
+    const int32_t current_position_int32 = _encoder->get_current_position();
+
+    const int32_t threshold_for_pos_diff =
+      _config->get_drawer_pulled_out_threshold_in_percent_of_max_extent() * _encoder->get_count_drawer_max_extent();
+
+    return current_position_int32 >= threshold_for_pos_diff;
   }
 
   bool EncoderMonitor::is_position_update_pending(const uint32_t current_timestamp_ms,
