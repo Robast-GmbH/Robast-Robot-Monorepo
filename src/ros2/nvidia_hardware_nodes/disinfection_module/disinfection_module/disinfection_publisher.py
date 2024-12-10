@@ -21,6 +21,11 @@ class DisinfectionPublisher(Node):
         self.__sum_of_readings = 0
         self.__read_counter = 0
         self.__average_switch_reading = 0
+        self.__timer_is_active = False
+        self.__timer = self.create_timer(
+            self.__timer_period_in_sec, self.__evaluate_disinfection_switch
+        )
+        self.__timer.cancel()
 
     def destroy_node(self) -> None:
         super().destroy_node()
@@ -70,28 +75,30 @@ class DisinfectionPublisher(Node):
         self.__publisher.publish(msg)
 
     def __trigger_disinfection_evaluation(self, channel: int):
-        self.__read_counter = 0
-        self.__sum_of_readings = 0
-        self.__average_switch_reading = 0
-        self.get_logger().info(
-            f"Disinfection switch triggered on channel {channel}. "
-            f"Evaluate disinfection switch for {self.__read_counter_limit} times."
-        )
-        self.__timer = self.create_timer(
-            self.__timer_period_in_sec, self.__evaluate_disinfection_switch
-        )
+        if not self.__timer_is_active:
+            self.__read_counter = 0
+            self.__sum_of_readings = 0
+            self.__average_switch_reading = 0
+            self.get_logger().info(
+                f"Disinfection switch triggered on channel {channel}. "
+                f"Evaluate disinfection switch for {self.__read_counter_limit} times."
+            )
+            self.__timer.reset()
+
 
     def __evaluate_disinfection_switch(self):
+        self.__timer_is_active = True
         self.__read_in_disinfection_switch_pin()
         if (
             self.__read_counter
             >= self.__read_counter_limit
         ):
             self.__timer.cancel()
+            self.__timer_is_active = False
             if self.__is_disinfection_switch_triggered():
                 self.__publish_disinfection_triggered_with_stamp()
             else:
-                self.get_logger().info(
+                self.get_logger().warn(
                     f"False positive detected with running average: {self.__average_switch_reading}"
                 )
 
