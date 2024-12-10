@@ -56,10 +56,21 @@ namespace drawer_sm
 
     try
     {
-      const std::string command = "ros2 launch drawer_sm heartbeat_launch.py id:=" + msg->id;
+      const std::string setup_file = "/robast/" + std::string(std::getenv("ROS_DISTRO")) + "/setup.bash";
+      const std::string command_to_run = "ros2 launch drawer_sm heartbeat_launch.py id:=" + msg->id;
 
-      // Start the process
-      boost::process::child c(command);
+      RCLCPP_INFO(get_logger(), "Sourcing: %s. And running command: %s", setup_file.c_str(), command_to_run.c_str());
+
+      // Combine the conditional sourcing and command execution
+      std::string shell_command = "[ -f " + setup_file + " ] && source " + setup_file + " && " + command_to_run +
+                                  " || echo 'Setup file not found. Skipping setup.'";
+
+      // Run the command in a shell
+      boost::process::child c("/bin/bash",                                    // Specify shell
+                              boost::process::args = {"-c", shell_command},   // Pass the combined command
+                              boost::process::std_out > stdout,               // Redirect stdout
+                              boost::process::std_err > stderr                // Redirect stderr
+      );
 
       // Store the child process if you need to manage it later
       _child_processes[msg->id] = std::move(c);
