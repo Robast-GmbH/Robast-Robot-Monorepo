@@ -20,7 +20,9 @@ class ErrorBridge(BaseBridge):
             on_msg_callback=self.__on_error,
         )
 
-        self.__error_by_id: Dict[int, Dict[str, RobastError]] = defaultdict(dict)
+        self.__error_by_id_by_code: Dict[int, Dict[str, RobastError]] = defaultdict(
+            dict
+        )
 
     def get_drawer_not_opened_errors(self) -> List[Dict[str, Any]]:
         return self.__get_errors_by_code(
@@ -34,7 +36,7 @@ class ErrorBridge(BaseBridge):
 
     def __on_error(self, msg: Dict[str, Any]) -> None:
         error = RobastError.from_dict(msg)
-        self.__error_by_id[error.code][error.id] = error
+        self.__error_by_id_by_code[error.code][error.id] = error
         Timer(
             ErrorBridge.ERROR_INVALIDATION_TIME_IN_S,
             self.__invalidate_error,
@@ -43,12 +45,14 @@ class ErrorBridge(BaseBridge):
 
     def __invalidate_error(self, error_code: str, error_id: str) -> None:
         if (
-            error_code in self.__error_by_id
-            and error_id in self.__error_by_id[error_code]
+            error_code in self.__error_by_id_by_code
+            and error_id in self.__error_by_id_by_code[error_code]
         ):
-            del self.__error_by_id[error_code][error_id]
+            del self.__error_by_id_by_code[error_code][error_id]
 
     def __get_errors_by_code(self, error_code: str) -> List[Dict[str, Any]]:
-        if error_code not in self.__error_by_id:
+        if error_code not in self.__error_by_id_by_code:
             return []
-        return [error.to_dict() for error in self.__error_by_id[error_code].values()]
+        return [
+            error.to_dict() for error in self.__error_by_id_by_code[error_code].values()
+        ]
