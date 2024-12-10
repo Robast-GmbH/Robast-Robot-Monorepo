@@ -72,6 +72,8 @@ namespace drawer_sm
                               boost::process::std_err > stderr                // Redirect stderr
       );
 
+      c.detach();   // Detach the child process
+
       // Store the child process if you need to manage it later
       _child_processes[msg->id] = std::move(c);
     }
