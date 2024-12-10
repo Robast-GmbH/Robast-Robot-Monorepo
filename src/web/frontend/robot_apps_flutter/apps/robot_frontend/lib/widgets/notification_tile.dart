@@ -4,7 +4,18 @@ import 'package:robot_frontend/pages/setting_pages/cleaning_page.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
 
 class NotificationTile extends StatelessWidget {
-  const NotificationTile({super.key});
+  const NotificationTile({
+    super.key,
+    required this.title,
+    required this.message,
+    required this.onPressed,
+    required this.actionIcon,
+  });
+
+  final String title;
+  final String message;
+  final VoidCallback onPressed;
+  final IconData actionIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -24,25 +35,21 @@ class NotificationTile extends StatelessWidget {
                 size: 64,
               ),
             ),
-            const Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Reinigung erforderlich',
-                  style: TextStyle(color: RobotColors.primaryText, fontSize: 48),
+                  title,
+                  style: const TextStyle(color: RobotColors.primaryText, fontSize: 48),
                 ),
                 Text(
-                  'Bitte reinigen Sie den Roboter',
-                  style: TextStyle(color: RobotColors.secondaryText, fontSize: 28),
+                  message,
+                  style: const TextStyle(color: RobotColors.secondaryText, fontSize: 28),
                 ),
               ],
             ),
             const Spacer(),
-            IconButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute<void>(builder: (context) => const CleaningPage()));
-                },
-                icon: const Icon(Icons.arrow_right_alt, color: RobotColors.primaryText, size: 64)),
+            IconButton(onPressed: onPressed, icon: Icon(actionIcon, color: RobotColors.primaryText, size: 64)),
           ],
         ),
       ),
