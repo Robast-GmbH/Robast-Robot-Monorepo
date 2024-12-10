@@ -66,8 +66,12 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
       padding: const EdgeInsets.only(bottom: 32, top: 8),
       child: InkWell(
         onTap: () {
+          final amount = int.tryParse(amountController.text);
+          if (textController.text.trimRight().trimLeft().isEmpty || amountController.text.isEmpty || amount == null) {
+            return;
+          }
           setState(() {
-            widget.moduleContentController.createdItemsByCount[textController.text] = int.tryParse(amountController.text) ?? 0;
+            widget.moduleContentController.createdItemsByCount[textController.text] = amount;
             textController.clear();
             amountController.clear();
           });
@@ -95,7 +99,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
               child: buildListTileText(entry.key),
             ),
             Padding(
@@ -103,7 +107,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
               child: Row(
                 children: [
                   IconButton(
-                    iconSize: 32,
+                    iconSize: 48,
                     onPressed: () {
                       if (controller.contentItemsByChange.containsKey(entry.key)) {
                         setState(() {
@@ -118,11 +122,14 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
                     icon: const Icon(Icons.remove),
                     color: RobotColors.secondaryIcon,
                   ),
-                  buildListTileText(
-                    (entry.value + (controller.contentItemsByChange.containsKey(entry.key) ? controller.contentItemsByChange[entry.key]! : 0)).toString(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: buildListTileText(
+                      (entry.value + (controller.contentItemsByChange.containsKey(entry.key) ? controller.contentItemsByChange[entry.key]! : 0)).toString(),
+                    ),
                   ),
                   IconButton(
-                    iconSize: 32,
+                    iconSize: 48,
                     onPressed: () {
                       if (controller.contentItemsByChange.containsKey(entry.key)) {
                         setState(() {
@@ -157,7 +164,8 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
               flex: 8,
               child: TextField(
                 controller: textController,
-                style: const TextStyle(fontSize: 28, color: RobotColors.secondaryText),
+                style: const TextStyle(fontSize: 32, color: RobotColors.secondaryText),
+                onChanged: (value) => widget.moduleContentController.itemName = value,
               ),
             ),
             const SizedBox(
@@ -167,8 +175,9 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
               child: TextField(
                 textAlign: TextAlign.center,
                 controller: amountController,
-                style: const TextStyle(fontSize: 28, color: RobotColors.secondaryText),
+                style: const TextStyle(fontSize: 32, color: RobotColors.secondaryText),
                 keyboardType: const TextInputType.numberWithOptions(),
+                onChanged: (value) => widget.moduleContentController.amount = value,
               ),
             ),
           ],
@@ -180,7 +189,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
   Text buildListTileText(String text) {
     return Text(
       text,
-      style: const TextStyle(fontSize: 28, color: RobotColors.secondaryText),
+      style: const TextStyle(fontSize: 32, color: RobotColors.secondaryText),
     );
   }
 }

@@ -70,6 +70,7 @@ class NavBridge(BaseBridge):
 
     def cancel_navigate_to_goal_pose(self) -> bool:
         self.__cancel_goal_publisher.publish(Message({"data": True}))
+        self.__goal_pose = None
         return True
 
     def get_remaining_nav_time(self) -> int:
@@ -105,7 +106,11 @@ class NavBridge(BaseBridge):
     def is_navigation_completed(self) -> bool:
         try:
             if "/goal_status" in self.context and self.context["/goal_status"]:
-                return self.context["/goal_status"]["data"] == "SUCCEEDED"
+                is_completed = self.context["/goal_status"]["data"] == "SUCCEEDED"
+                if is_completed:
+                    self.__goal_pose = None
+                    self.__clear_goal_status()
+                return is_completed
             return False
         except KeyError:
             return True

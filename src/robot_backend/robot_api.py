@@ -120,6 +120,10 @@ Modules API Endpoints
 """
 
 
+@app.get("/living_devices", tags=["Modules"])
+def read_living_devices():
+    return ros_bridge.module_bridge.get_living_devices()
+
 @app.get("/submodule_status", tags=["Modules"])
 def read_submodule_status(module_id: int, submodule_id: int):
     return ros_bridge.module_bridge.get_submodule_state(module_id, submodule_id)
@@ -176,3 +180,20 @@ def get_disinfection_module_status():
 @app.post("/refill_disinfection_fluid_container", tags=["Disinfection"])
 def refill_disinfection_fluid_container():
     return ros_bridge.disinfection_module_bridge.refill_disinfection_fluid_container()
+
+
+"""
+======================
+Error API Endpoints
+======================
+"""
+
+
+@app.get("/drawer_not_opened_errors", tags=["Errors"])
+def get_drawer_not_opened_errors():
+    return ros_bridge.error_bridge.get_drawer_not_opened_errors()
+
+
+@app.get("/heartbeat_timeout_errors", tags=["Errors"])
+def get_heartbeat_timeout_errors():
+    return ros_bridge.error_bridge.get_heartbeat_timeout_errors()

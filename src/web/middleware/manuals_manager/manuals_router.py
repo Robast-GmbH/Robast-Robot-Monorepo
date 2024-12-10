@@ -39,6 +39,8 @@ async def upload_or_update_pdf(file: UploadFile = File(...)):
     with open(file_location, "wb") as f:
         f.write(await file.read())
 
+    manuals_logger.info(f"{action} '{file.filename}'.")
+
     return {
         "message": f"File '{file.filename}' {action} successfully.",
         "path": str(file_location),
@@ -79,6 +81,8 @@ async def delete_pdf(file_name: str):
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="File not found.")
 
+    manuals_logger.info(f"Deleted '{file_name}'.")
+
     os.remove(file_path)
     return {"message": f"File '{file_name}' deleted successfully."}
 
@@ -94,5 +98,7 @@ async def delete_all_files():
         if file_path.is_file():
             os.remove(file_path)
             files_deleted += 1
+
+    manuals_logger.info(f"Deleted {files_deleted} file(s).")
 
     return {"message": f"Deleted {files_deleted} file(s)."}

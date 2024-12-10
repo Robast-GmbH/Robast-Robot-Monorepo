@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('RobotApiUtilities', () {
-    const testPrefix = 'http://10.10.23.7:8001';
+    const testPrefix = 'http://10.10.23.8:8001';
 
     test('can be instantiated', () {
       expect(RobotApiUtilities(prefix: ''), isNotNull);
@@ -14,6 +14,18 @@ void main() {
       final robotApiUtilities = RobotApiUtilities(prefix: testPrefix);
       final isNavigationBlocked = await robotApiUtilities.isNavigationBlocked();
       expect(isNavigationBlocked, isNotNull);
+    });
+
+    test('can get hearbeat_timeout_errors', () async {
+      final robotApiUtilities = RobotApiUtilities(prefix: testPrefix);
+      final hearbeatTimeoutErrors = await robotApiUtilities.getHeartbeatTimeoutErrors();
+      expect(hearbeatTimeoutErrors, isNotNull);
+    });
+
+    test('can get living devices', () async {
+      final robotApiUtilities = RobotApiUtilities(prefix: testPrefix);
+      final livingDevices = await robotApiUtilities.getLivingDevices();
+      expect(livingDevices, isNotNull);
     });
   });
 }
