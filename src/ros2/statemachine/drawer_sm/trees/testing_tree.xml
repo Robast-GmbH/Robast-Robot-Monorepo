@@ -5,13 +5,13 @@
       <GetBlackboardEntry key="drawer_address" value="{drawer}"/>
       <InitLEDVector size="20" led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}" blue="0" brightness="25" green="255" lower_bound="0.0" red="0" upper_bound="100.0" LEDs_colored="{leds}"/>
-      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="2000" led_topic="/led_cmd" leds="{leds}"/>
+      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="2000" led_topic="/led_cmd" leds="{leds}" ack_requested="false"/>
       <PartialColorizeLED LEDs="{leds}" blue="255" brightness="25" green="0" lower_bound="0.0" red="0" upper_bound="100.0" LEDs_colored="{leds}"/>
-      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="2000" led_topic="/led_cmd" leds="{leds}"/>
+      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="2000" led_topic="/led_cmd" leds="{leds}" ack_requested="false"/>
       <PartialColorizeLED LEDs="{leds}" blue="0.0" brightness="200" green="0" lower_bound="0.0" red="255" upper_bound="100.0" LEDs_colored="{leds}"/>
-      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="2000" led_topic="/led_cmd" leds="{leds}"/>
+      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="2000" led_topic="/led_cmd" leds="{leds}" ack_requested="false"/>
       <PartialColorizeLED LEDs="{leds}" blue="255" brightness="10" green="255" lower_bound="0.0" red="255" upper_bound="100.0" LEDs_colored="{leds}"/>
-      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="2000" led_topic="/led_cmd" leds="{leds}"/>
+      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="2000" led_topic="/led_cmd" leds="{leds}" ack_requested="false"/>
     </Sequence>
   </BehaviorTree>
 
@@ -37,6 +37,7 @@
       <input_port name="fading_time_ms" default="0">uint8</input_port>
       <input_port name="led_topic" default="/drawer_leds"/>
       <input_port name="leds" default="{leds}"/>
+      <input_port name="ack_requested" default="false">bool</input_port>
     </Action>
     <Action ID="PartialColorizeLED">
       <input_port name="LEDs" default="{leds}"/>

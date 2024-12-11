@@ -13,7 +13,8 @@
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="500"
                                 led_topic="/led_cmd"
-                                leds="{leds}"/>
+                                leds="{leds}"
+                                ack_requested="false"/>
             <DrawerStatusCondition target_value="true"
                                    topic="/drawer_is_open"/>
             <PublishDrawerStatus topic_name="/bt_drawer_open"
@@ -24,7 +25,8 @@
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="500"
                                 led_topic="/led_cmd"
-                                leds="{leds}"/>
+                                leds="{leds}"
+                                ack_requested="false"/>
             <DrawerStatusCondition target_value="false"
                                    topic="/drawer_is_open"/>
             <SubTree ID="LED_Close"
@@ -32,13 +34,15 @@
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="500"
                                 led_topic="/led_cmd"
-                                leds="{leds}"/>
+                                leds="{leds}"
+                                ack_requested="false"/>
             <SubTree ID="LED_Default"
                      _autoremap="true"/>
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="500"
                                 led_topic="/led_cmd"
-                                leds="{leds}"/>
+                                leds="{leds}"
+                                ack_requested="false"/>
             <PublishDrawerStatus topic_name="/bt_drawer_open"
                                  status="false"
                                  drawer_address="{drawer}"/>
@@ -58,7 +62,8 @@
           <LEDPublisherAction drawer_address="{drawer}"
                               fading_time_ms="100"
                               led_topic="/led_cmd"
-                              leds="{leds}"/>
+                              leds="{leds}"
+                              ack_requested="false"/>
           <Delay delay_msec="1000">
             <PublishStateFeedback state_feedback="closed"
                                   state_feedback_topic="/module_state_update"
@@ -206,6 +211,8 @@
                   default="/drawer_leds"/>
       <input_port name="leds"
                   default="{leds}"/>
+      <input_port name="ack_requested"
+                  default="false">bool</input_port>
     </Action>
     <Action ID="OpenDrawer">
       <input_port name="drawer_address"
