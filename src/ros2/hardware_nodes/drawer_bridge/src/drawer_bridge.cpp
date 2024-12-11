@@ -112,7 +112,7 @@ namespace drawer_bridge
     }
     else
     {
-      send_led_cmd_msg_to_can_bus(module_id, num_of_leds, fade_time_in_hundreds_of_ms, msg.leds);
+      send_led_cmd_msg_to_can_bus(module_id, num_of_leds, fade_time_in_hundreds_of_ms, msg.leds, NO_ACK_REQUESTED);
     }
   }
 
@@ -121,7 +121,7 @@ namespace drawer_bridge
                                                           const uint8_t fade_time_in_hundreds_of_ms,
                                                           const std::vector<communication_interfaces::msg::Led>& leds)
   {
-    send_led_cmd_msg_to_can_bus(module_id, num_of_leds, fade_time_in_hundreds_of_ms, leds);
+    send_led_cmd_msg_to_can_bus(module_id, num_of_leds, fade_time_in_hundreds_of_ms, leds, ACK_REQUESTED);
 
     wait_for_led_cmd_ack();
 
@@ -152,7 +152,8 @@ namespace drawer_bridge
   void DrawerBridge::send_led_cmd_msg_to_can_bus(const uint32_t module_id,
                                                  const uint16_t num_of_leds,
                                                  const uint8_t fade_time_in_hundreds_of_ms,
-                                                 const std::vector<communication_interfaces::msg::Led>& leds)
+                                                 const std::vector<communication_interfaces::msg::Led>& leds,
+                                                 const bool ack_requested)
   {
     uint16_t num_of_led_states_in_group = 1;
     uint16_t start_index = 0;
@@ -174,7 +175,7 @@ namespace drawer_bridge
         const bool is_group_state = num_of_led_states_in_group > 1;
 
         const CanMessage can_msg_led_state =
-          _can_message_creator.create_can_msg_set_led_state(leds[i], module_id, is_group_state, NO_ACK_REQUESTED);
+          _can_message_creator.create_can_msg_set_led_state(leds[i], module_id, is_group_state, ack_requested);
         send_can_msg(can_msg_led_state);
 
         start_index = i + 1;

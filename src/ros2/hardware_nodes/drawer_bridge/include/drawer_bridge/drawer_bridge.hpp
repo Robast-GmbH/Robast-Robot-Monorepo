@@ -52,6 +52,7 @@ namespace drawer_bridge
   constexpr std::chrono::seconds MAX_WAIT_TIME_FOR_MOTOR_CONTROL_CONFIRMATION_IN_S = std::chrono::seconds(5);
   constexpr std::chrono::seconds MAX_WAIT_TIME_FOR_LED_CMD_ACK_IN_S = std::chrono::seconds(1);
   constexpr uint8_t MAX_LED_CMD_ATTEMPTS = 2;
+  constexpr bool ACK_REQUESTED = true;
   constexpr bool NO_ACK_REQUESTED = false;
 
   struct led_parameters
@@ -197,7 +198,8 @@ namespace drawer_bridge
     void send_led_cmd_msg_to_can_bus(const uint32_t module_id,
                                      const uint16_t num_of_leds,
                                      const uint8_t fade_time_in_hundreds_of_ms,
-                                     const std::vector<communication_interfaces::msg::Led>& leds);
+                                     const std::vector<communication_interfaces::msg::Led>& leds,
+                                     const bool ack_requested);
 
     bool are_consecutive_leds_same(const std::vector<communication_interfaces::msg::Led>& leds,
                                    uint16_t index_1,
