@@ -41,14 +41,15 @@ namespace robast_can_msgs
     constexpr uint8_t TRAY_LED_BRIGHTNESS = 6;
     constexpr uint8_t MODULE_CONFIG = 8;
     constexpr uint8_t ELECTRICAL_DRAWER_MOTOR_CONTROL = 4;
-    constexpr uint8_t HEARTBEAT = 5;
     constexpr uint8_t ACKNOWLEDGMENT = 5;
+    constexpr uint8_t HEARTBEAT = 5;
   }   // namespace can_dlc
 
   /*********************************************************************************************************
    CAN msg index and can signal index to access the msg and signals in our can_db vector
   *********************************************************************************************************/
 
+  // Very important: The order of this needs to be the same as the order of the CAN messages in the can_db vector!
   namespace can_msg
   {
     constexpr uint8_t DRAWER_UNLOCK = 0;
@@ -61,8 +62,8 @@ namespace robast_can_msgs
     constexpr uint8_t TRAY_LED_BRIGHTNESS = 7;
     constexpr uint8_t MODULE_CONFIG = 8;
     constexpr uint8_t ELECTRICAL_DRAWER_MOTOR_CONTROL = 9;
-    constexpr uint8_t HEARTBEAT = 10;
-    constexpr uint8_t ACKNOWLEDGMENT = 11;
+    constexpr uint8_t ACKNOWLEDGMENT = 10;
+    constexpr uint8_t HEARTBEAT = 11;
   }   // namespace can_msg
 
   namespace can_signal
@@ -152,17 +153,17 @@ namespace robast_can_msgs
         constexpr uint8_t CONFIRM_CONTROL_CHANGE = 3;
       }   // namespace electrical_drawer_motor_control
 
-      namespace heartbeat
-      {
-        constexpr uint8_t MODULE_ID = 0;
-        constexpr uint8_t INTERVAL_IN_MS = 1;
-      }   // namespace heartbeat
-
       namespace acknowledgment
       {
         constexpr uint8_t MODULE_ID = 0;
         constexpr uint8_t REFERENCED_MSG_ID = 1;
       }   // namespace acknowledgment
+
+      namespace heartbeat
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t INTERVAL_IN_MS = 1;
+      }   // namespace heartbeat
 
     }   // namespace id
 
@@ -251,17 +252,17 @@ namespace robast_can_msgs
         constexpr uint8_t CONFIRM_CONTROL_CHANGE = 27;
       }   // namespace electrical_drawer_motor_control
 
-      namespace heartbeat
-      {
-        constexpr uint8_t MODULE_ID = 0;
-        constexpr uint8_t INTERVAL_IN_MS = 24;
-      }   // namespace heartbeat
-
       namespace acknowledgment
       {
         constexpr uint8_t MODULE_ID = 0;
         constexpr uint8_t REFERENCED_MSG_ID = 24;
       }   // namespace acknowledgment
+
+      namespace heartbeat
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t INTERVAL_IN_MS = 24;
+      }   // namespace heartbeat
 
     }   // namespace bit_start
 
@@ -350,17 +351,17 @@ namespace robast_can_msgs
         constexpr uint8_t CONFIRM_CONTROL_CHANGE = 1;
       }   // namespace electrical_drawer_motor_control
 
-      namespace heartbeat
-      {
-        constexpr uint8_t MODULE_ID = 24;
-        constexpr uint8_t INTERVAL_IN_MS = 16;
-      }   // namespace heartbeat
-
       namespace acknowledgment
       {
         constexpr uint8_t MODULE_ID = 24;
         constexpr uint8_t REFERENCED_MSG_ID = 11;
       }   // namespace acknowledgment
+
+      namespace heartbeat
+      {
+        constexpr uint8_t MODULE_ID = 24;
+        constexpr uint8_t INTERVAL_IN_MS = 16;
+      }   // namespace heartbeat
 
     }   // namespace bit_length
 
