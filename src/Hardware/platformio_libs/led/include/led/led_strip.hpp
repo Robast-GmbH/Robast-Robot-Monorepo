@@ -304,12 +304,14 @@ namespace led
   template <uint8_t led_pixel_pin, uint8_t total_num_of_leds>
   void LedStrip<led_pixel_pin, total_num_of_leds>::set_led_state(const LedState led_state)
   {
-    debug_printf_green("Setting led state with red: %d, green: %d, blue: %d, brightness: %d, is_group_state: %d\n",
-                       led_state.red,
-                       led_state.green,
-                       led_state.blue,
-                       led_state.brightness,
-                       led_state.is_group_state);
+    debug_printf_green(
+      "Setting led state with red: %d, green: %d, blue: %d, brightness: %d, is_group_state: %d, ack_requested: %d\n",
+      led_state.red,
+      led_state.green,
+      led_state.blue,
+      led_state.brightness,
+      led_state.is_group_state,
+      led_state.ack_requested);
 
     if (_current_index_led_states >= total_num_of_leds)
     {
