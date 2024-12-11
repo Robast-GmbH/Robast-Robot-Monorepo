@@ -169,6 +169,18 @@ class TestProcessOutput(unittest.TestCase):
         with open(INPUT_DATA_PATH) as f:
             data = yaml.safe_load(f)
 
+        self.publish_led_cmd_msg_without_ack_requested(data)
+        self.publish_led_cmd_msg_with_ack_requested(data)
+
+        self.__open_drawer_msg = DrawerAddress()
+        self.__open_drawer_msg.module_id = data["open_drawer"]["module_id"]
+        self.__open_drawer_msg.drawer_id = data["open_drawer"]["drawer_id"]
+        self.__open_drawer_publisher.publish(self.__open_drawer_msg)
+        self.__node.get_logger().info(
+            'Publishing to open_drawer topic with module_id: "%s"' % self.__open_drawer_msg.module_id
+        )
+
+    def publish_led_cmd_msg_without_ack_requested(self, data):
         led_state_1_msg = Led()
         led_state_1_msg.red = data["led_state_1"]["red"]
         led_state_1_msg.blue = data["led_state_1"]["blue"]
@@ -182,15 +194,18 @@ class TestProcessOutput(unittest.TestCase):
         led_state_2_msg.brightness = data["led_state_2"]["brightness"]
 
         self.__led_states = [led_state_1_msg, led_state_2_msg, led_state_1_msg, led_state_2_msg]
-        self.__num_of_led_state_msgs = [1, 2, 3, 4]
+        self.__num_of_led_state_msgs = [1, 5, 3, 4]
+        self.__ack_requested = []
 
         self.__led_cmd_msg = LedCmd()
         self.__led_cmd_msg.drawer_address.module_id = data["led_cmd"]["drawer_address"]["module_id"]
         self.__led_cmd_msg.drawer_address.drawer_id = data["led_cmd"]["drawer_address"]["drawer_id"]
         self.__led_cmd_msg.start_index = data["led_cmd"]["start_index"]
         self.__led_cmd_msg.fade_time_in_ms = data["led_cmd"]["fade_time_in_ms"]
+        self.__led_cmd_msg.ack_requested = False
 
         for i, num_msgs in enumerate(self.__num_of_led_state_msgs):
+            self.__ack_requested.append(False)
             for _ in range(num_msgs):
                 self.__led_cmd_msg.leds.append(self.__led_states[i])
 
@@ -199,13 +214,34 @@ class TestProcessOutput(unittest.TestCase):
             'Publishing to led_cmd topic for module_id: "%i"' % self.__led_cmd_msg.drawer_address.module_id
         )
 
-        self.__open_drawer_msg = DrawerAddress()
-        self.__open_drawer_msg.module_id = data["open_drawer"]["module_id"]
-        self.__open_drawer_msg.drawer_id = data["open_drawer"]["drawer_id"]
-        self.__open_drawer_publisher.publish(self.__open_drawer_msg)
+    def publish_led_cmd_msg_with_ack_requested(self, data):
+        led_state_msg = Led()
+        led_state_msg.red = data["led_state_1"]["red"]
+        led_state_msg.blue = data["led_state_1"]["blue"]
+        led_state_msg.green = data["led_state_1"]["green"]
+
+        self.__led_cmd_msg_ack_requested = LedCmd()
+        self.__led_cmd_msg_ack_requested.drawer_address.module_id = data["led_cmd"]["drawer_address"]["module_id"]
+        self.__led_cmd_msg_ack_requested.drawer_address.drawer_id = data["led_cmd"]["drawer_address"]["drawer_id"]
+        self.__led_cmd_msg_ack_requested.start_index = data["led_cmd"]["start_index"]
+        self.__led_cmd_msg_ack_requested.fade_time_in_ms = data["led_cmd"]["fade_time_in_ms"]
+        self.__led_cmd_msg_ack_requested.leds.append(led_state_msg)
+        self.__led_cmd_msg_ack_requested.ack_requested = True
+
+        self.__led_states.append(led_state_msg)
+        self.__num_of_led_state_msgs.append(1)
+        self.__ack_requested.append(True)
+
+        self.__led_cmd_publisher.publish(self.__led_cmd_msg_ack_requested)
         self.__node.get_logger().info(
-            'Publishing to open_drawer topic with module_id: "%s"' % self.__open_drawer_msg.module_id
+            'Publishing to led_cmd topic for module_id: "%i" with ack requested'
+            % self.__led_cmd_msg_ack_requested.drawer_address.module_id
         )
+        # Send message to can_in topic to mimic the response from the dut
+        acknowledgement_msg = can_data_helpers.construct_acknowledgement_can_frame(
+            self.__led_cmd_msg_ack_requested.drawer_address.module_id, can_db_defines.can_id.LED_STATE
+        )
+        self.__can_in_publisher.publish(acknowledgement_msg)
 
     def call_action_clients(self):
         # Read input data that is send to dut
@@ -415,20 +451,28 @@ class TestProcessOutput(unittest.TestCase):
 
             if msg.id == can_db_defines.can_id.LED_HEADER:
                 self.assertEqual(msg.dlc, can_db_defines.can_dlc.LED_HEADER)
+                if self.__num_of_led_header_received >= len(self.__num_of_led_state_msgs):
+                    self.__node.get_logger().info("WARNING: Received more LED_HEADER messages than expected!")
+                    continue
                 expected_data_bytes = can_data_helpers.construct_can_data_led_header(
                     self.__led_cmd_msg.drawer_address.module_id,
                     int(self.__led_cmd_msg.fade_time_in_ms / 100),
                     self.__num_of_led_state_msgs,
                     self.__num_of_led_header_received,
+                    self.__ack_requested[self.__num_of_led_header_received],
                 )
                 self.__num_of_led_header_received += 1
 
             if msg.id == can_db_defines.can_id.LED_STATE:
                 self.assertEqual(msg.dlc, can_db_defines.can_dlc.LED_STATE)
+                if self.__num_of_led_states_received >= len(self.__num_of_led_state_msgs):
+                    self.__node.get_logger().info("WARNING: Received more LED_STATE messages than expected!")
+                    continue
                 expected_data_bytes = can_data_helpers.construct_can_data_led_state(
                     self.__led_cmd_msg.drawer_address.module_id,
                     self.__led_states[self.__num_of_led_states_received],
                     self.__num_of_led_state_msgs[self.__num_of_led_states_received],
+                    self.__ack_requested[self.__num_of_led_states_received],
                 )
                 self.__num_of_led_states_received += 1
 

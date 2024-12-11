@@ -164,13 +164,14 @@ def construct_can_data_heartbeat(module_id, interval_in_ms):
 
 
 def construct_can_data_led_header(
-    module_id, fade_time_in_hundreds_of_ms, num_of_led_state_msgs, num_of_led_header_received
+    module_id, fade_time_in_hundreds_of_ms, num_of_led_state_msgs, num_of_led_header_received, ack_requested
 ):
     start_index = 0
-    if num_of_led_header_received > 0:
-        # loop through num_of_led_state_msgs and add them up to num_of_led_header_received
-        for i in range(num_of_led_header_received):
-            start_index += num_of_led_state_msgs[i]
+    if not ack_requested:
+        if num_of_led_header_received > 0:
+            # loop through num_of_led_state_msgs and add them up to num_of_led_header_received
+            for i in range(num_of_led_header_received):
+                start_index += num_of_led_state_msgs[i]
 
     num_of_leds = num_of_led_state_msgs[num_of_led_header_received]
 
@@ -211,7 +212,7 @@ def construct_can_data_led_header(
     return data_uint64.to_bytes(8, byteorder="big")
 
 
-def construct_can_data_led_state(module_id, led_state, num_of_expected_led_states):
+def construct_can_data_led_state(module_id, led_state, num_of_expected_led_states, ack_requested):
     is_group_state = 0
     if num_of_expected_led_states > 1:
         is_group_state = 1
@@ -265,5 +266,37 @@ def construct_can_data_led_state(module_id, led_state, num_of_expected_led_state
                 - can_db_defines.can_signal.bit_start.LED_STATE_IS_GROUP_STATE
             )
         )
+        | (
+            ack_requested
+            << (
+                can_db_defines.CAN_STD_MSG_DLC_MAXIMUM * 8
+                - can_db_defines.can_signal.bit_length.LED_STATE_ACK_REQUESTED
+                - can_db_defines.can_signal.bit_start.LED_STATE_ACK_REQUESTED
+            )
+        )
     )
     return data_uint64.to_bytes(8, byteorder="big")
+
+
+def construct_acknowledgement_can_frame(module_id, referenced_msg_id):
+    data_uint64 = (
+        module_id
+        << (
+            can_db_defines.CAN_STD_MSG_DLC_MAXIMUM * 8
+            - can_db_defines.can_signal.bit_length.ACKNOWLEDGMENT_MODULE_ID
+            - can_db_defines.can_signal.bit_start.ACKNOWLEDGMENT_MODULE_ID
+        )
+    ) | (
+        referenced_msg_id
+        << (
+            can_db_defines.CAN_STD_MSG_DLC_MAXIMUM * 8
+            - can_db_defines.can_signal.bit_length.ACKNOWLEDGMENT_REFERENCED_MSG_ID
+            - can_db_defines.can_signal.bit_start.ACKNOWLEDGMENT_REFERENCED_MSG_ID
+        )
+    )
+
+    acknowledgement_can_msg = Frame()
+    acknowledgement_can_msg.id = can_db_defines.can_id.ACKNOWLEDGMENT
+    acknowledgement_can_msg.dlc = can_db_defines.can_dlc.ACKNOWLEDGMENT
+    acknowledgement_can_msg.data = list(data_uint64.to_bytes(8, byteorder="big"))
+    return acknowledgement_can_msg
