@@ -553,9 +553,6 @@ namespace drawer_bridge
     uint8_t config_id = goal_handle->get_goal()->config_id;
     uint32_t config_value = goal_handle->get_goal()->config_value;
 
-    // this needs to return quickly to avoid blocking the executor, so spin up a new thread
-    std::thread{std::bind(&DrawerBridge::set_module_config, this, std::placeholders::_1), goal_handle}.detach();
-
     _module_config_thread =
       std::move(std::jthread{std::bind(&DrawerBridge::set_module_config, this, std::placeholders::_1), goal_handle});
   }
