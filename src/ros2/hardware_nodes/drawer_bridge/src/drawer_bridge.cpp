@@ -208,7 +208,7 @@ namespace drawer_bridge
     }
   }
 
-  void DrawerBridge::handle_drawer_status(const robast_can_msgs::CanMessage drawer_feedback_can_msg)
+  void DrawerBridge::handle_drawer_status(const robast_can_msgs::CanMessage& drawer_feedback_can_msg)
   {
     std::vector<robast_can_msgs::CanSignal> can_signals = drawer_feedback_can_msg.get_can_signals();
 
@@ -226,7 +226,7 @@ namespace drawer_bridge
     publish_drawer_status(drawer_address, is_endstop_switch_pushed, is_lock_switch_pushed);
   }
 
-  void DrawerBridge::handle_e_drawer_feedback(const robast_can_msgs::CanMessage electrical_drawer_feedback_can_msg)
+  void DrawerBridge::handle_e_drawer_feedback(const robast_can_msgs::CanMessage& electrical_drawer_feedback_can_msg)
   {
     std::vector<robast_can_msgs::CanSignal> can_signals = electrical_drawer_feedback_can_msg.get_can_signals();
 
@@ -258,7 +258,7 @@ namespace drawer_bridge
   }
 
   void DrawerBridge::handle_e_drawer_motor_control_feedback(
-    const robast_can_msgs::CanMessage e_drawer_motor_control_can_msg)
+    const robast_can_msgs::CanMessage& e_drawer_motor_control_can_msg)
   {
     RCLCPP_DEBUG(get_logger(), "Received e_drawer_motor_control feedback message!");
 
@@ -283,7 +283,7 @@ namespace drawer_bridge
     }
   }
 
-  void DrawerBridge::handle_can_acknowledgment(const robast_can_msgs::CanMessage acknowledgment_msg)
+  void DrawerBridge::handle_can_acknowledgment(const robast_can_msgs::CanMessage& acknowledgment_msg)
   {
     std::vector<robast_can_msgs::CanSignal> can_signals = acknowledgment_msg.get_can_signals();
 
@@ -349,7 +349,7 @@ namespace drawer_bridge
     }
   }
 
-  void DrawerBridge::publish_drawer_error_msg(const robast_can_msgs::CanMessage drawer_error_feedback_can_msg)
+  void DrawerBridge::publish_drawer_error_msg(const robast_can_msgs::CanMessage& drawer_error_feedback_can_msg)
   {
     std::vector<robast_can_msgs::CanSignal> can_signals = drawer_error_feedback_can_msg.get_can_signals();
 
@@ -388,7 +388,7 @@ namespace drawer_bridge
     }
   }
 
-  void DrawerBridge::publish_heartbeat(const robast_can_msgs::CanMessage heartbeat_can_msg)
+  void DrawerBridge::publish_heartbeat(const robast_can_msgs::CanMessage& heartbeat_can_msg)
   {
     std::vector<robast_can_msgs::CanSignal> can_signals = heartbeat_can_msg.get_can_signals();
 
@@ -401,7 +401,7 @@ namespace drawer_bridge
     _heartbeat_publisher->publish(heartbeat_msg);
   }
 
-  void DrawerBridge::receive_can_msg_callback(CanMessage can_msg)
+  void DrawerBridge::receive_can_msg_callback(const CanMessage& can_msg)
   {
     RCLCPP_DEBUG(this->get_logger(), "Received CAN message: id:'%d' dlc:'%d' \n ", can_msg.id, can_msg.dlc);
 
@@ -433,7 +433,7 @@ namespace drawer_bridge
     }
   }
 
-  void DrawerBridge::send_can_msg(const CanMessage can_msg)
+  void DrawerBridge::send_can_msg(const CanMessage& can_msg)
   {
     RCLCPP_DEBUG(this->get_logger(), "Sending can message with id '%d'!\n ", can_msg.id);
 

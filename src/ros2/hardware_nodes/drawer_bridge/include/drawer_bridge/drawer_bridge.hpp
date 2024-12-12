@@ -155,19 +155,19 @@ namespace drawer_bridge
 
     void setup_action_server();
 
-    void send_can_msg(const CanMessage can_msg);
+    void send_can_msg(const CanMessage& can_msg);
 
-    void receive_can_msg_callback(const CanMessage can_msg);
+    void receive_can_msg_callback(const CanMessage& can_msg);
 
-    void handle_drawer_status(const robast_can_msgs::CanMessage drawer_feedback_can_msg);
+    void handle_drawer_status(const robast_can_msgs::CanMessage& drawer_feedback_can_msg);
 
-    void handle_e_drawer_feedback(const robast_can_msgs::CanMessage electrical_drawer_feedback_can_msg);
+    void handle_e_drawer_feedback(const robast_can_msgs::CanMessage& electrical_drawer_feedback_can_msg);
 
-    void handle_e_drawer_motor_control_feedback(const robast_can_msgs::CanMessage e_drawer_motor_control_can_msg);
+    void handle_e_drawer_motor_control_feedback(const robast_can_msgs::CanMessage& e_drawer_motor_control_can_msg);
 
-    void handle_can_acknowledgment(const robast_can_msgs::CanMessage acknowledgment_msg);
+    void handle_can_acknowledgment(const robast_can_msgs::CanMessage& acknowledgment_msg);
 
-    void publish_drawer_error_msg(const robast_can_msgs::CanMessage drawer_error_feedback_can_msg);
+    void publish_drawer_error_msg(const robast_can_msgs::CanMessage& drawer_error_feedback_can_msg);
 
     void publish_push_to_close_triggered(const bool is_push_to_close_triggered);
 
@@ -181,7 +181,7 @@ namespace drawer_bridge
 
     void handle_led_state_acknowledgment();
 
-    void publish_heartbeat(const robast_can_msgs::CanMessage heartbeat_msg);
+    void publish_heartbeat(const robast_can_msgs::CanMessage& heartbeat_msg);
 
     void set_module_config(const std::shared_ptr<rclcpp_action::ServerGoalHandle<ModuleConfig>> goal_handle);
 
