@@ -51,7 +51,7 @@ namespace drawer_bridge
 {
   constexpr std::chrono::seconds MAX_WAIT_TIME_FOR_MOTOR_CONTROL_CONFIRMATION_IN_S = std::chrono::seconds(5);
   constexpr std::chrono::seconds MAX_WAIT_TIME_FOR_LED_CMD_ACK_IN_S = std::chrono::seconds(1);
-  constexpr uint8_t MAX_LED_CMD_ATTEMPTS = 2;
+  constexpr uint8_t MAX_LED_CMD_RETRIES = 2;
   constexpr bool ACK_REQUESTED = true;
   constexpr bool NO_ACK_REQUESTED = false;
 
@@ -134,7 +134,7 @@ namespace drawer_bridge
     std::mutex _led_cmd_ack_mutex;
     std::condition_variable _led_cmd_ack_cv;
     bool _is_led_cmd_ack_received = false;
-    uint8_t _led_cmd_attempts = 0;
+    uint8_t _led_cmd_retries = 0;
 
     std::jthread _led_cmd_with_ack_thread;
     std::jthread _e_drawer_motor_control_thread;

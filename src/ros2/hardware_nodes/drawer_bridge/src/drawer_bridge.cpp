@@ -128,22 +128,22 @@ namespace drawer_bridge
     {
       RCLCPP_INFO(get_logger(), "Sent LED command and received acknowledgment");
       _is_led_cmd_ack_received = false;
-      _led_cmd_attempts = 0;
+      _led_cmd_retries = 0;
     }
     else
     {
-      ++_led_cmd_attempts;
-      if (_led_cmd_attempts >= MAX_LED_CMD_ATTEMPTS)
+      ++_led_cmd_retries;
+      if (_led_cmd_retries >= MAX_LED_CMD_RETRIES)
       {
         RCLCPP_ERROR(
-          get_logger(), "Sent LED command but did not receive acknowledgment after %i attempts.", MAX_LED_CMD_ATTEMPTS);
-        _led_cmd_attempts = 0;
+          get_logger(), "Sent LED command but did not receive acknowledgment after %i retries.", MAX_LED_CMD_RETRIES);
+        _led_cmd_retries = 0;
         return;
       }
       RCLCPP_WARN(
         get_logger(),
         "Sent LED command but did not receive acknowledgment. Sending led cmd again. This is now attempt number %i",
-        _led_cmd_attempts);
+        _led_cmd_retries);
       send_led_cmd_msg_to_can_bus_with_ack(module_id, num_of_leds, fade_time_in_hundreds_of_ms, leds);
     }
   }
