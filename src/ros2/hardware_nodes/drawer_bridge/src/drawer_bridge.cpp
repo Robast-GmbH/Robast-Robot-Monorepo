@@ -126,26 +126,25 @@ namespace drawer_bridge
 
     if (_is_led_cmd_ack_received)
     {
-      RCLCPP_INFO(get_logger(), "Sent LED command and received acknowledgment");
+      RCLCPP_DEBUG(get_logger(), "Sent LED command and received acknowledgment");
       _is_led_cmd_ack_received = false;
       _led_cmd_retries = 0;
+      return;
     }
-    else
+
+    ++_led_cmd_retries;
+    if (_led_cmd_retries >= MAX_LED_CMD_RETRIES)
     {
-      ++_led_cmd_retries;
-      if (_led_cmd_retries >= MAX_LED_CMD_RETRIES)
-      {
-        RCLCPP_ERROR(
-          get_logger(), "Sent LED command but did not receive acknowledgment after %i retries.", MAX_LED_CMD_RETRIES);
-        _led_cmd_retries = 0;
-        return;
-      }
-      RCLCPP_WARN(
-        get_logger(),
-        "Sent LED command but did not receive acknowledgment. Sending led cmd again. This is now attempt number %i",
-        _led_cmd_retries);
-      send_led_cmd_msg_to_can_bus_with_ack(module_id, num_of_leds, fade_time_in_hundreds_of_ms, leds);
+      RCLCPP_ERROR(
+        get_logger(), "Sent LED command but did not receive acknowledgment after %i retries.", MAX_LED_CMD_RETRIES);
+      _led_cmd_retries = 0;
+      return;
     }
+    RCLCPP_WARN(
+      get_logger(),
+      "Sent LED command but did not receive acknowledgment. Sending led cmd again. This is now attempt number %i",
+      _led_cmd_retries);
+    send_led_cmd_msg_to_can_bus_with_ack(module_id, num_of_leds, fade_time_in_hundreds_of_ms, leds);
   }
 
   void DrawerBridge::send_led_cmd_msg_to_can_bus(const uint32_t module_id,
