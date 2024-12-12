@@ -238,10 +238,10 @@ class TestProcessOutput(unittest.TestCase):
             % self.__led_cmd_msg_ack_requested.drawer_address.module_id
         )
         # Send message to can_in topic to mimic the response from the dut
-        acknowledgement_msg = can_data_helpers.construct_acknowledgement_can_frame(
+        acknowledgment_msg = can_data_helpers.construct_acknowledgment_can_frame(
             self.__led_cmd_msg_ack_requested.drawer_address.module_id, can_db_defines.can_id.LED_STATE
         )
-        self.__can_in_publisher.publish(acknowledgement_msg)
+        self.__can_in_publisher.publish(acknowledgment_msg)
 
     def call_action_clients(self):
         # Read input data that is send to dut

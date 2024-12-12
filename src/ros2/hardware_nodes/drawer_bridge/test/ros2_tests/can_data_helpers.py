@@ -277,7 +277,7 @@ def construct_can_data_led_state(module_id, led_state, num_of_expected_led_state
     return data_uint64.to_bytes(8, byteorder="big")
 
 
-def construct_acknowledgement_can_frame(module_id, referenced_msg_id):
+def construct_acknowledgment_can_frame(module_id, referenced_msg_id):
     data_uint64 = (
         module_id
         << (
@@ -294,8 +294,8 @@ def construct_acknowledgement_can_frame(module_id, referenced_msg_id):
         )
     )
 
-    acknowledgement_can_msg = Frame()
-    acknowledgement_can_msg.id = can_db_defines.can_id.ACKNOWLEDGMENT
-    acknowledgement_can_msg.dlc = can_db_defines.can_dlc.ACKNOWLEDGMENT
-    acknowledgement_can_msg.data = list(data_uint64.to_bytes(8, byteorder="big"))
-    return acknowledgement_can_msg
+    acknowledgment_can_msg = Frame()
+    acknowledgment_can_msg.id = can_db_defines.can_id.ACKNOWLEDGMENT
+    acknowledgment_can_msg.dlc = can_db_defines.can_dlc.ACKNOWLEDGMENT
+    acknowledgment_can_msg.data = list(data_uint64.to_bytes(8, byteorder="big"))
+    return acknowledgment_can_msg
