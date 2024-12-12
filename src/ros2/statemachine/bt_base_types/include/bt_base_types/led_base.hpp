@@ -94,8 +94,7 @@ namespace bt_base_types
         const std::vector<LED> &leds,
         const communication_interfaces::msg::DrawerAddress &drawer_address,
         const uint16_t fade_in_ms,
-        const uint16_t start_index = 0,
-        const bool ack_requested = false)
+        const uint16_t start_index = 0)
     {
       communication_interfaces::msg::LedCmd led_cmd;
       std::vector<communication_interfaces::msg::Led> led_vector;
@@ -108,7 +107,6 @@ namespace bt_base_types
       led_cmd.drawer_address = drawer_address;
       led_cmd.fade_time_in_ms = fade_in_ms;
       led_cmd.start_index = start_index;
-      led_cmd.ack_requested = ack_requested;
       return led_cmd;
     }
   };
