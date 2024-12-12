@@ -40,7 +40,11 @@ namespace drawer_sm
 
     std::unordered_set<std::string> _living_devices;
 
-    std::unordered_map<std::string, boost::process::child> _child_processes;
+    std::unordered_map<std::string, std::jthread> _running_heartbeat_trees;
+
+    std::unordered_map<std::string, std::jthread> _heartbeat_tree_trigger;
+
+    std::jthread _terminate_tree_thread;
   };
 
 }   // namespace drawer_sm

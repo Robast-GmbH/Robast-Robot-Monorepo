@@ -54,35 +54,33 @@ namespace drawer_sm
 
     RCLCPP_INFO(get_logger(), "Creating new tree for device ID: %s", msg->id.c_str());
 
-    try
-    {
-      const std::string setup_file = "/robast/" + std::string(std::getenv("ROS_DISTRO")) + "/setup.bash";
-      const std::string command_to_run = "ros2 launch drawer_sm heartbeat_launch.py id:=" + msg->id;
+    _running_heartbeat_trees[msg->id] = std::move(std::jthread(
+        [this, msg]()
+        {
+          try
+          {
+            const std::string setup_file = "/robast/" + std::string(std::getenv("ROS_DISTRO")) + "/setup.bash";
+            const std::string command_to_run = "ros2 launch drawer_sm heartbeat_launch.py id:=" + msg->id;
 
-      RCLCPP_INFO(get_logger(), "Sourcing: %s. And running command: %s", setup_file.c_str(), command_to_run.c_str());
+            RCLCPP_INFO(
+                get_logger(), "Sourcing: %s. And running command: %s", setup_file.c_str(), command_to_run.c_str());
 
-      // Combine the conditional sourcing and command execution
-      std::string shell_command = "[ -f " + setup_file + " ] && source " + setup_file + " && " + command_to_run +
-                                  " || echo 'Setup file not found. Skipping setup.'";
+            // Combine the conditional sourcing and command execution
+            std::string shell_command = "[ -f " + setup_file + " ] && source " + setup_file + " && " + command_to_run +
+                                        " || echo 'Setup file not found. Skipping setup.'";
 
-      // Run the command in a shell
-      boost::process::child c("/bin/bash",                                    // Specify shell
-                              boost::process::args = {"-c", shell_command},   // Pass the combined command
-                              boost::process::std_out > stdout,               // Redirect stdout
-                              boost::process::std_err > stderr                // Redirect stderr
-      );
+            std::string bash_command = "bash -c \"" + shell_command + "\"";
 
-      c.detach();   // Detach the child process
+            // Run the with std::system
+            std::system(bash_command.c_str());
+          }
+          catch (const std::exception &e)
+          {
+            RCLCPP_ERROR(this->get_logger(), "Failed to launch process: %s", e.what());
+          }
+        }));
 
-      // Store the child process if you need to manage it later
-      _child_processes[msg->id] = std::move(c);
-    }
-    catch (const std::exception &e)
-    {
-      RCLCPP_ERROR(this->get_logger(), "Failed to launch process: %s", e.what());
-    }
-
-    std::thread(
+    _heartbeat_tree_trigger[msg->id] = std::move(std::jthread(
         [this, msg]()
         {
           try
@@ -95,8 +93,7 @@ namespace drawer_sm
           {
             RCLCPP_ERROR(this->get_logger(), "Failed to launch process: %s", e.what());
           }
-        })
-        .detach();
+        }));
   }
 
   void HeartbeatTreeSpawner::callback_heartbeat_timeout(const std_msgs::msg::String::SharedPtr msg)
@@ -105,27 +102,33 @@ namespace drawer_sm
     RCLCPP_WARN(get_logger(), "Device with device ID %s timed out. Removed it from living devices.", msg->data.c_str());
     publish_living_devices();
 
-    // To the termination in a separate thread to avoid blocking the executor
-    std::thread{std::bind(&HeartbeatTreeSpawner::terminate_tree, this, msg->data)}.detach();
+    // Do the termination in a separate thread to avoid blocking the executor
+    _terminate_tree_thread = std::move(std::jthread(
+        [this, msg]()
+        {
+          terminate_tree(msg->data);
+        }));
   }
 
   void HeartbeatTreeSpawner::terminate_tree(const std::string &id)
   {
-    std::unordered_map<std::string, boost::process::child>::iterator it = _child_processes.find(id);
-    if (it != _child_processes.end())
+    std::unordered_map<std::string, std::jthread>::iterator it_heartbeat_tree = _running_heartbeat_trees.find(id);
+    if (it_heartbeat_tree != _running_heartbeat_trees.end())
     {
-      if (it->second.running())
-      {
-        if (!it->second.wait_for(std::chrono::seconds(TIMEOUT_TREE_TERMINATION_IN_SEC)))
-        {
-          RCLCPP_WARN(get_logger(),
-                      "Process for device ID %s did not terminate within the timeout period. Forcing termination.",
-                      id.c_str());
-          it->second.terminate();
-        }
-      }
-      _child_processes.erase(it);
-      RCLCPP_INFO(get_logger(), "Terminated process for device ID: %s", id.c_str());
+      RCLCPP_INFO(get_logger(), "Terminating tree for device ID: %s", id.c_str());
+      it_heartbeat_tree->second.request_stop();
+      it_heartbeat_tree->second.join();
+      _running_heartbeat_trees.erase(it_heartbeat_tree);
+    }
+
+    // Although the trigger thread should have finished by now, we still check and join it
+    std::unordered_map<std::string, std::jthread>::iterator it_trigger = _heartbeat_tree_trigger.find(id);
+    if (it_trigger != _heartbeat_tree_trigger.end())
+    {
+      RCLCPP_INFO(get_logger(), "Terminating trigger thread for device ID: %s", id.c_str());
+      it_trigger->second.request_stop();
+      it_trigger->second.join();
+      _heartbeat_tree_trigger.erase(it_trigger);
     }
   }
 
