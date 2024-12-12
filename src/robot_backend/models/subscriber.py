@@ -34,16 +34,10 @@ class Subscriber:
         on_msg_callback: Optional[Callable] = None,
     ) -> Topic:
         topic = Topic(ros, topic, msg_type)
-        if on_msg_callback:
-            on_msg_callback_with_log = self.__add_subscriber_log_callback(
-                on_msg_callback
-            )
-            topic.subscribe(on_msg_callback_with_log)
-        else:
-            on_msg_callback_with_log = self.__add_subscriber_log_callback(
-                self.__create_on_msg_callback(topic)
-            )
-            topic.subscribe(on_msg_callback_with_log)
+        on_msg_callback_with_log = self.__add_log_callback(
+            on_msg_callback if on_msg_callback else self.__create_on_msg_callback(topic)
+        )
+        topic.subscribe(on_msg_callback_with_log)
         return topic
 
     def __create_on_msg_callback(self, topic: str) -> Callable:
@@ -52,7 +46,7 @@ class Subscriber:
 
         return on_msg_callback
 
-    def __add_subscriber_log_callback(self, on_msg: Callable) -> Callable:
+    def __add_log_callback(self, on_msg: Callable) -> Callable:
         def log_callback(message: dict[str, Any]):
             self.__logger.info(f"received: {message}")
             on_msg(message)
