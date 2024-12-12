@@ -22,14 +22,12 @@ namespace statemachine
     std::vector<bt_base_types::LED> led_vector;
     communication_interfaces::msg::DrawerAddress drawer_address;
     uint16_t fade_in_ms;
-    bool ack_requested = false;
     int tmp = 0;
     getInput("fading_time_ms", tmp);
     fade_in_ms = (uint16_t) tmp;
     getInput("leds", led_vector);
     getInput("drawer_address", drawer_address);
-    getInput("ack_requested", ack_requested);
-    auto msg = bt_base_types::Base_LED_modes::to_ros_led_cmd(led_vector, drawer_address, fade_in_ms, ack_requested);
+    auto msg = bt_base_types::Base_LED_modes::to_ros_led_cmd(led_vector, drawer_address, fade_in_ms);
     _led_publisher->publish(msg);
 
     return BT::NodeStatus::SUCCESS;
