@@ -34,8 +34,7 @@
               <LEDPublisherAction drawer_address="{drawer}"
                                   fading_time_ms="100"
                                   led_topic="/led_cmd"
-                                  leds="{leds}"
-                                  ack_requested="true"/>
+                                  leds="{leds}"/>
               <AlwaysSuccess/>
             </IfThenElse>
           </Sequence>
@@ -93,8 +92,7 @@
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="100"
                                 led_topic="/led_cmd"
-                                leds="{leds}"
-                                ack_requested="false"/>
+                                leds="{leds}"/>
             <Delay delay_msec="500">
               <PartialColorizeLED LEDs="{leds}"
                                   blue="{blue}"
@@ -108,8 +106,7 @@
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="300"
                                 led_topic="/led_cmd"
-                                leds="{leds}"
-                                ack_requested="false"/>
+                                leds="{leds}"/>
             <Delay delay_msec="500">
               <PartialColorizeLED LEDs="{leds}"
                                   blue="0"
@@ -123,8 +120,7 @@
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="100"
                                 led_topic="/led_cmd"
-                                leds="{leds}"
-                                ack_requested="false"/>
+                                leds="{leds}"/>
             <Delay delay_msec="500">
               <PartialColorizeLED LEDs="{leds}"
                                   blue="{blue}"
@@ -138,8 +134,7 @@
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="300"
                                 led_topic="/led_cmd"
-                                leds="{leds}"
-                                ack_requested="false"/>
+                                leds="{leds}"/>
             <Delay delay_msec="550">
               <AlwaysSuccess/>
             </Delay>
@@ -167,8 +162,7 @@
           <LEDPublisherAction drawer_address="{drawer}"
                               fading_time_ms="100"
                               led_topic="/led_cmd"
-                              leds="{leds}"
-                              ack_requested="false"/>
+                              leds="{leds}"/>
           <Delay delay_msec="800">
             <PartialColorizeLED LEDs="{leds}"
                                 blue="{blue}"
@@ -182,8 +176,7 @@
           <LEDPublisherAction drawer_address="{drawer}"
                               fading_time_ms="300"
                               led_topic="/led_cmd"
-                              leds="{leds}"
-                              ack_requested="false"/>
+                              leds="{leds}"/>
           <Delay delay_msec="800">
             <AlwaysSuccess/>
           </Delay>
@@ -216,8 +209,7 @@
           <LEDPublisherAction drawer_address="{drawer}"
                               fading_time_ms="100"
                               led_topic="/led_cmd"
-                              leds="{leds}"
-                              ack_requested="false"/>
+                              leds="{leds}"/>
           <PartialColorizeLED LEDs="{leds}"
                               blue="{blue}"
                               brightness="{brightness}"
@@ -230,8 +222,7 @@
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="300"
                                 led_topic="/led_cmd"
-                                leds="{leds}"
-                                ack_requested="false"/>
+                                leds="{leds}"/>
           </Delay>
           <Delay delay_msec="800">
             <AlwaysSuccess/>
@@ -322,8 +313,7 @@
         <LEDPublisherAction drawer_address="{drawer}"
                             fading_time_ms="100"
                             led_topic="/led_cmd"
-                            leds="{leds}"
-                            ack_requested="false"/>
+                            leds="{leds}"/>
         <AlwaysSuccess/>
       </IfThenElse>
     </Sequence>
@@ -395,8 +385,6 @@
                   default="/drawer_leds"/>
       <input_port name="leds"
                   default="{leds}"/>
-      <input_port name="ack_requested"
-                  default="false">bool</input_port>
     </Action>
     <Action ID="PartialColorizeLED">
       <input_port name="LEDs"
@@ -422,7 +410,7 @@
       <input_port name="valid_path_age_in_ms"
                   default="2000">uint16</input_port>
       <input_port name="num_of_minimal_poses"
-                  default="10">uint16</input_port>
+                  default="10">uint16</input_port>                  
     </Condition>
     <Action ID="PublishStringTopic"
             editable="true">

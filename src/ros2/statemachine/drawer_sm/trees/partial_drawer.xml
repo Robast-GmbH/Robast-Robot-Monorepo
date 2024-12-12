@@ -71,8 +71,7 @@
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="700"
                                 led_topic="/led_cmd"
-                                leds="{leds}"
-                                ack_requested="false"/>
+                                leds="{leds}"/>
             <PartialColorizeLED LEDs="{leds}"
                                 blue="0"
                                 brightness="0"
@@ -85,8 +84,7 @@
               <LEDPublisherAction drawer_address="{drawer}"
                                   fading_time_ms="700"
                                   led_topic="/led_cmd"
-                                  leds="{leds}"
-                                  ack_requested="false"/>
+                                  leds="{leds}"/>
             </Delay>
             <Sleep msec="700"/>
           </Sequence>
@@ -171,8 +169,7 @@
         <LEDPublisherAction drawer_address="{drawer}"
                             fading_time_ms="700"
                             led_topic="/led_cmd"
-                            leds="{leds}"
-                            ack_requested="false"/>
+                            leds="{leds}"/>
         <PartialColorizeLED LEDs="{leds}"
                             blue="0"
                             brightness="0"
@@ -185,8 +182,7 @@
           <LEDPublisherAction drawer_address="{drawer}"
                               fading_time_ms="700"
                               led_topic="/led_cmd"
-                              leds="{leds}"
-                              ack_requested="false"/>
+                              leds="{leds}"/>
         </Delay>
         <Sleep msec="700"/>
       </Sequence>
@@ -224,8 +220,7 @@
       <LEDPublisherAction drawer_address="{drawer}"
                           fading_time_ms="100"
                           led_topic="/led_cmd"
-                          leds="{leds}"
-                          ack_requested="false"/>
+                          leds="{leds}"/>
     </Sequence>
   </BehaviorTree>
 
@@ -239,8 +234,7 @@
         <LEDPublisherAction drawer_address="{drawer}"
                             fading_time_ms="500"
                             led_topic="/led_cmd"
-                            leds="{leds}"
-                            ack_requested="false"/>
+                            leds="{leds}"/>
         <Delay delay_msec="1000">
           <MoveElectricDrawer drawer_address="{drawer}"
                               move_electric_drawer_topic="/electrical_drawer_task"
@@ -282,8 +276,7 @@
           <LEDPublisherAction drawer_address="{drawer}"
                               fading_time_ms="500"
                               led_topic="/led_cmd"
-                              leds="{leds}"
-                              ack_requested="false"/>
+                              leds="{leds}"/>
         </Sequence>
         <PublishDrawerStatus topic_name="/bt_drawer_open"
                              status="false"
@@ -364,8 +357,6 @@
                   default="/drawer_leds"/>
       <input_port name="leds"
                   default="{leds}"/>
-      <input_port name="ack_requested"
-                  default="false">bool</input_port>
     </Action>
     <Action ID="LockPartialDrawer"
             editable="true">
