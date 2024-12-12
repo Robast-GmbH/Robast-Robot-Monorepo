@@ -33,7 +33,7 @@
               <LEDChangedCondition led_vector="{leds}"/>
               <LEDPublisherAction drawer_address="{drawer}"
                                   fading_time_ms="100"
-                                  led_topic="/led_cmd"
+                                  led_topic="/safety/led_cmd"
                                   leds="{leds}"/>
               <AlwaysSuccess/>
             </IfThenElse>
@@ -410,7 +410,7 @@
       <input_port name="valid_path_age_in_ms"
                   default="2000">uint16</input_port>
       <input_port name="num_of_minimal_poses"
-                  default="10">uint16</input_port>                  
+                  default="10">uint16</input_port>
     </Condition>
     <Action ID="PublishStringTopic"
             editable="true">
