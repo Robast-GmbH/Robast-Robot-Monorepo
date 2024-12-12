@@ -101,14 +101,13 @@ namespace drawer_bridge
 
     if (ack_requested)
     {
-      // detach this thread to not block the main thread when we wait for the acknowledgment
-      std::thread{&DrawerBridge::send_led_cmd_msg_to_can_bus_with_ack,
-                  this,
-                  module_id,
-                  num_of_leds,
-                  fade_time_in_hundreds_of_ms,
-                  msg.leds}
-        .detach();
+      // start a new thread to not block the main thread when we wait for the acknowledgment
+      _led_cmd_with_ack_thread = std::move(std::jthread{&DrawerBridge::send_led_cmd_msg_to_can_bus_with_ack,
+                                                        this,
+                                                        module_id,
+                                                        num_of_leds,
+                                                        fade_time_in_hundreds_of_ms,
+                                                        msg.leds});
     }
     else
     {
@@ -463,8 +462,8 @@ namespace drawer_bridge
     RCLCPP_DEBUG(this->get_logger(), "Received electrical drawer motor control accepted request!");
 
     // this needs to return quickly to avoid blocking the executor, so spin up a new thread
-    std::thread{std::bind(&DrawerBridge::set_electrical_drawer_motor_control, this, std::placeholders::_1), goal_handle}
-      .detach();
+    _e_drawer_motor_control_thread = std::move(std::jthread{
+      std::bind(&DrawerBridge::set_electrical_drawer_motor_control, this, std::placeholders::_1), goal_handle});
   }
 
   void DrawerBridge::wait_for_motor_control_change()
@@ -556,6 +555,9 @@ namespace drawer_bridge
 
     // this needs to return quickly to avoid blocking the executor, so spin up a new thread
     std::thread{std::bind(&DrawerBridge::set_module_config, this, std::placeholders::_1), goal_handle}.detach();
+
+    _module_config_thread =
+      std::move(std::jthread{std::bind(&DrawerBridge::set_module_config, this, std::placeholders::_1), goal_handle});
   }
 
   void DrawerBridge::set_module_config(const std::shared_ptr<rclcpp_action::ServerGoalHandle<ModuleConfig>> goal_handle)

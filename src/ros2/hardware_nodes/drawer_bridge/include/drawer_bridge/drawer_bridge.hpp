@@ -136,6 +136,10 @@ namespace drawer_bridge
     bool _is_led_cmd_ack_received = false;
     uint8_t _led_cmd_attempts = 0;
 
+    std::jthread _led_cmd_with_ack_thread;
+    std::jthread _e_drawer_motor_control_thread;
+    std::jthread _module_config_thread;
+
     /* FUNCTIONS */
     void open_drawer_topic_callback(const DrawerAddress& msg);
 
