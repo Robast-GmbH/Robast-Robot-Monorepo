@@ -6,9 +6,9 @@ from typing import Any
 class RobotPosBridge(BaseBridge):
     def __init__(self, ros: Ros) -> None:
         super().__init__(ros)
-        self.start_subscriber("/robot_position", "geometry_msgs/msg/Point")
-        self.start_subscriber("/is_robot_lost", "std_msgs/msg/Bool")
-        self.__set_initial_point_publisher = self.start_publisher(
+        self.create_subscriber("/robot_position", "geometry_msgs/msg/Point")
+        self.create_subscriber("/is_robot_lost", "std_msgs/msg/Bool")
+        self.__set_initial_point_publisher = self.create_publisher(
             "/set_initial_point", "geometry_msgs/msg/Point"
         )
 
