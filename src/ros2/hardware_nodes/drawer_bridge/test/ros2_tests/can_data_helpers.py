@@ -167,11 +167,10 @@ def construct_can_data_led_header(
     module_id, fade_time_in_hundreds_of_ms, num_of_led_state_msgs, num_of_led_header_received, ack_requested
 ):
     start_index = 0
-    if not ack_requested:
-        if num_of_led_header_received > 0:
-            # loop through num_of_led_state_msgs and add them up to num_of_led_header_received
-            for i in range(num_of_led_header_received):
-                start_index += num_of_led_state_msgs[i]
+    if not ack_requested and num_of_led_header_received > 0:
+        # loop through num_of_led_state_msgs and add them up to num_of_led_header_received
+        for i in range(num_of_led_header_received):
+            start_index += num_of_led_state_msgs[i]
 
     num_of_leds = num_of_led_state_msgs[num_of_led_header_received]
 
