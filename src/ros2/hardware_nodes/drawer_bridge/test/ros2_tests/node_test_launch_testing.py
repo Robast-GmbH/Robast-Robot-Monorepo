@@ -145,6 +145,9 @@ class TestProcessOutput(unittest.TestCase):
         self.__led_cmd_publisher = self.__node.create_publisher(
             LedCmd, "led_cmd", qos_profile=self.__qos_profile_led_cmd
         )
+        self.__led_cmd_safety_publisher = self.__node.create_publisher(
+            LedCmd, "safety/led_cmd", qos_profile=self.__qos_profile_led_cmd
+        )
         self.__can_in_publisher = self.__can_node.create_publisher(
             Frame, "from_can_bus", qos_profile=self.__qos_can_msg
         )
@@ -202,7 +205,6 @@ class TestProcessOutput(unittest.TestCase):
         self.__led_cmd_msg.drawer_address.drawer_id = data["led_cmd"]["drawer_address"]["drawer_id"]
         self.__led_cmd_msg.start_index = data["led_cmd"]["start_index"]
         self.__led_cmd_msg.fade_time_in_ms = data["led_cmd"]["fade_time_in_ms"]
-        self.__led_cmd_msg.ack_requested = False
 
         for i, num_msgs in enumerate(self.__num_of_led_state_msgs):
             self.__ack_requested.append(False)
@@ -226,13 +228,12 @@ class TestProcessOutput(unittest.TestCase):
         self.__led_cmd_msg_ack_requested.start_index = data["led_cmd"]["start_index"]
         self.__led_cmd_msg_ack_requested.fade_time_in_ms = data["led_cmd"]["fade_time_in_ms"]
         self.__led_cmd_msg_ack_requested.leds.append(led_state_msg)
-        self.__led_cmd_msg_ack_requested.ack_requested = True
 
         self.__led_states.append(led_state_msg)
         self.__num_of_led_state_msgs.append(1)
         self.__ack_requested.append(True)
 
-        self.__led_cmd_publisher.publish(self.__led_cmd_msg_ack_requested)
+        self.__led_cmd_safety_publisher.publish(self.__led_cmd_msg_ack_requested)
         self.__node.get_logger().info(
             'Publishing to led_cmd topic for module_id: "%i" with ack requested'
             % self.__led_cmd_msg_ack_requested.drawer_address.module_id

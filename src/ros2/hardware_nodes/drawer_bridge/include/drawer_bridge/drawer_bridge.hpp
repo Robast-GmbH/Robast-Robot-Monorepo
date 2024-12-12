@@ -113,6 +113,7 @@ namespace drawer_bridge
     rclcpp::Subscription<DrawerAddress>::SharedPtr _open_drawer_subscription;
     rclcpp::Subscription<DrawerTask>::SharedPtr _drawer_task_subscription;
     rclcpp::Subscription<LedCmd>::SharedPtr _led_cmd_subscription;
+    rclcpp::Subscription<LedCmd>::SharedPtr _led_cmd_safety_subscription;
     rclcpp::Subscription<TrayTask>::SharedPtr _tray_task_subscription;
     rclcpp::Subscription<CanMessage>::SharedPtr _can_messages_subscription;
 
@@ -146,6 +147,8 @@ namespace drawer_bridge
     void electrical_drawer_task_topic_callback(const DrawerTask& task);
 
     void led_cmd_topic_callback(const LedCmd& msg);
+
+    void led_cmd_safety_topic_callback(const LedCmd& msg);
 
     void tray_task_topic_callback(const TrayTask& msg);
 

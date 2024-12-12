@@ -26,6 +26,11 @@ namespace drawer_bridge
                                         _qos_config.get_qos_led_cmd(),
                                         std::bind(&DrawerBridge::led_cmd_topic_callback, this, std::placeholders::_1));
 
+    _led_cmd_safety_subscription = this->create_subscription<LedCmd>(
+      "safety/led_cmd",
+      _qos_config.get_qos_led_cmd(),
+      std::bind(&DrawerBridge::led_cmd_safety_topic_callback, this, std::placeholders::_1));
+
     _tray_task_subscription = this->create_subscription<TrayTask>(
       "tray_task",
       _qos_config.get_qos_open_drawer(),
@@ -92,27 +97,28 @@ namespace drawer_bridge
     const uint32_t module_id = msg.drawer_address.module_id;
     const uint16_t num_of_leds = msg.leds.size();
     const uint8_t fade_time_in_hundreds_of_ms = msg.fade_time_in_ms / 100;
-    const bool ack_requested = msg.ack_requested;
 
     RCLCPP_DEBUG(get_logger(),
                  "I heard from the /led_cmd topic the module id %i and the number of led states = %i",
                  msg.drawer_address.module_id,
                  num_of_leds);
 
-    if (ack_requested)
-    {
-      // start a new thread to not block the main thread when we wait for the acknowledgment
-      _led_cmd_with_ack_thread = std::move(std::jthread{&DrawerBridge::send_led_cmd_msg_to_can_bus_with_ack,
-                                                        this,
-                                                        module_id,
-                                                        num_of_leds,
-                                                        fade_time_in_hundreds_of_ms,
-                                                        msg.leds});
-    }
-    else
-    {
-      send_led_cmd_msg_to_can_bus(module_id, num_of_leds, fade_time_in_hundreds_of_ms, msg.leds, NO_ACK_REQUESTED);
-    }
+    send_led_cmd_msg_to_can_bus(module_id, num_of_leds, fade_time_in_hundreds_of_ms, msg.leds, NO_ACK_REQUESTED);
+  }
+
+  void DrawerBridge::led_cmd_safety_topic_callback(const LedCmd& msg)
+  {
+    const uint32_t module_id = msg.drawer_address.module_id;
+    const uint16_t num_of_leds = msg.leds.size();
+    const uint8_t fade_time_in_hundreds_of_ms = msg.fade_time_in_ms / 100;
+
+    // start a new thread to not block the main thread when we wait for the acknowledgment
+    _led_cmd_with_ack_thread = std::move(std::jthread{&DrawerBridge::send_led_cmd_msg_to_can_bus_with_ack,
+                                                      this,
+                                                      module_id,
+                                                      num_of_leds,
+                                                      fade_time_in_hundreds_of_ms,
+                                                      msg.leds});
   }
 
   void DrawerBridge::send_led_cmd_msg_to_can_bus_with_ack(const uint32_t module_id,
