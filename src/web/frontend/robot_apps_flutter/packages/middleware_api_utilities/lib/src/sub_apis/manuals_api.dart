@@ -17,7 +17,7 @@ class ManualsApi {
   }
 
   Future<Uint8List?> downloadManual(String path) async {
-    final response = await RequestService.tryGet(uri: Uri.parse('$prefix/manuals/$path'), timeout: 5);
+    final response = await RequestService.tryGet(uri: Uri.parse('$prefix/manuals/$path'), timeoutInMS: 5000);
     if (response != null && response.statusCode == 200) {
       return response.bodyBytes;
     } else {
