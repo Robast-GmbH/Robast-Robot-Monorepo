@@ -6,8 +6,12 @@ from models.timezone_formatter import TimezoneFormatter
 import os
 import time
 
-LOG_FOLDER = "./log"
+home_directory = os.path.expanduser("~")
+LOG_FOLDER = f"{home_directory}/log"
 os.makedirs(LOG_FOLDER, exist_ok=True)
+os.makedirs(f"{LOG_FOLDER}/subscriber", exist_ok=True)
+os.makedirs(f"{LOG_FOLDER}/services", exist_ok=True)
+os.makedirs(f"{LOG_FOLDER}/publisher", exist_ok=True)
 
 
 class Logger:
