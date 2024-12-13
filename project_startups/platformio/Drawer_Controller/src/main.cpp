@@ -270,7 +270,7 @@ void setup()
 
   led_strip =
     std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.total_num_of_leds>>(
-      USER_CONFIG.use_color_fade, USER_CONFIG.allow_partial_led_changes);
+      MODULE_ID, USER_CONFIG.use_color_fade, USER_CONFIG.allow_partial_led_changes, can_utils);
 
   // Very important to initialize this before the can_controller is created
   can_queue_mutex = xSemaphoreCreateMutex();

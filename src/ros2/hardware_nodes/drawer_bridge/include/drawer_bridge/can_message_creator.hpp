@@ -32,7 +32,8 @@ namespace drawer_bridge
 
     can_msgs::msg::Frame create_can_msg_set_led_state(const Led& led_state,
                                                       const uint32_t module_id,
-                                                      const bool is_group_state) const;
+                                                      const bool is_group_state,
+                                                      const bool ack_requested) const;
 
     can_msgs::msg::Frame create_can_msg_tray_led_brightness(const DrawerAddress& drawer_address,
                                                             const uint8_t led_row,

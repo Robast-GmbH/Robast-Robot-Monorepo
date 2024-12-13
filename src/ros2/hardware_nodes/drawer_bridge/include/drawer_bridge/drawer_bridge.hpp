@@ -50,6 +50,10 @@
 namespace drawer_bridge
 {
   constexpr std::chrono::seconds MAX_WAIT_TIME_FOR_MOTOR_CONTROL_CONFIRMATION_IN_S = std::chrono::seconds(5);
+  constexpr std::chrono::seconds MAX_WAIT_TIME_FOR_LED_CMD_ACK_IN_S = std::chrono::seconds(1);
+  constexpr uint8_t MAX_LED_CMD_RETRIES = 2;
+  constexpr bool ACK_REQUESTED = true;
+  constexpr bool NO_ACK_REQUESTED = false;
 
   struct led_parameters
   {
@@ -109,6 +113,7 @@ namespace drawer_bridge
     rclcpp::Subscription<DrawerAddress>::SharedPtr _open_drawer_subscription;
     rclcpp::Subscription<DrawerTask>::SharedPtr _drawer_task_subscription;
     rclcpp::Subscription<LedCmd>::SharedPtr _led_cmd_subscription;
+    rclcpp::Subscription<LedCmd>::SharedPtr _led_cmd_safety_subscription;
     rclcpp::Subscription<TrayTask>::SharedPtr _tray_task_subscription;
     rclcpp::Subscription<CanMessage>::SharedPtr _can_messages_subscription;
 
@@ -127,12 +132,23 @@ namespace drawer_bridge
     std::condition_variable _motor_control_cv;
     bool _is_motor_control_change_confirmed = false;
 
+    std::mutex _led_cmd_ack_mutex;
+    std::condition_variable _led_cmd_ack_cv;
+    bool _is_led_cmd_ack_received = false;
+    uint8_t _led_cmd_retries = 0;
+
+    std::jthread _led_cmd_with_ack_thread;
+    std::jthread _e_drawer_motor_control_thread;
+    std::jthread _module_config_thread;
+
     /* FUNCTIONS */
     void open_drawer_topic_callback(const DrawerAddress& msg);
 
     void electrical_drawer_task_topic_callback(const DrawerTask& task);
 
     void led_cmd_topic_callback(const LedCmd& msg);
+
+    void led_cmd_safety_topic_callback(const LedCmd& msg);
 
     void tray_task_topic_callback(const TrayTask& msg);
 
@@ -142,17 +158,19 @@ namespace drawer_bridge
 
     void setup_action_server();
 
-    void send_can_msg(const CanMessage can_msg);
+    void send_can_msg(const CanMessage& can_msg);
 
-    void receive_can_msg_callback(const CanMessage can_msg);
+    void receive_can_msg_callback(const CanMessage& can_msg);
 
-    void handle_drawer_status(const robast_can_msgs::CanMessage drawer_feedback_can_msg);
+    void handle_drawer_status(const robast_can_msgs::CanMessage& drawer_feedback_can_msg);
 
-    void handle_e_drawer_feedback(const robast_can_msgs::CanMessage electrical_drawer_feedback_can_msg);
+    void handle_e_drawer_feedback(const robast_can_msgs::CanMessage& electrical_drawer_feedback_can_msg);
 
-    void handle_e_drawer_motor_control_feedback(const robast_can_msgs::CanMessage e_drawer_motor_control_can_msg);
+    void handle_e_drawer_motor_control_feedback(const robast_can_msgs::CanMessage& e_drawer_motor_control_can_msg);
 
-    void publish_drawer_error_msg(const robast_can_msgs::CanMessage drawer_error_feedback_can_msg);
+    void handle_can_acknowledgment(const robast_can_msgs::CanMessage& acknowledgment_msg);
+
+    void publish_drawer_error_msg(const robast_can_msgs::CanMessage& drawer_error_feedback_can_msg);
 
     void publish_push_to_close_triggered(const bool is_push_to_close_triggered);
 
@@ -164,7 +182,9 @@ namespace drawer_bridge
                                const bool is_endstop_switch_pushed,
                                const bool is_lock_switch_pushed);
 
-    void publish_heartbeat(const robast_can_msgs::CanMessage heartbeat_msg);
+    void handle_led_state_acknowledgment();
+
+    void publish_heartbeat(const robast_can_msgs::CanMessage& heartbeat_msg);
 
     void set_module_config(const std::shared_ptr<rclcpp_action::ServerGoalHandle<ModuleConfig>> goal_handle);
 
@@ -173,7 +193,20 @@ namespace drawer_bridge
 
     void wait_for_motor_control_change();
 
+    void wait_for_led_cmd_ack();
+
     void reset_motor_control_change_flag();
+
+    void send_led_cmd_msg_to_can_bus_with_ack(const uint32_t module_id,
+                                              const uint16_t num_of_leds,
+                                              const uint8_t fade_time_in_hundreds_of_ms,
+                                              const std::vector<communication_interfaces::msg::Led>& leds);
+
+    void send_led_cmd_msg_to_can_bus(const uint32_t module_id,
+                                     const uint16_t num_of_leds,
+                                     const uint8_t fade_time_in_hundreds_of_ms,
+                                     const std::vector<communication_interfaces::msg::Led>& leds,
+                                     const bool ack_requested);
 
     bool are_consecutive_leds_same(const std::vector<communication_interfaces::msg::Led>& leds,
                                    uint16_t index_1,

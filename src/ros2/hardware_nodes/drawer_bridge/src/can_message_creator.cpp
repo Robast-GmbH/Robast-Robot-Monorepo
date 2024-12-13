@@ -39,7 +39,8 @@ namespace drawer_bridge
 
   can_msgs::msg::Frame CanMessageCreator::create_can_msg_set_led_state(const Led& led_state,
                                                                        const uint32_t module_id,
-                                                                       const bool is_group_state) const
+                                                                       const bool is_group_state,
+                                                                       const bool ack_requested) const
   {
     robast_can_msgs::CanMessage can_msg_set_single_led_state =
       _can_db.can_messages.at(robast_can_msgs::can_msg::LED_STATE);
@@ -57,6 +58,7 @@ namespace drawer_bridge
       .set_data(led_state.brightness);
     can_signals_single_led_state.at(robast_can_msgs::can_signal::id::led_state::IS_GROUP_STATE)
       .set_data(is_group_state);
+    can_signals_single_led_state.at(robast_can_msgs::can_signal::id::led_state::ACK_REQUESTED).set_data(ack_requested);
 
     can_msg_set_single_led_state.set_can_signals(can_signals_single_led_state);
 

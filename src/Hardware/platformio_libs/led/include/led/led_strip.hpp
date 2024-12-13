@@ -9,6 +9,7 @@
 
 #include "can/can_db.hpp"
 #include "can/can_helper.hpp"
+#include "can_toolbox/can_utils.hpp"
 #include "debug/debug.hpp"
 #include "led/led_animation.hpp"
 #include "led/led_header.hpp"
@@ -28,12 +29,16 @@ namespace led
   constexpr float FULL_PROGRESS_LED_FADING = 1.0;
   constexpr uint8_t MINIMAL_LOOP_TIME_IN_MS = 1;
   constexpr bool NO_GROUP_STATE = false;
+  constexpr bool NO_ACK_REQUESTED = false;
 
   template <uint8_t led_pixel_pin, uint8_t total_num_of_leds>
   class LedStrip
   {
    public:
-    LedStrip(const bool use_color_fading, const bool allow_partial_led_changes);
+    LedStrip(const uint32_t module_id,
+             const bool use_color_fading,
+             const bool allow_partial_led_changes,
+             const std::shared_ptr<can_toolbox::CanUtils> can_utils);
 
     void handle_led_control();
 
@@ -42,6 +47,9 @@ namespace led
     void set_led_state(LedState state);
 
    private:
+    const std::shared_ptr<can_toolbox::CanUtils> _can_utils;
+    const uint32_t _module_id;
+
     bool _allow_partial_led_changes;
     bool _is_fading_in_progress = false;
     std::vector<LedState> _starting_led_states;   // used for fading from starting to target led state
@@ -95,14 +103,18 @@ namespace led
   *********************************************************************************************************/
 
   template <uint8_t led_pixel_pin, uint8_t total_num_of_leds>
-  LedStrip<led_pixel_pin, total_num_of_leds>::LedStrip(const bool use_color_fading,
-                                                       const bool allow_partial_led_changes)
+  LedStrip<led_pixel_pin, total_num_of_leds>::LedStrip(const uint32_t module_id,
+                                                       const bool use_color_fading,
+                                                       const bool allow_partial_led_changes,
+                                                       const std::shared_ptr<can_toolbox::CanUtils> can_utils)
       : _starting_led_states(total_num_of_leds),
         _current_led_states(total_num_of_leds),
         _target_led_animation(std::vector<LedState>(total_num_of_leds), 0, total_num_of_leds, 0),
         _new_target_led_animation(std::vector<LedState>(total_num_of_leds), 0, total_num_of_leds, 0),
+        _module_id(module_id),
         _use_color_fading(use_color_fading),
-        _allow_partial_led_changes(allow_partial_led_changes)
+        _allow_partial_led_changes(allow_partial_led_changes),
+        _can_utils(can_utils)
   {
     initialize_led_strip();
   }
@@ -133,7 +145,7 @@ namespace led
     for (uint8_t i = 0; i < total_num_of_leds; ++i)
     {
       _new_target_led_animation.target_led_states.push_back(
-        LedState(LED_INIT_RED, LED_INIT_GREEN, LED_INIT_BLUE, LED_INIT_BRIGHTNESS, NO_GROUP_STATE));
+        LedState(LED_INIT_RED, LED_INIT_GREEN, LED_INIT_BLUE, LED_INIT_BRIGHTNESS, NO_GROUP_STATE, NO_ACK_REQUESTED));
     }
     LedAnimation initial_led_animation = LedAnimation(_new_target_led_animation.target_led_states,
                                                       LED_INIT_ANIMATION_FADE_TIME_IN_MS / 100,
@@ -292,12 +304,14 @@ namespace led
   template <uint8_t led_pixel_pin, uint8_t total_num_of_leds>
   void LedStrip<led_pixel_pin, total_num_of_leds>::set_led_state(const LedState led_state)
   {
-    debug_printf_green("Setting led state with red: %d, green: %d, blue: %d, brightness: %d, is_group_state: %d\n",
-                       led_state.red,
-                       led_state.green,
-                       led_state.blue,
-                       led_state.brightness,
-                       led_state.is_group_state);
+    debug_printf_green(
+      "Setting led state with red: %d, green: %d, blue: %d, brightness: %d, is_group_state: %d, ack_requested: %d\n",
+      led_state.red,
+      led_state.green,
+      led_state.blue,
+      led_state.brightness,
+      led_state.is_group_state,
+      led_state.ack_requested);
 
     if (_current_index_led_states >= total_num_of_leds)
     {
@@ -319,6 +333,12 @@ namespace led
       debug_printf_green("All led states set!\n");
       LedAnimation led_animation = _new_target_led_animation;   // deep copy (see "=" operator definition in struct)
       _led_animations_queue->enqueue(led_animation);
+
+      if (led_state.ack_requested)
+      {
+        debug_printf_green("Sending requested ack for led state change!\n");
+        _can_utils->enqueue_acknowledgement_msg(_module_id, robast_can_msgs::can_id::LED_STATE);
+      }
     }
   }
 
