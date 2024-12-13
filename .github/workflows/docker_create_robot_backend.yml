@@ -28,7 +28,7 @@ jobs:
       uses: docker/setup-buildx-action@v2 
     
     - name: Build ${{ env.Project-Name }} release docker
-      uses: docker/build-push-action@v4
+      uses: docker/build-push-action@v6
       with:
         context: src/${{ env.Project-Name }}/
         platforms: linux/amd64

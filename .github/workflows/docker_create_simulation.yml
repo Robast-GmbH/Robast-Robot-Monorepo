@@ -35,7 +35,7 @@ jobs:
       uses: docker/setup-buildx-action@v1 
     
     - name: Build humble ${{ env.Project-Name }} dev docker
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v6
       with:
         context: src/ros2/${{ env.Project-Name }}/
         push: true
@@ -48,7 +48,7 @@ jobs:
         cache-to: type=gha,mode=min
 
     - name: Build iron ${{ env.Project-Name }} dev docker
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v6
       with:
         context: src/ros2/${{ env.Project-Name }}/
         build-args: |
