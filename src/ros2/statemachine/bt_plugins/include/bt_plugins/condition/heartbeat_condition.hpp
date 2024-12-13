@@ -23,7 +23,7 @@ namespace statemachine
       return {BT::InputPort<std::string>("topic", "/heartbeat"),
               BT::InputPort<uint8_t>("timeouts_until_failure", "3"),
               BT::InputPort<uint16_t>("latency_tolerance_in_ms", "100"),
-              BT::OutputPort<std::string>("id", "1")};
+              BT::OutputPort<std::string>("failed_heartbeat_id", "1")};
     }
 
    private:
@@ -35,14 +35,13 @@ namespace statemachine
     rclcpp::Subscription<communication_interfaces::msg::Heartbeat>::SharedPtr _heartbeat_sub;
 
     std::string _topic_name;
-    std::string _id;
     uint8_t _timeouts_until_failure;
     uint16_t _latency_tolerance_in_ms;
-    uint16_t _heartbeat_interval_in_ms;
-    builtin_interfaces::msg::Time _last_heartbeat_timestamp;
+    std::unordered_map<std::string, uint16_t> _heartbeat_interval_in_ms_by_id;
+    std::unordered_map<std::string, builtin_interfaces::msg::Time> _last_heartbeat_timestamp_by_id;
 
+    std::unordered_map<std::string, bool> _printed_single_timeout_warning;
     bool _first_heartbeat_received = false;
-    bool _printed_single_timeout_warning = false;
 
     void _callback_heartbeat(const communication_interfaces::msg::Heartbeat::SharedPtr msg);
   };

@@ -64,18 +64,6 @@ else()
     message(STATUS "Boost coroutines disabled by CMake option.")
 endif()
 
-add_executable(executable_heartbeat_tree_spawner
-  src/heartbeat_tree_spawner.cpp)
-
-
-ament_target_dependencies(executable_heartbeat_tree_spawner
-  ${dependencies}
-)
-
-target_include_directories(executable_heartbeat_tree_spawner PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-
 ament_target_dependencies(drawer_sm_startup_debug
   ${dependencies}
 )
@@ -88,7 +76,6 @@ target_include_directories(drawer_sm_startup_debug
 
 install(TARGETS
   drawer_sm_startup_debug
-  executable_heartbeat_tree_spawner
   DESTINATION lib/${PROJECT_NAME}
 )
 
