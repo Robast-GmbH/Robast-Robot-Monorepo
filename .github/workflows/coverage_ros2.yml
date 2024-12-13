@@ -76,7 +76,7 @@ jobs:
     #         -Dsonar.coverage.reportPaths=/home/coverage-${{env.Project2}}.info
 
     - name: Upload coverage report to Codecov
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: /home/coverage-${{env.Project}}.info
