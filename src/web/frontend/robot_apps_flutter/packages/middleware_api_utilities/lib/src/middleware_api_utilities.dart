@@ -58,8 +58,8 @@ class MiddlewareApiUtilities {
     required String url,
   }) async {
     try {
-      final response = await http.get(Uri.parse('$url/'));
-      return response.statusCode == 200;
+      final response = await RequestService.tryGet(uri: Uri.parse('$url/'));
+      return response != null && response.statusCode == 200;
     } catch (e) {
       return false;
     }
@@ -68,11 +68,14 @@ class MiddlewareApiUtilities {
   Future<List<Robot>> getRobots() async {
     final robots = <Robot>[];
     try {
-      final response = await http.get(Uri.parse('$_prefix/fleet'));
-      if (response.statusCode == 200) {
+      final response = await RequestService.tryGet(uri: Uri.parse('$_prefix/fleet'));
+      if (response != null) {
         final jsonData = (jsonDecode(response.body) as Map<String, dynamic>)['fleet'] as List<dynamic>;
         for (final robot in jsonData) {
-          final posReponse = await http.get(Uri.parse('$_prefix/robot_pos?robot_name=$robot'));
+          final posReponse = await RequestService.tryGet(uri: Uri.parse('$_prefix/robot_pos?robot_name=$robot'));
+          if (posReponse == null) {
+            continue;
+          }
           final posData = jsonDecode(posReponse.body) as Map<String, dynamic>;
           final robotData = {
             'robot_name': robot,
@@ -91,80 +94,8 @@ class MiddlewareApiUtilities {
     return robots;
   }
 
-  Future<bool> moveRobot({
-    required String robotName,
-    required double x,
-    required double y,
-    required double yaw,
-  }) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$_prefix/goal_pose?robot_name=$robotName&x=$x&y=$y&z=$yaw'),
-      );
-      return response.statusCode == 200;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<bool> stopRobot({
-    required String robotName,
-  }) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$_prefix/block_navigation?robot_name=$robotName'),
-      );
-      return response.statusCode == 200;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<bool> resumeRobot({
-    required String robotName,
-  }) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$_prefix/unblock_navigation?robot_name=$robotName'),
-      );
-      return response.statusCode == 200;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<bool> isRobotNavigationBlocked({required String robotName}) async {
-    try {
-      final response = await http.get(
-        Uri.parse('$_prefix/is_navigation_blocked?robot_name=$robotName'),
-      );
-      if (response.statusCode == 200) {
-        return (jsonDecode(response.body) as Map<String, dynamic>)['is_nav_blocked'] as bool;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<bool> isNavigationBlocked({required String robotName}) async {
-    try {
-      final response = await http.get(
-        Uri.parse('$_prefix/is_navigation_blocked?robot_name=$robotName'),
-      );
-      if (response.statusCode == 200) {
-        return (jsonDecode(response.body) as Map<String, dynamic>)['is_nav_blocked'] as bool;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      return false;
-    }
-  }
-
   Future<BuildingMap?> getMap() async {
-    final response = await RequestService.tryGet(uri: Uri.parse('$_prefix/building_map'));
+    final response = await RequestService.tryGet(uri: Uri.parse('$_prefix/building_map'), timeoutInMS: 2000);
     if (response != null) {
       final data = RequestService.responseToMap(response: response);
       return BuildingMap.fromJson(data);
@@ -174,7 +105,7 @@ class MiddlewareApiUtilities {
   }
 
   Future<Uint8List?> getMapImage() async {
-    final response = await RequestService.tryGet(uri: Uri.parse('$_prefix/building_map.png'));
+    final response = await RequestService.tryGet(uri: Uri.parse('$_prefix/building_map.png'), timeoutInMS: 3000);
     if (response != null) {
       final data = response.bodyBytes;
       return data;
