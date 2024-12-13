@@ -215,7 +215,7 @@ void setup()
 
   led_strip =
     std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.total_num_of_leds>>(
-      USER_CONFIG.use_color_fade, USER_CONFIG.allow_partial_led_changes);
+      MODULE_ID, USER_CONFIG.use_color_fade, USER_CONFIG.allow_partial_led_changes, can_utils);
 
   can_queue_mutex = xSemaphoreCreateMutex();
   can_msg_queue = std::make_unique<utils::Queue<robast_can_msgs::CanMessage>>();

@@ -11,6 +11,7 @@ namespace robast_can_msgs
    CAN IDs and DLCs for the CAN Bus
   *********************************************************************************************************/
 
+  // Very important: The lower the CAN ID, the higher the priority on the bus!
   namespace can_id
   {
     constexpr uint16_t DRAWER_UNLOCK = 0x001;
@@ -23,7 +24,9 @@ namespace robast_can_msgs
     constexpr uint16_t TRAY_LED_BRIGHTNESS = 0x008;
     constexpr uint16_t MODULE_CONFIG = 0x009;
     constexpr uint16_t ELECTRICAL_DRAWER_MOTOR_CONTROL = 0x00A;
-    constexpr uint16_t HEARTBEAT = 0x00B;
+    // Less important CAN IDs
+    constexpr uint16_t ACKNOWLEDGMENT = 0x100;
+    constexpr uint16_t HEARTBEAT = 0x101;
   }   // namespace can_id
 
   namespace can_dlc
@@ -38,6 +41,7 @@ namespace robast_can_msgs
     constexpr uint8_t TRAY_LED_BRIGHTNESS = 6;
     constexpr uint8_t MODULE_CONFIG = 8;
     constexpr uint8_t ELECTRICAL_DRAWER_MOTOR_CONTROL = 4;
+    constexpr uint8_t ACKNOWLEDGMENT = 5;
     constexpr uint8_t HEARTBEAT = 5;
   }   // namespace can_dlc
 
@@ -45,6 +49,7 @@ namespace robast_can_msgs
    CAN msg index and can signal index to access the msg and signals in our can_db vector
   *********************************************************************************************************/
 
+  // Very important: The order of this needs to be the same as the order of the CAN messages in the can_db vector!
   namespace can_msg
   {
     constexpr uint8_t DRAWER_UNLOCK = 0;
@@ -57,7 +62,8 @@ namespace robast_can_msgs
     constexpr uint8_t TRAY_LED_BRIGHTNESS = 7;
     constexpr uint8_t MODULE_CONFIG = 8;
     constexpr uint8_t ELECTRICAL_DRAWER_MOTOR_CONTROL = 9;
-    constexpr uint8_t HEARTBEAT = 10;
+    constexpr uint8_t ACKNOWLEDGMENT = 10;
+    constexpr uint8_t HEARTBEAT = 11;
   }   // namespace can_msg
 
   namespace can_signal
@@ -121,6 +127,7 @@ namespace robast_can_msgs
         constexpr uint8_t LED_STATE_BLUE = 3;
         constexpr uint8_t LED_STATE_BRIGHTNESS = 4;
         constexpr uint8_t IS_GROUP_STATE = 5;
+        constexpr uint8_t ACK_REQUESTED = 6;
       }   // namespace led_state
 
       namespace tray_led_brightness
@@ -145,6 +152,12 @@ namespace robast_can_msgs
         constexpr uint8_t ENABLE_MOTOR = 2;
         constexpr uint8_t CONFIRM_CONTROL_CHANGE = 3;
       }   // namespace electrical_drawer_motor_control
+
+      namespace acknowledgment
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t REFERENCED_MSG_ID = 1;
+      }   // namespace acknowledgment
 
       namespace heartbeat
       {
@@ -213,6 +226,7 @@ namespace robast_can_msgs
         constexpr uint8_t LED_STATE_BLUE = 40;
         constexpr uint8_t LED_STATE_BRIGHTNESS = 48;
         constexpr uint8_t IS_GROUP_STATE = 56;
+        constexpr uint8_t ACK_REQUESTED = 57;
       }   // namespace led_state
 
       namespace tray_led_brightness
@@ -237,6 +251,12 @@ namespace robast_can_msgs
         constexpr uint8_t ENABLE_MOTOR = 26;
         constexpr uint8_t CONFIRM_CONTROL_CHANGE = 27;
       }   // namespace electrical_drawer_motor_control
+
+      namespace acknowledgment
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t REFERENCED_MSG_ID = 24;
+      }   // namespace acknowledgment
 
       namespace heartbeat
       {
@@ -305,6 +325,7 @@ namespace robast_can_msgs
         constexpr uint8_t LED_STATE_BLUE = 8;
         constexpr uint8_t LED_STATE_BRIGHTNESS = 8;
         constexpr uint8_t IS_GROUP_STATE = 1;
+        constexpr uint8_t ACK_REQUESTED = 1;
       }   // namespace led_state
 
       namespace tray_led_brightness
@@ -329,6 +350,12 @@ namespace robast_can_msgs
         constexpr uint8_t ENABLE_MOTOR = 1;
         constexpr uint8_t CONFIRM_CONTROL_CHANGE = 1;
       }   // namespace electrical_drawer_motor_control
+
+      namespace acknowledgment
+      {
+        constexpr uint8_t MODULE_ID = 24;
+        constexpr uint8_t REFERENCED_MSG_ID = 11;
+      }   // namespace acknowledgment
 
       namespace heartbeat
       {

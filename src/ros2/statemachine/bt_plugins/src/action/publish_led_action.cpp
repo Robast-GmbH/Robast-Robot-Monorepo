@@ -24,14 +24,15 @@ namespace statemachine
     uint16_t fade_in_ms;
     int tmp = 0;
     getInput("fading_time_ms", tmp);
-    fade_in_ms = (uint16_t)tmp;
+    fade_in_ms = (uint16_t) tmp;
     getInput("leds", led_vector);
     getInput("drawer_address", drawer_address);
     auto msg = bt_base_types::Base_LED_modes::to_ros_led_cmd(led_vector, drawer_address, fade_in_ms);
     _led_publisher->publish(msg);
+
     return BT::NodeStatus::SUCCESS;
   }
-}
+}   // namespace statemachine
 
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)

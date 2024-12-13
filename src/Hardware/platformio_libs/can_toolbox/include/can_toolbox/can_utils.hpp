@@ -42,6 +42,8 @@ namespace can_toolbox
 
     void enqueue_heartbeat_msg(const uint32_t module_id, const uint16_t interval_in_ms) const;
 
+    void enqueue_acknowledgement_msg(const uint32_t module_id, const uint16_t reference_msg_id) const;
+
    private:
     const std::unique_ptr<utils::Queue<robast_can_msgs::CanMessage>> _feedback_can_msg_queue =
       std::make_unique<utils::Queue<robast_can_msgs::CanMessage>>();
@@ -71,6 +73,9 @@ namespace can_toolbox
                                                                   const bool confirm_control_change) const;
 
     robast_can_msgs::CanMessage create_heartbeat_msg(const uint32_t module_id, const uint16_t interval_in_ms) const;
+
+    robast_can_msgs::CanMessage create_acknowledgement_msg(const uint32_t module_id,
+                                                           const uint16_t reference_msg_id) const;
   };
 }   // namespace can_toolbox
 #endif   // CAN_CONTROLLER_CAN_UTILS_HPP
