@@ -5,7 +5,6 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
-from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
@@ -17,14 +16,13 @@ def generate_launch_description():
         default_value=os.path.join(bringup_dir, 'config', 'heartbeat_tree_params.yaml'),
         description='path to the bt_params.yaml file')
 
-    param_substitutions = {
-        'bt_path': os.path.join(bringup_dir, 'trees', 'heartbeat.xml')}
-    
-    configured_params = RewrittenYaml(
-        source_file=bt_config_params,
-        root_key='',
-        param_rewrites=param_substitutions,
-        convert_types=True)
+    params = {
+        "bt_path": os.path.join(bringup_dir, "trees", "heartbeat.xml"),
+        "plugins": ["heartbeat_condition_node", "robast_error_pub_node", "publish_string_topic_action_node"],
+        "trigger_topic": "trigger_heartbeat_tree",
+        "main_tree": "default_heartbeat_drawer_tree",
+        "tree_tick_time": 10
+    }
 
     bt_node = Node(
         package="bt_base_nodes",
@@ -32,7 +30,7 @@ def generate_launch_description():
         name="heartbeat_tree_initiator",
         output="screen",
         arguments=['--ros-args', '--log-level', "info"],
-        parameters=[configured_params])
+        parameters=[params])
     
     ld = LaunchDescription()
     ld.add_action(declare_bt_config_params_cmd)

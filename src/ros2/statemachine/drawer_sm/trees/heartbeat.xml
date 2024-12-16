@@ -2,22 +2,20 @@
 <root BTCPP_format="4"
       main_tree_to_execute="default_heartbeat_drawer_tree">
   <BehaviorTree ID="default_heartbeat_drawer_tree">
-    <ReactiveFallback>
-      <KeepRunningUntilFailure>
-        <HeartbeatCondition topic="/heartbeat"
-                            timeouts_until_failure="3"
-                            latency_tolerance_in_ms="100"
-                            id="{id}"/>
-      </KeepRunningUntilFailure>
-      <Sequence>
-        <PublishStringTopic topic="/heartbeat_timeout"
-                            message="{id}"/>
+    <KeepRunningUntilFailure>
+      <ReactiveFallback>
+        <KeepRunningUntilFailure>
+          <HeartbeatCondition topic="/heartbeat"
+                              timeouts_until_failure="3"
+                              latency_tolerance_in_ms="100"
+                              failed_heartbeat_id="{id}"/>
+        </KeepRunningUntilFailure>
         <RobastErrorPub topic="/robast_error"
                         error_code="50304"
                         error_data="{id}"
                         error_description="Heartbeat timeout occured for module."/>
-      </Sequence>
-    </ReactiveFallback>
+      </ReactiveFallback>
+    </KeepRunningUntilFailure>
   </BehaviorTree>
 
   <!-- Description of Node Models (used by Groot) -->
@@ -29,16 +27,9 @@
                   default="3">uint8</input_port>
       <input_port name="latency_tolerance_in_ms"
                   default="100">uint16</input_port>
-      <output_port name="id"
+      <output_port name="failed_heartbeat_id"
                    default="1">string</output_port>
     </Condition>
-    <Action ID="PublishStringTopic"
-            editable="true">
-      <input_port name="topic"
-                  default="/topic">string</input_port>
-      <input_port name="message"
-                  default="message">string</input_port>
-    </Action>
     <Action ID="RobastErrorPub">
       <input_port name="topic"
                   default="/robast_error"/>

@@ -60,7 +60,7 @@
             <input_port name="topic" default="/heartbeat"/>
             <input_port name="timeouts_until_failure" default="3">uint8</input_port>
             <input_port name="latency_tolerance_in_ms" default="100">uint16</input_port>
-            <output_port name="id" default="1">string</output_port>
+            <output_port name="failed_heartbeat_id" default="1">string</output_port>
         </Condition>
         <Action ID="ImportEnvironmentLEDColor" editable="true">
             <output_port name="red" default="{red}"/>
