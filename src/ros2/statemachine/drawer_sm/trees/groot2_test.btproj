@@ -30,6 +30,11 @@
             <input_port name="key" default="FRONT_LASER_SAFE_ZONE_FREE"/>
             <input_port name="topic" default="/robot/safety_module/raw_registers"/>
         </Condition>
+        <Condition ID="DoubleCompareCondition" editable="true">
+            <input_port name="target_value" default="0.0"/>
+            <input_port name="value" default="0.0"/>
+            <input_port name="comparison" default="=="/>
+        </Condition>
         <Action ID="DrawerChangeStateReq">
             <input_port name="drawer_address_topic" default="/open_request"/>
             <output_port name="drawer_address" default="{drawer}"/>

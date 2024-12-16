@@ -15,6 +15,7 @@ robot_tree_initiator:
       - check_safety_register_condition_node
       - publish_string_topic_action_node
       - path_topic_condition_node
+      - double_compare_condition_node
     bt_path: "/workspace/src/statemachine/drawer_sm/trees/Robo_base.xml"
     trigger_topic: "trigger_base_tree"
     main_tree: "BehaviorTree"
