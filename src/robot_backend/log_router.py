@@ -1,14 +1,16 @@
 from fastapi import APIRouter, HTTPException, Body
 from fastapi.responses import FileResponse
 from pathlib import Path
+import os
 
 log_router = APIRouter()
 
-LOG_FOLDER = Path("./log").resolve()
+home_directory = os.path.expanduser("~")
+LOG_FOLDER = Path(f"{home_directory}/log").resolve()
 
 available_logs = [
     str(file.relative_to(LOG_FOLDER))
-    for file in LOG_FOLDER.rglob("*")
+    for file in LOG_FOLDER.rglob("*.log")
     if file.is_file()
 ]
 
