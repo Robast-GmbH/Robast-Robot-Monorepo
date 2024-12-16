@@ -21,7 +21,7 @@ def generate_launch_description():
         "plugins": ["heartbeat_condition_node", "robast_error_pub_node", "publish_string_topic_action_node"],
         "trigger_topic": "trigger_heartbeat_tree",
         "main_tree": "default_heartbeat_drawer_tree",
-        "tree_tick_time": 10
+        "tree_tick_time": 500
     }
 
     bt_node = Node(
