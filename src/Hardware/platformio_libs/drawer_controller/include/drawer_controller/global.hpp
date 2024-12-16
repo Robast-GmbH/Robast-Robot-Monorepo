@@ -16,6 +16,7 @@
 #include "utils/can_message_converter.hpp"
 #include "utils/config_manager.hpp"
 #include "utils/queue.hpp"
+#include "watchdog/heartbeat.hpp"
 
 constexpr float SWITCH_PRESSED_THRESHOLD = 0.9;
 constexpr float SWITCH_WEIGHT_NEW_VALUES = 0.25;
@@ -31,6 +32,8 @@ SemaphoreHandle_t can_queue_mutex = NULL;
 
 std::shared_ptr<robast_can_msgs::CanDb> can_db;
 
+std::shared_ptr<can_toolbox::CanUtils> can_utils;
+
 std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper;
 
 std::shared_ptr<lock::ElectricalDrawerLock> drawer_lock;
@@ -42,12 +45,15 @@ std::shared_ptr<motor::EncoderConfig> encoder_config;
 std::shared_ptr<motor::MotorConfig> motor_config;
 std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config;
 std::shared_ptr<tray::TrayManagerConfig> tray_manager_config;
+std::shared_ptr<watchdog::HeartbeatConfig> heartbeat_config;
 
 std::shared_ptr<switch_lib::Switch> endstop_switch;
 
 std::unique_ptr<utils::CanMessageConverter> can_message_converter;
 
 std::unique_ptr<utils::ConfigManager> config_manager;
+
+std::shared_ptr<watchdog::Heartbeat> heartbeat;
 
 // shared resource, so we need a mutex for this
 std::unique_ptr<utils::Queue<robast_can_msgs::CanMessage>> can_msg_queue;

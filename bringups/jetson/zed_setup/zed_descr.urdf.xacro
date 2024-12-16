@@ -32,14 +32,14 @@
 	    <origin xyz="$(arg gnss_x) $(arg gnss_y) $(arg gnss_z)" rpy="0 0 0"/>
   </xacro:zed_camera>
   <!-- Add a joint to connect the ZED Camera to the robot -->
-  <!-- <link name="robot/base_link"/> -->
+  <link name="robot/base_link"/>
   <!-- NO ZED Localization -> '$(arg camera_name)_camera_link' is a child of 'base_link' -->
-  <!-- <joint name="$(arg camera_name)_joint" type="fixed">
+  <joint name="$(arg camera_name)_joint" type="fixed">
     <parent link="robot/base_link"/>
     <child link="$(arg camera_name)_camera_link"/>
     <origin
       xyz="0.27 0 1.44"
       rpy="0 0.436 0"
     />
-  </joint> -->
+  </joint>
 </robot>

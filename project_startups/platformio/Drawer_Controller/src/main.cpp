@@ -26,14 +26,15 @@ constexpr config::UserConfig USER_CONFIG{.module_version = config::version::CURA
                                          .lock_id = 1,
                                          .is_shaft_direction_inverted = true,
                                          .endstop_switch_type = switch_lib::Switch::normally_open,
-                                         .use_color_fade = false};
+                                         .use_color_fade = false,
+                                         .allow_partial_led_changes = false};
 
 constexpr config::ModuleHardwareConfig MODULE_HARDWARE_CONFIG =
   config::get_module_hardware_config<USER_CONFIG.module_version>(USER_CONFIG.module_prefix);
 
 constexpr uint32_t MODULE_ID = module_id::generate_module_id(USER_CONFIG.module_prefix, USER_CONFIG.unique_module_id);
 
-std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.num_of_leds>> led_strip;
+std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.total_num_of_leds>> led_strip;
 
 // Initialize can_controller based on HARDWARE_VERSION
 #if HARDWARE_VERSION == 3
@@ -74,7 +75,7 @@ void add_can_msg_to_queue(std::optional<robast_can_msgs::CanMessage>& received_m
   }
   else
   {
-    Serial.println("[Main]: Error: Could not take the mutex. This should not occur.");
+    serial_println_error("[Main]: Error: Could not take the mutex. This should not occur.");
   }
 }
 
@@ -157,7 +158,7 @@ void process_can_msgs_task_loop(void* pvParameters)
     }
     else
     {
-      Serial.println("Error: Could not take the mutex. This should not occur.");
+      serial_println_error("[Main]: Error: Could not take the mutex. This should not occur.");
     }
 
     if (received_message.has_value())
@@ -182,7 +183,7 @@ void process_can_msgs_task_loop(void* pvParameters)
           led_strip->initialize_led_state_change(led_header);
         }
         break;
-        case robast_can_msgs::can_id::SINGLE_LED_STATE:
+        case robast_can_msgs::can_id::LED_STATE:
         {
           const led::LedState led_state = can_message_converter->convert_to_led_state(received_message.value());
           led_strip->set_led_state(led_state);
@@ -199,7 +200,7 @@ void process_can_msgs_task_loop(void* pvParameters)
                                          .get_data());
           if (!config_set_successfully)
           {
-            Serial.println("[Main]: Warning - Tried to set config for invalid config id!");
+            serial_println_warning("[Main]: Warning - Tried to set config for invalid config id!");
           }
         }
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_MOTOR_CONTROL:
@@ -214,7 +215,7 @@ void process_can_msgs_task_loop(void* pvParameters)
           i_drawer->set_motor_driver_state(enable_motor, motor_id);
         }
         default:
-          debug_println("[Main]: Received unsupported CAN message.");
+          serial_println_warning("[Main]: Received unsupported CAN message.");
           break;
       }
     }
@@ -226,7 +227,9 @@ void process_can_msgs_task_loop(void* pvParameters)
       i_drawer->update_state();
     }
 
-    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = i_drawer->can_out();
+    heartbeat->generate_heartbeat();
+
+    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = can_utils->get_element_from_feedback_msg_queue();
 
     if (to_be_sent_message.has_value())
     {
@@ -238,7 +241,7 @@ void process_can_msgs_task_loop(void* pvParameters)
 void setup()
 {
   Serial.begin(115200);
-  debug_printf("[Main]: Start the module with the module id: %d\n", MODULE_ID);
+  debug_printf_green("[Main]: Start the module with the module id: %d\n", MODULE_ID);
 
   std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(1);
   wire_port_expander->begin(peripherals::i2c::I2C_SDA, peripherals::i2c::I2C_SCL);
@@ -263,9 +266,11 @@ void setup()
 
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   can_message_converter = std::make_unique<utils::CanMessageConverter>();
+  can_utils = std::make_shared<can_toolbox::CanUtils>(can_db);
 
-  led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.num_of_leds>>(
-    USER_CONFIG.use_color_fade);
+  led_strip =
+    std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.total_num_of_leds>>(
+      MODULE_ID, USER_CONFIG.use_color_fade, USER_CONFIG.allow_partial_led_changes, can_utils);
 
   // Very important to initialize this before the can_controller is created
   can_queue_mutex = xSemaphoreCreateMutex();
@@ -295,19 +300,23 @@ void setup()
   motor_config = std::make_shared<motor::MotorConfig>();
   motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
   tray_manager_config = std::make_shared<tray::TrayManagerConfig>();
+  heartbeat_config = std::make_shared<watchdog::HeartbeatConfig>();
 
   config_manager = std::make_unique<utils::ConfigManager>(
-    drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config);
+    drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config, heartbeat_config);
   config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                              USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
+  config_manager->print_all_configs();
+
+  heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, heartbeat_config);
 
   if (MODULE_HARDWARE_CONFIG.is_electrical_drawer)
   {
     i_drawer = std::make_shared<drawer::ElectricalDrawer>(
       MODULE_ID,
       USER_CONFIG.lock_id,
-      can_db,
       gpio_wrapper,
+      can_utils,
       stepper_1_pin_id_config,
       MODULE_HARDWARE_CONFIG.use_encoder,
       gpio_wrapper->get_gpio_num_for_pin_id(gpio_defines::pin_id::STEPPER_1_ENCODER_A),
@@ -323,7 +332,7 @@ void setup()
   else
   {
     i_drawer =
-      std::make_shared<drawer::ManualDrawer>(MODULE_ID, USER_CONFIG.lock_id, can_db, endstop_switch, drawer_lock);
+      std::make_shared<drawer::ManualDrawer>(MODULE_ID, USER_CONFIG.lock_id, can_utils, endstop_switch, drawer_lock);
   }
 
   // Initialize CAN Controller right before can task receive loop is started, otherwise rx_queue might overflow
@@ -347,7 +356,7 @@ void setup()
                           &Task2,                     /* Task handle to keep track of created task */
                           1);                         /* pin task to core 1 */
 
-  debug_println("[Main]: Finished setup()!");
+  debug_printf_green("[Main]: Finished setup()!\n");
 }
 
 void loop()

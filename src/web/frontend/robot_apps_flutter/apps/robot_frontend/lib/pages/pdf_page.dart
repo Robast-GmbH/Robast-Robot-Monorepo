@@ -16,8 +16,8 @@ class PdfPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      ignoreEmergencyStop: true,
       inactivityTimerEnabled: inactivityTimerEnabled,
+      ignoreMissingEmergencyStopData: true,
       title: path.split('/').last.split('.').first,
       child: PdfViewer.file(
         path,

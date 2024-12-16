@@ -5,12 +5,13 @@ import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/pages/auth_page.dart';
+import 'package:robot_frontend/pages/manuals_page.dart';
 import 'package:robot_frontend/pages/module_pages/module_process_page.dart';
+import 'package:robot_frontend/widgets/clock_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/disinfection_module_empty_view.dart';
 
 import 'package:robot_frontend/widgets/driving_view.dart';
-import 'package:robot_frontend/widgets/status_bar.dart';
 import 'package:robot_frontend/widgets/status_indicator_view.dart';
 
 class HomePage extends StatefulWidget {
@@ -72,16 +73,45 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       inactivityTimerEnabled: false,
       child: Column(
         children: [
-          const Row(
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: EdgeInsets.all(12),
-                child: StatusIndicatorView(
-                  shouldBlockNavigation: true,
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16, top: 8),
+                      child: IconButton(
+                        padding: const EdgeInsets.all(0),
+                        onPressed: () async {
+                          final robotProvider = Provider.of<RobotProvider>(context, listen: false);
+                          robotProvider.blockNavigation();
+                          await Navigator.push(context, MaterialPageRoute<ManualsPage>(builder: (context) => const ManualsPage()));
+                          robotProvider.unblockNavigation();
+                        },
+                        color: RobotColors.primaryIcon,
+                        icon: const Icon(
+                          Icons.info_outline,
+                          size: 64,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Expanded(child: StatusBar()),
+              const Padding(
+                padding: EdgeInsets.all(8),
+                child: ClockView(),
+              ),
+              const Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 8, right: 16),
+                  child: StatusIndicatorView(
+                    shouldBlockNavigation: true,
+                  ),
+                ),
+              ),
             ],
           ),
           Expanded(

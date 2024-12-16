@@ -4,6 +4,8 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
+    middleware_address = "http://10.10.23.7:8003"
+
     use_sim_time = LaunchConfiguration("use_sim_time", default="false")
 
     config_file = LaunchConfiguration(
@@ -52,6 +54,18 @@ def generate_launch_description():
         parameters=[use_sim_time],
     )
 
+    dispenser_ingestor_mock = Node(
+        package="dispenser_ingestor_mock",
+        executable="dispenser_ingestor_mock",
+        parameters=[middleware_address],
+    )
+
+    fire_alarm_publisher = Node(
+        package="fire_alarm_publisher",
+        executable="fire_alarm_publisher",
+        parameters=[middleware_address],
+    )
+
     fleet_adapter = Node(
         package="fleet_adapter_rb_theron",
         executable="fleet_adapter",
@@ -72,6 +86,8 @@ def generate_launch_description():
             building_map_server,
             rmf_task_dispatcher,
             door_supervisor,
+            dispenser_ingestor_mock,
+            fire_alarm_publisher,
             fleet_adapter,
         ]
     )

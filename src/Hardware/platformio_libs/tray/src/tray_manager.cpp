@@ -51,7 +51,7 @@ namespace tray
 
   void TrayManager::unlock_lock(uint8_t tray_id)
   {
-    debug_printf("[TrayManager]: Unlocking lock for tray %d\n", tray_id);
+    debug_printf_green("[TrayManager]: Unlocking lock for tray %d\n", tray_id);
     _electrical_tray_locks[tray_id - 1]->unlock();
     _timestamp_last_tray_lock_opening[tray_id - 1] = millis();
   }
@@ -129,14 +129,34 @@ namespace tray
         _tray_manager_config->get_speed_deviation_in_percentage_for_stall_when_closing_lid());
 
       _reduced_speed_for_tray_lid[tray_id - 1] = true;
+
+      debug_printf_green(
+        "[TrayManager]: Reduced speed for tray lid %d because distance to tray lid is %u and threshold is %u and "
+        "_speed_deviation_in_percentage_for_stall_before_reduced_speed is %f and _target_speed_before_reduced_speed is "
+        "%u\n",
+        tray_id,
+        distance_to_tray_lid,
+        threshold,
+        _speed_deviation_in_percentage_for_stall_before_reduced_speed,
+        _target_speed_before_reduced_speed);
     }
-    else if (distance_to_tray_lid > threshold)
+
+    if (_reduced_speed_for_tray_lid[tray_id - 1] && distance_to_tray_lid > threshold)
     {
       _motor_monitor_config->set_speed_deviation_in_percentage_for_stall(
         _speed_deviation_in_percentage_for_stall_before_reduced_speed);
       _e_drawer->set_target_speed_and_direction(_target_speed_before_reduced_speed, true);
       _reduced_speed_for_tray_lid[tray_id - 1] = false;
       _electrical_tray_locks[tray_id - 1]->set_is_drawer_opening_in_progress(false);
+      debug_printf_green(
+        "[TrayManager]: Restored speed for tray lid %d because distance to tray lid is %u and threshold is %u and "
+        "_speed_deviation_in_percentage_for_stall_before_reduced_speed is %f and _target_speed_before_reduced_speed is "
+        "%u\n",
+        tray_id,
+        distance_to_tray_lid,
+        threshold,
+        _speed_deviation_in_percentage_for_stall_before_reduced_speed,
+        _target_speed_before_reduced_speed);
     }
   }
 }   // namespace tray

@@ -1,4 +1,3 @@
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -21,8 +20,6 @@ class _ManualsManagementPageState extends State<ManualsManagementPage> {
   final manuals = <String>[];
   late Future<void> _loadFiles;
 
-  String? _statusMessage;
-
   Future<void> pickAndUploadFile() async {
     try {
       // Step 1: Pick a file
@@ -32,9 +29,6 @@ class _ManualsManagementPageState extends State<ManualsManagementPage> {
       );
 
       if (result == null || result.files.isEmpty) {
-        setState(() {
-          _statusMessage = 'No file selected.';
-        });
         return;
       }
 
@@ -44,9 +38,6 @@ class _ManualsManagementPageState extends State<ManualsManagementPage> {
       final fileName = file.name;
 
       if (fileBytes == null) {
-        setState(() {
-          _statusMessage = 'Failed to read the file.';
-        });
         return;
       }
 
@@ -61,21 +52,9 @@ class _ManualsManagementPageState extends State<ManualsManagementPage> {
           ),
         );
 
-      final response = await request.send();
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        setState(() {
-          _statusMessage = "File '$fileName' uploaded successfully.";
-        });
-      } else {
-        setState(() {
-          _statusMessage = 'Failed to upload. Server responded with status: ${response.statusCode}.';
-        });
-      }
+      await request.send();
     } catch (e) {
-      setState(() {
-        _statusMessage = 'An error occurred: $e';
-      });
+      setState(() {});
     }
   }
 
@@ -110,47 +89,49 @@ class _ManualsManagementPageState extends State<ManualsManagementPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () async {
-            await pickAndUploadFile();
-            _loadFiles = loadFiles();
-          },),
+        child: const Icon(Icons.add),
+        onPressed: () async {
+          await pickAndUploadFile();
+          _loadFiles = loadFiles();
+        },
+      ),
       body: FutureBuilder(
-          future: _loadFiles,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return ListView(
-              children: manuals
-                  .map(
-                    (manual) => ListTile(
-                      title: Text(manual),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () async {
-                          await http.delete(
-                            Uri.parse('${MiddlewareApiUtilities().prefix}/manuals/$manual'),
-                            headers: headers,
-                          );
-                          _loadFiles = loadFiles();
-                        },
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute<PdfPage>(
-                            builder: (context) => PdfPage(
-                              path: '${MiddlewareApiUtilities().prefix}/manuals/$manual',
-                            ),
-                          ),
+        future: _loadFiles,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          return ListView(
+            children: manuals
+                .map(
+                  (manual) => ListTile(
+                    title: Text(manual),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () async {
+                        await http.delete(
+                          Uri.parse('${MiddlewareApiUtilities().prefix}/manuals/$manual'),
+                          headers: headers,
                         );
+                        _loadFiles = loadFiles();
                       },
                     ),
-                  )
-                  .toList(),
-            );
-          },),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<PdfPage>(
+                          builder: (context) => PdfPage(
+                            path: '${MiddlewareApiUtilities().prefix}/manuals/$manual',
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                )
+                .toList(),
+          );
+        },
+      ),
     );
   }
 }

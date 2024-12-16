@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class SidebarMenuPoint {
-
   SidebarMenuPoint({
     required this.title,
     required this.icon,

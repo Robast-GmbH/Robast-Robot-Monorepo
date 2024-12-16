@@ -14,7 +14,7 @@ slam_toolbox:
     odom_frame: robot/odom
     map_frame: map
     base_frame: robot/base_footprint
-    scan_topic: /robot/front_laser/scan
+    scan_topic: /robot/merged_laser/scan
     mode: mapping #localization
 
     # if you'd like to immediately start continuing a map at a given pose

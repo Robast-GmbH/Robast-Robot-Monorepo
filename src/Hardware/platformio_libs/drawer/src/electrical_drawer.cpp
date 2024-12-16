@@ -4,8 +4,8 @@ namespace drawer
 {
   ElectricalDrawer::ElectricalDrawer(const uint32_t module_id,
                                      const uint8_t id,
-                                     const std::shared_ptr<robast_can_msgs::CanDb> can_db,
                                      const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
+                                     const std::shared_ptr<can_toolbox::CanUtils> can_utils,
                                      const stepper_motor::StepperPinIdConfig &stepper_pin_id_config,
                                      const bool use_encoder,
                                      const uint8_t encoder_pin_a,
@@ -20,9 +20,9 @@ namespace drawer
       : _module_id{module_id},
         _id{id},
         _gpio_wrapper{gpio_wrapper},
+        _can_utils{can_utils},
         _stepper_pin_id_config{stepper_pin_id_config},
         _encoder{std::make_shared<motor::Encoder>(use_encoder, encoder_pin_a, encoder_pin_b, encoder_config)},
-        _can_utils{std::make_unique<can_toolbox::CanUtils>(can_db)},
         _motor{std::make_shared<stepper_motor::Motor>(
           motor_driver_address, _gpio_wrapper, _stepper_pin_id_config, motor_config)},
         _endstop_switch{endstop_switch},
@@ -41,6 +41,7 @@ namespace drawer
 
   void ElectricalDrawer::set_motor_driver_state(const bool enabled, const uint8_t motor_id) const
   {
+    debug_printf_warning("[ElectricalDrawer]: Setting motor driver state to %d\n", enabled);
     // TODO@Jacob: Once we have more then one motor, we need to change this to a switch case and use the motor_id
     enabled ? _motor->enable_driver() : _motor->disable_driver();
 
@@ -56,13 +57,9 @@ namespace drawer
     }
     else
     {
-      Serial.println("[ElectricalDrawer]: Warning! Received request to unlock the lock, but no lock is installed!");
+      serial_println_warning(
+        "[ElectricalDrawer]: Warning! Received request to unlock the lock, but no lock is installed!");
     }
-  }
-
-  std::optional<robast_can_msgs::CanMessage> ElectricalDrawer::can_out()
-  {
-    return _can_utils->get_element_from_feedback_msg_queue();
   }
 
   void ElectricalDrawer::update_state()
@@ -117,6 +114,38 @@ namespace drawer
   {
     reset_encoder_if_endstop_is_pushed();
 
+    check_if_push_to_close_is_triggered();
+
+    check_if_drawer_is_pulled_out();
+
+    // In very rare cases, when the stall guard is triggerd very close before closing, we might close the drawer
+    // by hand without push to close triggering. In this case, we need to catch the drawer closing.
+    if (_is_drawer_opening_in_progress)
+    {
+      handle_finished_moving_in_drawer();
+    }
+
+    start_next_e_drawer_task();
+  }
+
+  void ElectricalDrawer::check_if_drawer_is_pulled_out()
+  {
+    if (!_is_drawer_opening_in_progress)
+    {
+      if (_encoder_monitor->check_if_drawer_is_pulled_out())
+      {
+        add_e_drawer_task_to_queue({DRAWER_TARGET_HOMING_POSITION,
+                                    _config->get_drawer_push_in_auto_close_speed(),
+                                    _config->get_drawer_push_in_auto_close_stall_guard_value(),
+                                    IS_NOT_HOMING,
+                                    DO_NOT_USE_ACCELERATION_RAMP});
+        // TODO: Do we need to send a feedback message here?
+      }
+    }
+  }
+
+  void ElectricalDrawer::check_if_push_to_close_is_triggered()
+  {
     // if the drawer is not moving, we need to check if the drawer is pushed in
     // but make sure to wait a certain amount of time if the stall guard was triggered
     const uint32_t wait_time_in_ms_after_stall_guard_triggered =
@@ -146,15 +175,6 @@ namespace drawer
         _encoder->get_normed_current_position(),
         PUSH_TO_CLOSE_TRIGGERED);
     }
-
-    // In very rare cases, when the stall guard is triggerd very close before closing, we might close the drawer
-    // by hand without push to close triggering. In this case, we need to catch the drawer closing.
-    if (_is_drawer_opening_in_progress)
-    {
-      handle_finished_moving_in_drawer();
-    }
-
-    start_next_e_drawer_task();
   }
 
   void ElectricalDrawer::start_next_e_drawer_task()
@@ -247,8 +267,6 @@ namespace drawer
     _encoder->update_position(_motor->get_active_speed());
 
     _is_drawer_moving_out ? handle_drawer_moving_out() : handle_drawer_moving_in();
-
-    debug_prints_moving_e_drawer();
   }
 
   bool ElectricalDrawer::check_and_handle_initial_drawer_homing()
@@ -259,7 +277,7 @@ namespace drawer
       _encoder->set_current_position(STALL_GUARD_DISABLED);
       _drawer_was_homed_once = true;
       _is_idling = true;
-      debug_println("[ElectricalDrawer]: Drawer was homed successfully!");
+      debug_printf_green("[ElectricalDrawer]: Drawer was homed successfully!\n");
     }
     return _drawer_was_homed_once;
   }
@@ -285,8 +303,9 @@ namespace drawer
     if (millis() - _timestamp_movement_started_in_ms <
         _config->get_drawer_stall_guard_wait_time_after_movement_started_in_ms())
     {
-      debug_printf(
-        "[ElectricalDrawer]: Since the movement started, %u ms passed! We need to wait %u ms until we start detecting "
+      debug_printf_warning(
+        "[ElectricalDrawer]: Since the movement started, %u ms passed! We need to wait %u ms until we start "
+        "detecting "
         "a stall guard!\n",
         millis() - _timestamp_movement_started_in_ms,
         _config->get_drawer_stall_guard_wait_time_after_movement_started_in_ms());
@@ -310,11 +329,11 @@ namespace drawer
 
     if (_is_tmc_stall_guard_triggered)
     {
-      debug_println("[ElectricalDrawer]: Motor stall is detected by TMC stall guard.!");
+      debug_printf_warning("[ElectricalDrawer]: Motor stall is detected by TMC stall guard!\n");
     }
     if (_is_motor_monitor_stall_guard_triggered)
     {
-      debug_println("[ElectricalDrawer]: Motor stall is detected by motor monitor.");
+      debug_printf_warning("[ElectricalDrawer]: Motor stall is detected by motor monitor!\n");
     }
 
     return true;
@@ -322,7 +341,7 @@ namespace drawer
 
   void ElectricalDrawer::handle_stall_guard_triggered()
   {
-    debug_println("[ElectricalDrawer]: Stall guard is triggered! Setting speed to 0 and creating feedback messages!");
+    debug_printf_warning("[ElectricalDrawer]: Stall guard is triggered! Setting speed to 0 and creating feedback!\n");
 
     _motor->set_target_speed_instantly(TARGET_SPEED_ZERO);
 
@@ -368,7 +387,7 @@ namespace drawer
     // Before we add a new task to the queue, we need to check if the drawer was homed once
     if (!_drawer_was_homed_once)
     {
-      debug_println("[ElectricalDrawer]: Drawer was not homed once yet, so add homing task to queue!");
+      debug_printf_warning("[ElectricalDrawer]: Drawer was not homed once yet, so add homing task to queue!");
       _e_drawer_task_queue->enqueue({DRAWER_TARGET_HOMING_POSITION,
                                      get_normed_target_speed_uint8(_config->get_drawer_initial_homing_speed()),
                                      STALL_GUARD_DISABLED,
@@ -388,8 +407,9 @@ namespace drawer
     if (e_drawer_task.target_position == _target_position_uint8 &&
         (!_is_idling || _encoder->get_normed_current_position() == _target_position_uint8))
     {
-      Serial.printf("[ElectricalDrawer]: Warning! Received redundant task with target position %d! Discarding it!\n",
-                    _target_position_uint8);
+      serial_printf_warning(
+        "[ElectricalDrawer]: Warning! Received redundant task with target position %d! Discarding it!\n",
+        _target_position_uint8);
       return;
     }
 
@@ -545,7 +565,7 @@ namespace drawer
     {
       // This makes sure the lock automatically closes as soon as the drawer is opened.
       _drawer_lock.value()->set_expected_lock_state_current_step(lock::LockState::locked);
-      debug_println("[ElectricalDrawer]: Triggered closing the lock because drawer is not retracted anymore!");
+      debug_printf_green("[ElectricalDrawer]: Triggered closing the lock because drawer is not retracted anymore!\n");
     }
   }
 
@@ -559,12 +579,12 @@ namespace drawer
       }
       else
       {
-        debug_println("[ElectricalDrawer]: Drawer is closed, but no opening was in progress!");
+        debug_printf_warning("[ElectricalDrawer]: Drawer is closed, but no opening was in progress!\n");
         return;
       }
     }
 
-    debug_println("[ElectricalDrawer]: Drawer is closed! Setting speed to 0 and creating feedback messages!");
+    debug_printf_green("[ElectricalDrawer]: Drawer is closed! Setting speed to 0 and creating feedback messages!\n");
     _motor->set_target_speed_instantly(TARGET_SPEED_ZERO);
     _encoder->set_current_position(DRAWER_HOMING_POSITION);
 
@@ -596,16 +616,4 @@ namespace drawer
   {
     return _is_motor_monitor_stall_guard_triggered || _is_tmc_stall_guard_triggered;
   }
-
-  void ElectricalDrawer::debug_prints_moving_e_drawer()
-  {
-    int normed_target_position = (_target_position_uint8 / 255.0) * _encoder->get_count_drawer_max_extent();
-    debug_printf(
-      "[ElectricalDrawer]: Current position: % d, Target Position: %d, Current Speed: %d, Target Speed: % d\n ",
-      _encoder->get_current_position(),
-      normed_target_position,
-      _motor->get_active_speed(),
-      _motor->get_target_speed());
-  }
-
 }   // namespace drawer

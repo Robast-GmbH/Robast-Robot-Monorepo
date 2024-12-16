@@ -6,12 +6,14 @@ namespace utils
                                const std::shared_ptr<motor::EncoderConfig> encoder_config,
                                const std::shared_ptr<motor::MotorConfig> motor_config,
                                const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config,
-                               const std::shared_ptr<tray::TrayManagerConfig> tray_manager_config)
+                               const std::shared_ptr<tray::TrayManagerConfig> tray_manager_config,
+                               const std::shared_ptr<watchdog::HeartbeatConfig> heartbeat_config)
       : _drawer_config{drawer_config},
         _encoder_config{encoder_config},
         _motor_config{motor_config},
         _motor_monitor_config{motor_monitor_config},
-        _tray_manager_config{tray_manager_config}
+        _tray_manager_config{tray_manager_config},
+        _heartbeat_config{heartbeat_config}
   {
     set_default_configs();
   }
@@ -153,6 +155,11 @@ namespace utils
             config_value));
         break;
 
+      case module_config::encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT:
+        _encoder_config->set_drawer_pulled_out_threshold_in_percent_of_max_extent(
+          std::bit_cast<module_config::ModuleSetting<
+            module_config::encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>::type>(config_value));
+
       case module_config::motor::IS_SHAFT_DIRECTION_INVERTED:
         _motor_config->set_is_shaft_direction_inverted(
           static_cast<module_config::ModuleSetting<module_config::motor::IS_SHAFT_DIRECTION_INVERTED>::type>(
@@ -240,10 +247,26 @@ namespace utils
             config_value));
         break;
 
+      case module_config::watchdog::HEARTBEAT_INTERVAL_IN_MS:
+        _heartbeat_config->set_heartbeat_interval_in_ms(
+          static_cast<module_config::ModuleSetting<module_config::watchdog::HEARTBEAT_INTERVAL_IN_MS>::type>(
+            config_value));
+        break;
+
       default:
         return false;
     }
     return true;
+  }
+
+  void ConfigManager::print_all_configs() const
+  {
+    _drawer_config->print_all_configs();
+    _encoder_config->print_all_configs();
+    _motor_config->print_all_configs();
+    _motor_monitor_config->print_all_configs();
+    _tray_manager_config->print_all_configs();
+    _heartbeat_config->print_all_configs();
   }
 
   void ConfigManager::set_default_configs()
@@ -257,6 +280,8 @@ namespace utils
     set_default_motor_monitor_config();
 
     set_default_tray_manager_config();
+
+    set_default_heartbeat_config();
   }
 
   void ConfigManager::set_default_drawer_config()
@@ -360,6 +385,11 @@ namespace utils
       module_config::encoder::DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS,
       std::bit_cast<uint32_t>(
         module_config::ModuleSetting<module_config::encoder::DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS>::default_value));
+
+    set_config(module_config::encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT,
+               std::bit_cast<uint32_t>(
+                 module_config::ModuleSetting<
+                   module_config::encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>::default_value));
   }
 
   void ConfigManager::set_default_motor_config()
@@ -424,6 +454,13 @@ namespace utils
       module_config::tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID,
       static_cast<uint32_t>(
         module_config::ModuleSetting<module_config::tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID>::default_value));
+  }
+
+  void ConfigManager::set_default_heartbeat_config()
+  {
+    set_config(module_config::watchdog::HEARTBEAT_INTERVAL_IN_MS,
+               static_cast<uint32_t>(
+                 module_config::ModuleSetting<module_config::watchdog::HEARTBEAT_INTERVAL_IN_MS>::default_value));
   }
 
 }   // namespace utils

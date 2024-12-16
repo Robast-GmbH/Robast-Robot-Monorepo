@@ -5,11 +5,17 @@ led_cmd:
   start_index: 0
   fade_time_in_ms: 1000
 
-led:
+led_state_1:
   red: 11
   green: 22
   blue: 33
   brightness: 44
+
+led_state_2:
+  red: 55
+  green: 66
+  blue: 77
+  brightness: 88
 
 open_drawer:
   module_id: 0x010203

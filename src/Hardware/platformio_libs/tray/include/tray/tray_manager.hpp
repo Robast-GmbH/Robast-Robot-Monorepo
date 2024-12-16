@@ -50,7 +50,7 @@ namespace tray
 
     uint8_t _target_speed_before_reduced_speed = 0;
 
-    float _speed_deviation_in_percentage_for_stall_before_reduced_speed = 0.0;
+    float _speed_deviation_in_percentage_for_stall_before_reduced_speed = 0.0f;
 
     const std::unique_ptr<led::OnboardLedDriver> _onboard_led_driver;
 

@@ -17,7 +17,7 @@ def generate_launch_description():
     init_yaw = None
 
     if os.path.isfile('/logs/last_pose.yaml'):
-        with open('/workspace/last_pose.yaml', 'r') as file:
+        with open('/logs/last_pose.yaml', 'r') as file:
             config = yaml.safe_load(file)
             init_x = config['map_pose']['position']['x']
             init_y = config['map_pose']['position']['y']

@@ -3,8 +3,8 @@ from dispenser_ingestor_mock.submodule_process import SubmoduleProcess
 
 
 class RobotModulesAPI:
-    def __init__(self, middleware_url: str) -> None:
-        self.__middleware_url = middleware_url
+    def __init__(self, middleware_address: str) -> None:
+        self.__middleware_address = middleware_address
 
     def start_submodule_process(
         self, submodule_process_request: SubmoduleProcess
@@ -25,7 +25,7 @@ class RobotModulesAPI:
                 "items_by_change": items_by_change,
             }
             response = requests.post(
-                f"{self.__middleware_url}/modules/start_submodule_process?robot_name={submodule_process_request.robot_name}",
+                f"{self.__middleware_address}/modules/start_submodule_process?robot_name={submodule_process_request.robot_name}",
                 json=data,
             )
             response.raise_for_status()
@@ -37,7 +37,7 @@ class RobotModulesAPI:
     ) -> str | None:
         try:
             response = requests.get(
-                f"{self.__middleware_url}/modules/submodule_process_status?robot_name={robot_name}&module_id={module_id}&submodule_id={submodule_id}"
+                f"{self.__middleware_address}/modules/submodule_process_status?robot_name={robot_name}&module_id={module_id}&submodule_id={submodule_id}"
             )
             response.raise_for_status()
             return response.json()["status"]

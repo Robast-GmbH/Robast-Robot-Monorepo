@@ -16,8 +16,10 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
   auto motor_config = std::make_shared<motor::MotorConfig>();
   auto motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
   auto tray_manager_config = std::make_shared<tray::TrayManagerConfig>();
+  auto heartbeat_config = std::make_shared<watchdog::HeartbeatConfig>();
 
-  utils::ConfigManager config_manager(e_drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config);
+  utils::ConfigManager config_manager(
+    e_drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config, heartbeat_config);
 
   SECTION("Check if default configs are set correctly for the e-drawer config.")
   {
@@ -78,6 +80,9 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
     REQUIRE(encoder_config->get_drawer_push_in_threshold_in_percent_of_max_extent() ==
             module_config::ModuleSetting<
               module_config::encoder::DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>::default_value);
+    REQUIRE(encoder_config->get_drawer_pulled_out_threshold_in_percent_of_max_extent() ==
+            module_config::ModuleSetting<
+              module_config::encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>::default_value);
   }
 
   SECTION("Check if default configs are set correctlx for the motor config.")
@@ -115,10 +120,17 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
             module_config::ModuleSetting<
               module_config::tray_manager::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID>::default_value);
     REQUIRE(tray_manager_config->get_position_offset_for_tray_lid_computation() ==
-            module_config::ModuleSetting<module_config::tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION>::default_value);
+            module_config::ModuleSetting<
+              module_config::tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION>::default_value);
     REQUIRE(tray_manager_config->get_distance_to_tray_lid_threshold() ==
             module_config::ModuleSetting<module_config::tray_manager::DISTANCE_TO_TRAY_LID_THRESHOLD>::default_value);
     REQUIRE(tray_manager_config->get_target_speed_to_close_tray_lid() ==
             module_config::ModuleSetting<module_config::tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID>::default_value);
+  }
+
+  SECTION("Check if default configs are set correctly for the heartbeat config.")
+  {
+    REQUIRE(heartbeat_config->get_heartbeat_interval_in_ms() ==
+            module_config::ModuleSetting<module_config::watchdog::HEARTBEAT_INTERVAL_IN_MS>::default_value);
   }
 }

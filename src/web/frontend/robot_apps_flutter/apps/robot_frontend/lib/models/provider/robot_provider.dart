@@ -8,8 +8,9 @@ class RobotProvider extends ChangeNotifier {
   Pose? _robotPose;
   bool _isRobotLost = false;
   bool get isRobotLost => _isRobotLost;
-  double? _batteryLevel;
-  double? get batteryLevel => _batteryLevel;
+  BatteryStatus? _batteryStatus;
+  double? get batteryLevel => _batteryStatus?.level;
+  bool? get isCharging => _batteryStatus?.isCharging;
 
   int? _remainingDisinfections;
   int? get remainingDisinfections => _remainingDisinfections;
@@ -36,8 +37,8 @@ class RobotProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateBatteryLevel() async {
-    _batteryLevel = await _robotAPI.getBatteryLevel();
+  Future<void> updateBatteryStatus() async {
+    _batteryStatus = await _robotAPI.getBatteryStatus();
     notifyListeners();
   }
 
@@ -52,6 +53,7 @@ class RobotProvider extends ChangeNotifier {
   }
 
   void startPeriodicIsEmergencyStopPressedUpdate() {
+    stopPeriodicIsEmergencyStopPressedUpdate();
     startPeriodicUpdate(
       timerRef: _isEmergencyStopPressedUpdateTimer,
       callback: updateEmergencyStopPressed,
@@ -67,10 +69,10 @@ class RobotProvider extends ChangeNotifier {
     );
   }
 
-  void startPeriodicBatteryLevelUpdate() {
+  void startPeriodicBatteryStatusUpdate() {
     startPeriodicUpdate(
       timerRef: _batteryLevelUpdateTimer,
-      callback: updateBatteryLevel,
+      callback: updateBatteryStatus,
       duration: const Duration(minutes: 1),
     );
   }
@@ -99,7 +101,7 @@ class RobotProvider extends ChangeNotifier {
     _remainingDisinfectionsUpdateTimer?.cancel();
   }
 
-  void stopPeriodicBatteryLevelUpdate() {
+  void stopPeriodicBatteryStatusUpdate() {
     _batteryLevelUpdateTimer?.cancel();
   }
 

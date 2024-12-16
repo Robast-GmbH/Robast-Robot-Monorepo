@@ -3,6 +3,7 @@
     <include path="default_electrical_drawer.xml"/>
     <include path="drawer_nfc_bt.xml"/>
     <include path="drawer_sequence.xml"/>
+    <include path="heartbeat.xml"/>
     <include path="partial_drawer.xml"/>
     <include path="robo_base.xml"/>
     <include path="subtrees/drawer_close_animation.xml"/>
@@ -43,17 +44,24 @@
             <input_port name="use_stallguard" default="false"/>
         </Condition>
         <Action ID="EvaluateDriveDirection" editable="true">
-            <input_port name="path_topic" default="path"/>
+            <input_port name="global_path_topic" default="/plan"/>
+            <input_port name="cmd_vel_topic" default="/robot/robotnik_base_control/cmd_vel_unsafe"/>
             <input_port name="prediction_horizon" default="60">nav2 plan steps. approx 5cm per step</input_port>
             <input_port name="global_frame" default="map"/>
             <input_port name="base_frame" default="base_link"/>
-            <output_port name="direction" default="standing">standing, left, right, forward</output_port>
+            <output_port name="direction" default="standing">sleeping, standing, left, right, forward</output_port>
         </Action>
         <Action ID="GetBlackboardEntry">
             <input_port name="key" default="drawer_address">string</input_port>
             <output_port name="value" default="{drawer}"/>
         </Action>
         <Action ID="Hans"/>
+        <Condition ID="HeartbeatCondition">
+            <input_port name="topic" default="/heartbeat"/>
+            <input_port name="timeouts_until_failure" default="3">uint8</input_port>
+            <input_port name="latency_tolerance_in_ms" default="100">uint16</input_port>
+            <output_port name="id" default="1">string</output_port>
+        </Condition>
         <Action ID="ImportEnvironmentLEDColor" editable="true">
             <output_port name="red" default="{red}"/>
             <output_port name="green" default="{green}"/>
@@ -77,6 +85,10 @@
             <input_port name="fading_time_ms" default="0">uint8</input_port>
             <input_port name="led_topic" default="/drawer_leds"/>
             <input_port name="leds" default="{leds}"/>
+        </Action>
+        <Action ID="LockPartialDrawer" editable="true">
+            <input_port name="module_address" default="{drawer}"/>
+            <input_port name="lock" default="true"/>
         </Action>
         <Action ID="MoveElectricDrawer">
             <input_port name="drawer_address" default="{drawer}"/>
@@ -107,6 +119,11 @@
             <input_port name="led_brightness_bot" default="255"/>
             <input_port name="topic" default="/tray_task"/>
         </Action>
+        <Condition ID="PathTopicCondition">
+            <input_port name="topic" default="/plan"/>
+            <input_port name="valid_path_age_in_ms" default="2000">uint16</input_port>
+            <input_port name="num_of_minimal_poses" default="10">uint16</input_port>
+        </Condition>
         <Action ID="PublishDrawerStatus" editable="true">
             <input_port name="topic_name" default="/bt_drawer_open"/>
             <input_port name="status" default="false"/>
@@ -117,10 +134,20 @@
             <input_port name="state_feedback_topic" default="/state_feedback"/>
             <input_port name="drawer_address" default="{drawer}"/>
         </Action>
+        <Action ID="PublishStringTopic" editable="true">
+            <input_port name="topic" default="/topic">string</input_port>
+            <input_port name="message" default="message">string</input_port>
+        </Action>
         <Control ID="ReactiveIfThenElse" editable="true"/>
         <Decorator ID="ResetDecorator">
             <input_port name="topic" default="/tree_reset"/>
         </Decorator>
+        <Action ID="RobastErrorPub">
+            <input_port name="topic" default="/robast_error"/>
+            <input_port name="error_code" default="0">uint16</input_port>
+            <input_port name="error_data" default="error_data">string</input_port>
+            <input_port name="error_description" default="error_description">string</input_port>
+        </Action>
         <Action ID="SetDefaultLEDColor" editable="true">
             <output_port name="red" default="{red}"/>
             <output_port name="green" default="{green}"/>

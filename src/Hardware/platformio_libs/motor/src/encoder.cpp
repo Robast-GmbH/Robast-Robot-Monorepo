@@ -14,7 +14,7 @@ namespace motor
     {
       _esp32_encoder = std::make_unique<ESP32Encoder>(true);
       ESP32Encoder::isrServiceCpuCore = 0;   // Use core 0
-      ESP32Encoder::useInternalWeakPullResistors = UP;
+      ESP32Encoder::useInternalWeakPullResistors = puType::up;
       _esp32_encoder->attachFullQuad(encoder_pin_a, encoder_pin_b);
       _esp32_encoder->setCount(0);
     }

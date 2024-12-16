@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/provider/fire_alarm_provider.dart';
+import 'package:robot_frontend/models/provider/hygiene_provider.dart';
 import 'package:robot_frontend/models/provider/map_provider.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
+import 'package:robot_frontend/models/provider/notification_provider.dart';
 
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/home_page.dart';
@@ -37,10 +40,14 @@ class _ConfigPageState extends State<ConfigPage> {
     required String middlewareAddress,
   }) async {
     Provider.of<RobotProvider>(context, listen: false).initRobotAPI(prefix: robotBackendAddress);
+    Provider.of<NotificationProvider>(context, listen: false).initRobotAPI(prefix: robotBackendAddress);
     Provider.of<RobotProvider>(context, listen: false).startPeriodicIsEmergencyStopPressedUpdate();
+    Provider.of<NotificationProvider>(context, listen: false).startPeriodicHeartbeatTimeoutsUpdate();
+    Provider.of<FireAlarmProvider>(context, listen: false).startPeriodicFireAlarmUpdate();
     MiddlewareApiUtilities().setPrefix(prefix: middlewareAddress);
     unawaited(Provider.of<MapProvider>(context, listen: false).fetchBuildingMap());
     Provider.of<ModuleProvider>(context, listen: false).stopSubmodulesUpdateTimer();
+    Provider.of<HygieneProvider>(context, listen: false).startPeriodicHygieneDataUpdate();
     Navigator.popUntil(context, ModalRoute.withName('/root'));
     await Navigator.push(
       context,
@@ -59,7 +66,7 @@ class _ConfigPageState extends State<ConfigPage> {
     return CustomScaffold(
       showBackButton: !widget.autoClose,
       inactivityTimerEnabled: false,
-      ignoreEmergencyStop: true,
+      ignoreMissingEmergencyStopData: true,
       child: Row(
         children: [
           const Expanded(child: SizedBox()),

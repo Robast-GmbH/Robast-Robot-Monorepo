@@ -147,6 +147,9 @@
                           red="0"
                           upper_bound="100.0"
                           LEDs_colored="{leds}"/>
+      <PublishStateFeedback state_feedback="opening"
+                            state_feedback_topic="/module_state_update"
+                            drawer_address="{drawer}"/>
     </Sequence>
   </BehaviorTree>
 
@@ -192,11 +195,11 @@
                 success_count="1">
         <SubTree ID="LED_unlocked"
                  _autoremap="true"/>
-        <ElectricDrawerStatusCondition target_value="251"
+        <ElectricDrawerStatusCondition target_value="254"
                                        topic="/electrical_drawer_status"
                                        use_stallguard="false"/>
         <Sequence>
-          <ElectricDrawerStatusCondition target_value="251"
+          <ElectricDrawerStatusCondition target_value="254"
                                          topic="/drawer_feedback_status"
                                          use_stallguard="true"/>
           <PublishStateFeedback state_feedback="stall_guard_triggered"
@@ -278,6 +281,10 @@
         <PublishDrawerStatus topic_name="/bt_drawer_open"
                              status="false"
                              drawer_address="{drawer}"/>
+        <Delay delay_msec="100">
+          <LockPartialDrawer module_address="{drawer}"
+                             lock="true"/>
+        </Delay>
         <PublishStateFeedback state_feedback="closed"
                               state_feedback_topic="/module_state_update"
                               drawer_address="{drawer}"/>
@@ -350,6 +357,13 @@
                   default="/drawer_leds"/>
       <input_port name="leds"
                   default="{leds}"/>
+    </Action>
+    <Action ID="LockPartialDrawer"
+            editable="true">
+      <input_port name="module_address"
+                  default="{drawer}"/>
+      <input_port name="lock"
+                  default="true"/>
     </Action>
     <Action ID="MoveElectricDrawer">
       <input_port name="drawer_address"

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
+import 'package:robot_frontend/widgets/dialogs/finish_cleaning_dialog.dart';
 
 class CleaningPage extends StatefulWidget {
   const CleaningPage({super.key});
@@ -34,12 +35,18 @@ class _CleaningPageState extends State<CleaningPage> {
       ]);
 
       if (result.exitCode == 0) {
-        disabledTouchscreenTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        disabledTouchscreenTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
           setState(() {
             disabledSeconds--;
           });
           if (disabledSeconds == 0) {
-            Navigator.pop(context);
+            enableTouchscreen();
+            timer.cancel();
+            await showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (context) => const FinishCleaningDialog(),
+            );
           }
         });
         return true;

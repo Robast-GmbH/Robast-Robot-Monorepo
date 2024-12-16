@@ -24,6 +24,7 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_eigen REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(nav2_util REQUIRED)
+find_package(rclcpp_action REQUIRED)
 
 
 set(dependencies
@@ -42,6 +43,7 @@ set(dependencies
   tf2_geometry_msgs
   tf2_ros
   nav2_util
+  rclcpp_action
 )
 include_directories(
   include
@@ -138,6 +140,9 @@ list(APPEND plugin_libs publish_drawer_status_action_bt_node)
 add_library(partial_drawer_leds_action_bt_node SHARED src/action/partial_drawer_leds_action.cpp)
 list(APPEND plugin_libs partial_drawer_leds_action_bt_node)
 
+add_library(lock_partial_drawer_action_bt_node SHARED src/action/lock_partial_drawer_action.cpp)
+list(APPEND plugin_libs lock_partial_drawer_action_bt_node)
+
 add_library(import_environment_led_color_action_bt_node SHARED src/action/import_environment_led_color_action.cpp)
 list(APPEND plugin_libs import_environment_led_color_action_bt_node)
 
@@ -155,6 +160,18 @@ list(APPEND plugin_libs check_safety_register_condition_node)
 
 add_library(reactive_if_then_else_node SHARED src/control/reactive_if_then_else.cpp)
 list(APPEND plugin_libs reactive_if_then_else_node)
+
+add_library(heartbeat_condition_node SHARED src/condition/heartbeat_condition.cpp)
+list(APPEND plugin_libs heartbeat_condition_node)
+
+add_library(path_topic_condition_node SHARED src/condition/path_topic_condition.cpp)
+list(APPEND plugin_libs path_topic_condition_node)
+
+add_library(robast_error_pub_node SHARED src/action/robast_error_pub_action.cpp)
+list(APPEND plugin_libs robast_error_pub_node)
+
+add_library(publish_string_topic_action_node SHARED src/action/publish_string_topic.cpp)
+list(APPEND plugin_libs publish_string_topic_action_node)
 
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})

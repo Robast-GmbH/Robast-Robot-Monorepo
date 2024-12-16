@@ -1,6 +1,6 @@
 #!/bin/bash
 apt install iputils-ping -y
-target_ip="192.168.0.47"
+target_ip="192.168.0.108"
 
 max_attempts=30
 interval=5

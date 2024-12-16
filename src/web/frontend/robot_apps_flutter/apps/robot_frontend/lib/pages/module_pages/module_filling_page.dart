@@ -62,16 +62,16 @@ class _ModuleFillingPageState extends State<ModuleFillingPage> {
                     await Navigator.push(context, MaterialPageRoute<ModuleProcessPage>(builder: (context) => const ModuleProcessPage()));
                     inactivityProvider.resetInactivityTimer();
                   }
-                  moduleProvider.isInSubmoduleProcess = false;
+                  Future.delayed(const Duration(seconds: 1), () => moduleProvider.isInSubmoduleProcess = false);
                   if (context.mounted) {
                     Navigator.pop(context);
                   }
                 },
                 child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  padding: EdgeInsets.symmetric(vertical: 32, horizontal: 16),
                   child: Text(
                     'Bestätigen',
-                    style: TextStyle(fontSize: 30, color: RobotColors.primaryText),
+                    style: TextStyle(fontSize: 32, color: RobotColors.primaryText),
                   ),
                 ),
               ),

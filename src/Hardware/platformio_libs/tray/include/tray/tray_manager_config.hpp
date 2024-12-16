@@ -3,12 +3,16 @@
 
 #include <cstdint>
 
+#include "debug/debug.hpp"
+
 namespace tray
 {
   class TrayManagerConfig
   {
    public:
     TrayManagerConfig() = default;
+
+    void print_all_configs() const;
 
     void set_speed_deviation_in_percentage_for_stall_when_closing_lid(
       const float speed_deviation_in_percentage_for_stall_when_closing_lid);

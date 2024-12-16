@@ -36,7 +36,7 @@ namespace module_config
     constexpr uint8_t ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL = 15;
     constexpr uint8_t DRAWER_DEFAULT_ACCELERATION = 16;
     constexpr uint8_t WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS = 17;
-  } // namespace drawer
+  }   // namespace drawer
 
   namespace encoder
   {
@@ -45,7 +45,8 @@ namespace module_config
     constexpr uint8_t DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN = 22;
     constexpr uint8_t DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT = 23;
     constexpr uint8_t DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS = 24;
-  } // namespace encoder
+    constexpr uint8_t DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT = 25;
+  }   // namespace encoder
 
   namespace motor
   {
@@ -56,7 +57,7 @@ namespace module_config
     constexpr uint8_t SEMIN = 34;
     constexpr uint8_t SEMAX = 35;
     constexpr uint8_t SEDN = 36;
-  }
+  }   // namespace motor
 
   namespace motor_monitor
   {
@@ -64,7 +65,7 @@ namespace module_config
     constexpr uint8_t LOWER_POSITION_THRESHOLD = 41;
     constexpr uint8_t MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS = 42;
     constexpr uint8_t SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL = 43;
-  } // namespace motor_monitor
+  }   // namespace motor_monitor
 
   namespace tray_manager
   {
@@ -72,7 +73,12 @@ namespace module_config
     constexpr uint8_t POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION = 51;
     constexpr uint8_t DISTANCE_TO_TRAY_LID_THRESHOLD = 52;
     constexpr uint8_t TARGET_SPEED_TO_CLOSE_TRAY_LID = 53;
-  }
+  }   // namespace tray_manager
+
+  namespace watchdog
+  {
+    constexpr uint8_t HEARTBEAT_INTERVAL_IN_MS = 60;
+  }   // namespace watchdog
 
   /********************************************************************************************************
    * Configs for the drawer
@@ -176,8 +182,6 @@ namespace module_config
     static constexpr type default_value = true;
   };
 
-  
-
   template <>
   struct ModuleSetting<drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL>
   {
@@ -236,6 +240,13 @@ namespace module_config
   {
     using type = uint32_t;
     static constexpr type default_value = 500;
+  };
+
+  template <>
+  struct ModuleSetting<encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>
+  {
+    using type = float;
+    static constexpr type default_value = 0.005;
   };
 
   /********************************************************************************************************
@@ -356,6 +367,16 @@ namespace module_config
     static constexpr type default_value = 50;
   };
 
-} // namespace module_config
+  /********************************************************************************************************
+   * Configs for the watchdog
+   ********************************************************************************************************/
+  template <>
+  struct ModuleSetting<watchdog::HEARTBEAT_INTERVAL_IN_MS>
+  {
+    using type = uint16_t;
+    static constexpr type default_value = 1000;
+  };
 
-#endif // MODULE_CONFIG__MODULE_CONFIG_DEFINES_HPP
+}   // namespace module_config
+
+#endif   // MODULE_CONFIG__MODULE_CONFIG_DEFINES_HPP

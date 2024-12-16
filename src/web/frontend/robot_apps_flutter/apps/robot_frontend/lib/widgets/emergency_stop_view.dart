@@ -1,39 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
-import 'package:robot_frontend/pages/manuals_page.dart';
 
 class EmergencyStopView extends StatelessWidget {
   const EmergencyStopView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
+    return const ColoredBox(
       color: RobotColors.error,
       child: Stack(
         fit: StackFit.expand,
         children: [
-          const Center(
-            child: Text(
-              "Not-Aus Schalter gedrückt",
-              style: TextStyle(color: RobotColors.secondaryText, fontSize: 80),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Not-Aus Schalter gedrückt",
+                  style: TextStyle(color: RobotColors.secondaryText, fontSize: 120),
+                ),
+                SizedBox(
+                  height: 32,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 128.0),
+                  child: Text(
+                    'Zum Verschieben des Roboters den orangenen Knopf gedrückt halten.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: RobotColors.secondaryText,
+                      fontSize: 80,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 128.0),
+                  child: Text(
+                    'Zum Deaktivieren des Not-Aus die Not-Ause entriegeln und den blauen Knopf drücken.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: RobotColors.secondaryText,
+                      fontSize: 80,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          Align(
-            alignment: Alignment.topLeft,
-            child: IconButton(
-              icon: const Icon(Icons.info_outline),
-              iconSize: 40,
-              color: RobotColors.primaryIcon,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ManualsPage(),
-                  ),
-                );
-              },
-            ),
-          )
         ],
       ),
     );

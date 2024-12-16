@@ -67,3 +67,13 @@ def update_task(task: TaskRequest):
 @task_system_router.delete("/delete_task", tags=["Tasks"])
 def delete_task(task_id: str):
     return task_manager.delete_task(task_id)
+
+
+@task_system_router.post("/robot_is_task_queue_open", tags=["Tasks"])
+def set_robot_is_task_queue_open(robot_name: str, is_open: bool):
+    return task_assignment_system.set_robot_is_task_queue_open(robot_name, is_open)
+
+
+@task_system_router.get("/robot_is_task_queue_open", tags=["Tasks"])
+def get_robot_is_task_queue_open(robot_name: str):
+    return task_assignment_system.get_robot_is_task_queue_open(robot_name)

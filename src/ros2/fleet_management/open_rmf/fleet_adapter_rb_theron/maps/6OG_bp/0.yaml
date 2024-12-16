@@ -86,6 +86,12 @@ levels:
     - - 14
       - 13
       - {speed_limit: 0}
+    - - 14
+      - 15
+      - {speed_limit: 0}
+    - - 15
+      - 14
+      - {speed_limit: 0}
     - - 15
       - 16
       - {speed_limit: 0}
@@ -99,29 +105,29 @@ levels:
       - 17
       - {speed_limit: 0}
     - - 15
+      - 18
+      - {speed_limit: 0}
+    - - 18
+      - 15
+      - {speed_limit: 0}
+    - - 18
       - 8
       - {speed_limit: 0}
     - - 8
-      - 15
+      - 18
       - {speed_limit: 0}
-    - - 14
-      - 15
-      - {door_name: example_door, speed_limit: 0}
-    - - 15
-      - 14
-      - {door_name: example_door, speed_limit: 0}
     vertices:
     - - 24.836841915748135
       - -10.605865245320512
-      - {is_charger: true, is_parking_spot: true, name: darts, spawn_robot_name: rb_theron}
-    - - 24.844348319894305
-      - -11.774175662894303
+      - {is_charger: true, is_parking_spot: false, name: darts, spawn_robot_name: rb_theron}
+    - - 24.78822901270629
+      - -11.702530687503346
       - {dropoff_ingestor: drawer_ingestor, name: robast_door_1, pickup_dispenser: drawer_dispenser}
     - - 31.658702410929617
       - -11.774175662894303
       - {dropoff_ingestor: drawer_ingestor, name: robast_door_2, pickup_dispenser: drawer_dispenser}
-    - - 33.40303221416294
-      - -11.714870407776756
+    - - 33.47576507421276
+      - -11.640365849853925
       - {dropoff_ingestor: drawer_ingestor, name: kenny, pickup_dispenser: drawer_dispenser}
     - - 34.71410418139862
       - -10.775808370244615
@@ -129,20 +135,20 @@ levels:
     - - 34.704826079379444
       - -8.417010229265603
       - {dropoff_ingestor: drawer_ingestor, name: marketing, pickup_dispenser: drawer_dispenser}
-    - - 33.6034982743729
-      - -7.52273795725987
+    - - 33.61563595892395
+      - -7.661816240291035
       - {dropoff_ingestor: drawer_ingestor, name: sales, pickup_dispenser: drawer_dispenser}
-    - - 31.89873639030344
-      - -7.4045004360506725
+    - - 31.921644132977253
+      - -7.45978051793042
       - {dropoff_ingestor: drawer_ingestor, name: showers, pickup_dispenser: drawer_dispenser}
-    - - 18.406837474689773
-      - -7.586394751012876
+    - - 18.229838640692464
+      - -7.755063496765166
       - {dropoff_ingestor: drawer_ingestor, name: floor, pickup_dispenser: drawer_dispenser}
-    - - 14.111091781020718
-      - -7.690116782630934
+    - - 14.126959355830733
+      - -7.723981077940455
       - {dropoff_ingestor: drawer_ingestor, name: toilets, pickup_dispenser: drawer_dispenser}
-    - - 12.491588971787436
-      - -7.7265142950746695
+    - - 12.464049948708743
+      - -7.755063496765166
       - {dropoff_ingestor: drawer_ingestor, name: kitchen, pickup_dispenser: drawer_dispenser}
     - - 9.305407924113467
       - -7.69378450805225
@@ -150,18 +156,21 @@ levels:
     - - 9.218610269545465
       - -9.660944171839914
       - {dropoff_ingestor: drawer_ingestor, name: mensa_main_entry, pickup_dispenser: drawer_dispenser}
-    - - 9.218610269545465
-      - -11.628088294418166
+    - - 9.262560809763604
+      - -11.127505939246209
       - {dropoff_ingestor: drawer_ingestor, name: tt, pickup_dispenser: drawer_dispenser}
     - - 13.702560009198141
       - -11.628088294418166
       - {dropoff_ingestor: drawer_ingestor, name: storage, pickup_dispenser: drawer_dispenser}
-    - - 18.389011707493804
-      - -11.714870407776756
+    - - 18.292003478341883
+      - -11.640365849853925
       - {dropoff_ingestor: drawer_ingestor, name: printer, pickup_dispenser: drawer_dispenser}
-    - - 21.426137015693875
-      - -11.711575671381336
+    - - 21.229292057276986
+      - -11.74915431574041
       - {dropoff_ingestor: drawer_ingestor, name: server, pickup_dispenser: drawer_dispenser}
     - - 6.920609339787586
       - -9.580549495549802
       - {dropoff_ingestor: drawer_ingestor, name: mensa, pickup_dispenser: drawer_dispenser}
+    - - 18.24537985010482
+      - -9.697714673309546
+      - {dropoff_ingestor: drawer_ingestor, is_parking_spot: true, name: bar, pickup_dispenser: drawer_dispenser}

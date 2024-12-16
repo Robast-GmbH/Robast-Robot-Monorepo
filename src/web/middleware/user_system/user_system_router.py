@@ -13,10 +13,12 @@ from pydantic_models.user_response import UserResponse, AuthResponse
 from pydantic_models.default_response import DefaultResponse
 from user_system.auth_session_manager import AuthSessionManager
 from models.url_helper import URLHelper
+from models.logger import Logger
 
 user_system_router = APIRouter()
 user_repository = UserRepository()
 auth_session_manager = AuthSessionManager()
+user_system_logger = Logger("user_system", "log/user_system.log")
 
 
 @user_system_router.get("/all_users", tags=["Users"], response_model=list[UserResponse])
@@ -105,6 +107,9 @@ def read_and_assign_user_nfc_id(robot_name: str, user_id: str):
 @user_system_router.get("/session", tags=["Auth"], response_model=AuthResponse)
 def get_session(robot_name: str):
     session_user = auth_session_manager.get_session(robot_name)
+    user_system_logger.info(
+        f"get_session {robot_name} -> {session_user.id if session_user else None}"
+    )
     return AuthResponse(
         status="success" if session_user else "failure", user=session_user
     )
@@ -113,6 +118,9 @@ def get_session(robot_name: str):
 @user_system_router.post("/set_session", tags=["Auth"], response_model=DefaultResponse)
 def post_set_session(robot_name: str, user_id: str):
     was_successful = auth_session_manager.set_session(robot_name, user_id)
+    user_system_logger.info(
+        f"set_session on {robot_name} to {user_id} -> was_successful {was_successful}"
+    )
     return DefaultResponse(
         message=(
             "Session set successfully" if was_successful else "Session could not be set"
@@ -130,18 +138,23 @@ def post_try_start_session(
     result = auth_session_manager.try_start_session(
         robot_name, required_user_ids, required_user_groups
     )
+    user_system_logger.info(
+        f"try_start_session on {robot_name} for user_ids {required_user_ids} or user_groups {required_user_groups} -> {result['message']}"
+    )
     return DefaultResponse(message=result["message"], status=result["status"])
 
 
 @user_system_router.post("/end_session", tags=["Auth"], response_model=DefaultResponse)
 def post_end_session(robot_name: str):
     auth_session_manager.end_session(robot_name)
+    user_system_logger.info(f"end_session on {robot_name}")
     return DefaultResponse(message="Session ended successfully", status="success")
 
 
 @user_system_router.post("/login", tags=["Auth"], response_model=AuthResponse)
 def post_login(request: LoginRequest):
     user = user_repository.login_user(request.mail, request.password)
+    user_system_logger.info(f"login {request.mail} -> {user.id if user else 'failure'}")
     return AuthResponse(status="success" if user else "failure", user=user)
 
 

@@ -2,6 +2,19 @@
 
 namespace motor
 {
+  void MotorConfig::print_all_configs() const
+  {
+    // clang-format off
+    debug_printf_color(ANSI_COLOR_BLUE, "[MotorConfig]: Is shaft direction inverted: %u\n", _is_shaft_direction_inverted);
+    debug_printf_color(ANSI_COLOR_BLUE, "[MotorConfig]: Tcoolthrs: %u\n", _tcoolthrs);
+    debug_printf_color(ANSI_COLOR_BLUE, "[MotorConfig]: Tpwmthrs: %u\n", _tpwmthrs);
+    debug_printf_color(ANSI_COLOR_BLUE, "[MotorConfig]: Microsteps: %u\n", _microsteps);
+    debug_printf_color(ANSI_COLOR_BLUE, "[MotorConfig]: Semin: %u\n", _semin);
+    debug_printf_color(ANSI_COLOR_BLUE, "[MotorConfig]: Semax: %u\n", _semax);
+    debug_printf_color(ANSI_COLOR_BLUE, "[MotorConfig]: Sedn: %u\n", _sedn);
+    // clang-format on
+  }
+
   void MotorConfig::set_is_shaft_direction_inverted(const bool is_shaft_direction_inverted)
   {
     _is_shaft_direction_inverted = is_shaft_direction_inverted;

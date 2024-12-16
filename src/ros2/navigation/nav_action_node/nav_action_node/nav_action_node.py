@@ -55,7 +55,7 @@ class NavigateToPoseActionClient(Node):
         self.__is_reorientation_enabled_subscriber = self.create_subscription(Bool, "is_reorientation_enabled", self.__set_reorientation_enabled, 10)
         self.__is_navigating_publisher = self.create_publisher(Bool, "is_navigating", 10)
         self.__remaining_time_publisher = self.create_publisher(Duration, "navigation_remaining_time", 10)
-        self.__status_publisher = self.create_publisher( String, "goal_status", 10)
+        self.__status_publisher = self.create_publisher( String, "/goal_status", 10)
         self.__cmd_vel_publisher = self.create_publisher(Twist, self.__cmd_vel_topic, 1)
         self.__marker_for_visualisation_publisher = self.create_publisher(Marker, 'sector_marker', 10)
 

@@ -19,7 +19,7 @@ namespace config
     bool module_contains_a_drawer;
     bool is_electrical_drawer;
     bool use_encoder;
-    uint8_t num_of_leds;
+    uint8_t total_num_of_leds;
     module_id::ModulePrefix module_prefix;
 
     // Parameterized Constructor
@@ -31,7 +31,7 @@ namespace config
         : module_contains_a_drawer(module_contains_a_drawer_arg),
           is_electrical_drawer(is_electrical_drawer_arg),
           use_encoder(use_encoder_arg),
-          num_of_leds(num_of_leds_arg),
+          total_num_of_leds(num_of_leds_arg),
           module_prefix(module_prefix_arg)
     {
     }
