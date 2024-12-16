@@ -40,6 +40,7 @@ jobs:
           -v $(pwd)/../ros2_control:/workspace/src/ros2_control
           -v $(pwd)/../utils:/workspace/src/utils
           -v $(pwd)/../dds_configs:/workspace/dds_configs
+          -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces
           --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}:devel-humble
           /bin/sh -c "cd /workspace/ &&
           sudo apt-get update &&
