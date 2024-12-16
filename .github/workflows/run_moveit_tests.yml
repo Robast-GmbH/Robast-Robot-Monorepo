@@ -47,7 +47,7 @@ jobs:
           rosdep update && rosdep install --from-paths src --ignore-src -r -y &&
           export CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_github_config.xml &&
           . /opt/ros/${{ env.Ros-Distro }}/setup.sh &&
-          . /workspace_moveit2/install/setup.sh &&
+          . /workspace_moveit_task_constructor/install/setup.sh &&
           . /workspace_ros_control/install/setup.sh  &&
           colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic &&
           colcon test &&
