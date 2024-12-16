@@ -158,6 +158,9 @@ list(APPEND plugin_libs is_robot_charging_condition_node)
 add_library(check_safety_register_condition_node SHARED src/condition/check_safety_register_condition.cpp)
 list(APPEND plugin_libs check_safety_register_condition_node)
 
+add_library(double_compare_condition_node SHARED src/condition/double_compare_condition.cpp)
+list(APPEND plugin_libs double_compare_condition_node)
+
 add_library(reactive_if_then_else_node SHARED src/control/reactive_if_then_else.cpp)
 list(APPEND plugin_libs reactive_if_then_else_node)
 
