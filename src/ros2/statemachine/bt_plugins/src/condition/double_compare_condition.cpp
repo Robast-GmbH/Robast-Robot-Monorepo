@@ -42,6 +42,7 @@ namespace statemachine
     }
     else
     {
+      throw BT::RuntimeError("Invalid comparison type");
       return BT::NodeStatus::FAILURE;   // Invalid comparison type
     }
   }
