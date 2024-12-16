@@ -18,37 +18,30 @@ namespace statemachine
     // Perform the comparison based on the specified comparison type
     if (_comparison == "==")
     {
-      std::cout << "Comparing " << _value << " == " << _target_value << std::endl;
       return (_value == _target_value) ? BT::NodeStatus::SUCCESS : BT::NodeStatus::FAILURE;
     }
     else if (_comparison == "!=")
     {
-      std::cout << "Comparing " << _value << " != " << _target_value << std::endl;
       return (_value != _target_value) ? BT::NodeStatus::SUCCESS : BT::NodeStatus::FAILURE;
     }
     else if (_comparison == "<")
     {
-      std::cout << "Comparing " << _value << " < " << _target_value << std::endl;
       return (_value < _target_value) ? BT::NodeStatus::SUCCESS : BT::NodeStatus::FAILURE;
     }
     else if (_comparison == "<=")
     {
-      std::cout << "Comparing " << _value << " <= " << _target_value << std::endl;
       return (_value <= _target_value) ? BT::NodeStatus::SUCCESS : BT::NodeStatus::FAILURE;
     }
     else if (_comparison == ">")
     {
-      std::cout << "Comparing " << _value << " > " << _target_value << std::endl;
       return (_value > _target_value) ? BT::NodeStatus::SUCCESS : BT::NodeStatus::FAILURE;
     }
     else if (_comparison == ">=")
     {
-      std::cout << "Comparing " << _value << " >= " << _target_value << std::endl;
       return (_value >= _target_value) ? BT::NodeStatus::SUCCESS : BT::NodeStatus::FAILURE;
     }
     else
     {
-      std::cout << "Invalid comparison type: " << _comparison << std::endl;
       return BT::NodeStatus::FAILURE;   // Invalid comparison type
     }
   }
