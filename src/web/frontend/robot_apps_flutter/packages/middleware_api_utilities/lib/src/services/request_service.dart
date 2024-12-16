@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 
 class RequestService {
@@ -7,21 +7,23 @@ class RequestService {
     required Uri uri,
     int timeoutInMS = 200,
   }) async {
+    final client = http.Client();
     try {
-      final response = await http.get(
+      final response = await client.get(
         uri,
         headers: {
           'charset': 'utf-8',
         },
       ).timeout(Duration(milliseconds: timeoutInMS));
 
-      if (response.statusCode == 200) {
-        return response;
-      } else {
+      if (response.statusCode != 200) {
         return null;
       }
+      return response;
     } catch (e) {
       return null;
+    } finally {
+      client.close();
     }
   }
 
