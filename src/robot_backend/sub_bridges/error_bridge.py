@@ -53,4 +53,6 @@ class ErrorBridge(BaseBridge):
     def __get_errors_by_code(self, error_code: str) -> List[Dict[str, Any]]:
         if error_code not in self.__error_by_id_by_code:
             return []
-        return [error.to_dict() for error in self.__error_by_id_by_code[error_code].values()]
+        return [
+            error.to_dict() for error in self.__error_by_id_by_code[error_code].values()
+        ]
