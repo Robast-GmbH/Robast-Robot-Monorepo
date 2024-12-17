@@ -221,7 +221,7 @@ namespace drawer
                                                 _id,
                                                 _endstop_switch->is_switch_pressed(),
                                                 LOCK_SWITCH_IS_NOT_PUSHED,
-                                                get_is_stall_guard_triggered(),
+                                                is_stall_guard_triggered(),
                                                 _encoder->get_normed_current_position(),
                                                 PUSH_TO_CLOSE_NOT_TRIGGERED);
       return;
@@ -513,7 +513,7 @@ namespace drawer
         _id,
         _endstop_switch->is_switch_pressed(),
         _drawer_lock.has_value() ? _drawer_lock.value()->is_lock_switch_pushed() : false,
-        get_is_stall_guard_triggered(),
+        is_stall_guard_triggered(),
         _encoder->get_normed_current_position(),
         PUSH_TO_CLOSE_NOT_TRIGGERED);
 
@@ -596,7 +596,7 @@ namespace drawer
                                               _id,
                                               ENDSTOP_SWITCH_IS_PUSHED,
                                               LOCK_SWITCH_IS_NOT_PUSHED,
-                                              get_is_stall_guard_triggered(),
+                                              is_stall_guard_triggered(),
                                               _encoder->get_normed_current_position(),
                                               PUSH_TO_CLOSE_NOT_TRIGGERED);
 
@@ -610,10 +610,5 @@ namespace drawer
     {
       _is_idling = true;
     }
-  }
-
-  bool ElectricalDrawer::get_is_stall_guard_triggered() const
-  {
-    return _is_motor_monitor_stall_guard_triggered || _is_tmc_stall_guard_triggered;
   }
 }   // namespace drawer
