@@ -27,6 +27,20 @@
                                 red="{red}"
                                 upper_bound="100.0"
                                 LEDs_colored="{leds}"/>
+            <IfThenElse>
+              <DoubleCompareCondition target_value="10.0"
+                                      value="{battery}"
+                                      comparison="&lt;"/>
+              <PartialColorizeLED LEDs="{leds}"
+                                  blue="87"
+                                  brightness="255"
+                                  green="80"
+                                  lower_bound="0.0"
+                                  red="100"
+                                  upper_bound="100.0"
+                                  LEDs_colored="{leds}"/>
+              <AlwaysSuccess/>
+            </IfThenElse>
             <SubTree ID="E-Stop"
                      _autoremap="true"/>
             <IfThenElse>
@@ -91,7 +105,7 @@
                                 LEDs_colored="{leds}"/>
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="100"
-                                led_topic="/led_cmd"
+                                led_topic="/safety/led_cmd"
                                 leds="{leds}"/>
             <Delay delay_msec="500">
               <PartialColorizeLED LEDs="{leds}"
@@ -105,7 +119,7 @@
             </Delay>
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="300"
-                                led_topic="/led_cmd"
+                                led_topic="/safety/led_cmd"
                                 leds="{leds}"/>
             <Delay delay_msec="500">
               <PartialColorizeLED LEDs="{leds}"
@@ -119,7 +133,7 @@
             </Delay>
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="100"
-                                led_topic="/led_cmd"
+                                led_topic="/safety/led_cmd"
                                 leds="{leds}"/>
             <Delay delay_msec="500">
               <PartialColorizeLED LEDs="{leds}"
@@ -133,7 +147,7 @@
             </Delay>
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="300"
-                                led_topic="/led_cmd"
+                                led_topic="/safety/led_cmd"
                                 leds="{leds}"/>
             <Delay delay_msec="550">
               <AlwaysSuccess/>
@@ -161,7 +175,7 @@
                               LEDs_colored="{leds}"/>
           <LEDPublisherAction drawer_address="{drawer}"
                               fading_time_ms="100"
-                              led_topic="/led_cmd"
+                              led_topic="/safety/led_cmd"
                               leds="{leds}"/>
           <Delay delay_msec="800">
             <PartialColorizeLED LEDs="{leds}"
@@ -175,7 +189,7 @@
           </Delay>
           <LEDPublisherAction drawer_address="{drawer}"
                               fading_time_ms="300"
-                              led_topic="/led_cmd"
+                              led_topic="/safety/led_cmd"
                               leds="{leds}"/>
           <Delay delay_msec="800">
             <AlwaysSuccess/>
@@ -208,7 +222,7 @@
                               LEDs_colored="{leds}"/>
           <LEDPublisherAction drawer_address="{drawer}"
                               fading_time_ms="100"
-                              led_topic="/led_cmd"
+                              led_topic="/safety/led_cmd"
                               leds="{leds}"/>
           <PartialColorizeLED LEDs="{leds}"
                               blue="{blue}"
@@ -221,7 +235,7 @@
           <Delay delay_msec="800">
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="300"
-                                led_topic="/led_cmd"
+                                led_topic="/safety/led_cmd"
                                 leds="{leds}"/>
           </Delay>
           <Delay delay_msec="800">
@@ -312,7 +326,7 @@
         <LEDChangedCondition led_vector="{leds}"/>
         <LEDPublisherAction drawer_address="{drawer}"
                             fading_time_ms="100"
-                            led_topic="/led_cmd"
+                            led_topic="/safety/led_cmd"
                             leds="{leds}"/>
         <AlwaysSuccess/>
       </IfThenElse>
@@ -334,6 +348,15 @@
                   default="FRONT_LASER_SAFE_ZONE_FREE"/>
       <input_port name="topic"
                   default="/robot/safety_module/raw_registers"/>
+    </Condition>
+    <Condition ID="DoubleCompareCondition"
+               editable="true">
+      <input_port name="target_value"
+                  default="0.0"/>
+      <input_port name="value"
+                  default="0.0"/>
+      <input_port name="comparison"
+                  default="=="/>
     </Condition>
     <Action ID="EvaluateDriveDirection"
             editable="true">
