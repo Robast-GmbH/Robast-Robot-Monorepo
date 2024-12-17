@@ -33,7 +33,7 @@ class Subscriber:
         msg_type: str,
         on_msg_callback: Optional[Callable] = None,
     ) -> Topic:
-        self.__logger.info(f"received: {topic}")
+        self.__logger.info("subscriber started")
         ros_topic = Topic(ros, topic, msg_type)
         on_msg_callback_with_log = self.__add_log_callback(
             on_msg_callback if on_msg_callback else self.__create_on_msg_callback(topic)
