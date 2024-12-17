@@ -7,7 +7,7 @@
         <KeepRunningUntilFailure>
           <HeartbeatCondition topic="/heartbeat"
                               timeouts_until_failure="3"
-                              latency_tolerance_in_ms="200"
+                              latency_tolerance_in_ms="300"
                               failed_heartbeat_id="{id}"/>
         </KeepRunningUntilFailure>
         <RobastErrorPub topic="/robast_error"
@@ -26,7 +26,7 @@
       <input_port name="timeouts_until_failure"
                   default="3">uint8</input_port>
       <input_port name="latency_tolerance_in_ms"
-                  default="200">uint16</input_port>
+                  default="300">uint16</input_port>
       <output_port name="failed_heartbeat_id"
                    default="1">string</output_port>
     </Condition>
