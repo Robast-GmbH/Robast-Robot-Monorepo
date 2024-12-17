@@ -82,7 +82,9 @@ class _StatusIndicatorViewState extends State<StatusIndicatorView> {
     chargingAnimationTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       animationOffset += 1;
       animationOffset %= (maxAnimationOffset + 1) - (chargingIndex ?? 0);
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 

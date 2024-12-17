@@ -56,7 +56,7 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -64,7 +64,7 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                 moduleContentController: moduleContentController,
               ),
               const SizedBox(
-                height: 8,
+                height: 16,
               ),
               SubmoduleTypeSelector(
                 controller: submoduleSizeController,
@@ -76,7 +76,7 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.only(left: 8),
+                    padding: EdgeInsets.only(left: 8, bottom: 4),
                     child: Text(
                       'Sender',
                       style: TextStyle(color: WebColors.primaryText, fontSize: 24),
@@ -87,15 +87,15 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                     initWithSessionUser: true,
                   ),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   UserGroupsSelector(controller: senderUserGroupsSelectionController),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   LocationSelector(controller: startController, label: 'Start'),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   TimeSelector(deliveryTimeController: senderTimeController),
                 ],
@@ -107,7 +107,7 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.only(left: 8),
+                    padding: EdgeInsets.only(left: 8, bottom: 4),
                     child: Text(
                       'Empfänger',
                       style: TextStyle(color: WebColors.primaryText, fontSize: 24),
@@ -117,19 +117,19 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                     controller: recipientUserController,
                   ),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   UserGroupsSelector(controller: recipientUserGroupsSelectionController),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   LocationSelector(controller: targetController, label: 'Ziel'),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   TimeSelector(deliveryTimeController: recipientTimeController),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                 ],
               ),

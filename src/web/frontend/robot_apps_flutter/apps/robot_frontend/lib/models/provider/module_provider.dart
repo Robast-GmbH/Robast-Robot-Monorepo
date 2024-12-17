@@ -34,8 +34,10 @@ class ModuleProvider extends ChangeNotifier {
 
   Future<void> fetchModules() async {
     final submodules = await _middlewareApiUtilities.modules.getSubmodules(robotName: 'rb_theron');
-    submodules.sort((a, b) => a.position.compareTo(b.position));
-    _setModules(submodules);
+    if (submodules.isNotEmpty) {
+      submodules.sort((a, b) => a.position.compareTo(b.position));
+      _setModules(submodules);
+    }
   }
 
   void _setModules(List<Submodule> submodules) {

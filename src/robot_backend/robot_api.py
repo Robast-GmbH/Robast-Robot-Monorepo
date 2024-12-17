@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from ros_bridge import RosBridge
+from models.logger import Logger
+from log_router import log_router
 
+api_logger = Logger("api", "api.log")
 ros_bridge = RosBridge(ip="localhost", port=9090)
 app = FastAPI()
 app.add_middleware(
@@ -12,6 +15,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(log_router, prefix="/logs")
 
 """
 ======================
@@ -66,6 +70,9 @@ Navigation API Endpoints
 
 @app.post("/goal_pose", tags=["Navigation"])
 def post_goal_pose(x: float, y: float, z: float, use_reorientation: bool = False):
+    api_logger.info(
+        f"Received goal pose: {x}, {y}, {z}, use_reorientation: {use_reorientation}"
+    )
     return {
         "success": ros_bridge.nav_bridge.navigate_to_goal_pose(
             (x, y, z), use_reorientation
@@ -75,6 +82,7 @@ def post_goal_pose(x: float, y: float, z: float, use_reorientation: bool = False
 
 @app.post("/cancel_goal", tags=["Navigation"])
 def post_cancel_goal():
+    api_logger.info("Received cancel goal request")
     return {"success": ros_bridge.nav_bridge.cancel_navigate_to_goal_pose()}
 
 
@@ -90,11 +98,13 @@ def read_remaining_nav_time():
 
 @app.post("/block_navigation", tags=["Navigation"])
 def post_block_nav():
+    api_logger.info("Received block navigation request")
     return {"success": ros_bridge.nav_bridge.block_nav()}
 
 
 @app.post("/unblock_navigation", tags=["Navigation"])
 def post_unblock_nav():
+    api_logger.info("Received unblock navigation request")
     return {"success": ros_bridge.nav_bridge.unblock_nav()}
 
 
@@ -110,6 +120,7 @@ def read_requires_replan():
 
 @app.post("/set_initial_point", tags=["Navigation"])
 def post_set_initial_point(x: float, y: float, z: float):
+    api_logger.info(f"Received set initial point request: {x}, {y}, {z}")
     return {"success": ros_bridge.robot_pos_bridge.set_initial_point(x, y, z)}
 
 
@@ -124,6 +135,7 @@ Modules API Endpoints
 def read_living_devices():
     return ros_bridge.module_bridge.get_living_devices()
 
+
 @app.get("/submodule_status", tags=["Modules"])
 def read_submodule_status(module_id: int, submodule_id: int):
     return ros_bridge.module_bridge.get_submodule_state(module_id, submodule_id)
@@ -131,11 +143,13 @@ def read_submodule_status(module_id: int, submodule_id: int):
 
 @app.post("/open_submodule", tags=["Modules"])
 def post_open_submodule(module_id: int, submodule_id: int):
+    api_logger.info(f"Received open submodule request: {module_id}, {submodule_id}")
     return {"success": ros_bridge.module_bridge.open_submodule(module_id, submodule_id)}
 
 
 @app.post("/close_submodule", tags=["Modules"])
 def post_close_submodule(module_id: int, submodule_id: int):
+    api_logger.info(f"Received close submodule request: {module_id}, {submodule_id}")
     return {
         "success": ros_bridge.module_bridge.close_submodule(module_id, submodule_id)
     }
@@ -155,6 +169,7 @@ def get_nfc_tag():
 
 @app.get("/read_nfc_tag", tags=["NFC"])
 def read_nfc_tag(timeout_in_s: int):
+    api_logger.info(f"Received read NFC tag request with timeout: {timeout_in_s}")
     return ros_bridge.nfc_bridge.read_nfc_tag(timeout_in_s=timeout_in_s)
 
 
@@ -179,6 +194,15 @@ def get_disinfection_module_status():
 
 @app.post("/refill_disinfection_fluid_container", tags=["Disinfection"])
 def refill_disinfection_fluid_container():
+    disinfection_module_status = (
+        ros_bridge.disinfection_module_bridge.get_disinfection_module_status()
+    )
+    remaining_disinfections = None
+    if disinfection_module_status["status"] == "success":
+        remaining_disinfections = disinfection_module_status["remaining_disinfections"]
+    api_logger.info(
+        f"Received refill disinfection fluid container request at {remaining_disinfections} remaining disinfections"
+    )
     return ros_bridge.disinfection_module_bridge.refill_disinfection_fluid_container()
 
 

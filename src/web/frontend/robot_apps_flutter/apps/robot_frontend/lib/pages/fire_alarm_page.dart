@@ -25,7 +25,7 @@ class FireAlarmPage extends StatelessWidget {
                     'Feueralarm',
                     style: TextStyle(
                       color: RobotColors.secondaryText,
-                      fontSize: 120,
+                      fontSize: 100,
                     ),
                   ),
                   SizedBox(
@@ -43,11 +43,11 @@ class FireAlarmPage extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 128.0),
                 child: Text(
-                  'Zum Anhalten und Verschieben des Roboters Not-Aus Schalter betätigen.',
+                  'Zum Anhalten und Verschieben des Roboters Not\u{2011}Aus\u{2011}Schalter betätigen.',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: RobotColors.secondaryText,
-                    fontSize: 80,
+                    fontSize: 64,
                   ),
                 ),
               ),

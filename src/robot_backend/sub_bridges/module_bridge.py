@@ -21,30 +21,30 @@ class ModuleBridge(BaseBridge):
 
     def __init__(self, ros: Ros) -> None:
         super().__init__(ros)
-        self.__module_state_update_subscriber = self.start_subscriber(
+        self.__module_state_update_subscriber = self.create_subscriber(
             "/module_state_update",
             ModuleBridge.MODULE_STATE_UPDATE_MSG,
             self.__on_module_state_update,
         )
-        self.__living_devices_subscriber = self.start_subscriber(
+        self.__living_devices_subscriber = self.create_subscriber(
             "/living_devices",
             ModuleBridge.LIVING_DEVICES_MSG,
             self.__on_living_devices_update,
         )
 
-        self.__drawer_tree_publisher = self.start_publisher(
+        self.__drawer_tree_publisher = self.create_publisher(
             "/trigger_drawer_tree",
             ModuleBridge.DRAWER_ADDRESS_MSG,
         )
-        self.__electric_drawer_tree_publisher = self.start_publisher(
+        self.__electric_drawer_tree_publisher = self.create_publisher(
             "/trigger_electric_drawer_tree",
             ModuleBridge.DRAWER_ADDRESS_MSG,
         )
-        self.__partial_drawer_tree_publisher = self.start_publisher(
+        self.__partial_drawer_tree_publisher = self.create_publisher(
             "/trigger_partial_drawer_tree",
             ModuleBridge.DRAWER_ADDRESS_MSG,
         )
-        self.__close_drawer_publisher = self.start_publisher(
+        self.__close_drawer_publisher = self.create_publisher(
             "/close_drawer",
             ModuleBridge.DRAWER_ADDRESS_MSG,
         )
@@ -97,7 +97,7 @@ class ModuleBridge(BaseBridge):
         if not self.__is_alive(module_id):
             print("Module is not alive")
             return False
-        
+
         if self.__is_module_type(
             module_type=ModuleBridge.MODULE_TYPES["E_DRAWER_10x40"],
             module_id=module_id,
@@ -120,7 +120,7 @@ class ModuleBridge(BaseBridge):
         return (
             module_id >> ModuleBridge.MODULE_UNIQUE_ID_LENGTH
         ) in ModuleBridge.MODULE_TYPES.values()
-    
+
     def __is_alive(self, module_id: int) -> bool:
         living_devices = self.get_living_devices()
         if living_devices is None:
@@ -133,4 +133,6 @@ class ModuleBridge(BaseBridge):
         self.context[f"{module_id}_{drawer_id}"] = message["state"]
 
     def __on_living_devices_update(self, message: dict) -> None:
-        self.context["living_devices"] = [int(module_id) for module_id in message["data"].split(",")]
+        self.context["living_devices"] = [
+            int(module_id) for module_id in message["data"].split(",")
+        ]

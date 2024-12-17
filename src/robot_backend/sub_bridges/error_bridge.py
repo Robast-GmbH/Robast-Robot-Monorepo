@@ -14,7 +14,7 @@ class ErrorBridge(BaseBridge):
     def __init__(self, ros: Ros) -> None:
         super().__init__(ros)
 
-        self.__robast_error_subscriber = self.start_subscriber(
+        self.__robast_error_subscriber = self.create_subscriber(
             "/robast_error_best_effort",
             ErrorBridge.ERROR_MSG,
             on_msg_callback=self.__on_error,

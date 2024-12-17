@@ -6,11 +6,13 @@ from typing import Any
 class RobotStatusBridge(BaseBridge):
     def __init__(self, ros: Ros) -> None:
         super().__init__(ros)
-        self.start_subscriber(
+        self.create_subscriber(
             "/robot/battery_estimator/data", "robotnik_msgs/msg/BatteryStatus"
         )
-        self.start_subscriber(
-            "/robot/safety_module/emergency_stop", "std_msgs/msg/Bool"
+        self.create_subscriber(
+            "/robot/safety_module/emergency_stop",
+            "std_msgs/msg/Bool",
+            logger_cache_timeout_in_s=15,
         )
 
     def get_battery_status(self) -> dict[str, Any]:
