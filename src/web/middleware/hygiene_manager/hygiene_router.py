@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 from pathlib import Path
 import json
+import os
 
 from models.logger import Logger
 
@@ -12,7 +13,8 @@ hygiene_logger = Logger("hygiene_manager", "log/hygiene_manager.log")
 
 DEFAULT_CYCLE = 4.0
 TIMEZONE = ZoneInfo("Europe/Berlin")
-DATA_FILE = Path("./cleaning_data.json")
+home_directory = os.path.expanduser("~")
+DATA_FILE = Path(f"{home_directory}/cleaning_data.json")
 
 if not DATA_FILE.exists():
     initial_data = {

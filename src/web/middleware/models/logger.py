@@ -1,6 +1,12 @@
 import logging
 from logging.handlers import RotatingFileHandler
 from models.timezone_formatter import TimezoneFormatter
+import os
+
+
+home_directory = os.path.expanduser("~")
+os.makedirs(f"{home_directory}/log", exist_ok=True)
+
 
 
 class Logger:
@@ -31,7 +37,7 @@ class Logger:
         )
 
         file_handler = RotatingFileHandler(
-            log_file, maxBytes=max_file_size, backupCount=backup_count
+            f'{home_directory}/{log_file}', maxBytes=max_file_size, backupCount=backup_count
         )
         file_handler.setFormatter(formatter)
         self.__logger.addHandler(file_handler)

@@ -5,7 +5,8 @@ from pathlib import Path
 
 log_router = APIRouter()
 
-DOWNLOAD_FOLDER = "./log"
+home_directory = os.path.expanduser("~")
+DOWNLOAD_FOLDER = f"{home_directory}/log"
 AVAILABLE_LOGS = [
     "fire_alarm.log",
     "hygiene_manager.log",
