@@ -14,8 +14,7 @@ class RequestService {
         headers: {
           'charset': 'utf-8',
         },
-      );
-      //.timeout(Duration(milliseconds: timeoutInMS));
+      ).timeout(Duration(milliseconds: timeoutInMS));
 
       if (response.statusCode != 200) {
         return null;
