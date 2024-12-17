@@ -25,7 +25,7 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: configures Docker Buildx to create a builder instance for running the image build.
-      uses: docker/setup-buildx-action@v2 
+      uses: docker/setup-buildx-action@v3 
     
     - name: Build ${{ env.Project-Name }} release docker
       uses: docker/build-push-action@v6
