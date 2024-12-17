@@ -17,7 +17,7 @@ jobs:
           submodules: recursive
 
     - name: Login to GitHub Container Registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -27,7 +27,7 @@ jobs:
       run: |
           ls ${{ github.workspace }}/sonar-project.properties
     - name: Install sonar-scanner and build-wrapper
-      uses: SonarSource/sonarcloud-github-c-cpp@v2
+      uses: SonarSource/sonarcloud-github-c-cpp@v3
     - name: Generate coverage report
       working-directory: .
       run: >
@@ -76,7 +76,7 @@ jobs:
     #         -Dsonar.coverage.reportPaths=/home/coverage-${{env.Project2}}.info
 
     - name: Upload coverage report to Codecov
-      uses: codecov/codecov-action@v2
+      uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: /home/coverage-${{env.Project}}.info
