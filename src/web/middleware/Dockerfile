@@ -18,6 +18,5 @@ COPY . /workspace/middleware/
 
 USER robast
 
-RUN pip install -r /workspace/middleware/requirements.txt
-CMD ["bash", "-c", "cd /workspace/middleware && python3 main.py"]
+CMD ["bash", "-c", "cd /workspace/middleware && pip install -r requirements.txt && python3 main.py"]
 
