@@ -141,8 +141,7 @@ namespace statemachine
                  _heartbeat_interval_in_ms_by_id[msg->id],
                  utils::convert_to_milliseconds(msg->stamp).count());
 
-    // Go through all living devices and check if the new device is already in the list
-    if (_living_devices.find(msg->id) == _living_devices.end())
+    if (!_living_devices.contains(msg->id))
     {
       RCLCPP_INFO(rclcpp::get_logger("HeartbeatCondition"), "Added new device %s to living devices", msg->id.c_str());
       _living_devices.insert(msg->id);
