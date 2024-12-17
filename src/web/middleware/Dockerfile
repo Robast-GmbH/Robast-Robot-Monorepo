@@ -18,5 +18,6 @@ COPY . /workspace/middleware/
 
 USER robast
 
-RUN pip install --no-cache-dir -r /workspace/middleware/requirements.txt
-#CMD [ "python", "/workspace/middleware/main.py" ]
+RUN pip install -r /workspace/middleware/requirements.txt
+CMD ["bash", "-c", "cd /workspace/middleware && python3 main.py"]
+
