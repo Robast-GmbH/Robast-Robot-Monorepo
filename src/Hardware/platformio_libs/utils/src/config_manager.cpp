@@ -7,13 +7,15 @@ namespace utils
                                const std::shared_ptr<motor::MotorConfig> motor_config,
                                const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config,
                                const std::shared_ptr<tray::TrayManagerConfig> tray_manager_config,
-                               const std::shared_ptr<watchdog::HeartbeatConfig> heartbeat_config)
+                               const std::shared_ptr<watchdog::HeartbeatConfig> heartbeat_config,
+                               const std::shared_ptr<logging::RotatingFileHandlerConfig> rotating_file_handler_config)
       : _drawer_config{drawer_config},
         _encoder_config{encoder_config},
         _motor_config{motor_config},
         _motor_monitor_config{motor_monitor_config},
         _tray_manager_config{tray_manager_config},
-        _heartbeat_config{heartbeat_config}
+        _heartbeat_config{heartbeat_config},
+        _rotating_file_handler_config{rotating_file_handler_config}
   {
     set_default_configs();
   }
@@ -253,6 +255,19 @@ namespace utils
             config_value));
         break;
 
+      case module_config::logging::ROTATING_FILE_HANDLER_MAX_FILE_SIZE_IN_BYTES:
+        _rotating_file_handler_config->set_max_file_size_in_bytes(
+          static_cast<
+            module_config::ModuleSetting<module_config::logging::ROTATING_FILE_HANDLER_MAX_FILE_SIZE_IN_BYTES>::type>(
+            config_value));
+        break;
+
+      case module_config::logging::ROTATING_FILE_HANDLER_MAX_FILES:
+        _rotating_file_handler_config->set_max_files(
+          static_cast<module_config::ModuleSetting<module_config::logging::ROTATING_FILE_HANDLER_MAX_FILES>::type>(
+            config_value));
+        break;
+
       default:
         return false;
     }
@@ -267,6 +282,7 @@ namespace utils
     _motor_monitor_config->print_all_configs();
     _tray_manager_config->print_all_configs();
     _heartbeat_config->print_all_configs();
+    _rotating_file_handler_config->print_all_configs();
   }
 
   void ConfigManager::set_default_configs()
@@ -282,6 +298,8 @@ namespace utils
     set_default_tray_manager_config();
 
     set_default_heartbeat_config();
+
+    set_default_rotating_file_handler_config();
   }
 
   void ConfigManager::set_default_drawer_config()
@@ -461,6 +479,17 @@ namespace utils
     set_config(module_config::watchdog::HEARTBEAT_INTERVAL_IN_MS,
                static_cast<uint32_t>(
                  module_config::ModuleSetting<module_config::watchdog::HEARTBEAT_INTERVAL_IN_MS>::default_value));
+  }
+
+  void ConfigManager::set_default_rotating_file_handler_config()
+  {
+    set_config(
+      module_config::logging::ROTATING_FILE_HANDLER_MAX_FILE_SIZE_IN_BYTES,
+      static_cast<uint32_t>(module_config::ModuleSetting<
+                            module_config::logging::ROTATING_FILE_HANDLER_MAX_FILE_SIZE_IN_BYTES>::default_value));
+    set_config(module_config::logging::ROTATING_FILE_HANDLER_MAX_FILES,
+               static_cast<uint32_t>(
+                 module_config::ModuleSetting<module_config::logging::ROTATING_FILE_HANDLER_MAX_FILES>::default_value));
   }
 
 }   // namespace utils

@@ -301,14 +301,23 @@ void setup()
   motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
   tray_manager_config = std::make_shared<tray::TrayManagerConfig>();
   heartbeat_config = std::make_shared<watchdog::HeartbeatConfig>();
+  rotating_file_handler_config = std::make_shared<logging::RotatingFileHandlerConfig>();
 
-  config_manager = std::make_unique<utils::ConfigManager>(
-    drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config, heartbeat_config);
+  config_manager = std::make_unique<utils::ConfigManager>(drawer_config,
+                                                          encoder_config,
+                                                          motor_config,
+                                                          motor_monitor_config,
+                                                          tray_manager_config,
+                                                          heartbeat_config,
+                                                          rotating_file_handler_config);
   config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                              USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
   config_manager->print_all_configs();
 
   heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, heartbeat_config);
+
+  rotating_file_handler = std::make_shared<logging::RotatingFileHandler>(rotating_file_handler_config);
+  rotating_file_handler->print_all_logs();
 
   if (MODULE_HARDWARE_CONFIG.is_electrical_drawer)
   {

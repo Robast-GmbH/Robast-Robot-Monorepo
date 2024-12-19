@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "drawer/electrical_drawer_config.hpp"
+#include "logging/rotating_file_handler.hpp"
 #include "module_config/module_config_defines.hpp"
 #include "motor/enconder_config.hpp"
 #include "motor/motor_config.hpp"
@@ -22,7 +23,8 @@ namespace utils
                   const std::shared_ptr<motor::MotorConfig> motor_config,
                   const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config,
                   const std::shared_ptr<tray::TrayManagerConfig> tray_manager_config,
-                  const std::shared_ptr<watchdog::HeartbeatConfig> heartbeat_config);
+                  const std::shared_ptr<watchdog::HeartbeatConfig> heartbeat_config,
+                  const std::shared_ptr<logging::RotatingFileHandlerConfig> rotating_file_handler_config);
 
     bool set_config(const uint8_t config_id, const uint32_t config_value);
 
@@ -35,6 +37,7 @@ namespace utils
     const std::shared_ptr<motor::MotorMonitorConfig> _motor_monitor_config;
     const std::shared_ptr<tray::TrayManagerConfig> _tray_manager_config;
     const std::shared_ptr<watchdog::HeartbeatConfig> _heartbeat_config;
+    const std::shared_ptr<logging::RotatingFileHandlerConfig> _rotating_file_handler_config;
 
     void set_default_configs();
 
@@ -49,6 +52,8 @@ namespace utils
     void set_default_tray_manager_config();
 
     void set_default_heartbeat_config();
+
+    void set_default_rotating_file_handler_config();
   };
 
 }   // namespace utils

@@ -117,6 +117,13 @@
   Serial.print(ANSI_COLOR_RESET)
 #endif
 
+#ifndef serial_printf_color
+#define serial_printf_color(color, format, ...) \
+  Serial.print(color);                          \
+  Serial.printf(format, ##__VA_ARGS__);         \
+  Serial.print(ANSI_COLOR_RESET)
+#endif
+
 #ifndef serial_printf_warning
 #define serial_printf_warning(format, ...) \
   Serial.print(ANSI_COLOR_YELLOW);         \

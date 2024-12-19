@@ -80,6 +80,13 @@ namespace module_config
     constexpr uint8_t HEARTBEAT_INTERVAL_IN_MS = 60;
   }   // namespace watchdog
 
+  namespace logging
+  {
+    constexpr uint8_t ROTATING_FILE_HANDLER_MAX_FILE_SIZE_IN_BYTES = 70;
+    constexpr uint8_t ROTATING_FILE_HANDLER_MAX_FILES = 71;    
+  } // namespace logging
+  
+
   /********************************************************************************************************
    * Configs for the drawer
    *********************************************************************************************************/
@@ -375,6 +382,24 @@ namespace module_config
   {
     using type = uint16_t;
     static constexpr type default_value = 1000;
+  };
+
+  /********************************************************************************************************
+   * Configs for the logging
+   ********************************************************************************************************/
+
+  template <>
+  struct ModuleSetting<logging::ROTATING_FILE_HANDLER_MAX_FILE_SIZE_IN_BYTES>
+  {
+    using type = uint16_t;
+    static constexpr type default_value = 100;
+  };
+
+  template <>
+  struct ModuleSetting<logging::ROTATING_FILE_HANDLER_MAX_FILES>
+  {
+    using type = uint8_t;
+    static constexpr type default_value = 3;
   };
 
 }   // namespace module_config
