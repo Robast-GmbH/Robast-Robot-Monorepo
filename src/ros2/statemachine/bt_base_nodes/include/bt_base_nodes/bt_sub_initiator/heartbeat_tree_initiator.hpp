@@ -5,11 +5,11 @@
 
 #include "behaviortree_cpp/bt_factory.h"
 #include "bt_base_nodes/bt_sub_base.hpp"
-#include "std_msgs/msg/string.hpp"
+#include "std_msgs/msg/empty.hpp"
 
 namespace bt_base_nodes
 {
-  class HeartbeatTreeInitiator : public bt_base_nodes::BTSubBase<std_msgs::msg::String>
+  class HeartbeatTreeInitiator : public bt_base_nodes::BTSubBase<std_msgs::msg::Empty>
   {
    public:
     HeartbeatTreeInitiator(const rclcpp::NodeOptions &options = rclcpp::NodeOptions()) : BTSubBase(options)
@@ -17,7 +17,7 @@ namespace bt_base_nodes
     }
 
    protected:
-    void callbackRunBT(const std_msgs::msg::String::SharedPtr msg) override
+    void callbackRunBT(const std_msgs::msg::Empty::SharedPtr msg) override
     {
       BT::NodeStatus status = bt_.tickWhileRunning(std::chrono::milliseconds(tree_tick_time_));
 
@@ -27,9 +27,6 @@ namespace bt_base_nodes
         rclcpp::shutdown();
       }
     }
-
-   private:
-    std::string _id;
   };
 
 }   // namespace bt_base_nodes
