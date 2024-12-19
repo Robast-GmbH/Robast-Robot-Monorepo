@@ -96,7 +96,6 @@ namespace statemachine
           _printed_single_timeout_warning[id] = true;
         }
 
-        // Move to the next element if no deletion occurred
         ++it;
       }
     }
