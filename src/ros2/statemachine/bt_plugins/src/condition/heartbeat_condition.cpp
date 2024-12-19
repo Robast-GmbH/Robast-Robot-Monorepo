@@ -51,14 +51,18 @@ namespace statemachine
     }
 
     // Use an iterator-based loop to safely erase elements
-    for (auto it = _last_heartbeat_timestamp_by_id.begin(); it != _last_heartbeat_timestamp_by_id.end();)
+    for (auto it = _heartbeat_info_by_id.begin(); it != _heartbeat_info_by_id.end();)
     {
       const std::string &id = it->first;
-      const rclcpp::Time &last_timestamp = it->second;
+      heartbeat_info &info = it->second;
+
+      const rclcpp::Time &last_timestamp = info.timestamp;
+      const uint16_t &interval_in_ms = info.interval_in_ms;
+      bool &printed_single_timeout_warning = info.printed_single_timeout_warning;
+
       const std::chrono::milliseconds time_since_last_heartbeat_in_ms =
           utils::convert_to_milliseconds(_node->now()) - utils::convert_to_milliseconds(last_timestamp);
-      const std::chrono::milliseconds failure_timeout_in_ms(_heartbeat_interval_in_ms_by_id[id] *
-                                                            _timeouts_until_failure);
+      const std::chrono::milliseconds failure_timeout_in_ms(interval_in_ms * _timeouts_until_failure);
 
       if (time_since_last_heartbeat_in_ms > failure_timeout_in_ms)
       {
@@ -76,15 +80,14 @@ namespace statemachine
         publish_living_devices();
 
         // Safely erase the element and update the iterator
-        it = _last_heartbeat_timestamp_by_id.erase(it);
+        it = _heartbeat_info_by_id.erase(it);
 
         return BT::NodeStatus::FAILURE;
       }
       else
       {
-        const std::chrono::milliseconds acceptable_heartbeat_delay_in_ms(_heartbeat_interval_in_ms_by_id[id] +
-                                                                         _latency_tolerance_in_ms);
-        if (!_printed_single_timeout_warning[id] && time_since_last_heartbeat_in_ms > acceptable_heartbeat_delay_in_ms)
+        const std::chrono::milliseconds acceptable_heartbeat_delay_in_ms(interval_in_ms + _latency_tolerance_in_ms);
+        if (!printed_single_timeout_warning && time_since_last_heartbeat_in_ms > acceptable_heartbeat_delay_in_ms)
         {
           RCLCPP_WARN(rclcpp::get_logger("HeartbeatCondition"),
                       "HeartbeatCondition WARNING. Single timeout for id %s occurred! Last heartbeat was %ld ms ago. "
@@ -93,7 +96,7 @@ namespace statemachine
                       id.c_str(),
                       time_since_last_heartbeat_in_ms.count(),
                       acceptable_heartbeat_delay_in_ms.count());
-          _printed_single_timeout_warning[id] = true;
+          printed_single_timeout_warning = true;
         }
 
         ++it;
@@ -128,16 +131,16 @@ namespace statemachine
 
   void HeartbeatCondition::_callback_heartbeat(const communication_interfaces::msg::Heartbeat::SharedPtr msg)
   {
-    _last_heartbeat_timestamp_by_id[msg->id] = msg->stamp;
-    _printed_single_timeout_warning[msg->id] = false;
-    _heartbeat_interval_in_ms_by_id[msg->id] = msg->interval_in_ms;
+    _heartbeat_info_by_id[msg->id].timestamp = msg->stamp;
+    _heartbeat_info_by_id[msg->id].printed_single_timeout_warning = false;
+    _heartbeat_info_by_id[msg->id].interval_in_ms = msg->interval_in_ms;
     _first_heartbeat_received = true;
 
     RCLCPP_DEBUG(rclcpp::get_logger("HeartbeatCondition"),
                  "Received heartbeat from %s. My interval is %d ms and the "
                  "last heartbeat was at %ld ms.",
                  msg->id.c_str(),
-                 _heartbeat_interval_in_ms_by_id[msg->id],
+                 _heartbeat_info_by_id[msg->id].interval_in_ms,
                  utils::convert_to_milliseconds(msg->stamp).count());
 
     if (!_living_devices.contains(msg->id))

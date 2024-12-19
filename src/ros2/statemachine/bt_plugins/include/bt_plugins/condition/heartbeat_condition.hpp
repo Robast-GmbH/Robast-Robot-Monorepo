@@ -12,6 +12,13 @@
 
 namespace statemachine
 {
+  struct heartbeat_info
+  {
+    builtin_interfaces::msg::Time timestamp;
+    uint16_t interval_in_ms;
+    bool printed_single_timeout_warning;
+  };
+
   class HeartbeatCondition : public BT::ConditionNode
   {
    public:
@@ -40,9 +47,8 @@ namespace statemachine
     std::string _topic_name;
     uint8_t _timeouts_until_failure;
     uint16_t _latency_tolerance_in_ms;
-    std::unordered_map<std::string, uint16_t> _heartbeat_interval_in_ms_by_id;
-    std::unordered_map<std::string, builtin_interfaces::msg::Time> _last_heartbeat_timestamp_by_id;
-    std::unordered_map<std::string, bool> _printed_single_timeout_warning;
+
+    std::unordered_map<std::string, heartbeat_info> _heartbeat_info_by_id;
 
     std::unordered_set<std::string> _living_devices;
 
