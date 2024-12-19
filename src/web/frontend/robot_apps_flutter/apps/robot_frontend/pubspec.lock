@@ -1063,6 +1063,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  virtual_keyboard_custom_layout:
+    dependency: "direct main"
+    description:
+      name: virtual_keyboard_custom_layout
+      sha256: c630116ff5bda4121ef2995706a1d14fa80fe7cb90919364290c5e68be12471a
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   vm_service:
     dependency: transitive
     description:

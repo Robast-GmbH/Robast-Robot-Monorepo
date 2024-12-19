@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/dialogs/user_creation_dialog.dart';
@@ -51,8 +52,8 @@ class _UserManagementPageState extends State<UserManagementPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 16,
+                  SizedBox(
+                    height: Provider.of<KeyboardProvider>(context).textController != null ? 332 : 16,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),

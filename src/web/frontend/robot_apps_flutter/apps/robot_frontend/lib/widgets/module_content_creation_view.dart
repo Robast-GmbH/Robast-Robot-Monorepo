@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/widgets/custom_textfield.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 
@@ -20,6 +21,8 @@ class ModuleContentCreationView extends StatefulWidget {
 class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
   final textController = TextEditingController();
   final amountController = TextEditingController();
+  final focusNode = FocusNode();
+  final scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +47,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
                 children: [
                   Expanded(
                     child: ListView(
+                      controller: scrollController,
                       children: widget.moduleContentController.initialItemsByCount.entries.map<Widget>(buildContentListTile).toList() +
                           controller.createdItemsByCount.entries.map(buildContentListTile).toList() +
                           [
@@ -63,7 +67,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
 
   Padding buildItemsByChangeCreationButton() {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 32, top: 8),
+      padding: const EdgeInsets.only(bottom: 96, top: 8),
       child: InkWell(
         onTap: () {
           final amount = int.tryParse(amountController.text);
@@ -75,6 +79,8 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
             textController.clear();
             amountController.clear();
           });
+          focusNode.requestFocus();
+          scrollController.jumpTo(scrollController.position.maxScrollExtent);
         },
         child: const RoundedContainer(
           child: Padding(
@@ -162,22 +168,23 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
           children: [
             Expanded(
               flex: 8,
-              child: TextField(
+              child: CustomTextfield(
                 controller: textController,
-                style: const TextStyle(fontSize: 32, color: RobotColors.secondaryText),
-                onChanged: (value) => widget.moduleContentController.itemName = value,
+                focusNode: focusNode,
+                // style: const TextStyle(fontSize: 32, color: RobotColors.secondaryText),
+                // onChanged: (value) => widget.moduleContentController.itemName = value,
               ),
             ),
             const SizedBox(
               width: 32,
             ),
             Expanded(
-              child: TextField(
-                textAlign: TextAlign.center,
+              child: CustomTextfield(
+                //textAlign: TextAlign.center,
                 controller: amountController,
-                style: const TextStyle(fontSize: 32, color: RobotColors.secondaryText),
-                keyboardType: const TextInputType.numberWithOptions(),
-                onChanged: (value) => widget.moduleContentController.amount = value,
+                //   style: const TextStyle(fontSize: 32, color: RobotColors.secondaryText),
+                //   keyboardType: const TextInputType.numberWithOptions(),
+                //   onChanged: (value) => widget.moduleContentController.amount = value,
               ),
             ),
           ],

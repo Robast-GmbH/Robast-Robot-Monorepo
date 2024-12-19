@@ -7,6 +7,7 @@ import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/fire_alarm_provider.dart';
 import 'package:robot_frontend/models/provider/hygiene_provider.dart';
 import 'package:robot_frontend/models/provider/inactivity_provider.dart';
+import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 import 'package:robot_frontend/models/provider/map_provider.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/notification_provider.dart';
@@ -51,6 +52,9 @@ void main() {
         ),
         ChangeNotifierProvider(
           create: (_) => NotificationProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => KeyboardProvider(),
         ),
         ChangeNotifierProvider(
           create: (_) => InactivityProvider(navigatorKey),

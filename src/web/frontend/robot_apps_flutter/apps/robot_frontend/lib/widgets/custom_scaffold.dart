@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/manuals_page.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
 import 'package:robot_frontend/widgets/emergency_stop_view.dart';
-import 'package:robot_frontend/widgets/status_bar.dart';
 import 'package:robot_frontend/widgets/status_indicator_view.dart';
 import 'package:robot_frontend/widgets/titled_view.dart';
+import 'package:virtual_keyboard_custom_layout/virtual_keyboard_custom_layout.dart';
 
 class CustomScaffold extends StatelessWidget {
   const CustomScaffold({
@@ -32,6 +33,7 @@ class CustomScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('rebuild CustomScaffold');
     return Scaffold(
       body: BackgroundView(
         inactivityTimerEnabled: inactivityTimerEnabled,
@@ -82,7 +84,7 @@ class CustomScaffold extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Expanded(
+                  const Expanded(
                     child: Center(
                         child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 256),
@@ -97,15 +99,50 @@ class CustomScaffold extends StatelessWidget {
               );
             }
             if (isEmergencyStopPressed ?? false) {
+              Provider.of<KeyboardProvider>(context, listen: false).textController = null;
               Navigator.of(context).popUntil((route) => route is PageRoute);
               return const EmergencyStopView();
             }
-            return TitledView(
-              title: title,
-              showBackButton: showBackButton,
-              onBackButtonPressed: onBackButtonPressed,
-              collapsedTitle: collapsedTitle,
-              child: child,
+            return Stack(
+              children: [
+                TitledView(
+                  title: title,
+                  showBackButton: showBackButton,
+                  onBackButtonPressed: onBackButtonPressed,
+                  collapsedTitle: collapsedTitle,
+                  child: child,
+                ),
+                if (Provider.of<KeyboardProvider>(context).textController != null)
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: ColoredBox(
+                      color: Colors.white,
+                      child: Listener(
+                        onPointerDown: (_) {
+                          print("pointer down");
+                          Provider.of<KeyboardProvider>(context, listen: false).isMaskingUnfocus = true;
+                        },
+                        onPointerUp: (event) {
+                          print("pointer up");
+                          Provider.of<KeyboardProvider>(context, listen: false).isMaskingUnfocus = false;
+                        },
+                        onPointerCancel: (event) {
+                          print("pointer cancel");
+                        },
+                        onPointerSignal: (event) {
+                          print(event.kind);
+                        },
+                        child: VirtualKeyboard(
+                          type: VirtualKeyboardType.Alphanumeric,
+                          fontSize: 32,
+                          height: 400,
+                          defaultLayouts: const [VirtualKeyboardDefaultLayouts.English],
+                          textController: Provider.of<KeyboardProvider>(context).textController,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             );
           },
         ),

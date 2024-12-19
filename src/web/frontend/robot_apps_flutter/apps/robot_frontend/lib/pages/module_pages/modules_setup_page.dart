@@ -6,6 +6,7 @@ import 'package:robot_frontend/pages/manuals_page.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
 import 'package:robot_frontend/widgets/dialogs/finish_module_setup_dialog.dart';
+import 'package:robot_frontend/widgets/num_pad.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 
 class ModulesSetupPage extends StatefulWidget {
@@ -151,12 +152,21 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                       height: 8,
                     ),
                     TextField(
-                      style: const TextStyle(color: RobotColors.secondaryText, fontSize: 26),
+                      style: const TextStyle(color: RobotColors.secondaryText, fontSize: 32),
                       controller: controller,
                       decoration: const InputDecoration(
                         hintText: 'Modul ID',
                       ),
+                      readOnly: true,
                     ),
+                    const SizedBox(
+                      height: 8,
+                    ),
+                    SizedBox(
+                        height: 400,
+                        child: NumPad(
+                          controller: controller,
+                        )),
                     const SizedBox(
                       height: 8,
                     ),
@@ -173,9 +183,17 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                             });
                           },
                         ),
-                        const Text(
-                          'Ist elektrisch',
-                          style: TextStyle(color: RobotColors.primaryText),
+                        TextButton(
+                          child: const Text(
+                            'Ist elektrisch',
+                            style: TextStyle(color: RobotColors.primaryText, fontSize: 24),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isElectric = !isElectric;
+                              isPartial = false;
+                            });
+                          },
                         ),
                       ],
                     ),
@@ -195,9 +213,17 @@ class _ModulesSetupPageState extends State<ModulesSetupPage> {
                             });
                           },
                         ),
-                        const Text(
-                          'Ist partiell',
-                          style: TextStyle(color: RobotColors.primaryText),
+                        TextButton(
+                          child: const Text(
+                            'Ist partiell',
+                            style: TextStyle(color: RobotColors.primaryText, fontSize: 24),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isPartial = !isPartial;
+                              isElectric = false;
+                            });
+                          },
                         ),
                       ],
                     ),

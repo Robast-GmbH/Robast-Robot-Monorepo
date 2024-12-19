@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/inactivity_provider.dart';
+import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/pages/module_pages/module_process_page.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
@@ -41,6 +42,10 @@ class _ModuleFillingPageState extends State<ModuleFillingPage> {
                 label: 'Inhalt',
               ),
             ),
+            if (Provider.of<KeyboardProvider>(context).textController != null)
+              const SizedBox(
+                height: 280,
+              ),
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: RoundedButton(

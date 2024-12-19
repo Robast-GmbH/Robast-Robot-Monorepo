@@ -27,6 +27,7 @@ dependencies:
   zoom_widget: ^2.0.1
   path_provider: ^2.1.5
   pdfrx: ^1.0.88
+  virtual_keyboard_custom_layout: ^1.0.0
 
 dev_dependencies:
   bloc_test: ^9.1.6
