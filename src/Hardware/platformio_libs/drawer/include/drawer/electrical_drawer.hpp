@@ -165,8 +165,6 @@ namespace drawer
 
     bool is_stall_guard_triggered();
 
-    bool get_is_stall_guard_triggered() const;
-
     void handle_stall_guard_triggered();
 
     void reset_encoder_if_endstop_is_pushed();
