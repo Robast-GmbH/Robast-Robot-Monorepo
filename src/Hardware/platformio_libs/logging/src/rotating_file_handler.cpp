@@ -18,6 +18,8 @@ namespace logging
 
   void RotatingFileHandler::rotate_logs()
   {
+    debug_printf_green("[RotatingFileHandler]: Rotating log files\n");
+
     const uint8_t max_files = _config->get_max_files();
 
     // Close the current log file if it is open
@@ -27,10 +29,9 @@ namespace logging
       file.close();
     }
 
-    if (_current_file_number >= max_files)
+    if (_current_file_number >= (max_files - 1))
     {
       serial_printf_green("[RotatingFileHandler]: Maximum number of log files reached. Deleting oldest log file\n");
-      LittleFS.remove("/log_0.txt");
       _current_file_number = 0;
     }
     else
@@ -40,11 +41,7 @@ namespace logging
 
     snprintf(_current_file_name, sizeof(_current_file_name), "/log_%d.txt", _current_file_number);
 
-    // Check if the new log file already exists and delete it
-    if (LittleFS.exists(_current_file_name))
-    {
-      LittleFS.remove(_current_file_name);
-    }
+    delete_log_file_if_exists(_current_file_name);
 
     // Create a new log file
     file = LittleFS.open(_current_file_name, FILE_WRITE);
@@ -58,11 +55,8 @@ namespace logging
     serial_printf_green("[RotatingFileHandler]: Log file rotated successfully\n");
   }
 
-  void RotatingFileHandler::write(const char *msg)
+  void RotatingFileHandler::write(std::string msg)
   {
-    serial_printf_green("[RotatingFileHandler]: Writing to log file %s\n", _current_file_name);
-
-    // write to file here and rotate if necessary
     File file = LittleFS.open(_current_file_name, FILE_APPEND);
     if (!file)
     {
@@ -70,34 +64,36 @@ namespace logging
       return;
     }
 
-    file.println(msg);
+    file.println(msg.c_str());
+    const uint32_t file_size = file.size();
     file.close();
 
-    if (file.size() > _config->get_max_file_size_in_bytes())
+    if (file_size > _config->get_max_file_size_in_bytes())
     {
+      serial_printf_color(
+        ANSI_COLOR_YELLOW,
+        "[RotatingFileHandler]: Current Log file size %d exceeds maximum file size %d. Rotating log files\n",
+        file_size,
+        _config->get_max_file_size_in_bytes());
       rotate_logs();
     }
 
-    serial_printf_green("[RotatingFileHandler]: Successfully wrote to log file\n");
+    debug_printf_green("[RotatingFileHandler]: Successfully wrote to log file %s. Current file size: %d\n",
+                       _current_file_name,
+                       file_size);
   }
 
   void RotatingFileHandler::print_all_logs()
   {
-    // Check how many log files exist
-    std::vector<String> log_files;
-    File root = LittleFS.open("/");
-    File f = root.openNextFile();
-    while (f)
-    {
-      log_files.push_back(f.name());
-      f = root.openNextFile();
-    }
+    std::vector<String> log_files = get_all_logs();
+
+    uint16_t current_log_file_num = 0;
 
     // Print all log files
     for (const auto &log_file : log_files)
     {
       // print content of all log files
-      File file = LittleFS.open("/" + log_file, "r");
+      File file = LittleFS.open(log_file.c_str(), "r");
       if (!file)
       {
         serial_printf_error("[RotatingFileHandler]: Failed to open log file %s\n", log_file.c_str());
@@ -111,6 +107,36 @@ namespace logging
         serial_printf_color(ANSI_COLOR_CYAN, "%c", file.read());
       }
       file.close();
+
+      if (current_log_file_num >= _config->get_max_files())
+      {
+        delete_log_file_if_exists(log_file.c_str());
+      }
+
+      ++current_log_file_num;
+    }
+  }
+
+  std::vector<String> RotatingFileHandler::get_all_logs() const
+  {
+    std::vector<String> log_files;
+    File root = LittleFS.open("/");
+    File f = root.openNextFile();
+    while (f)
+    {
+      log_files.push_back(String("/") + f.name());
+      f = root.openNextFile();
+    }
+
+    return log_files;
+  }
+
+  void RotatingFileHandler::delete_log_file_if_exists(const char *file_name)
+  {
+    if (LittleFS.exists(file_name))
+    {
+      debug_printf_green("[RotatingFileHandler]: Deleting existing log file %s\n", file_name);
+      LittleFS.remove(file_name);
     }
   }
 

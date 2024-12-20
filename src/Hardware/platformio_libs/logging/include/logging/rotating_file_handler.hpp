@@ -23,7 +23,7 @@ namespace logging
 
     void init();
 
-    void write(const char *msg);
+    void write(std::string msg);
 
     void print_all_logs();
 
@@ -33,9 +33,13 @@ namespace logging
     uint32_t _current_file_size = 0;
     uint32_t _current_file_number = 0;
 
-    char *_current_file_name = "/log_0.txt";
+    char _current_file_name[20] = "/log_0.txt";
 
     void rotate_logs();
+
+    void delete_log_file_if_exists(const char *file_name);
+
+    std::vector<String> get_all_logs() const;
   };
 
 }   // namespace logging
