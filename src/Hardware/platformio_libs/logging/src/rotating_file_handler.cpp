@@ -31,7 +31,7 @@ namespace logging
 
     if (_current_file_number >= (max_files - 1))
     {
-      serial_printf_green("[RotatingFileHandler]: Maximum number of log files reached. Deleting oldest log file\n");
+      debug_printf_green("[RotatingFileHandler]: Maximum number of log files reached. Starting from the beginning\n");
       _current_file_number = 0;
     }
     else
@@ -52,7 +52,7 @@ namespace logging
     }
     file.close();
 
-    serial_printf_green("[RotatingFileHandler]: Log file rotated successfully\n");
+    debug_printf_green("[RotatingFileHandler]: Log file rotated successfully\n");
   }
 
   void RotatingFileHandler::write(std::string msg)

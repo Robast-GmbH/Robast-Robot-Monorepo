@@ -234,6 +234,8 @@ void process_can_msgs_task_loop(void* pvParameters)
 
     if (to_be_sent_message.has_value())
     {
+      // Why is this only working when I have this print statement here?
+      // serial_printf_green("[Main]: Sending CAN message with id: %d\n", to_be_sent_message->get_id());
       can_controller->send_can_message(to_be_sent_message.value());
     }
   }
@@ -243,6 +245,28 @@ void setup()
 {
   Serial.begin(115200);
   debug_printf_green("[Main]: Start the module with the module id: %d\n", MODULE_ID);
+
+  drawer_config = std::make_shared<drawer::ElectricalDrawerConfig>();
+  encoder_config = std::make_shared<motor::EncoderConfig>();
+  motor_config = std::make_shared<motor::MotorConfig>();
+  motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
+  tray_manager_config = std::make_shared<tray::TrayManagerConfig>();
+  heartbeat_config = std::make_shared<watchdog::HeartbeatConfig>();
+  rotating_file_handler_config = std::make_shared<logging::RotatingFileHandlerConfig>();
+
+  config_manager = std::make_unique<utils::ConfigManager>(drawer_config,
+                                                          encoder_config,
+                                                          motor_config,
+                                                          motor_monitor_config,
+                                                          tray_manager_config,
+                                                          heartbeat_config,
+                                                          rotating_file_handler_config);
+  config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
+                             USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
+  config_manager->print_all_configs();
+
+  rotating_file_logger = std::make_shared<logging::RotatingFileHandler>(rotating_file_handler_config);
+  rotating_file_logger->print_all_logs();
 
   std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(1);
   wire_port_expander->begin(peripherals::i2c::I2C_SDA, peripherals::i2c::I2C_SCL);
@@ -296,29 +320,7 @@ void setup()
                                                              SWITCH_PRESSED_THRESHOLD,
                                                              SWITCH_WEIGHT_NEW_VALUES);
 
-  drawer_config = std::make_shared<drawer::ElectricalDrawerConfig>();
-  encoder_config = std::make_shared<motor::EncoderConfig>();
-  motor_config = std::make_shared<motor::MotorConfig>();
-  motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
-  tray_manager_config = std::make_shared<tray::TrayManagerConfig>();
-  heartbeat_config = std::make_shared<watchdog::HeartbeatConfig>();
-  rotating_file_handler_config = std::make_shared<logging::RotatingFileHandlerConfig>();
-
-  config_manager = std::make_unique<utils::ConfigManager>(drawer_config,
-                                                          encoder_config,
-                                                          motor_config,
-                                                          motor_monitor_config,
-                                                          tray_manager_config,
-                                                          heartbeat_config,
-                                                          rotating_file_handler_config);
-  config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
-                             USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
-  config_manager->print_all_configs();
-
-  heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, heartbeat_config);
-
-  rotating_file_handler = std::make_shared<logging::RotatingFileHandler>(rotating_file_handler_config);
-  rotating_file_handler->print_all_logs();
+  heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, heartbeat_config, rotating_file_logger);
 
   if (MODULE_HARDWARE_CONFIG.is_electrical_drawer)
   {
