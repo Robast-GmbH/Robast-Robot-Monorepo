@@ -119,18 +119,14 @@ class CustomScaffold extends StatelessWidget {
                       color: Colors.white,
                       child: Listener(
                         onPointerDown: (_) {
-                          print("pointer down");
+                          print("1: pointer down");
                           Provider.of<KeyboardProvider>(context, listen: false).isMaskingUnfocus = true;
+                          Provider.of<KeyboardProvider>(context, listen: false).focusNode?.requestFocus();
                         },
                         onPointerUp: (event) {
-                          print("pointer up");
+                          print("3: pointer up");
+                          Provider.of<KeyboardProvider>(context, listen: false).focusNode?.requestFocus();
                           Provider.of<KeyboardProvider>(context, listen: false).isMaskingUnfocus = false;
-                        },
-                        onPointerCancel: (event) {
-                          print("pointer cancel");
-                        },
-                        onPointerSignal: (event) {
-                          print(event.kind);
                         },
                         child: VirtualKeyboard(
                           type: VirtualKeyboardType.Alphanumeric,

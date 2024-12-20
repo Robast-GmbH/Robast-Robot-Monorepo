@@ -21,9 +21,8 @@ class _CustomTextfieldState extends State<CustomTextfield> {
   Timer? maskUnfocusTimer;
 
   void textEditingControllerCallback() {
-    print("Text: ${widget.controller.text}");
+    print("4: Text: ${widget.controller.text}");
     widget.onChanged?.call(widget.controller.text);
-    focusNode.requestFocus();
   }
 
   void focusNodeCallback() {
@@ -32,7 +31,6 @@ class _CustomTextfieldState extends State<CustomTextfield> {
       Provider.of<KeyboardProvider>(context, listen: false).focusNode = focusNode;
       Provider.of<KeyboardProvider>(context, listen: false).textController = widget.controller;
     } else {
-      print('Unfocus');
       maskUnfocusTimer?.cancel();
       maskUnfocusTimer = Timer(const Duration(milliseconds: 200), () {
         if (mounted && !(Provider.of<KeyboardProvider>(context, listen: false).focusNode?.hasFocus ?? true)) {
@@ -41,7 +39,7 @@ class _CustomTextfieldState extends State<CustomTextfield> {
         }
       });
     }
-    print('Focus: ${focusNode.hasFocus}');
+    print('${focusNode.hasFocus ? "5" : "2"}: Focus: ${focusNode.hasFocus}');
   }
 
   @override
