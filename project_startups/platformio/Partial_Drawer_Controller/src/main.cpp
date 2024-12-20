@@ -9,6 +9,7 @@
 #include "tray/tray_manager.hpp"
 
 // These are the very basic top level configurations for the drawer controller you need to set.
+// Besides that there are a lot of other configs that are managed by the ConfigManager and can be set via CAN messages.
 constexpr config::UserConfig USER_CONFIG{.module_version = config::version::CURA,
                                          .module_prefix = module_id::ModulePrefix::PARTIAL_DRAWER_10x40x8,
                                          .unique_module_id = 1,
