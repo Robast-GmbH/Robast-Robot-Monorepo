@@ -392,7 +392,7 @@ namespace module_config
   struct ModuleSetting<logging::ROTATING_FILE_HANDLER_MAX_FILE_SIZE_IN_BYTES>
   {
     using type = uint16_t;
-    static constexpr type default_value = 100;
+    static constexpr type default_value = 500;
   };
 
   template <>
