@@ -20,14 +20,14 @@ class UserNameEditor extends StatefulWidget {
 }
 
 class _UserNameEditorState extends State<UserNameEditor> {
-  late final TextEditingController firstNameController;
-  late final TextEditingController lastNameController;
+  late final TextController firstNameController;
+  late final TextController lastNameController;
 
   @override
   void initState() {
     super.initState();
-    firstNameController = TextEditingController(text: widget.controller.firstName);
-    lastNameController = TextEditingController(text: widget.controller.lastName);
+    firstNameController = TextController(text: widget.controller.firstName);
+    lastNameController = TextController(text: widget.controller.lastName);
   }
 
   @override
@@ -58,8 +58,7 @@ class _UserNameEditorState extends State<UserNameEditor> {
             Expanded(
               flex: 3,
               child: CustomTextfield(
-                controller: firstNameController,
-                onChanged: (value) => widget.controller.firstName = value,
+                textController: firstNameController,
               ),
             ),
             const SizedBox(
@@ -68,8 +67,7 @@ class _UserNameEditorState extends State<UserNameEditor> {
             Expanded(
               flex: 3,
               child: CustomTextfield(
-                controller: lastNameController,
-                onChanged: (value) => widget.controller.lastName = value,
+                textController: lastNameController,
               ),
             ),
           ],

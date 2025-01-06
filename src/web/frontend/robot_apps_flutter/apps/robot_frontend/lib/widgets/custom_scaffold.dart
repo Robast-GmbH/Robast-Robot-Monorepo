@@ -99,42 +99,62 @@ class CustomScaffold extends StatelessWidget {
               );
             }
             if (isEmergencyStopPressed ?? false) {
-              Provider.of<KeyboardProvider>(context, listen: false).textController = null;
+              Provider.of<KeyboardProvider>(context, listen: false).key = null;
               Navigator.of(context).popUntil((route) => route is PageRoute);
               return const EmergencyStopView();
             }
             return Stack(
               children: [
-                TitledView(
-                  title: title,
-                  showBackButton: showBackButton,
-                  onBackButtonPressed: onBackButtonPressed,
-                  collapsedTitle: collapsedTitle,
-                  child: child,
+                GestureDetector(
+                  onTap: () => Provider.of<KeyboardProvider>(context, listen: false).key = null,
+                  child: TitledView(
+                    title: title,
+                    showBackButton: showBackButton,
+                    onBackButtonPressed: onBackButtonPressed,
+                    collapsedTitle: collapsedTitle,
+                    child: child,
+                  ),
                 ),
-                if (Provider.of<KeyboardProvider>(context).textController != null)
+                if (Provider.of<KeyboardProvider>(context).key != null)
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: ColoredBox(
                       color: Colors.white,
-                      child: Listener(
-                        onPointerDown: (_) {
-                          print("1: pointer down");
-                          Provider.of<KeyboardProvider>(context, listen: false).isMaskingUnfocus = true;
-                          Provider.of<KeyboardProvider>(context, listen: false).focusNode?.requestFocus();
+                      child: VirtualKeyboard(
+                        type: VirtualKeyboardType.Alphanumeric,
+                        fontSize: 32,
+                        height: 400,
+                        defaultLayouts: const [VirtualKeyboardDefaultLayouts.English],
+                        textController: TextEditingController(text: Provider.of<KeyboardProvider>(context, listen: false).text),
+                        onKeyPress: (key) {
+                          print('key:');
+                          final provider = Provider.of<KeyboardProvider>(context, listen: false);
+                          if (key.keyType == VirtualKeyboardKeyType.Action) {
+                            switch (key.action) {
+                              case VirtualKeyboardKeyAction.Backspace:
+                                print('backspace and ${provider.text}');
+                                if (provider.text!.isNotEmpty) {
+                                  provider.text = provider.text!.substring(0, provider.text!.length - 1);
+                                }
+                                break;
+                              case VirtualKeyboardKeyAction.Return:
+                                provider.text = provider.text! + '\n';
+                                break;
+                              case VirtualKeyboardKeyAction.Space:
+                                provider.text = provider.text! + ' ';
+                                break;
+                              case VirtualKeyboardKeyAction.Shift:
+                                break;
+                              default:
+                                print('pressed unsupported action');
+                                break;
+                            }
+                          } else if (key is VirtualKeyboardKey) {
+                            print(key.text);
+                            provider.text = provider.text! + key.text!;
+                          }
+                          provider.setTextState!();
                         },
-                        onPointerUp: (event) {
-                          print("3: pointer up");
-                          Provider.of<KeyboardProvider>(context, listen: false).focusNode?.requestFocus();
-                          Provider.of<KeyboardProvider>(context, listen: false).isMaskingUnfocus = false;
-                        },
-                        child: VirtualKeyboard(
-                          type: VirtualKeyboardType.Alphanumeric,
-                          fontSize: 32,
-                          height: 400,
-                          defaultLayouts: const [VirtualKeyboardDefaultLayouts.English],
-                          textController: Provider.of<KeyboardProvider>(context).textController,
-                        ),
                       ),
                     ),
                   ),

@@ -42,7 +42,7 @@ class _ModuleFillingPageState extends State<ModuleFillingPage> {
                 label: 'Inhalt',
               ),
             ),
-            if (Provider.of<KeyboardProvider>(context).textController != null)
+            if (Provider.of<KeyboardProvider>(context).key != null)
               const SizedBox(
                 height: 280,
               ),

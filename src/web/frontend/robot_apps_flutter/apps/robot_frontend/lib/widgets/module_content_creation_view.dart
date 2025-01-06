@@ -19,8 +19,8 @@ class ModuleContentCreationView extends StatefulWidget {
 }
 
 class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
-  final textController = TextEditingController();
-  final amountController = TextEditingController();
+  final textController = TextController();
+  final amountController = TextController();
   final focusNode = FocusNode();
   final scrollController = ScrollController();
 
@@ -169,8 +169,8 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
             Expanded(
               flex: 8,
               child: CustomTextfield(
-                controller: textController,
-                focusNode: focusNode,
+                textController: textController,
+
                 // style: const TextStyle(fontSize: 32, color: RobotColors.secondaryText),
                 // onChanged: (value) => widget.moduleContentController.itemName = value,
               ),
@@ -181,7 +181,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
             Expanded(
               child: CustomTextfield(
                 //textAlign: TextAlign.center,
-                controller: amountController,
+                textController: amountController,
                 //   style: const TextStyle(fontSize: 32, color: RobotColors.secondaryText),
                 //   keyboardType: const TextInputType.numberWithOptions(),
                 //   onChanged: (value) => widget.moduleContentController.amount = value,

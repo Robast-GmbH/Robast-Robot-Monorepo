@@ -1066,12 +1066,11 @@ packages:
   virtual_keyboard_custom_layout:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "1a773b0ad7e37acc49ad3e451ce5c21823a9fbce"
-      resolved-ref: "1a773b0ad7e37acc49ad3e451ce5c21823a9fbce"
-      url: "https://github.com/ane-robast/virtual_keyboard_custom_layout.git"
-    source: git
-    version: "0.0.6"
+      name: virtual_keyboard_custom_layout
+      sha256: b47f2f21f661b149ca771f8fa2de7f3db087f7f7573d68e057d215dd073382bd
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
   vm_service:
     dependency: transitive
     description:

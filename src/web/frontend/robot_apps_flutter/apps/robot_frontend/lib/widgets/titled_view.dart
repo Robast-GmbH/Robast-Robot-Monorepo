@@ -29,7 +29,7 @@ class TitledView extends StatelessWidget {
             showBackButton: showBackButton,
             onBackButtonPressed: onBackButtonPressed ??
                 () {
-                  Provider.of<KeyboardProvider>(context, listen: false).textController = null;
+                  Provider.of<KeyboardProvider>(context, listen: false).key = null;
                   Navigator.of(context).pop();
                 },
           ),

@@ -2,77 +2,89 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/keyboard_provider.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class CustomTextfield extends StatefulWidget {
-  const CustomTextfield({super.key, required this.controller, this.focusNode, this.onChanged});
+  const CustomTextfield({this.textController, super.key});
 
-  final TextEditingController controller;
-  final FocusNode? focusNode;
-  final void Function(String)? onChanged;
+  final TextController? textController;
 
   @override
   State<CustomTextfield> createState() => _CustomTextfieldState();
 }
 
 class _CustomTextfieldState extends State<CustomTextfield> {
-  late final FocusNode focusNode;
-  Timer? maskUnfocusTimer;
-
-  void textEditingControllerCallback() {
-    print("4: Text: ${widget.controller.text}");
-    widget.onChanged?.call(widget.controller.text);
-  }
-
-  void focusNodeCallback() {
-    if (focusNode.hasFocus) {
-      maskUnfocusTimer?.cancel();
-      Provider.of<KeyboardProvider>(context, listen: false).focusNode = focusNode;
-      Provider.of<KeyboardProvider>(context, listen: false).textController = widget.controller;
-    } else {
-      maskUnfocusTimer?.cancel();
-      maskUnfocusTimer = Timer(const Duration(milliseconds: 200), () {
-        if (mounted && !(Provider.of<KeyboardProvider>(context, listen: false).focusNode?.hasFocus ?? true)) {
-          Provider.of<KeyboardProvider>(context, listen: false).focusNode = null;
-          Provider.of<KeyboardProvider>(context, listen: false).textController = null;
-        }
-      });
-    }
-    print('${focusNode.hasFocus ? "5" : "2"}: Focus: ${focusNode.hasFocus}');
-  }
+  final _key = GlobalKey();
+  late TextController controller;
+  Timer? indicatorBlinkingTimer;
+  bool indicatorBlinkingValue = true;
 
   @override
   void initState() {
+    controller = widget.textController ?? TextController();
     super.initState();
-
-    focusNode = widget.focusNode ?? FocusNode();
-    focusNode.addListener(focusNodeCallback);
-    widget.controller.addListener(textEditingControllerCallback);
-  }
-
-  @override
-  void dispose() {
-    maskUnfocusTimer?.cancel();
-    focusNode.removeListener(focusNodeCallback);
-    widget.controller.removeListener(textEditingControllerCallback);
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      focusNode: focusNode,
-      controller: widget.controller,
-      style: const TextStyle(fontSize: 32, color: RobotColors.secondaryText),
-      decoration: InputDecoration(
-        enabledBorder: Provider.of<KeyboardProvider>(context, listen: true).focusNode == focusNode
-            ? const UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.white),
-              )
-            : null,
-        focusedBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.white),
+    return GestureDetector(
+      onTap: () {
+        print("onTap");
+        Provider.of<KeyboardProvider>(context, listen: false).key = _key;
+        Provider.of<KeyboardProvider>(context, listen: false).text = controller.text;
+        Provider.of<KeyboardProvider>(context, listen: false).setTextState = () {
+          setState(() {
+            controller.text = Provider.of<KeyboardProvider>(context, listen: false).text ?? '';
+          });
+        };
+      },
+      child: Container(
+        color: Colors.transparent,
+        child: Selector<KeyboardProvider, GlobalKey?>(
+          selector: (context, provider) => provider.key,
+          builder: (context, key, child) {
+            final isFocused = key == _key;
+            if (isFocused && !(indicatorBlinkingTimer?.isActive ?? false)) {
+              indicatorBlinkingTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
+                setState(() {
+                  indicatorBlinkingValue = !indicatorBlinkingValue;
+                });
+              });
+            } else if (!isFocused) {
+              indicatorBlinkingTimer?.cancel();
+              indicatorBlinkingValue = true;
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        controller.text,
+                        maxLines: 1,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      if (isFocused)
+                        Container(
+                          margin: const EdgeInsets.only(left: 2),
+                          height: 18,
+                          width: 1,
+                          color: indicatorBlinkingValue ? Colors.black : Colors.transparent,
+                        )
+                    ],
+                  ),
+                ),
+                Container(
+                  color: isFocused ? Colors.blue : Colors.grey,
+                  width: double.infinity,
+                  height: 1,
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
