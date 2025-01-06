@@ -87,6 +87,12 @@ namespace logging
 
     std::vector<String> log_files = get_all_logs();
 
+    if (log_files.empty())
+    {
+      serial_print_green("... no log files found.");
+      return;
+    }
+
     uint16_t current_log_file_num = 0;
 
     for (const auto &log_file : log_files)
