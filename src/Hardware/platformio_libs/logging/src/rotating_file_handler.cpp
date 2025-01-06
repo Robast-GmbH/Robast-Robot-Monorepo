@@ -11,15 +11,14 @@ namespace logging
   {
     if (!LittleFS.begin(FORMAT_LITTLEFS_IF_FAILED))
     {
-      serial_printf_error("[RotatingFileHandler]: Failed to mount LittleFS\n");
+      serial_print_error("Failed to mount LittleFS");
     }
-    serial_printf_green("[RotatingFileHandler]: Successfully mounted LittleFS\n");
+
+    serial_print_green("Successfully mounted LittleFS");
   }
 
   void RotatingFileHandler::rotate_logs()
   {
-    debug_printf_green("[RotatingFileHandler]: Rotating log files\n");
-
     const uint8_t max_files = _config->get_max_files();
 
     // Close the current log file if it is open
@@ -31,7 +30,7 @@ namespace logging
 
     if (_current_file_number >= (max_files - 1))
     {
-      debug_printf_green("[RotatingFileHandler]: Maximum number of log files reached. Starting from the beginning\n");
+      // Maximum number of log files reached. Starting from the beginning
       _current_file_number = 0;
     }
     else
@@ -47,12 +46,10 @@ namespace logging
     file = LittleFS.open(_current_file_name, FILE_WRITE);
     if (!file)
     {
-      serial_printf_error("[RotatingFileHandler]: Failed to create new log file\n");
+      serial_print_error("Failed to create new log file");
       return;
     }
     file.close();
-
-    debug_printf_green("[RotatingFileHandler]: Log file rotated successfully\n");
   }
 
   void RotatingFileHandler::write(std::string msg)
@@ -60,51 +57,53 @@ namespace logging
     File file = LittleFS.open(_current_file_name, FILE_APPEND);
     if (!file)
     {
-      serial_printf_error("[RotatingFileHandler]: Failed to open log file\n");
+      serial_print_error("Failed to open log file!");
       return;
     }
 
-    file.println(msg.c_str());
     const uint32_t file_size = file.size();
     file.close();
 
     if (file_size > _config->get_max_file_size_in_bytes())
     {
-      serial_printf_color(
-        ANSI_COLOR_YELLOW,
-        "[RotatingFileHandler]: Current Log file size %d exceeds maximum file size %d. Rotating log files\n",
-        file_size,
-        _config->get_max_file_size_in_bytes());
       rotate_logs();
     }
 
-    debug_printf_green("[RotatingFileHandler]: Successfully wrote to log file %s. Current file size: %d\n",
-                       _current_file_name,
-                       file_size);
+    file = LittleFS.open(_current_file_name, FILE_APPEND);
+
+    if (!file.println(msg.c_str()))
+    {
+      serial_print_error("Failed to write to log file!");
+      return;
+    }
+
+    serial_print_green("Successfully wrote to log file " + std::string(_current_file_name) +
+                       ". Current file size: " + std::to_string(file_size));
   }
 
   void RotatingFileHandler::print_all_logs()
   {
+    serial_print_green("Printing all logs! The content of ...");
+
     std::vector<String> log_files = get_all_logs();
 
     uint16_t current_log_file_num = 0;
 
-    // Print all log files
     for (const auto &log_file : log_files)
     {
-      // print content of all log files
       File file = LittleFS.open(log_file.c_str(), "r");
       if (!file)
       {
-        serial_printf_error("[RotatingFileHandler]: Failed to open log file %s\n", log_file.c_str());
+        serial_print_error("Failed to open log file " + std::string(log_file.c_str()));
         return;
       }
 
-      serial_printf_green("[RotatingFileHandler]: Printing content of log file %s:\n", log_file.c_str());
-      // print content of file
+      serial_print_green("... log file " + std::string(log_file.c_str()) + " is:");
       while (file.available())
       {
-        serial_printf_color(ANSI_COLOR_CYAN, "%c", file.read());
+        Serial.print(ANSI_COLOR_CYAN);
+        Serial.printf("%c", file.read());
+        Serial.print(ANSI_COLOR_RESET);
       }
       file.close();
 
@@ -135,9 +134,21 @@ namespace logging
   {
     if (LittleFS.exists(file_name))
     {
-      debug_printf_green("[RotatingFileHandler]: Deleting existing log file %s\n", file_name);
       LittleFS.remove(file_name);
     }
   }
 
+  void RotatingFileHandler::serial_print_error(const std::string msg)
+  {
+    Serial.print(ANSI_COLOR_RED);
+    Serial.printf("[RotatingFileHandler]: %s\n", msg.c_str());
+    Serial.print(ANSI_COLOR_RESET);
+  }
+
+  void RotatingFileHandler::serial_print_green(const std::string msg)
+  {
+    Serial.print(ANSI_COLOR_GREEN);
+    Serial.printf("[RotatingFileHandler]: %s\n", msg.c_str());
+    Serial.print(ANSI_COLOR_RESET);
+  }
 }   // namespace logging

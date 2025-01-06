@@ -5,6 +5,8 @@
 #include <Arduino.h>
 #endif
 
+#include "logging/rotating_file_handler.hpp"
+
 // #define DEBUG
 
 #define ANSI_COLOR_RED     "\x1b[31m"
@@ -110,6 +112,8 @@
 
 #endif
 
+extern std::shared_ptr<logging::RotatingFileHandler> rotating_file_logger;
+
 #ifndef serial_printf_green
 #define serial_printf_green(format, ...) \
   Serial.print(ANSI_COLOR_GREEN);        \
@@ -142,14 +146,16 @@
 #define serial_printf_error(format, ...) \
   Serial.print(ANSI_COLOR_RED);          \
   Serial.printf(format, ##__VA_ARGS__);  \
-  Serial.print(ANSI_COLOR_RESET)
+  Serial.print(ANSI_COLOR_RESET);        \
+  rotating_file_logger->write(format_string(format, ##__VA_ARGS__));
 #endif
 
 #ifndef serial_println_error
 #define serial_println_error(num) \
   Serial.print(ANSI_COLOR_RED);   \
   Serial.println(num);            \
-  Serial.print(ANSI_COLOR_RESET)
+  Serial.print(ANSI_COLOR_RESET); \
+  rotating_file_logger->write(std::string(num) + "\n");
 #endif
 
 #ifndef RUNNING_TESTS
@@ -161,5 +167,25 @@ inline void serial_setup(unsigned long baudrate)
   }
 }
 #endif
+
+inline std::string format_string(const char* format, ...)
+{
+  va_list args;
+  va_start(args, format);
+
+  // Calculate the size of the formatted string
+  va_list args_copy;
+  va_copy(args_copy, args);
+  const int size = std::vsnprintf(nullptr, 0, format, args_copy);
+  va_end(args_copy);
+
+  // Create a string with the required size
+  std::vector<char> buffer(size + 1);
+  std::vsnprintf(buffer.data(), buffer.size(), format, args);
+
+  va_end(args);
+
+  return std::string(buffer.data(), buffer.size() - 1);
+}
 
 #endif   // DRAWER_CONTROLLER_DEBUG_HPP

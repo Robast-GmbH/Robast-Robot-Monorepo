@@ -4,10 +4,10 @@ namespace logging
 {
   void RotatingFileHandlerConfig::print_all_configs() const
   {
-    // clang-format off
-        debug_printf_color(ANSI_COLOR_BLUE, "[RotatingFileHandlerConfig]: Max file size: %u\n", _max_file_size);
-        debug_printf_color(ANSI_COLOR_BLUE, "[RotatingFileHandlerConfig]: Max files: %u\n", _max_files);
-    // clang-format on
+    Serial.print(ANSI_COLOR_BLUE);
+    Serial.printf("[RotatingFileHandlerConfig]: Max file size: %u\n", _max_file_size);
+    Serial.printf("[RotatingFileHandlerConfig]: Max files: %u\n", _max_files);
+    Serial.print(ANSI_COLOR_RESET);
   }
 
   void RotatingFileHandlerConfig::set_max_file_size_in_bytes(const uint16_t max_file_size)

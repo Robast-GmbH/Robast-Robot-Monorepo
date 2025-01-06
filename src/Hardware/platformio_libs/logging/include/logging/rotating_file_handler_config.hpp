@@ -1,9 +1,14 @@
 #ifndef LOGGING_ROTATING_FILE_HANDLER_CONFIG_HPP
 #define LOGGING_ROTATING_FILE_HANDLER_CONFIG_HPP
 
+#ifndef RUNNING_TESTS
+#include <Arduino.h>
+#endif
+
 #include <cstdint>
 
-#include "debug/debug.hpp"
+#define ANSI_COLOR_BLUE  "\x1b[34m"
+#define ANSI_COLOR_RESET "\x1b[0m"
 
 namespace logging
 {

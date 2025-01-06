@@ -14,6 +14,11 @@
 #define FILE_WRITE                "w"
 #define FILE_APPEND               "a"
 
+#define ANSI_COLOR_RED   "\x1b[31m"
+#define ANSI_COLOR_GREEN "\x1b[32m"
+#define ANSI_COLOR_CYAN  "\x1b[36m"
+#define ANSI_COLOR_RESET "\x1b[0m"
+
 namespace logging
 {
   class RotatingFileHandler
@@ -40,6 +45,10 @@ namespace logging
     void delete_log_file_if_exists(const char *file_name);
 
     std::vector<String> get_all_logs() const;
+
+    void serial_print_error(const std::string msg);
+
+    void serial_print_green(const std::string msg);
   };
 
 }   // namespace logging

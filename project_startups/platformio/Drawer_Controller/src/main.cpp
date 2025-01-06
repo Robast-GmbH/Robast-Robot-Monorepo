@@ -234,8 +234,6 @@ void process_can_msgs_task_loop(void* pvParameters)
 
     if (to_be_sent_message.has_value())
     {
-      // Why is this only working when I have this print statement here?
-      // serial_printf_green("[Main]: Sending CAN message with id: %d\n", to_be_sent_message->get_id());
       can_controller->send_can_message(to_be_sent_message.value());
     }
   }
@@ -244,7 +242,7 @@ void process_can_msgs_task_loop(void* pvParameters)
 void setup()
 {
   Serial.begin(115200);
-  debug_printf_green("[Main]: Start the module with the module id: %d\n", MODULE_ID);
+  serial_printf_green("[Main]: Start the module with the module id: %d.\n", MODULE_ID);
 
   drawer_config = std::make_shared<drawer::ElectricalDrawerConfig>();
   encoder_config = std::make_shared<motor::EncoderConfig>();
@@ -320,7 +318,7 @@ void setup()
                                                              SWITCH_PRESSED_THRESHOLD,
                                                              SWITCH_WEIGHT_NEW_VALUES);
 
-  heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, heartbeat_config, rotating_file_logger);
+  heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, heartbeat_config);
 
   if (MODULE_HARDWARE_CONFIG.is_electrical_drawer)
   {

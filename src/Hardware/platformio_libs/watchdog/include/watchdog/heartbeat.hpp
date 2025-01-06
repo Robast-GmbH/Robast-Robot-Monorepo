@@ -2,7 +2,6 @@
 #define WATCHDOG__HEARTBEAT_HPP
 
 #include "can_toolbox/can_utils.hpp"
-#include "logging/rotating_file_handler.hpp"
 #include "watchdog/heartbeat_config.hpp"
 
 namespace watchdog
@@ -13,8 +12,7 @@ namespace watchdog
    public:
     Heartbeat(const uint32_t module_id,
               const std::shared_ptr<can_toolbox::CanUtils> can_utils,
-              const std::shared_ptr<watchdog::HeartbeatConfig> heartbeat_config,
-              const std::shared_ptr<logging::RotatingFileHandler> rotating_file_logger);
+              const std::shared_ptr<watchdog::HeartbeatConfig> heartbeat_config);
 
     void generate_heartbeat();
 
@@ -23,7 +21,6 @@ namespace watchdog
 
     const std::shared_ptr<can_toolbox::CanUtils> _can_utils;
     const std::shared_ptr<watchdog::HeartbeatConfig> _heartbeat_config;
-    const std::shared_ptr<logging::RotatingFileHandler> _rotating_file_logger;
 
     uint32_t _last_heartbeat_time_in_ms = 0;
   };
