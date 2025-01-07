@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include <utils/config_manager.hpp>
+#include <utils/partial_drawer_config_manager.hpp>
 
 // How to run this:
 // Go into the utils folder and run the following command:
@@ -11,16 +11,16 @@
 
 TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
 {
-  auto e_drawer_config = std::make_shared<drawer::ElectricalDrawerConfig>();
-  auto encoder_config = std::make_shared<motor::EncoderConfig>();
-  auto motor_config = std::make_shared<motor::MotorConfig>();
-  auto motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
-  auto tray_manager_config = std::make_shared<tray::TrayManagerConfig>();
-  auto heartbeat_config = std::make_shared<watchdog::HeartbeatConfig>();
-  auto rotating_file_handler_config = std::make_shared<logging::RotatingFileHandlerConfig>();
+  std::unique_ptr<utils::PartialDrawerConfigManager> config_manager =
+    std::make_unique<utils::PartialDrawerConfigManager>();
 
-  utils::ConfigManager config_manager(
-    e_drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config, heartbeat_config, rotating_file_handler_config);
+  auto e_drawer_config = config_manager->get_drawer_config();
+  auto encoder_config = config_manager->get_encoder_config();
+  auto motor_config = config_manager->get_motor_config();
+  auto motor_monitor_config = config_manager->get_motor_monitor_config();
+  auto tray_manager_config = config_manager->get_tray_manager_config();
+  auto heartbeat_config = config_manager->get_heartbeat_config();
+  auto rotating_file_handler_config = config_manager->get_rotating_file_handler_config();
 
   SECTION("Check if default configs are set correctly for the e-drawer config.")
   {
@@ -133,5 +133,14 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
   {
     REQUIRE(heartbeat_config->get_heartbeat_interval_in_ms() ==
             module_config::ModuleSetting<module_config::watchdog::HEARTBEAT_INTERVAL_IN_MS>::default_value);
+  }
+
+  SECTION("Check if default configs are set correctly for the looging config.")
+  {
+    REQUIRE(rotating_file_handler_config->get_max_file_size_in_bytes() ==
+            module_config::ModuleSetting<
+              module_config::logging::ROTATING_FILE_HANDLER_MAX_FILE_SIZE_IN_BYTES>::default_value);
+    REQUIRE(rotating_file_handler_config->get_max_files() ==
+            module_config::ModuleSetting<module_config::logging::ROTATING_FILE_HANDLER_MAX_FILES>::default_value);
   }
 }
