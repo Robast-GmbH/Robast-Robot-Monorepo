@@ -17,9 +17,10 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
   auto motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
   auto tray_manager_config = std::make_shared<tray::TrayManagerConfig>();
   auto heartbeat_config = std::make_shared<watchdog::HeartbeatConfig>();
+  auto rotating_file_handler_config = std::make_shared<logging::RotatingFileHandlerConfig>();
 
   utils::ConfigManager config_manager(
-    e_drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config, heartbeat_config);
+    e_drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config, heartbeat_config, rotating_file_handler_config);
 
   SECTION("Check if default configs are set correctly for the e-drawer config.")
   {
