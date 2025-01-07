@@ -165,7 +165,6 @@ inline void serial_setup(unsigned long baudrate)
   {
   }
 }
-#endif
 
 inline std::string format_string(const char* format, ...)
 {
@@ -186,5 +185,6 @@ inline std::string format_string(const char* format, ...)
 
   return std::string(buffer.data(), buffer.size() - 1);
 }
+#endif
 
 #endif   // DRAWER_CONTROLLER_DEBUG_HPP
