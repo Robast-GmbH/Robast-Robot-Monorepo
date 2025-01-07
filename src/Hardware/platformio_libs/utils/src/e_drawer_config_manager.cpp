@@ -1,26 +1,18 @@
-#include "utils/config_manager.hpp"
+#include "utils/e_drawer_config_manager.hpp"
 
 namespace utils
 {
-  ConfigManager::ConfigManager(const std::shared_ptr<drawer::ElectricalDrawerConfig> drawer_config,
-                               const std::shared_ptr<motor::EncoderConfig> encoder_config,
-                               const std::shared_ptr<motor::MotorConfig> motor_config,
-                               const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config,
-                               const std::shared_ptr<tray::TrayManagerConfig> tray_manager_config,
-                               const std::shared_ptr<watchdog::HeartbeatConfig> heartbeat_config,
-                               const std::shared_ptr<logging::RotatingFileHandlerConfig> rotating_file_handler_config)
-      : _drawer_config{drawer_config},
-        _encoder_config{encoder_config},
-        _motor_config{motor_config},
-        _motor_monitor_config{motor_monitor_config},
-        _tray_manager_config{tray_manager_config},
-        _heartbeat_config{heartbeat_config},
-        _rotating_file_handler_config{rotating_file_handler_config}
+  EDrawerConfigManager::EDrawerConfigManager()
   {
     set_default_configs();
   }
 
-  bool ConfigManager::set_config(const uint8_t config_id, const uint32_t config_value)
+  bool EDrawerConfigManager::set_config(const uint8_t config_id, const uint32_t config_value)
+  {
+    return set_e_drawer_config(config_id, config_value);
+  }
+
+  bool EDrawerConfigManager::set_e_drawer_config(const uint8_t config_id, const uint32_t config_value)
   {
     switch (config_id)
     {
@@ -223,69 +215,48 @@ namespace utils
             config_value));
         break;
 
-      case module_config::tray_manager::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID:
-        _tray_manager_config->set_speed_deviation_in_percentage_for_stall_when_closing_lid(
-          std::bit_cast<module_config::ModuleSetting<
-            module_config::tray_manager::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID>::type>(
-            config_value));
-        break;
-
-      case module_config::tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION:
-        _tray_manager_config->set_position_offset_for_tray_lid_computation(
-          static_cast<
-            module_config::ModuleSetting<module_config::tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION>::type>(
-            config_value));
-        break;
-
-      case module_config::tray_manager::DISTANCE_TO_TRAY_LID_THRESHOLD:
-        _tray_manager_config->set_distance_to_tray_lid_threshold(
-          static_cast<module_config::ModuleSetting<module_config::tray_manager::DISTANCE_TO_TRAY_LID_THRESHOLD>::type>(
-            config_value));
-        break;
-
-      case module_config::tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID:
-        _tray_manager_config->set_target_speed_to_close_tray_lid(
-          static_cast<module_config::ModuleSetting<module_config::tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID>::type>(
-            config_value));
-        break;
-
-      case module_config::watchdog::HEARTBEAT_INTERVAL_IN_MS:
-        _heartbeat_config->set_heartbeat_interval_in_ms(
-          static_cast<module_config::ModuleSetting<module_config::watchdog::HEARTBEAT_INTERVAL_IN_MS>::type>(
-            config_value));
-        break;
-
-      case module_config::logging::ROTATING_FILE_HANDLER_MAX_FILE_SIZE_IN_BYTES:
-        _rotating_file_handler_config->set_max_file_size_in_bytes(
-          static_cast<
-            module_config::ModuleSetting<module_config::logging::ROTATING_FILE_HANDLER_MAX_FILE_SIZE_IN_BYTES>::type>(
-            config_value));
-        break;
-
-      case module_config::logging::ROTATING_FILE_HANDLER_MAX_FILES:
-        _rotating_file_handler_config->set_max_files(
-          static_cast<module_config::ModuleSetting<module_config::logging::ROTATING_FILE_HANDLER_MAX_FILES>::type>(
-            config_value));
-        break;
-
       default:
-        return false;
+        return BaseConfigManager::set_base_config(config_id, config_value);
     }
     return true;
   }
 
-  void ConfigManager::print_all_configs() const
+  void EDrawerConfigManager::print_all_configs() const
+  {
+    print_e_drawer_configs();
+
+    BaseConfigManager::print_base_configs();
+  }
+
+  void EDrawerConfigManager::print_e_drawer_configs() const
   {
     _drawer_config->print_all_configs();
     _encoder_config->print_all_configs();
     _motor_config->print_all_configs();
     _motor_monitor_config->print_all_configs();
-    _tray_manager_config->print_all_configs();
-    _heartbeat_config->print_all_configs();
-    _rotating_file_handler_config->print_all_configs();
   }
 
-  void ConfigManager::set_default_configs()
+  std::shared_ptr<drawer::ElectricalDrawerConfig> EDrawerConfigManager::get_drawer_config() const
+  {
+    return _drawer_config;
+  }
+
+  std::shared_ptr<motor::EncoderConfig> EDrawerConfigManager::get_encoder_config() const
+  {
+    return _encoder_config;
+  }
+
+  std::shared_ptr<motor::MotorConfig> EDrawerConfigManager::get_motor_config() const
+  {
+    return _motor_config;
+  }
+
+  std::shared_ptr<motor::MotorMonitorConfig> EDrawerConfigManager::get_motor_monitor_config() const
+  {
+    return _motor_monitor_config;
+  }
+
+  void EDrawerConfigManager::set_default_configs()
   {
     set_default_drawer_config();
 
@@ -294,15 +265,9 @@ namespace utils
     set_default_motor_config();
 
     set_default_motor_monitor_config();
-
-    set_default_tray_manager_config();
-
-    set_default_heartbeat_config();
-
-    set_default_rotating_file_handler_config();
   }
 
-  void ConfigManager::set_default_drawer_config()
+  void EDrawerConfigManager::set_default_drawer_config()
   {
     set_config(module_config::drawer::MAX_SPEED,
                std::bit_cast<uint32_t>(module_config::ModuleSetting<module_config::drawer::MAX_SPEED>::default_value));
@@ -378,7 +343,7 @@ namespace utils
                    module_config::drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS>::default_value));
   }
 
-  void ConfigManager::set_default_encoder_config()
+  void EDrawerConfigManager::set_default_encoder_config()
   {
     set_config(
       module_config::encoder::OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT,
@@ -410,7 +375,7 @@ namespace utils
                    module_config::encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>::default_value));
   }
 
-  void ConfigManager::set_default_motor_config()
+  void EDrawerConfigManager::set_default_motor_config()
   {
     set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                static_cast<uint32_t>(
@@ -429,7 +394,7 @@ namespace utils
                static_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::SEDN>::default_value));
   }
 
-  void ConfigManager::set_default_motor_monitor_config()
+  void EDrawerConfigManager::set_default_motor_monitor_config()
   {
     set_config(module_config::motor_monitor::ACTIVE_SPEED_THRESHOLD,
                std::bit_cast<uint32_t>(
@@ -448,48 +413,6 @@ namespace utils
       module_config::motor_monitor::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL,
       std::bit_cast<uint32_t>(module_config::ModuleSetting<
                               module_config::motor_monitor::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL>::default_value));
-  }
-
-  void ConfigManager::set_default_tray_manager_config()
-  {
-    set_config(
-      module_config::tray_manager::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID,
-      std::bit_cast<uint32_t>(
-        module_config::ModuleSetting<
-          module_config::tray_manager::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID>::default_value));
-
-    set_config(
-      module_config::tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION,
-      static_cast<uint32_t>(module_config::ModuleSetting<
-                            module_config::tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION>::default_value));
-
-    set_config(
-      module_config::tray_manager::DISTANCE_TO_TRAY_LID_THRESHOLD,
-      static_cast<uint32_t>(
-        module_config::ModuleSetting<module_config::tray_manager::DISTANCE_TO_TRAY_LID_THRESHOLD>::default_value));
-
-    set_config(
-      module_config::tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID,
-      static_cast<uint32_t>(
-        module_config::ModuleSetting<module_config::tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID>::default_value));
-  }
-
-  void ConfigManager::set_default_heartbeat_config()
-  {
-    set_config(module_config::watchdog::HEARTBEAT_INTERVAL_IN_MS,
-               static_cast<uint32_t>(
-                 module_config::ModuleSetting<module_config::watchdog::HEARTBEAT_INTERVAL_IN_MS>::default_value));
-  }
-
-  void ConfigManager::set_default_rotating_file_handler_config()
-  {
-    set_config(
-      module_config::logging::ROTATING_FILE_HANDLER_MAX_FILE_SIZE_IN_BYTES,
-      static_cast<uint32_t>(module_config::ModuleSetting<
-                            module_config::logging::ROTATING_FILE_HANDLER_MAX_FILE_SIZE_IN_BYTES>::default_value));
-    set_config(module_config::logging::ROTATING_FILE_HANDLER_MAX_FILES,
-               static_cast<uint32_t>(
-                 module_config::ModuleSetting<module_config::logging::ROTATING_FILE_HANDLER_MAX_FILES>::default_value));
   }
 
 }   // namespace utils

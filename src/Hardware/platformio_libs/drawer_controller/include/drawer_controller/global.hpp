@@ -15,7 +15,6 @@
 #include "motor/motor_monitor_config.hpp"
 #include "switch/switch.hpp"
 #include "utils/can_message_converter.hpp"
-#include "utils/config_manager.hpp"
 #include "utils/queue.hpp"
 #include "watchdog/heartbeat.hpp"
 
@@ -41,19 +40,9 @@ std::shared_ptr<lock::ElectricalDrawerLock> drawer_lock;
 
 std::shared_ptr<interfaces::IDrawer> i_drawer;
 
-std::shared_ptr<drawer::ElectricalDrawerConfig> drawer_config;
-std::shared_ptr<motor::EncoderConfig> encoder_config;
-std::shared_ptr<motor::MotorConfig> motor_config;
-std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config;
-std::shared_ptr<tray::TrayManagerConfig> tray_manager_config;
-std::shared_ptr<watchdog::HeartbeatConfig> heartbeat_config;
-std::shared_ptr<logging::RotatingFileHandlerConfig> rotating_file_handler_config;
-
 std::shared_ptr<switch_lib::Switch> endstop_switch;
 
 std::unique_ptr<utils::CanMessageConverter> can_message_converter;
-
-std::unique_ptr<utils::ConfigManager> config_manager;
 
 std::shared_ptr<watchdog::Heartbeat> heartbeat;
 

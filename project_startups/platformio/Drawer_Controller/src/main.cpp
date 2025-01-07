@@ -2,6 +2,7 @@
 
 #include "drawer_controller/global.hpp"
 #include "led/led_strip.hpp"
+#include "utils/e_drawer_config_manager.hpp"
 
 // VERY IMPORTANT: Set the hardware version of the drawer controller pcb here (currently 3 and 4 are supported):
 #define HARDWARE_VERSION 4
@@ -22,7 +23,7 @@
 // These are the very basic top level configurations for the drawer controller you need to set.
 // Besides that there are a lot of other configs that are managed by the ConfigManager and can be set via CAN messages.
 constexpr config::UserConfig USER_CONFIG{.module_version = config::version::CURA,
-                                         .module_prefix = module_id::ModulePrefix::E_DRAWER_10x40,
+                                         .module_prefix = module_id::ModulePrefix::MANUAL_DRAWER_30x40,
                                          .unique_module_id = 1,
                                          .lock_id = 1,
                                          .is_shaft_direction_inverted = true,
@@ -36,6 +37,8 @@ constexpr config::ModuleHardwareConfig MODULE_HARDWARE_CONFIG =
 constexpr uint32_t MODULE_ID = module_id::generate_module_id(USER_CONFIG.module_prefix, USER_CONFIG.unique_module_id);
 
 std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.total_num_of_leds>> led_strip;
+
+std::unique_ptr<utils::EDrawerConfigManager> config_manager;
 
 // Initialize can_controller based on HARDWARE_VERSION
 #if HARDWARE_VERSION == 3
@@ -244,26 +247,13 @@ void setup()
   Serial.begin(115200);
   serial_printf_green("[Main]: Start the module with the module id: %d.\n", MODULE_ID);
 
-  drawer_config = std::make_shared<drawer::ElectricalDrawerConfig>();
-  encoder_config = std::make_shared<motor::EncoderConfig>();
-  motor_config = std::make_shared<motor::MotorConfig>();
-  motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
-  tray_manager_config = std::make_shared<tray::TrayManagerConfig>();
-  heartbeat_config = std::make_shared<watchdog::HeartbeatConfig>();
-  rotating_file_handler_config = std::make_shared<logging::RotatingFileHandlerConfig>();
-
-  config_manager = std::make_unique<utils::ConfigManager>(drawer_config,
-                                                          encoder_config,
-                                                          motor_config,
-                                                          motor_monitor_config,
-                                                          tray_manager_config,
-                                                          heartbeat_config,
-                                                          rotating_file_handler_config);
+  config_manager = std::make_unique<utils::EDrawerConfigManager>();
   config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                              USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
   config_manager->print_all_configs();
 
-  rotating_file_logger = std::make_shared<logging::RotatingFileHandler>(rotating_file_handler_config);
+  rotating_file_logger =
+    std::make_shared<logging::RotatingFileHandler>(config_manager->get_rotating_file_handler_config());
   rotating_file_logger->print_all_logs();
 
   std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(1);
@@ -318,7 +308,7 @@ void setup()
                                                              SWITCH_PRESSED_THRESHOLD,
                                                              SWITCH_WEIGHT_NEW_VALUES);
 
-  heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, heartbeat_config);
+  heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, config_manager->get_heartbeat_config());
 
   if (MODULE_HARDWARE_CONFIG.is_electrical_drawer)
   {
@@ -332,12 +322,12 @@ void setup()
       gpio_wrapper->get_gpio_num_for_pin_id(gpio_defines::pin_id::STEPPER_1_ENCODER_A),
       gpio_wrapper->get_gpio_num_for_pin_id(gpio_defines::pin_id::STEPPER_1_ENCODER_B),
       STEPPER_MOTOR_1_ADDRESS,
-      motor_config,
+      config_manager->get_motor_config(),
       endstop_switch,
       drawer_lock,
-      drawer_config,
-      encoder_config,
-      motor_monitor_config);
+      config_manager->get_drawer_config(),
+      config_manager->get_encoder_config(),
+      config_manager->get_motor_monitor_config());
   }
   else
   {
