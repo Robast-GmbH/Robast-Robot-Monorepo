@@ -9,18 +9,10 @@
 #include "FS.h"
 #include "logging/rotating_file_handler_config.hpp"
 
-#define FORMAT_LITTLEFS_IF_FAILED true
-#define FILE_READ                 "r"
-#define FILE_WRITE                "w"
-#define FILE_APPEND               "a"
-
-#define ANSI_COLOR_RED   "\x1b[31m"
-#define ANSI_COLOR_GREEN "\x1b[32m"
-#define ANSI_COLOR_CYAN  "\x1b[36m"
-#define ANSI_COLOR_RESET "\x1b[0m"
-
 namespace logging
 {
+  constexpr bool FORMAT_LITTLEFS_IF_FAILED = true;
+
   class RotatingFileHandler
   {
    public:
@@ -42,7 +34,7 @@ namespace logging
 
     void rotate_logs();
 
-    void delete_log_file_if_exists(const char *file_name);
+    void delete_log_file_if_exists(const char* file_name);
 
     std::vector<String> get_all_logs() const;
 

@@ -7,11 +7,14 @@
 
 #include <cstdint>
 
-#define ANSI_COLOR_BLUE  "\x1b[34m"
-#define ANSI_COLOR_RESET "\x1b[0m"
-
 namespace logging
 {
+  constexpr const char* ANSI_COLOR_BLUE = "\x1b[34m";
+  constexpr const char* ANSI_COLOR_RED = "\x1b[31m";
+  constexpr const char* ANSI_COLOR_GREEN = "\x1b[32m";
+  constexpr const char* ANSI_COLOR_CYAN = "\x1b[36m";
+  constexpr const char* ANSI_COLOR_RESET = "\x1b[0m";
+
   class RotatingFileHandlerConfig
   {
    public:
