@@ -269,147 +269,160 @@ namespace utils
 
   void EDrawerConfigManager::set_default_drawer_config()
   {
-    set_config(module_config::drawer::MAX_SPEED,
-               std::bit_cast<uint32_t>(module_config::ModuleSetting<module_config::drawer::MAX_SPEED>::default_value));
+    this->set_config(
+      module_config::drawer::MAX_SPEED,
+      std::bit_cast<uint32_t>(module_config::ModuleSetting<module_config::drawer::MAX_SPEED>::default_value));
 
-    set_config(
+    this->set_config(
       module_config::drawer::HOMING_SPEED,
       std::bit_cast<uint32_t>(module_config::ModuleSetting<module_config::drawer::HOMING_SPEED>::default_value));
 
-    set_config(module_config::drawer::INITIAL_HOMING_SPEED,
-               std::bit_cast<uint32_t>(
-                 module_config::ModuleSetting<module_config::drawer::INITIAL_HOMING_SPEED>::default_value));
+    this->set_config(module_config::drawer::INITIAL_HOMING_SPEED,
+                     std::bit_cast<uint32_t>(
+                       module_config::ModuleSetting<module_config::drawer::INITIAL_HOMING_SPEED>::default_value));
 
-    set_config(module_config::drawer::MOVING_IN_DECELERATION_DISTANCE,
-               static_cast<uint32_t>(
-                 module_config::ModuleSetting<module_config::drawer::MOVING_IN_DECELERATION_DISTANCE>::default_value));
+    this->set_config(
+      module_config::drawer::MOVING_IN_DECELERATION_DISTANCE,
+      static_cast<uint32_t>(
+        module_config::ModuleSetting<module_config::drawer::MOVING_IN_DECELERATION_DISTANCE>::default_value));
 
-    set_config(module_config::drawer::MOVING_IN_FINAL_HOMING_DISTANCE,
-               static_cast<uint32_t>(
-                 module_config::ModuleSetting<module_config::drawer::MOVING_IN_FINAL_HOMING_DISTANCE>::default_value));
+    this->set_config(
+      module_config::drawer::MOVING_IN_FINAL_HOMING_DISTANCE,
+      static_cast<uint32_t>(
+        module_config::ModuleSetting<module_config::drawer::MOVING_IN_FINAL_HOMING_DISTANCE>::default_value));
 
-    set_config(module_config::drawer::MOVING_OUT_DECELERATION_DISTANCE,
-               static_cast<uint32_t>(
-                 module_config::ModuleSetting<module_config::drawer::MOVING_OUT_DECELERATION_DISTANCE>::default_value));
+    this->set_config(
+      module_config::drawer::MOVING_OUT_DECELERATION_DISTANCE,
+      static_cast<uint32_t>(
+        module_config::ModuleSetting<module_config::drawer::MOVING_OUT_DECELERATION_DISTANCE>::default_value));
 
-    set_config(module_config::drawer::MOVING_OUT_FINAL_SPEED,
-               std::bit_cast<uint32_t>(
-                 module_config::ModuleSetting<module_config::drawer::MOVING_OUT_FINAL_SPEED>::default_value));
+    this->set_config(module_config::drawer::MOVING_OUT_FINAL_SPEED,
+                     std::bit_cast<uint32_t>(
+                       module_config::ModuleSetting<module_config::drawer::MOVING_OUT_FINAL_SPEED>::default_value));
 
-    set_config(module_config::drawer::PUSH_IN_AUTO_CLOSE_SPEED,
-               static_cast<uint32_t>(
-                 module_config::ModuleSetting<module_config::drawer::PUSH_IN_AUTO_CLOSE_SPEED>::default_value));
+    this->set_config(module_config::drawer::PUSH_IN_AUTO_CLOSE_SPEED,
+                     static_cast<uint32_t>(
+                       module_config::ModuleSetting<module_config::drawer::PUSH_IN_AUTO_CLOSE_SPEED>::default_value));
 
-    set_config(
+    this->set_config(
       module_config::drawer::PUSH_IN_AUTO_CLOSE_TMC_STALL_GUARD_VALUE,
       static_cast<uint32_t>(
         module_config::ModuleSetting<module_config::drawer::PUSH_IN_AUTO_CLOSE_TMC_STALL_GUARD_VALUE>::default_value));
 
-    set_config(module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS,
-               std::bit_cast<uint32_t>(
-                 module_config::ModuleSetting<
-                   module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>::default_value));
+    this->set_config(module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS,
+                     std::bit_cast<uint32_t>(
+                       module_config::ModuleSetting<
+                         module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>::default_value));
 
-    set_config(
+    this->set_config(
       module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS,
       std::bit_cast<uint32_t>(module_config::ModuleSetting<
                               module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_MOVEMENT_FINISHED_IN_MS>::default_value));
 
-    set_config(module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS,
-               std::bit_cast<uint32_t>(
-                 module_config::ModuleSetting<
-                   module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS>::default_value));
+    this->set_config(module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS,
+                     std::bit_cast<uint32_t>(
+                       module_config::ModuleSetting<
+                         module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS>::default_value));
 
-    set_config(
+    this->set_config(
       module_config::drawer::USE_TMC_STALL_GUARD,
       static_cast<uint32_t>(module_config::ModuleSetting<module_config::drawer::USE_TMC_STALL_GUARD>::default_value));
 
-    set_config(module_config::drawer::USE_MOTOR_MONITOR_STALL_GUARD,
-               static_cast<uint32_t>(
-                 module_config::ModuleSetting<module_config::drawer::USE_MOTOR_MONITOR_STALL_GUARD>::default_value));
+    this->set_config(
+      module_config::drawer::USE_MOTOR_MONITOR_STALL_GUARD,
+      static_cast<uint32_t>(
+        module_config::ModuleSetting<module_config::drawer::USE_MOTOR_MONITOR_STALL_GUARD>::default_value));
 
-    set_config(module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL,
-               static_cast<uint32_t>(
-                 module_config::ModuleSetting<
-                   module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL>::default_value));
+    this->set_config(module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL,
+                     static_cast<uint32_t>(
+                       module_config::ModuleSetting<
+                         module_config::drawer::ENCODER_THRESHOLD_FOR_DRAWER_NOT_OPENED_DURING_STALL>::default_value));
 
-    set_config(module_config::drawer::DRAWER_DEFAULT_ACCELERATION,
-               static_cast<uint32_t>(
-                 module_config::ModuleSetting<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::default_value));
+    this->set_config(
+      module_config::drawer::DRAWER_DEFAULT_ACCELERATION,
+      static_cast<uint32_t>(
+        module_config::ModuleSetting<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::default_value));
 
-    set_config(module_config::drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS,
-               std::bit_cast<uint32_t>(
-                 module_config::ModuleSetting<
-                   module_config::drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS>::default_value));
+    this->set_config(module_config::drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS,
+                     std::bit_cast<uint32_t>(
+                       module_config::ModuleSetting<
+                         module_config::drawer::WAIT_TIME_TO_CLOSE_LOCK_AFTER_DRAWER_OPENED_IN_MS>::default_value));
   }
 
   void EDrawerConfigManager::set_default_encoder_config()
   {
-    set_config(
+    this->set_config(
       module_config::encoder::OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT,
       std::bit_cast<uint32_t>(
         module_config::ModuleSetting<module_config::encoder::OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT>::default_value));
 
-    set_config(module_config::encoder::ENCODER_COUNT_DRAWER_MAX_EXTENT,
-               std::bit_cast<uint32_t>(
-                 module_config::ModuleSetting<module_config::encoder::ENCODER_COUNT_DRAWER_MAX_EXTENT>::default_value));
+    this->set_config(
+      module_config::encoder::ENCODER_COUNT_DRAWER_MAX_EXTENT,
+      std::bit_cast<uint32_t>(
+        module_config::ModuleSetting<module_config::encoder::ENCODER_COUNT_DRAWER_MAX_EXTENT>::default_value));
 
-    set_config(
+    this->set_config(
       module_config::encoder::DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN,
       std::bit_cast<uint32_t>(
         module_config::ModuleSetting<module_config::encoder::DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN>::default_value));
 
-    set_config(module_config::encoder::DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT,
-               std::bit_cast<uint32_t>(
-                 module_config::ModuleSetting<
-                   module_config::encoder::DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>::default_value));
+    this->set_config(module_config::encoder::DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT,
+                     std::bit_cast<uint32_t>(
+                       module_config::ModuleSetting<
+                         module_config::encoder::DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>::default_value));
 
-    set_config(
+    this->set_config(
       module_config::encoder::DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS,
       std::bit_cast<uint32_t>(
         module_config::ModuleSetting<module_config::encoder::DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS>::default_value));
 
-    set_config(module_config::encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT,
-               std::bit_cast<uint32_t>(
-                 module_config::ModuleSetting<
-                   module_config::encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>::default_value));
+    this->set_config(module_config::encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT,
+                     std::bit_cast<uint32_t>(
+                       module_config::ModuleSetting<
+                         module_config::encoder::DRAWER_PULLED_OUT_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>::default_value));
   }
 
   void EDrawerConfigManager::set_default_motor_config()
   {
-    set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
-               static_cast<uint32_t>(
-                 module_config::ModuleSetting<module_config::motor::IS_SHAFT_DIRECTION_INVERTED>::default_value));
-    set_config(module_config::motor::TCOOLTHRS,
-               std::bit_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::TCOOLTHRS>::default_value));
-    set_config(module_config::motor::TPWMTHRS,
-               std::bit_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::TPWMTHRS>::default_value));
-    set_config(module_config::motor::MICROSTEPS,
-               static_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::MICROSTEPS>::default_value));
-    set_config(module_config::motor::SEMIN,
-               static_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::SEMIN>::default_value));
-    set_config(module_config::motor::SEMAX,
-               static_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::SEMAX>::default_value));
-    set_config(module_config::motor::SEDN,
-               static_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::SEDN>::default_value));
+    this->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
+                     static_cast<uint32_t>(
+                       module_config::ModuleSetting<module_config::motor::IS_SHAFT_DIRECTION_INVERTED>::default_value));
+    this->set_config(
+      module_config::motor::TCOOLTHRS,
+      std::bit_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::TCOOLTHRS>::default_value));
+    this->set_config(
+      module_config::motor::TPWMTHRS,
+      std::bit_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::TPWMTHRS>::default_value));
+    this->set_config(
+      module_config::motor::MICROSTEPS,
+      static_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::MICROSTEPS>::default_value));
+    this->set_config(module_config::motor::SEMIN,
+                     static_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::SEMIN>::default_value));
+    this->set_config(module_config::motor::SEMAX,
+                     static_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::SEMAX>::default_value));
+    this->set_config(module_config::motor::SEDN,
+                     static_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::SEDN>::default_value));
   }
 
   void EDrawerConfigManager::set_default_motor_monitor_config()
   {
-    set_config(module_config::motor_monitor::ACTIVE_SPEED_THRESHOLD,
-               std::bit_cast<uint32_t>(
-                 module_config::ModuleSetting<module_config::motor_monitor::ACTIVE_SPEED_THRESHOLD>::default_value));
+    this->set_config(
+      module_config::motor_monitor::ACTIVE_SPEED_THRESHOLD,
+      std::bit_cast<uint32_t>(
+        module_config::ModuleSetting<module_config::motor_monitor::ACTIVE_SPEED_THRESHOLD>::default_value));
 
-    set_config(module_config::motor_monitor::LOWER_POSITION_THRESHOLD,
-               std::bit_cast<uint32_t>(
-                 module_config::ModuleSetting<module_config::motor_monitor::LOWER_POSITION_THRESHOLD>::default_value));
+    this->set_config(
+      module_config::motor_monitor::LOWER_POSITION_THRESHOLD,
+      std::bit_cast<uint32_t>(
+        module_config::ModuleSetting<module_config::motor_monitor::LOWER_POSITION_THRESHOLD>::default_value));
 
-    set_config(module_config::motor_monitor::MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS,
-               std::bit_cast<uint32_t>(
-                 module_config::ModuleSetting<
-                   module_config::motor_monitor::MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS>::default_value));
+    this->set_config(
+      module_config::motor_monitor::MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS,
+      std::bit_cast<uint32_t>(
+        module_config::ModuleSetting<
+          module_config::motor_monitor::MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS>::default_value));
 
-    set_config(
+    this->set_config(
       module_config::motor_monitor::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL,
       std::bit_cast<uint32_t>(module_config::ModuleSetting<
                               module_config::motor_monitor::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL>::default_value));

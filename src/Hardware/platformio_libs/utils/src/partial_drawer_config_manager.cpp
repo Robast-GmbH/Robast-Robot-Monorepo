@@ -50,10 +50,10 @@ namespace utils
     _tray_manager_config->print_all_configs();
   }
 
-    std::shared_ptr<tray::TrayManagerConfig> PartialDrawerConfigManager::get_tray_manager_config() const
-    {
-        return _tray_manager_config;
-    }
+  std::shared_ptr<tray::TrayManagerConfig> PartialDrawerConfigManager::get_tray_manager_config() const
+  {
+    return _tray_manager_config;
+  }
 
   void PartialDrawerConfigManager::set_default_configs()
   {
@@ -62,23 +62,23 @@ namespace utils
 
   void PartialDrawerConfigManager::set_default_tray_manager_config()
   {
-    set_config(
+    this->set_config(
       module_config::tray_manager::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID,
       std::bit_cast<uint32_t>(
         module_config::ModuleSetting<
           module_config::tray_manager::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL_WHEN_CLOSING_LID>::default_value));
 
-    set_config(
+    this->set_config(
       module_config::tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION,
       static_cast<uint32_t>(module_config::ModuleSetting<
                             module_config::tray_manager::POSITION_OFFSET_FOR_TRAY_LID_COMPUTATION>::default_value));
 
-    set_config(
+    this->set_config(
       module_config::tray_manager::DISTANCE_TO_TRAY_LID_THRESHOLD,
       static_cast<uint32_t>(
         module_config::ModuleSetting<module_config::tray_manager::DISTANCE_TO_TRAY_LID_THRESHOLD>::default_value));
 
-    set_config(
+    this->set_config(
       module_config::tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID,
       static_cast<uint32_t>(
         module_config::ModuleSetting<module_config::tray_manager::TARGET_SPEED_TO_CLOSE_TRAY_LID>::default_value));
