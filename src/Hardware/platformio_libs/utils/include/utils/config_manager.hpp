@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "drawer/electrical_drawer_config.hpp"
-#include "logging/rotating_file_handler.hpp"
+#include "logging/rotating_file_handler_config.hpp"
 #include "module_config/module_config_defines.hpp"
 #include "motor/enconder_config.hpp"
 #include "motor/motor_config.hpp"
