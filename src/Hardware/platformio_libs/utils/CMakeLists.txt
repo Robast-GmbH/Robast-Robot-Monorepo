@@ -32,7 +32,11 @@ include_directories(${module_config_dir}/include)
 include_directories(${debug_dir}/include)
 include_directories(${looging_dir}/include)
 
-add_library(library_config_manager STATIC src/config_manager.cpp)
+add_library(library_config_manager STATIC
+ src/base_config_manager.cpp
+ src/e_drawer_config_manager.cpp
+ src/partial_drawer_config_manager.cpp
+)
 add_library(library_motor_config STATIC ${motor_dir}/src/motor_config.cpp)
 add_library(library_encoder_config STATIC ${motor_dir}/src/encoder_config.cpp)
 add_library(library_motor_monitor_config STATIC ${motor_dir}/src/motor_monitor_config.cpp)
