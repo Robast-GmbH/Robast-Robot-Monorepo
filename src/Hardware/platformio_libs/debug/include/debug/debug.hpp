@@ -3,9 +3,8 @@
 
 #ifndef RUNNING_TESTS
 #include <Arduino.h>
-#endif
-
 #include "logging/rotating_file_handler.hpp"
+#endif
 
 // #define DEBUG
 
@@ -112,6 +111,7 @@
 
 #endif
 
+#ifndef RUNNING_TESTS
 extern std::shared_ptr<logging::RotatingFileHandler> rotating_file_logger;
 
 #ifndef serial_printf_green
@@ -158,7 +158,6 @@ extern std::shared_ptr<logging::RotatingFileHandler> rotating_file_logger;
   rotating_file_logger->write(std::string(num) + "\n");
 #endif
 
-#ifndef RUNNING_TESTS
 inline void serial_setup(unsigned long baudrate)
 {
   debug_begin(115200);   // Init serial port and set baudrate
