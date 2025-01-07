@@ -11,8 +11,7 @@
 
 TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
 {
-  std::unique_ptr<utils::PartialDrawerConfigManager> config_manager =
-    std::make_unique<utils::PartialDrawerConfigManager>();
+  auto config_manager = std::make_unique<utils::PartialDrawerConfigManager>();
 
   auto e_drawer_config = config_manager->get_drawer_config();
   auto encoder_config = config_manager->get_encoder_config();
