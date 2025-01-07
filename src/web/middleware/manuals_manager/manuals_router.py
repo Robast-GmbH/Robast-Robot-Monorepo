@@ -8,8 +8,8 @@ from models.logger import Logger
 manuals_router = APIRouter()
 manuals_logger = Logger("manuals_manager", "log/manuals_manager.log")
 
-UPLOAD_FOLDER = "./uploaded_files"
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+home_directory= os.path.expanduser("~")
+UPLOAD_FOLDER = f"{home_directory}/uploaded_files"
 BASE_DIR = Path(UPLOAD_FOLDER).resolve()
 
 

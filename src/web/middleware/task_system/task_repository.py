@@ -6,9 +6,10 @@ from db_models.task import (
     Task,
 )
 from db_models.subtask import Subtask
+import os
 
-
-DB_PATH = "sqlite:///tasks2.db"
+home_directory = os.path.expanduser("~")
+DB_PATH = f"sqlite:///{home_directory}/databases/tasks.db"
 engine = create_engine(DB_PATH)
 SessionLocal = sessionmaker(bind=engine)
 
