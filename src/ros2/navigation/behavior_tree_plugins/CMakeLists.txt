@@ -81,6 +81,8 @@ add_library(compare_integer_condition_bt_node SHARED plugins/condition/compare_i
 list(APPEND plugin_libs compare_integer_condition_bt_node)
 add_library(string_topic_condition_bt_node SHARED plugins/condition/string_topic_condition.cpp)
 list(APPEND plugin_libs string_topic_condition_bt_node)
+add_library(check_person_in_front_condition_bt_node SHARED plugins/condition/check_person_in_front_condition.cpp)
+list(APPEND plugin_libs check_person_in_front_condition_bt_node)
 
 # DECORATER NODES
 add_library(revert_path_node_decorator_bt_node SHARED plugins/decorator/revert_path_node.cpp)

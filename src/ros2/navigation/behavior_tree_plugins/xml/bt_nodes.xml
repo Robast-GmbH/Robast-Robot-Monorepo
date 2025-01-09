@@ -47,6 +47,11 @@
       <input_port name="second_integer">BT-Key for the second integer that is compared to the first one</input_port>
     </Condition>
 
+    <Condition ID="CheckPersonInFront">
+      <input_port name="topic">Name of the topic, whose data field is checked for target value</input_port>
+      <input_port name="detection_range">Range in which the person is detected</input_port>
+    </Condition>"
+
     <Condition ID="VariableUpdated">
       <input_port name="variable_name">name of the int in the Blackboard that should be checked</input_port>
     </Condition>
