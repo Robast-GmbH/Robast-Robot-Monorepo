@@ -26,6 +26,8 @@ RUN apt-get update && apt-get install -y \
   ros-${ROS_BUILD_DISTRO}-rmw-cyclonedds-cpp \
   ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
   ros-humble-ros-testing \
+  alsa-utils \
+  mpg123 \
   ros-humble-launch-testing \
   && rm -rf /var/cache/apk/* \
   && rosdep init || echo "rosdep already initialized"
@@ -78,6 +80,8 @@ RUN apt-get update && apt-get upgrade -y && \
   libboost-all-dev \
   ros-${ROS_BUILD_DISTRO}-rmw-cyclonedds-cpp \
   ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
+  alsa-utils \
+  mpg123 \
   && rm -rf /var/cache/apk/*
 
 ENV ROS_DOMAIN_ID=0
