@@ -8,7 +8,8 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(communication_interfaces REQUIRED)
 
 add_executable(sound_playback src/sound_playback.cpp)
 target_include_directories(sound_playback PUBLIC
@@ -18,7 +19,8 @@ target_compile_features(sound_playback PUBLIC c_std_99 cxx_std_17)  # Require C9
 
 ament_target_dependencies(sound_playback
   rclcpp
-  std_msgs
+  rclcpp_action
+  communication_interfaces
 )
 
 install(TARGETS sound_playback

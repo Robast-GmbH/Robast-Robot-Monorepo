@@ -1,35 +1,66 @@
+#include "audio_bridge/sound_playback.hpp"
+
 #include <cstdlib>
-#include <rclcpp/rclcpp.hpp>
-#include <std_msgs/msg/string.hpp>
+#include <thread>
 
-class SoundPlayerNode : public rclcpp::Node
+SoundPlayerNode::SoundPlayerNode() : Node("sound_player_node")
 {
- public:
-  SoundPlayerNode() : Node("sound_player_node")
+  this->action_server_ = rclcpp_action::create_server<PlaySound>(
+      this,
+      "play_sound",
+      std::bind(&SoundPlayerNode::handle_goal, this, std::placeholders::_1, std::placeholders::_2),
+      std::bind(&SoundPlayerNode::handle_cancel, this, std::placeholders::_1),
+      std::bind(&SoundPlayerNode::handle_accepted, this, std::placeholders::_1));
+}
+
+rclcpp_action::GoalResponse SoundPlayerNode::handle_goal(const rclcpp_action::GoalUUID &uuid,
+                                                         std::shared_ptr<const PlaySound::Goal> goal)
+{
+  RCLCPP_INFO(this->get_logger(), "Received goal request with sound file: %s", goal->sound_file.c_str());
+  (void) uuid;
+  return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+}
+
+rclcpp_action::CancelResponse SoundPlayerNode::handle_cancel(const std::shared_ptr<GoalHandlePlaySound> goal_handle)
+{
+  RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
+  (void) goal_handle;
+  return rclcpp_action::CancelResponse::ACCEPT;
+}
+
+void SoundPlayerNode::handle_accepted(const std::shared_ptr<GoalHandlePlaySound> goal_handle)
+{
+  using namespace std::placeholders;
+  std::thread{std::bind(&SoundPlayerNode::execute, this, _1), goal_handle}.detach();
+}
+
+void SoundPlayerNode::execute(const std::shared_ptr<GoalHandlePlaySound> goal_handle)
+{
+  RCLCPP_INFO(this->get_logger(), "Executing goal");
+  const auto goal = goal_handle->get_goal();
+  auto feedback = std::make_shared<PlaySound::Feedback>();
+  auto result = std::make_shared<PlaySound::Result>();
+
+  // Play the sound file using mpg123 with PulseAudio
+  std::string command = "mpg123 -o pulse sounds/" + goal->sound_file;
+  int ret = std::system(command.c_str());
+
+  if (ret != 0)
   {
-    subscription_ = this->create_subscription<std_msgs::msg::String>(
-        "/sound", 10, std::bind(&SoundPlayerNode::topic_callback, this, std::placeholders::_1));
+    RCLCPP_ERROR(this->get_logger(), "Failed to play sound file");
+    result->success = false;
+    result->message = "Failed to play sound file";
+    goal_handle->abort(result);
+    return;
   }
 
- private:
-  void topic_callback(const std_msgs::msg::String::SharedPtr msg)
-  {
-    RCLCPP_INFO(this->get_logger(), "Received message: '%s'", msg->data.c_str());
+  feedback->feedback = "Playing sound file: " + goal->sound_file;
+  goal_handle->publish_feedback(feedback);
 
-    // Play the sound file using mpg123 with PulseAudio
-    std::string command =
-        "mpg123 -o pulse "
-        "/workspace/sounds/"
-        "ElevenLabs_2025-01-08T11_01_51_Rachel_pre_s50_sb75_se0_b_m2.mp3";
-    int result = std::system(command.c_str());
-    if (result != 0)
-    {
-      RCLCPP_ERROR(this->get_logger(), "Failed to play sound file");
-    }
-  }
-
-  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
-};
+  result->success = true;
+  result->message = "Sound file played successfully";
+  goal_handle->succeed(result);
+}
 
 int main(int argc, char **argv)
 {
