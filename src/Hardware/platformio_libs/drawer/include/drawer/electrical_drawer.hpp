@@ -143,7 +143,7 @@ namespace drawer
 
     void start_homing_movement(const uint8_t target_speed);
 
-    bool check_and_handle_initial_drawer_homing();
+    void handle_initial_drawer_homing();
 
     void handle_drawer_just_opened() override;
 

@@ -227,6 +227,7 @@ void setup()
   can_controller = std::make_unique<can_toolbox::CanController>(
     MODULE_ID, can_db, peripherals::pinout::TWAI_TX_PIN, peripherals::pinout::TWAI_RX_PIN);
 
+  config_manager = std::make_unique<utils::PartialDrawerConfigManager>();
   config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                              USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
   config_manager->print_all_configs();
