@@ -178,6 +178,9 @@ list(APPEND plugin_libs robast_error_pub_node)
 add_library(publish_string_topic_action_node SHARED src/action/publish_string_topic.cpp)
 list(APPEND plugin_libs publish_string_topic_action_node)
 
+add_library(generate_partial_position_action_node SHARED src/action/generate_partial_position_action.cpp)
+list(APPEND plugin_libs generate_partial_position_action_node)
+
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})
   target_compile_definitions(${bt_plugin} PRIVATE BT_PLUGIN_EXPORT)

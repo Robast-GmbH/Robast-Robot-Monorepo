@@ -235,12 +235,17 @@
                             fading_time_ms="500"
                             led_topic="/led_cmd"
                             leds="{leds}"/>
+        <GeneratePartialPosition drawer_address="{drawer}"
+                                 first_tray_position="40"
+                                 last_tray_position="254"
+                                 tray_count="8"
+                                 target_position="{target_position}"/>
         <Delay delay_msec="1000">
           <MoveElectricDrawer drawer_address="{drawer}"
                               move_electric_drawer_topic="/electrical_drawer_task"
                               speed="200"
                               stall_guard_value="80"
-                              target_position="254"/>
+                              target_position="{target_position}"/>
         </Delay>
         <ReactiveIfThenElse>
           <Inverter>
@@ -325,6 +330,18 @@
       <input_port name="use_stallguard"
                   default="false"/>
     </Condition>
+    <Action ID="GeneratePartialPosition">
+      <input_port name="drawer_address"
+                  default="{drawer}"/>
+      <input_port name="first_tray_position"
+                  default="40">uint8</input_port>
+      <input_port name="last_tray_position"
+                  default="253">uint8</input_port>
+      <input_port name="tray_count"
+                  default="8">uint8</input_port>
+      <output_port name="target_position"
+                   default="{target_position}">uint8</output_port>
+    </Action>
     <Action ID="GetBlackboardEntry">
       <input_port name="key"
                   default="drawer_address">string</input_port>

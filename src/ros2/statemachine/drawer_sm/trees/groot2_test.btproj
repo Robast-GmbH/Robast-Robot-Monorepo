@@ -56,6 +56,13 @@
             <input_port name="base_frame" default="base_link"/>
             <output_port name="direction" default="standing">sleeping, standing, left, right, forward</output_port>
         </Action>
+        <Action ID="GeneratePartialPosition">
+            <input_port name="drawer_address" default="{drawer}"/>
+            <input_port name="first_tray_position" default="40">uint8</input_port>
+            <input_port name="last_tray_position" default="253">uint8</input_port>
+            <input_port name="tray_count" default="8">uint8</input_port>
+            <output_port name="target_position" default="{target_position}">uint8</output_port>
+        </Action>
         <Action ID="GetBlackboardEntry">
             <input_port name="key" default="drawer_address">string</input_port>
             <output_port name="value" default="{drawer}"/>
