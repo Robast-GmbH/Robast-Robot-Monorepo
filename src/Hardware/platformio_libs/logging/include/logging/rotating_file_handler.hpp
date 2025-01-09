@@ -16,7 +16,7 @@ namespace logging
   class RotatingFileHandler
   {
    public:
-    RotatingFileHandler(const std::shared_ptr<RotatingFileHandlerConfig> config);
+    explicit RotatingFileHandler(const std::shared_ptr<RotatingFileHandlerConfig> config);
 
     void init();
 
