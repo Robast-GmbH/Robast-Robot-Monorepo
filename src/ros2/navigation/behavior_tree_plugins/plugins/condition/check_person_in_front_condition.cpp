@@ -29,6 +29,7 @@ namespace nav2_behavior_tree
 
   BT::NodeStatus CheckPersonInFrontCondition::tick()
   {
+    _callback_group_executor.spin_some();
     float detection_range = 0.0;
     if (!getInput("detection_range", detection_range))
     {

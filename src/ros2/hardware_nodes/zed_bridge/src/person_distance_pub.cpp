@@ -4,15 +4,15 @@
 
 PersonDistanceNode::PersonDistanceNode() : Node("person_distance_node")
 {
-  subscription_ = this->create_subscription<zed_msgs::msg::ObjectsStamped>(
+  _subscription = this->create_subscription<zed_msgs::msg::ObjectsStamped>(
       "/robot/zed/zed_node/body_trk/skeletons",
       10,
       std::bind(&PersonDistanceNode::topic_callback, this, std::placeholders::_1));
 
-  publisher_ = this->create_publisher<geometry_msgs::msg::PointStamped>("person_distance", 10);
+  _publisher = create_publisher<geometry_msgs::msg::PointStamped>("person_distance", 10);
 
-  tf_buffer_ = std::make_shared<tf2_ros::Buffer>(this->get_clock());
-  tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+  _tf_buffer = std::make_shared<tf2_ros::Buffer>(this->get_clock());
+  _tf_listener = std::make_shared<tf2_ros::TransformListener>(*_tf_buffer);
   this->get_parameter_or("target_frame", _target_frame, std::string("robot/base_footprint"));
 }
 
@@ -29,26 +29,27 @@ void PersonDistanceNode::topic_callback(const zed_msgs::msg::ObjectsStamped::Sha
     float min_distance = std::numeric_limits<float>::max();
     for (const auto &object : msg->objects)
     {
-      geometry_msgs::msg::PointStamped point_in, point_out;
-      point_in.header = msg->header;
-      point_in.point.x = object.position[0];
-      point_in.point.y = object.position[1];
-      point_in.point.z = object.position[2];
+      geometry_msgs::msg::PointStamped detected_point, transformed_point;
+      detected_point.header = msg->header;
+      detected_point.point.x = object.position[0];
+      detected_point.point.y = object.position[1];
+      detected_point.point.z = object.position[2];
 
       try
       {
-        geometry_msgs::msg::TransformStamped transform_stamped =
-            tf_buffer_->lookupTransform(_target_frame, point_in.header.frame_id, tf2::TimePointZero);
+        const geometry_msgs::msg::TransformStamped transform_stamped =
+            _tf_buffer->lookupTransform(_target_frame, detected_point.header.frame_id, tf2::TimePointZero);
 
-        tf2::doTransform(point_in, point_out, transform_stamped);
+        tf2::doTransform(detected_point, transformed_point, transform_stamped);
 
-        float distance =
-            std::sqrt(std::pow(point_out.point.x, 2) + std::pow(point_out.point.y, 2) + std::pow(point_out.point.z, 2));
+        const float distance =
+            std::sqrt(std::pow(transformed_point.point.x, 2) + std::pow(transformed_point.point.y, 2) +
+                      std::pow(transformed_point.point.z, 2));
 
         if (distance < min_distance)
         {
           min_distance = distance;
-          closest_point = point_out;
+          closest_point = transformed_point;
         }
       }
       catch (tf2::TransformException &ex)
@@ -59,7 +60,7 @@ void PersonDistanceNode::topic_callback(const zed_msgs::msg::ObjectsStamped::Sha
     }
   }
   closest_point.header.stamp = this->get_clock()->now();
-  publisher_->publish(closest_point);
+  _publisher->publish(closest_point);
 }
 
 int main(int argc, char **argv)

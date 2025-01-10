@@ -18,10 +18,10 @@ class PersonDistanceNode : public rclcpp::Node
  private:
   void topic_callback(const zed_msgs::msg::ObjectsStamped::SharedPtr msg);
 
-  rclcpp::Subscription<zed_msgs::msg::ObjectsStamped>::SharedPtr subscription_;
-  rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr publisher_;
-  std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
-  std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+  rclcpp::Subscription<zed_msgs::msg::ObjectsStamped>::SharedPtr _subscription;
+  rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr _publisher;
+  std::shared_ptr<tf2_ros::Buffer> _tf_buffer;
+  std::shared_ptr<tf2_ros::TransformListener> _tf_listener;
   std::string _target_frame;
 };
 
