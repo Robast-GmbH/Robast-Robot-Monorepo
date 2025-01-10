@@ -3,7 +3,7 @@
 <package format="3">
   <name>audio_bridge</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>The audio_bridge package is used to interact with the speaker provided by the robot.</description>
   <maintainer email="t.alscher@tiplu.de">robast</maintainer>
   <license>TODO: License declaration</license>
 

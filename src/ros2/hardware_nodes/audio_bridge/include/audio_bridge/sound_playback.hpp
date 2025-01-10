@@ -16,7 +16,7 @@ class SoundPlayerNode : public rclcpp::Node
   SoundPlayerNode();
 
  private:
-  rclcpp_action::Server<PlaySound>::SharedPtr action_server_;
+  rclcpp_action::Server<PlaySound>::SharedPtr _action_server;
 
   rclcpp_action::GoalResponse handle_goal(const rclcpp_action::GoalUUID &uuid,
                                           std::shared_ptr<const PlaySound::Goal> goal);

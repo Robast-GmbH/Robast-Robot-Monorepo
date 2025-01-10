@@ -5,7 +5,7 @@
 
 SoundPlayerNode::SoundPlayerNode() : Node("sound_player_node")
 {
-  this->action_server_ = rclcpp_action::create_server<PlaySound>(
+  this->_action_server = rclcpp_action::create_server<PlaySound>(
       this,
       "play_sound",
       std::bind(&SoundPlayerNode::handle_goal, this, std::placeholders::_1, std::placeholders::_2),
