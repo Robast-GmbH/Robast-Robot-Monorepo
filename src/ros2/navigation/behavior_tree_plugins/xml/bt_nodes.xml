@@ -49,7 +49,7 @@
 
     <Condition ID="CheckPersonInFront">
       <input_port name="topic">Name of the topic, whose data field is checked for target value</input_port>
-      <input_port name="detection_range">Range in which the person is detected</input_port>
+      <input_port name="detection_range">Range in meter in which the person is detected</input_port>
     </Condition>"
 
     <Condition ID="VariableUpdated">

@@ -1,7 +1,7 @@
 # Behaviortree Plugins
 
 ## Overview
-This package has to be fulle rebuild in a few weeks when we migrate to jazzy
+This package has to be fully rebuild in a few weeks when we migrate to jazzy
 This project implements behavior tree action nodes for a robot using the `nav2_behavior_tree` framework. The primary functionalities include changing the robot's footprint, checking if a person is in front of the robot, and other behavior tree actions.
 
 ## File Structure

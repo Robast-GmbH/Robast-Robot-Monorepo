@@ -3,7 +3,7 @@
 <package format="3">
   <name>zed_bridge</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>The zed bridge is a package that should support the interaction with the zed camera. Firstly by reducing needed topics to the key fields that are neccessary and later on for other interactions with the camera data aswell</description>
   <maintainer email="t.alscher@tiplu.de">robast</maintainer>
   <license>TODO: License declaration</license>
 
