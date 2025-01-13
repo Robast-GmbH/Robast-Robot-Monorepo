@@ -75,6 +75,12 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "valarray": "cpp",
-        "variant": "cpp"
-    }
+        "variant": "cpp",
+        "ranges": "cpp",
+        "span": "cpp"
+    },
+    "sonarlint.connectedMode.project": {
+        "connectionId": "robast-gmbh",
+        "projectKey": "Robast-GmbH_Monorepo"
+    },
 }
