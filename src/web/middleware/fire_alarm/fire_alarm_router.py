@@ -3,12 +3,14 @@ from pathlib import Path
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 from models.logger import Logger
+import os
 
 fire_alarm_router = APIRouter()
 fire_alarm_logger = Logger("fire_alarm", "log/fire_alarm.log")
 
 TIMEZONE = ZoneInfo("Europe/Berlin")
-DATA_FILE = Path("./fire_alarm_triggered.txt")
+home_directory = os.path.expanduser("~")
+DATA_FILE = Path(f"{home_directory}/fire_alarm_triggered.txt")
 last_fire_alarm_publisher_poll = datetime.now(tz=TIMEZONE)
 is_fire_alarm_publisher_active = True
 

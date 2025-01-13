@@ -134,6 +134,7 @@ namespace drawer
     {
       if (_encoder_monitor->check_if_drawer_is_pulled_out())
       {
+        debug_printf_warning("[ElectricalDrawer]: Drawer is pulled out! Adding task to move drawer back in!\n");
         add_e_drawer_task_to_queue({DRAWER_TARGET_HOMING_POSITION,
                                     _config->get_drawer_push_in_auto_close_speed(),
                                     _config->get_drawer_push_in_auto_close_stall_guard_value(),
@@ -161,6 +162,7 @@ namespace drawer
     if (is_wait_time_after_stall_guard_triggered_over && is_wait_time_after_movement_finished_over &&
         _encoder_monitor->check_if_drawer_is_pushed_in())
     {
+      debug_printf_green("[ElectricalDrawer]: Drawer is pushed in! Adding task to move drawer in!\n");
       add_e_drawer_task_to_queue({DRAWER_TARGET_HOMING_POSITION,
                                   _config->get_drawer_push_in_auto_close_speed(),
                                   _config->get_drawer_push_in_auto_close_stall_guard_value(),
@@ -213,6 +215,11 @@ namespace drawer
 
   void ElectricalDrawer::start_normal_drawer_movement(const uint8_t target_speed, const bool use_acceleration_ramp)
   {
+    debug_printf_green(
+      "[ElectricalDrawer]: Starting normal drawer movement with target speed %d and target position %d!\n",
+      target_speed,
+      _target_position_uint8);
+
     reset_encoder_if_endstop_is_pushed();
 
     if (_target_position_uint8 == _encoder->get_normed_current_position())
@@ -221,7 +228,7 @@ namespace drawer
                                                 _id,
                                                 _endstop_switch->is_switch_pressed(),
                                                 LOCK_SWITCH_IS_NOT_PUSHED,
-                                                get_is_stall_guard_triggered(),
+                                                is_stall_guard_triggered(),
                                                 _encoder->get_normed_current_position(),
                                                 PUSH_TO_CLOSE_NOT_TRIGGERED);
       return;
@@ -257,7 +264,8 @@ namespace drawer
       return;
     }
 
-    if (!check_and_handle_initial_drawer_homing())
+    handle_initial_drawer_homing();
+    if (!_drawer_was_homed_once || !_is_drawer_opening_in_progress)
     {
       return;
     }
@@ -269,7 +277,7 @@ namespace drawer
     _is_drawer_moving_out ? handle_drawer_moving_out() : handle_drawer_moving_in();
   }
 
-  bool ElectricalDrawer::check_and_handle_initial_drawer_homing()
+  void ElectricalDrawer::handle_initial_drawer_homing()
   {
     if (!_drawer_was_homed_once && _endstop_switch->is_switch_pressed())
     {
@@ -279,7 +287,6 @@ namespace drawer
       _is_idling = true;
       debug_printf_green("[ElectricalDrawer]: Drawer was homed successfully!\n");
     }
-    return _drawer_was_homed_once;
   }
 
   void ElectricalDrawer::handle_drawer_lock_control()
@@ -387,7 +394,7 @@ namespace drawer
     // Before we add a new task to the queue, we need to check if the drawer was homed once
     if (!_drawer_was_homed_once)
     {
-      debug_printf_warning("[ElectricalDrawer]: Drawer was not homed once yet, so add homing task to queue!");
+      debug_printf_warning("[ElectricalDrawer]: Drawer was not homed once yet, so add homing task to queue!\n");
       _e_drawer_task_queue->enqueue({DRAWER_TARGET_HOMING_POSITION,
                                      get_normed_target_speed_uint8(_config->get_drawer_initial_homing_speed()),
                                      STALL_GUARD_DISABLED,
@@ -513,7 +520,7 @@ namespace drawer
         _id,
         _endstop_switch->is_switch_pressed(),
         _drawer_lock.has_value() ? _drawer_lock.value()->is_lock_switch_pushed() : false,
-        get_is_stall_guard_triggered(),
+        is_stall_guard_triggered(),
         _encoder->get_normed_current_position(),
         PUSH_TO_CLOSE_NOT_TRIGGERED);
 
@@ -596,7 +603,7 @@ namespace drawer
                                               _id,
                                               ENDSTOP_SWITCH_IS_PUSHED,
                                               LOCK_SWITCH_IS_NOT_PUSHED,
-                                              get_is_stall_guard_triggered(),
+                                              is_stall_guard_triggered(),
                                               _encoder->get_normed_current_position(),
                                               PUSH_TO_CLOSE_NOT_TRIGGERED);
 
@@ -610,10 +617,5 @@ namespace drawer
     {
       _is_idling = true;
     }
-  }
-
-  bool ElectricalDrawer::get_is_stall_guard_triggered() const
-  {
-    return _is_motor_monitor_stall_guard_triggered || _is_tmc_stall_guard_triggered;
   }
 }   // namespace drawer

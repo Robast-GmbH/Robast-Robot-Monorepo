@@ -17,7 +17,7 @@ jobs:
       Project: hardware_nodes
 
     steps:
-    #- uses: actions/checkout@v3 
+    #- uses: actions/checkout@v4 
     # - uses: dorny/paths-filter@v2.11.1
     #   id: filter
     #   with:
@@ -28,7 +28,7 @@ jobs:
     #         - 'src/ros2/${{ env.Project }}/Dockerfile'
 
     - name: Checkout repository and submodules
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
           fetch-depth: 2
 

@@ -143,7 +143,7 @@ namespace drawer
 
     void start_homing_movement(const uint8_t target_speed);
 
-    bool check_and_handle_initial_drawer_homing();
+    void handle_initial_drawer_homing();
 
     void handle_drawer_just_opened() override;
 
@@ -164,8 +164,6 @@ namespace drawer
     void handle_finished_moving_out_drawer();
 
     bool is_stall_guard_triggered();
-
-    bool get_is_stall_guard_triggered() const;
 
     void handle_stall_guard_triggered();
 

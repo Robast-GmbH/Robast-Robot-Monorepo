@@ -3,9 +3,7 @@
 
 #ifndef RUNNING_TESTS
 #include <Arduino.h>
-#endif
-
-// #define DEBUG
+#include "logging/rotating_file_handler.hpp"
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -14,6 +12,9 @@
 #define ANSI_COLOR_MAGENTA "\x1b[35m"
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
+#endif
+
+// #define DEBUG
 
 #ifdef DEBUG
 
@@ -110,10 +111,20 @@
 
 #endif
 
+#ifndef RUNNING_TESTS
+extern std::shared_ptr<logging::RotatingFileHandler> rotating_file_logger;
+
 #ifndef serial_printf_green
 #define serial_printf_green(format, ...) \
   Serial.print(ANSI_COLOR_GREEN);        \
   Serial.printf(format, ##__VA_ARGS__);  \
+  Serial.print(ANSI_COLOR_RESET)
+#endif
+
+#ifndef serial_printf_color
+#define serial_printf_color(color, format, ...) \
+  Serial.print(color);                          \
+  Serial.printf(format, ##__VA_ARGS__);         \
   Serial.print(ANSI_COLOR_RESET)
 #endif
 
@@ -135,23 +146,44 @@
 #define serial_printf_error(format, ...) \
   Serial.print(ANSI_COLOR_RED);          \
   Serial.printf(format, ##__VA_ARGS__);  \
-  Serial.print(ANSI_COLOR_RESET)
+  Serial.print(ANSI_COLOR_RESET);        \
+  rotating_file_logger->write(format_string(format, ##__VA_ARGS__));
 #endif
 
 #ifndef serial_println_error
 #define serial_println_error(num) \
   Serial.print(ANSI_COLOR_RED);   \
   Serial.println(num);            \
-  Serial.print(ANSI_COLOR_RESET)
+  Serial.print(ANSI_COLOR_RESET); \
+  rotating_file_logger->write(std::string(num) + "\n");
 #endif
 
-#ifndef RUNNING_TESTS
 inline void serial_setup(unsigned long baudrate)
 {
   debug_begin(115200);   // Init serial port and set baudrate
   while (!Serial)
   {
   }
+}
+
+inline std::string format_string(const char* format, ...)
+{
+  va_list args;
+  va_start(args, format);
+
+  // Calculate the size of the formatted string
+  va_list args_copy;
+  va_copy(args_copy, args);
+  const int size = std::vsnprintf(nullptr, 0, format, args_copy);
+  va_end(args_copy);
+
+  // Create a string with the required size
+  std::vector<char> buffer(size + 1);
+  std::vsnprintf(buffer.data(), buffer.size(), format, args);
+
+  va_end(args);
+
+  return std::string(buffer.data(), buffer.size() - 1);
 }
 #endif
 
