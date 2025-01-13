@@ -5,27 +5,23 @@
 #include <string>
 
 #include "behaviortree_cpp/bt_factory.h"
-
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 
 // #include "bt_plugins/action/change_led_action.hpp"
-#include "bt_plugins/action/drawer_change_state_request_action.hpp"
-#include "bt_plugins/action/open_drawer_action.hpp"
-#include "bt_plugins/action/nfc_to_drawer_action.hpp"
-#include "bt_plugins/condition/drawer_status_condition.hpp"
-
-#include "bt_plugins/behavior_tree_engine.hpp"
-
 #include "behaviortree_cpp/behavior_tree.h"
 #include "behaviortree_cpp/xml_parsing.h"
-
-#include "std_msgs/msg/empty.hpp"
+#include "bt_plugins/action/drawer_change_state_request_action.hpp"
+#include "bt_plugins/action/nfc_to_drawer_action.hpp"
+#include "bt_plugins/action/open_drawer_action.hpp"
+#include "bt_plugins/behavior_tree_engine.hpp"
+#include "bt_plugins/condition/drawer_status_condition.hpp"
 #include "error_utils/generic_error_converter.hpp"
+#include "std_msgs/msg/empty.hpp"
 
 class BTTest : public rclcpp::Node
 {
-public:
+ public:
   BTTest() : Node("bt_test")
   {
   }
@@ -35,20 +31,17 @@ public:
     const std::vector<std::string> plugins = {
         "nfc_to_drawer_action_bt_node",
     };
-    MessageConverter<communication_interfaces::msg::DrawerAddress> converter;
     communication_interfaces::msg::DrawerAddress drawer_address;
     drawer_address.drawer_id = 1;
     drawer_address.module_id = 2;
-    std::string stringer = converter.messageToString(drawer_address);
+    std::string stringer = error_utils::message_to_string<communication_interfaces::msg::DrawerAddress>(drawer_address);
     std::cout << stringer << std::endl;
     communication_interfaces::msg::DrawerAddress drawer_address2;
-    drawer_address2 = converter.stringToMessage(stringer);
+    drawer_address2 = error_utils::string_to_message<communication_interfaces::msg::DrawerAddress>(stringer);
     static BT::NodeConfig *config_;
     config_ = new BT::NodeConfig();
     auto blackboard = BT::Blackboard::create();
-    blackboard->set<std::chrono::milliseconds>(
-        "bt_loop_duration",
-        std::chrono::milliseconds(10));
+    blackboard->set<std::chrono::milliseconds>("bt_loop_duration", std::chrono::milliseconds(10));
     std::string nfc_tree_xml =
         R"(
                 <root BTCPP_format="4" >
@@ -58,9 +51,7 @@ public:
                 </root>)";
 
     auto tmp = shared_from_this();
-    blackboard->set<rclcpp::Node::SharedPtr>(
-        "node",
-        std::shared_ptr<rclcpp::Node>(tmp));
+    blackboard->set<rclcpp::Node::SharedPtr>("node", std::shared_ptr<rclcpp::Node>(tmp));
 
     std::map<std::string, DrawerAddress> nfc_dictionary{{}};
     for (int i = 1; i <= 5; i++)
@@ -71,8 +62,7 @@ public:
       nfc_dictionary[std::to_string(i)] = drawer_address;
     }
 
-    blackboard->set<std::map<std::string, DrawerAddress>>(
-        "nfc_keys", nfc_dictionary);
+    blackboard->set<std::map<std::string, DrawerAddress>>("nfc_keys", nfc_dictionary);
 
     auto bt_engine = std::make_unique<statemachine::BehaviorTreeEngine>(plugins);
     bt_ = bt_engine->createTreeFromText(nfc_tree_xml, blackboard, "MainTree");
@@ -100,7 +90,6 @@ public:
           auto blackboard_drawer_address = blackboard->get<DrawerAddress>("drawer_address");
           if (blackboard_drawer_address == nfc_dictionary["1"])
           {
-
             std::cout << "fuck yea"
                       << "\n";
           }
@@ -112,20 +101,17 @@ public:
     qos.transient_local().reliable();
 
     _start_bt_sub = this->create_subscription<std_msgs::msg::Empty>(
-        "start_bt",
-        qos,
-        std::bind(&BTTest::callbackRunBT, this, std::placeholders::_1));
+        "start_bt", qos, std::bind(&BTTest::callbackRunBT, this, std::placeholders::_1));
   }
 
-private:
+ private:
   void ticking()
   {
     std::cout << "tick" << std::endl;
     bt_.tickOnce();
     std::cout << "ticked" << std::endl;
   }
-  void
-  callbackRunBT(const std_msgs::msg::Empty msg)
+  void callbackRunBT(const std_msgs::msg::Empty msg)
   {
     using namespace std::chrono_literals;
     bt_.tickWhileRunning(500ms);
@@ -140,7 +126,7 @@ private:
 
 class BTTicker : public rclcpp::Node
 {
-public:
+ public:
   BTTicker() : Node("bt_tickers")
   {
   }
@@ -155,12 +141,8 @@ public:
     auto blackboard = BT::Blackboard::create();
     // Put items on the blackboard
     auto tmp = shared_from_this();
-    blackboard->set<rclcpp::Node::SharedPtr>(
-        "node",
-        std::shared_ptr<rclcpp::Node>(tmp));
-    blackboard->set<std::chrono::milliseconds>(
-        "bt_loop_duration",
-        std::chrono::milliseconds(10));
+    blackboard->set<rclcpp::Node::SharedPtr>("node", std::shared_ptr<rclcpp::Node>(tmp));
+    blackboard->set<std::chrono::milliseconds>("bt_loop_duration", std::chrono::milliseconds(10));
     auto bt_engine = std::make_unique<statemachine::BehaviorTreeEngine>(plugins);
 
     std::string default_path = "/workspace/install/drawer_sm/trees/trees/drawer_sequence_simple.xml";
@@ -175,7 +157,8 @@ public:
         {
           if ((*iter)->registrationName() == "DrawerChangeStateReq")
           {
-            statemachine::DrawerChangeStateReq *node = dynamic_cast<statemachine::DrawerChangeStateReq *>((*iter).get());
+            statemachine::DrawerChangeStateReq *node =
+                dynamic_cast<statemachine::DrawerChangeStateReq *>((*iter).get());
             std::cout << "found: " << *plugin_name << "\n";
             found = true;
 
@@ -194,20 +177,17 @@ public:
     qos.transient_local().reliable();
 
     _start_bt_sub = this->create_subscription<std_msgs::msg::Empty>(
-        "start_bt",
-        qos,
-        std::bind(&BTTicker::callbackRunBT, this, std::placeholders::_1));
+        "start_bt", qos, std::bind(&BTTicker::callbackRunBT, this, std::placeholders::_1));
   }
 
-private:
+ private:
   void ticking()
   {
     std::cout << "tick" << std::endl;
     bt_.tickOnce();
     std::cout << "ticked" << std::endl;
   }
-  void
-  callbackRunBT(const std_msgs::msg::Empty msg)
+  void callbackRunBT(const std_msgs::msg::Empty msg)
   {
     using namespace std::chrono_literals;
     bt_.tickWhileRunning(500ms);

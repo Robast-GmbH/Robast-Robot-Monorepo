@@ -10,11 +10,11 @@
 #include "drawer/manual_drawer.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "led/led_strip.hpp"
+#include "logging/rotating_file_handler.hpp"
 #include "module_id/module_id.hpp"
 #include "motor/motor_monitor_config.hpp"
 #include "switch/switch.hpp"
 #include "utils/can_message_converter.hpp"
-#include "utils/config_manager.hpp"
 #include "utils/queue.hpp"
 #include "watchdog/heartbeat.hpp"
 
@@ -40,20 +40,13 @@ std::shared_ptr<lock::ElectricalDrawerLock> drawer_lock;
 
 std::shared_ptr<interfaces::IDrawer> i_drawer;
 
-std::shared_ptr<drawer::ElectricalDrawerConfig> drawer_config;
-std::shared_ptr<motor::EncoderConfig> encoder_config;
-std::shared_ptr<motor::MotorConfig> motor_config;
-std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config;
-std::shared_ptr<tray::TrayManagerConfig> tray_manager_config;
-std::shared_ptr<watchdog::HeartbeatConfig> heartbeat_config;
-
 std::shared_ptr<switch_lib::Switch> endstop_switch;
 
 std::unique_ptr<utils::CanMessageConverter> can_message_converter;
 
-std::unique_ptr<utils::ConfigManager> config_manager;
-
 std::shared_ptr<watchdog::Heartbeat> heartbeat;
+
+std::shared_ptr<logging::RotatingFileHandler> rotating_file_logger;
 
 // shared resource, so we need a mutex for this
 std::unique_ptr<utils::Queue<robast_can_msgs::CanMessage>> can_msg_queue;

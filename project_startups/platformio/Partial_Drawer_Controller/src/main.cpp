@@ -7,8 +7,10 @@
 #include "peripherals/gpio_defines.hpp"
 #include "peripherals/pinout_defines.hpp"
 #include "tray/tray_manager.hpp"
+#include "utils/partial_drawer_config_manager.hpp"
 
 // These are the very basic top level configurations for the drawer controller you need to set.
+// Besides that there are a lot of other configs that are managed by the ConfigManager and can be set via CAN messages.
 constexpr config::UserConfig USER_CONFIG{.module_version = config::version::CURA,
                                          .module_prefix = module_id::ModulePrefix::PARTIAL_DRAWER_10x40x8,
                                          .unique_module_id = 1,
@@ -30,6 +32,8 @@ std::shared_ptr<drawer::ElectricalDrawer> e_drawer;
 std::shared_ptr<tray::TrayManager> tray_manager;
 
 std::unique_ptr<can_toolbox::CanController> can_controller;
+
+std::unique_ptr<utils::PartialDrawerConfigManager> config_manager;
 
 stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
   .stepper_enn_tmc2209_pin_id = peripherals::pin_id::STEPPER_1_ENN_TMC2209,
@@ -223,20 +227,16 @@ void setup()
   can_controller = std::make_unique<can_toolbox::CanController>(
     MODULE_ID, can_db, peripherals::pinout::TWAI_TX_PIN, peripherals::pinout::TWAI_RX_PIN);
 
-  drawer_config = std::make_shared<drawer::ElectricalDrawerConfig>();
-  encoder_config = std::make_shared<motor::EncoderConfig>();
-  motor_config = std::make_shared<motor::MotorConfig>();
-  motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
-  tray_manager_config = std::make_shared<tray::TrayManagerConfig>();
-  heartbeat_config = std::make_shared<watchdog::HeartbeatConfig>();
-
-  config_manager = std::make_unique<utils::ConfigManager>(
-    drawer_config, encoder_config, motor_config, motor_monitor_config, tray_manager_config, heartbeat_config);
+  config_manager = std::make_unique<utils::PartialDrawerConfigManager>();
   config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                              USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
   config_manager->print_all_configs();
 
-  heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, heartbeat_config);
+  rotating_file_logger =
+    std::make_shared<logging::RotatingFileHandler>(config_manager->get_rotating_file_handler_config());
+  rotating_file_logger->print_all_logs();
+
+  heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, config_manager->get_heartbeat_config());
 
   e_drawer = std::make_shared<drawer::ElectricalDrawer>(
     MODULE_ID,
@@ -248,12 +248,12 @@ void setup()
     gpio_wrapper->get_gpio_num_for_pin_id(peripherals::pin_id::STEPPER_1_ENCODER_A),
     gpio_wrapper->get_gpio_num_for_pin_id(peripherals::pin_id::STEPPER_1_ENCODER_B),
     STEPPER_MOTOR_1_ADDRESS,
-    motor_config,
+    config_manager->get_motor_config(),
     endstop_switch,
     std::nullopt,
-    drawer_config,
-    encoder_config,
-    motor_monitor_config);
+    config_manager->get_drawer_config(),
+    config_manager->get_encoder_config(),
+    config_manager->get_motor_monitor_config());
 
   std::vector<tray::TrayPinConfig> tray_pin_config = {{peripherals::pin_id::LOCK_1_OPEN_CONTROL,
                                                        peripherals::pin_id::LOCK_1_CLOSE_CONTROL,
@@ -284,8 +284,8 @@ void setup()
                                                      gpio_wrapper,
                                                      wire_onboard_led_driver,
                                                      e_drawer,
-                                                     motor_monitor_config,
-                                                     tray_manager_config,
+                                                     config_manager->get_motor_monitor_config(),
+                                                     config_manager->get_tray_manager_config(),
                                                      SWITCH_PRESSED_THRESHOLD,
                                                      SWITCH_WEIGHT_NEW_VALUES);
 
