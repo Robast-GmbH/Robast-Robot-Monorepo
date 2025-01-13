@@ -21,8 +21,8 @@ class ModuleContentCreationView extends StatefulWidget {
 class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
   final textController = TextController();
   final amountController = TextController();
-  final focusNode = FocusNode();
   final scrollController = ScrollController();
+  bool createdAnItem = false;
 
   @override
   Widget build(BuildContext context) {
@@ -75,11 +75,11 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
             return;
           }
           setState(() {
+            createdAnItem = true;
             widget.moduleContentController.createdItemsByCount[textController.text] = amount;
             textController.clear();
             amountController.clear();
           });
-          focusNode.requestFocus();
           scrollController.jumpTo(scrollController.position.maxScrollExtent);
         },
         child: const RoundedContainer(
@@ -170,9 +170,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
               flex: 8,
               child: CustomTextfield(
                 textController: textController,
-
-                // style: const TextStyle(fontSize: 32, color: RobotColors.secondaryText),
-                // onChanged: (value) => widget.moduleContentController.itemName = value,
+                enabledAutofocus: createdAnItem,
               ),
             ),
             const SizedBox(
@@ -180,11 +178,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
             ),
             Expanded(
               child: CustomTextfield(
-                //textAlign: TextAlign.center,
                 textController: amountController,
-                //   style: const TextStyle(fontSize: 32, color: RobotColors.secondaryText),
-                //   keyboardType: const TextInputType.numberWithOptions(),
-                //   onChanged: (value) => widget.moduleContentController.amount = value,
               ),
             ),
           ],

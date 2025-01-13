@@ -59,6 +59,7 @@ class _UserNameEditorState extends State<UserNameEditor> {
               flex: 3,
               child: CustomTextfield(
                 textController: firstNameController,
+                onChanged: (firstName) => widget.controller.firstName = firstName,
               ),
             ),
             const SizedBox(
@@ -68,6 +69,7 @@ class _UserNameEditorState extends State<UserNameEditor> {
               flex: 3,
               child: CustomTextfield(
                 textController: lastNameController,
+                onChanged: (lastName) => widget.controller.lastName = lastName,
               ),
             ),
           ],

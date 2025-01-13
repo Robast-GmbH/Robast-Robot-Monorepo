@@ -278,4 +278,19 @@ class RobotApiUtilities {
       return null;
     }
   }
+
+  Future<List<String>?> getErrorLog() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.post(Uri.parse('$prefix/logs/download'), headers: headers, body: '"subscriber/robast_error_best_effort.log"');
+      if (response.statusCode == 200) {
+        return response.body.split('\n');
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
 }

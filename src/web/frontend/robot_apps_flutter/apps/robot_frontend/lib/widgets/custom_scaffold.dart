@@ -107,57 +107,68 @@ class CustomScaffold extends StatelessWidget {
               children: [
                 GestureDetector(
                   onTap: () => Provider.of<KeyboardProvider>(context, listen: false).key = null,
-                  child: TitledView(
-                    title: title,
-                    showBackButton: showBackButton,
-                    onBackButtonPressed: onBackButtonPressed,
-                    collapsedTitle: collapsedTitle,
-                    child: child,
-                  ),
-                ),
-                if (Provider.of<KeyboardProvider>(context).key != null)
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ColoredBox(
-                      color: Colors.white,
-                      child: VirtualKeyboard(
-                        type: VirtualKeyboardType.Alphanumeric,
-                        fontSize: 32,
-                        height: 400,
-                        defaultLayouts: const [VirtualKeyboardDefaultLayouts.English],
-                        textController: TextEditingController(text: Provider.of<KeyboardProvider>(context, listen: false).text),
-                        onKeyPress: (key) {
-                          print('key:');
-                          final provider = Provider.of<KeyboardProvider>(context, listen: false);
-                          if (key.keyType == VirtualKeyboardKeyType.Action) {
-                            switch (key.action) {
-                              case VirtualKeyboardKeyAction.Backspace:
-                                print('backspace and ${provider.text}');
-                                if (provider.text!.isNotEmpty) {
-                                  provider.text = provider.text!.substring(0, provider.text!.length - 1);
-                                }
-                                break;
-                              case VirtualKeyboardKeyAction.Return:
-                                provider.text = provider.text! + '\n';
-                                break;
-                              case VirtualKeyboardKeyAction.Space:
-                                provider.text = provider.text! + ' ';
-                                break;
-                              case VirtualKeyboardKeyAction.Shift:
-                                break;
-                              default:
-                                print('pressed unsupported action');
-                                break;
-                            }
-                          } else if (key is VirtualKeyboardKey) {
-                            print(key.text);
-                            provider.text = provider.text! + key.text!;
-                          }
-                          provider.setTextState!();
-                        },
-                      ),
+                  child: Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: Colors.transparent,
+                    child: TitledView(
+                      title: title,
+                      showBackButton: showBackButton,
+                      onBackButtonPressed: onBackButtonPressed,
+                      collapsedTitle: collapsedTitle,
+                      child: child,
                     ),
                   ),
+                ),
+                Selector<KeyboardProvider, GlobalKey?>(
+                    selector: (context, provider) => provider.key,
+                    builder: (context, key, child) {
+                      if (key == null) {
+                        return const SizedBox();
+                      }
+                      return Align(
+                        alignment: Alignment.bottomCenter,
+                        child: ColoredBox(
+                          color: Colors.white,
+                          child: VirtualKeyboard(
+                            type: VirtualKeyboardType.Alphanumeric,
+                            fontSize: 32,
+                            height: 400,
+                            defaultLayouts: const [VirtualKeyboardDefaultLayouts.English],
+                            textController: TextEditingController(text: Provider.of<KeyboardProvider>(context, listen: false).text),
+                            onKeyPress: (key) {
+                              print('key:');
+                              final provider = Provider.of<KeyboardProvider>(context, listen: false);
+                              if (key.keyType == VirtualKeyboardKeyType.Action) {
+                                switch (key.action) {
+                                  case VirtualKeyboardKeyAction.Backspace:
+                                    print('backspace and ${provider.text}');
+                                    if (provider.text!.isNotEmpty) {
+                                      provider.text = provider.text!.substring(0, provider.text!.length - 1);
+                                    }
+                                    break;
+                                  case VirtualKeyboardKeyAction.Return:
+                                    provider.text = '${provider.text!}\n';
+                                    break;
+                                  case VirtualKeyboardKeyAction.Space:
+                                    provider.text = '${provider.text!} ';
+                                    break;
+                                  case VirtualKeyboardKeyAction.Shift:
+                                    break;
+                                  default:
+                                    print('pressed unsupported action');
+                                    break;
+                                }
+                              } else if (key is VirtualKeyboardKey) {
+                                print(key.text);
+                                provider.text = provider.text! + key.text!;
+                              }
+                              provider.setTextState!();
+                            },
+                          ),
+                        ),
+                      );
+                    }),
               ],
             );
           },

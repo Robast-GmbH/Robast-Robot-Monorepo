@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
 import 'package:robot_frontend/models/provider/hygiene_provider.dart';
+import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/disinfection_page.dart';
 
@@ -40,6 +41,7 @@ class InactivityProvider with ChangeNotifier {
     bool isBarrierDismissed = true;
     int counter = _timeoutReactionDurationInS;
     Timer? timer;
+    Provider.of<KeyboardProvider>(context, listen: false).unfocus();
     await showDialog(
       context: _navigatorKey.currentContext!,
       builder: (dialogContext) {
