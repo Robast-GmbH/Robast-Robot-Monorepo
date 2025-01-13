@@ -5,6 +5,7 @@ namespace statemachine
   GeneratePartialPosition::GeneratePartialPosition(const std::string &name, const BT::NodeConfig &config)
       : BT::SyncActionNode(name, config)
   {
+    _node = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
   }
 
   BT::NodeStatus GeneratePartialPosition::tick()

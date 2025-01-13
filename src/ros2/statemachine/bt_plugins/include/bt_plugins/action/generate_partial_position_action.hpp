@@ -31,11 +31,14 @@ namespace statemachine
     {
       return {BT::InputPort<communication_interfaces::msg::DrawerAddress>(
                   "drawer_address", "address of the tray we want to get the position for"),
-              BT::InputPort<uint8_t>("first_tray_position", 0),
-              BT::InputPort<uint8_t>("last_tray_position", 0),
-              BT::InputPort<uint8_t>("tray_count", 0),
+              BT::InputPort<uint8_t>("first_tray_position", 0, "position of the first tray"),
+              BT::InputPort<uint8_t>("last_tray_position", 0, "position of the last tray"),
+              BT::InputPort<uint8_t>("tray_count", 0, "number of trays"),
               BT::OutputPort<uint8_t>("target_position")};
     }
+
+   private:
+    rclcpp::Node::SharedPtr _node;
   };
 
 }   // namespace statemachine
