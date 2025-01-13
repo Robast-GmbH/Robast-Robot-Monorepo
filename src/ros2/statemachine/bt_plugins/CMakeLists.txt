@@ -205,7 +205,7 @@ if(BUILD_TESTING)
   FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG        ab6c7375be9a8e71ee84c6f8537113f9f47daf99 # should equal tag v3.2.1
+    GIT_TAG        v3.8.0
   )
   FetchContent_MakeAvailable(Catch2)
 
@@ -228,7 +228,8 @@ if(BUILD_TESTING)
   list(APPEND test_executables error_decorator_test)
   add_executable(calculate_direction_test tests/calculate_direction_test.cpp)
   list(APPEND test_executables calculate_direction_test)
-  
+  add_executable(generate_partial_position_action_test tests/actions/generate_partial_position_action_test.cpp)
+  list(APPEND test_executables generate_partial_position_action_test)
 
   ament_target_dependencies(${test_libs}
   ${dependencies})
