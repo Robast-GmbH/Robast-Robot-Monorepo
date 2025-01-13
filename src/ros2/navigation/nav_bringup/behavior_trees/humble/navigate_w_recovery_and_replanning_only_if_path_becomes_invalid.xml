@@ -16,9 +16,17 @@
                   </Inverter>
                   <IsPathValid path="{path}"/>
                 </ReactiveSequence>
-                <ComputePathToPose goal="{goal}"
-                                   path="{path}"
-                                   planner_id="GridBased"/>
+                <Sequence>
+                  <IfThenElse>
+                    <CheckPersonInFront topic="person_distance"
+                                        detection_range="10"/>
+                    <Wait wait_duration="5"/>
+                    <AlwaysSuccess/>
+                  </IfThenElse>
+                  <ComputePathToPose goal="{goal}"
+                                     path="{path}"
+                                     planner_id="GridBased"/>
+                </Sequence>
               </Fallback>
               <ClearEntireCostmap name="ClearGlobalCostmap-Context"
                                   service_name="global_costmap/clear_entirely_global_costmap"/>
@@ -57,6 +65,10 @@
 
   <!-- Description of Node Models (used by Groot) -->
   <TreeNodesModel>
+    <Condition ID="CheckPersonInFront">
+      <input_port name="topic">Name of the topic, whose data field is checked for target value</input_port>
+      <input_port name="detection_range">Range in which the person is detected</input_port>
+    </Condition>
     <Action ID="ClearEntireCostmap"
             editable="true">
       <input_port name="service_name"/>
