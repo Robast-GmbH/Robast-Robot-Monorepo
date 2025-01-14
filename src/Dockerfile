@@ -60,7 +60,7 @@ WORKDIR /workspace
 
 #---------------------------------------------------------------------------------------------------#
 # Dockerfile to build a base robast image with our custom interfaces, dds configs and error handling
-
+ARG ROS_BUILD_DISTRO=humble
 FROM ros:${ROS_BUILD_DISTRO}-ros-base AS robast-dev-base
 ARG ROS_BUILD_DISTRO
 
