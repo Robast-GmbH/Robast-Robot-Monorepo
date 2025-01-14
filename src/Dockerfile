@@ -7,13 +7,13 @@ ARG ROS_BUILD_DISTRO
 # Common setup
 RUN apt-get update -q && \
     apt-get upgrade -yq && \
-    apt-get install -yq bash-completion build-essential curl git gosu locales lsb-release sudo tzdata vim wget && \
+    apt-get install -yq bash-completion build-essential curl gosu locales lsb-release sudo tzdata vim wget && \
     rm -rf /var/lib/apt/lists/*
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
     echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER robast
+ENV USER=robast
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV ROS_DOMAIN_ID=23
 ENV ROS_DISTRO=${ROS_BUILD_DISTRO}
@@ -39,6 +39,7 @@ WORKDIR /tmp_src
 COPY ros2/communication_interfaces/ /tmp_src/communication_interfaces/
 COPY ros2/error_handling/ /tmp_src/error_handling/
 RUN git clone -b ros2-devel https://github.com/RobotnikAutomation/robotnik_msgs.git \
+    && apt-get update \
     && rosdep update \
     && rosdep install --from-paths /tmp_src/ --ignore-src -r -y \
     && . /opt/ros/${ROS_DISTRO}/setup.sh \
@@ -47,6 +48,7 @@ RUN git clone -b ros2-devel https://github.com/RobotnikAutomation/robotnik_msgs.
         --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF' \
     && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/${USER}/.bashrc \
     && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> /home/${USER}/.bashrc \
+    && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp_src
 
 COPY ros2/dds_configs/ /dds_configs/
