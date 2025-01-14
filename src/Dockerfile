@@ -4,6 +4,7 @@ ARG ROS_BUILD_DISTRO=humble
 FROM ros:${ROS_BUILD_DISTRO}-ros-core AS robast-dev-core
 ARG ROS_BUILD_DISTRO
 
+# Common setup
 RUN apt-get update -q && \
     apt-get upgrade -yq && \
     apt-get install -yq bash-completion build-essential curl git gosu locales lsb-release sudo tzdata vim wget && \
@@ -34,7 +35,6 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/* \
   && rosdep init || echo "rosdep already initialized"
 
-
 WORKDIR /tmp_src
 COPY ros2/communication_interfaces/ /tmp_src/communication_interfaces/
 COPY ros2/error_handling/ /tmp_src/error_handling/
@@ -55,15 +55,13 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/dds_configs/cyclone_DDS_config.xml
 
-
 USER robast
 WORKDIR /workspace
 
 #---------------------------------------------------------------------------------------------------#
 # Dockerfile to build a base robast image with our custom interfaces, dds configs and error handling
 
-ARG ROS_BUILD_DISTRO=humble
-FROM ros:${ROS_BUILD_DISTRO}-ros-base AS robast-dev
+FROM ros:${ROS_BUILD_DISTRO}-ros-base AS robast-dev-base
 ARG ROS_BUILD_DISTRO
 
 ENV ROS_DISTRO=${ROS_BUILD_DISTRO}
@@ -82,8 +80,8 @@ RUN apt-get update -q && \
     python3-pip \
     python3-rosdep \
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
-    vim \
-    && rosdep init || echo "rosdep already initialized" && \
+    vim && \
+    rosdep init || echo "rosdep already initialized" && \
     rm -rf /var/lib/apt/lists/*
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
@@ -112,7 +110,6 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/dds_configs/cyclone_DDS_config.xml
 
-
 USER robast
 WORKDIR /workspace
 
@@ -121,7 +118,7 @@ WORKDIR /workspace
 # Dockerfile that contains the code of the Monorepo in the main branch.
 # Should be used in the CI/CD pipeline to build the docker image.
 ARG ROS_BUILD_DISTRO=humble
-FROM robast-dev AS robast-source
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS robast-source
 
 COPY web/ /monorepo/src/web/
 COPY Hardware/ /monorepo/src/Hardware/
