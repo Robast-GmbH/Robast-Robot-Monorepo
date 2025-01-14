@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-dev-base:
     runs-on: ubuntu-latest
     env:
       Ros-Distro: humble
@@ -44,6 +44,27 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha
 
+  build-dev-core:
+    runs-on: ubuntu-latest
+    env:
+      Ros-Distro: humble
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure Docker Buildx
+      uses: docker/setup-buildx-action@v3 
+
     - name: Build and push robast-dev-core
       uses: docker/build-push-action@v6
       with:
@@ -56,6 +77,28 @@ jobs:
           ghcr.io/robast-gmbh/monorepo/robast-dev-core:${{ env.Ros-Distro }}
         cache-from: type=gha
         cache-to: type=gha
+
+  build-source:
+    runs-on: ubuntu-latest
+    env:
+      Ros-Distro: humble
+    needs: build-dev-base
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure Docker Buildx
+      uses: docker/setup-buildx-action@v3 
 
     - name: Build and push robast-source
       uses: docker/build-push-action@v6
