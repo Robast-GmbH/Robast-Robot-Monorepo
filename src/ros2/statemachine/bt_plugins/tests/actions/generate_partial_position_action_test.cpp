@@ -64,12 +64,11 @@ namespace test
           {
             THEN("The tree should hold all added plugins, in this case GeneratePartialPosition")
             {
-              bool found = std::any_of(bt.subtrees[0]->nodes.begin(),
-                                       bt.subtrees[0]->nodes.end(),
-                                       [&nodename](const auto& node)
-                                       {
-                                         return node->registrationName() == nodename;
-                                       });
+              bool found = std::ranges::any_of(bt.subtrees[0]->nodes,
+                                               [&nodename](const auto& node)
+                                               {
+                                                 return node->registrationName() == nodename;
+                                               });
 
               REQUIRE(found);   // Ensure the plugin node is found
             }
