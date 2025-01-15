@@ -1,5 +1,5 @@
 ARG ROS_BUILD_DISTRO=humble
-FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} as devel
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS devel
 ARG ROS_BUILD_DISTRO
 
 RUN apt-get update && apt-get install -y \
@@ -14,9 +14,10 @@ RUN apt-get update && apt-get install -y \
 
 
 ############################## Build ##################################
-FROM ghcr.io/robast-gmbh/monorepo/robast-source:${ROS_BUILD_DISTRO} as build
+FROM ghcr.io/robast-gmbh/monorepo/robast-source:${ROS_BUILD_DISTRO} AS build
 ARG ROS_BUILD_DISTRO
 COPY . /ws/src/hardware_nodes
+USER root
 RUN apt-get update && apt-get install -y git
 
 
@@ -31,21 +32,23 @@ RUN rosdep update && \
 
 WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast \
-  && mv /monorepo/src/ros2/utils/qos_bridge /ws/src/ros2/qos_bridge \
+  && mv /monorepo/src/ros2/qos_bridge /ws/src/ros2/qos_bridge \
   && mv /monorepo/src/Hardware/cpp/libs ws/
-# TODO@TipluJacob: Brauchen wir die libs hier wirklich? Der Pfad kommt mir komisch vor
 
 # TODO@Tobi: Running colcon build with -DBUILD_TESTING=OFF should be removed once build artifacts are used for tests with volume mounts
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
+  . /robast/${ROS_BUILD_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 ############################## Release ##################################
-FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} as release
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS release
 ARG ROS_BUILD_DISTRO
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
+
+USER root
 
 RUN apt-get update && apt-get upgrade -y && \
   apt-get install -y \
@@ -55,8 +58,7 @@ RUN apt-get update && apt-get upgrade -y && \
 
 ENV ROS_DOMAIN_ID=0
 
-RUN apt-get update \
-  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
+RUN echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
 
 USER robast
 WORKDIR /robast
