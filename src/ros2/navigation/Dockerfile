@@ -1,6 +1,6 @@
 
 ARG ROS_BUILD_DISTRO=humble
-FROM ros:${ROS_BUILD_DISTRO}-perception as devel
+FROM ros:${ROS_BUILD_DISTRO}-perception AS devel
 
 ARG ROS_BUILD_DISTRO
 ARG DEBIAN_FRONTEND=noninteractive
@@ -82,10 +82,11 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 WORKDIR /workspace
 
 ############################## Build ##################################
-FROM ghcr.io/robast-gmbh/monorepo/robast-source:${ROS_BUILD_DISTRO} as build
+FROM ghcr.io/robast-gmbh/monorepo/robast-source:${ROS_BUILD_DISTRO} AS build
 ARG ROS_BUILD_DISTRO
 COPY --from=devel / /
 COPY . /ws/src/navigation
+USER root
 
 WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/; mkdir /robast; \
@@ -99,7 +100,7 @@ RUN rosdep update && \
   colcon build --install-base /robast/${ROS_DISTRO}/ --packages-skip robast_map_update_module robast_nav_recoveries
 
 ############################## Release ##################################
-FROM ros:${ROS_BUILD_DISTRO}-perception as release
+FROM ros:${ROS_BUILD_DISTRO}-perception AS release
 ARG ROS_BUILD_DISTRO
 RUN apt-get update && apt-get install -y \
   cmake \

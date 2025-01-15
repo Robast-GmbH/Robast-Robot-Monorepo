@@ -1,6 +1,8 @@
 ARG ROS_BUILD_DISTRO=humble
 FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} as base
 ARG GAZEBO_VERSION=fortress
+USER root
+
 
 RUN apt-get update && apt-get install -y \
     gnupg2 \
@@ -46,3 +48,5 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
+
+USER robast

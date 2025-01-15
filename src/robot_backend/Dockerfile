@@ -5,6 +5,7 @@ ARG ROS_BUILD_DISTRO
 ENV PATH=/opt/ros/${ROS_BUILD_DISTRO}/bin:$PATH
 ENV ROS_DOMAIN_ID=23
 ENV ROS_DISTRO=${ROS_BUILD_DISTRO}
+USER root
 
 
 RUN apt-get update && apt-get install -y \

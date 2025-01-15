@@ -33,7 +33,6 @@ WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast \
   && mv /monorepo/src/ros2/utils/qos_bridge /ws/src/ros2/qos_bridge \
   && mv /monorepo/src/Hardware/cpp/libs ws/
-# TODO@TipluJacob: Brauchen wir die libs hier wirklich? Der Pfad kommt mir komisch vor
 
 # TODO@Tobi: Running colcon build with -DBUILD_TESTING=OFF should be removed once build artifacts are used for tests with volume mounts
 RUN rosdep update && \
@@ -47,6 +46,8 @@ ARG ROS_BUILD_DISTRO
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
 
+USER root
+
 RUN apt-get update && apt-get upgrade -y && \
   apt-get install -y \
   libboost-all-dev \
@@ -55,8 +56,7 @@ RUN apt-get update && apt-get upgrade -y && \
 
 ENV ROS_DOMAIN_ID=0
 
-RUN apt-get update \
-  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
+RUN echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
 
 USER robast
 WORKDIR /robast

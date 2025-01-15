@@ -2,6 +2,8 @@ ARG ROS_BUILD_DISTRO=humble
 FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS devel
 ARG ROS_BUILD_DISTRO
 
+USER root
+
 RUN apt-get update && apt-get upgrade -y &&\
     apt-get install -y \
     libzmq3-dev \
@@ -15,13 +17,16 @@ RUN apt-get update && apt-get upgrade -y &&\
 
 WORKDIR /workspace
 
-RUN apt-get update \
-  && echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
+USER robast
+
+RUN echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
   && echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 ############################## Build ##################################
 FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS build
 ARG ROS_BUILD_DISTRO
+
+USER root
 
 WORKDIR /tmp
 RUN git clone -b 4.5.x https://github.com/BehaviorTree/BehaviorTree.CPP.git
@@ -37,9 +42,13 @@ RUN mkdir -p /robast/src/BT && \
   . /robast/${ROS_BUILD_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
+USER robast
+
 ############################## Release ##################################
 FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS release
 ARG ROS_BUILD_DISTRO
+
+USER root
 
 COPY --from=statemachine-build /opt/ros /opt/ros
 COPY --from=statemachine-build /robast /robast
@@ -48,6 +57,7 @@ RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y \
     libzmq3-dev
 
-RUN apt-get update \
-  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc \
+RUN echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc \
   && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
+
+USER robast
