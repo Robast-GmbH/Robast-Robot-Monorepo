@@ -8,7 +8,7 @@ on:
     paths:
       - src/Dockerfile
       - src/Hardware/**
-      - src/robot_bachend/**
+      - src/robot_backend/**
       - src/ros2/communication_interfaces/**
       - src/ros2/error_handling/**
   workflow_dispatch:
