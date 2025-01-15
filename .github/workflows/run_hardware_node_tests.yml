@@ -65,17 +65,5 @@ jobs:
               colcon test-result --all &&
               lcov --directory . --capture --output-file coverage-${{env.Project}}.info &&
               lcov --remove coverage-${{env.Project}}.info '/usr/*' --output-file coverage-${{env.Project}}.info &&
-              lcov --list coverage-${{env.Project}}.info &&
-              cp /workspace/coverage-${{env.Project}}.info /workspace/src/${{ env.Project }}/coverage-${{env.Project}}.info"
+              lcov --list coverage-${{env.Project}}.info"
       
-    - name: Wait for coverage report file
-      run: |
-          sleep 5
-          ls src/ros2/${{ env.Project }}/coverage-${{env.Project}}.info
-
-
-    - name: Upload coverage report to Codecov
-      uses: codecov/codecov-action@v5
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        files: src/ros2/${{ env.Project }}/coverage-${{env.Project}}.info
