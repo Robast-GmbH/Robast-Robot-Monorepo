@@ -1,22 +1,17 @@
-ARG ROS_VERSION=humble
-FROM ros:${ROS_VERSION} as base
+ARG ROS_BUILD_DISTRO=humble
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS base
 ARG GAZEBO_VERSION=fortress
-
-RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
-    echo robast:robast | chpasswd && \
-    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER robast
-
-RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
+USER root
 
 RUN apt-get update && apt-get install -y \
-    curl \
     gnupg2 \
     lsb-release \
     wget \	 
-    gnupg \	  
-    git \
+    gnupg \
+    pylint \ 
     python3-argcomplete \
+    python3-vcstool \
+    libboost-all-dev \	  
     && rm -rf /var/lib/apt/lists/*
 
 # Install Gazebo ignition 
@@ -27,20 +22,6 @@ RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pk
     && apt-get update \
     && apt-get install -y gz-${GZ_VERSION} \
     && apt-get update
-
-RUN apt-get update && apt-get install -y \
-    cmake \
-    gdb \
-    pylint \ 
-    python3-argcomplete \
-    python3-colcon-common-extensions \
-    python3-pip \
-    python3-rosdep \
-    python3-vcstool \
-    libboost-all-dev \
-    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
-    && rm -rf /var/lib/apt/lists/* \
-    && rosdep init || echo "rosdep already initialized"
     
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,compute,utility
@@ -66,3 +47,5 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
+
+USER robast
