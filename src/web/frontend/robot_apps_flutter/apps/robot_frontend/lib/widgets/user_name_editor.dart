@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/custom_focus_node.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/buttons/custom_dropdown_button.dart';
 import 'package:robot_frontend/widgets/custom_textfield.dart';
@@ -20,14 +21,14 @@ class UserNameEditor extends StatefulWidget {
 }
 
 class _UserNameEditorState extends State<UserNameEditor> {
-  late final TextController firstNameController;
-  late final TextController lastNameController;
+  late final CustomFocusNode firstNameController;
+  late final CustomFocusNode lastNameController;
 
   @override
   void initState() {
     super.initState();
-    firstNameController = TextController(text: widget.controller.firstName);
-    lastNameController = TextController(text: widget.controller.lastName);
+    firstNameController = CustomFocusNode(key: GlobalKey(), text: widget.controller.firstName);
+    lastNameController = CustomFocusNode(key: GlobalKey(), text: widget.controller.lastName);
   }
 
   @override
@@ -58,7 +59,7 @@ class _UserNameEditorState extends State<UserNameEditor> {
             Expanded(
               flex: 3,
               child: CustomTextfield(
-                textController: firstNameController,
+                focusNode: firstNameController,
                 onChanged: (firstName) => widget.controller.firstName = firstName,
               ),
             ),
@@ -68,7 +69,7 @@ class _UserNameEditorState extends State<UserNameEditor> {
             Expanded(
               flex: 3,
               child: CustomTextfield(
-                textController: lastNameController,
+                focusNode: lastNameController,
                 onChanged: (lastName) => widget.controller.lastName = lastName,
               ),
             ),

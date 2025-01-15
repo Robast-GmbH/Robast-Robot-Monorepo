@@ -1,26 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/models/custom_focus_node.dart';
 
 class KeyboardProvider extends ChangeNotifier {
-  String? text;
-  VoidCallback? setTextState;
-  GlobalKey? _key;
-  GlobalKey? get key => _key;
-  set key(GlobalKey? value) {
-    if (value == _key) return;
+  CustomFocusNode? _focusNode;
+  CustomFocusNode? get focusNode => _focusNode;
+  set focusNode(CustomFocusNode? focusNode) {
+    if (focusNode?.key == _focusNode?.key) return;
     print('setKey');
-    _key = value;
-
+    _focusNode = focusNode;
     notifyListeners();
   }
 
-  void setKeyWithoutNotify(GlobalKey? value) {
-    _key = value;
+  void focusSilently(CustomFocusNode? focusNode) {
+    _focusNode = focusNode;
   }
 
   void unfocus() {
-    text = null;
-    setTextState = null;
-    _key = null;
+    _focusNode = null;
     notifyListeners();
+  }
+
+  void focusNext() {
+    if (_focusNode?.next != null) {
+      _focusNode = _focusNode?.next;
+      notifyListeners();
+    } else if (focusNode != null) {
+      _focusNode?.onSubmit?.call();
+      _focusNode = null;
+
+      notifyListeners();
+    }
   }
 }

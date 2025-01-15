@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/custom_focus_node.dart';
+import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 import 'package:robot_frontend/widgets/custom_textfield.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
 import 'package:shared_data_models/shared_data_models.dart';
+import 'package:virtual_keyboard_custom_layout/virtual_keyboard_custom_layout.dart';
 
 class ModuleContentCreationView extends StatefulWidget {
   const ModuleContentCreationView({
@@ -19,13 +23,40 @@ class ModuleContentCreationView extends StatefulWidget {
 }
 
 class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
-  final textController = TextController();
-  final amountController = TextController();
+  final textFocusNode = CustomFocusNode(key: GlobalKey(), text: '');
+  late final CustomFocusNode amountFocusNode;
   final scrollController = ScrollController();
   bool createdAnItem = false;
 
+  void createItem() {
+    final amount = int.tryParse(amountFocusNode.text);
+    if (textFocusNode.text.trimRight().trimLeft().isEmpty || amountFocusNode.text.isEmpty || amount == null) {
+      return;
+    }
+    setState(() {
+      createdAnItem = true;
+      widget.moduleContentController.createdItemsByCount[textFocusNode.text] = amount;
+      textFocusNode.text = '';
+      amountFocusNode.text = '';
+    });
+    scrollController.jumpTo(scrollController.position.maxScrollExtent);
+    Provider.of<KeyboardProvider>(context, listen: false).focusNode = textFocusNode;
+  }
+
+  @override
+  void initState() {
+    amountFocusNode = CustomFocusNode(
+      key: GlobalKey(),
+      text: '',
+      layout: VirtualKeyboardDefaultLayouts.Numeric,
+      onSubmit: createItem,
+    );
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    textFocusNode.next = amountFocusNode;
     final controller = widget.moduleContentController;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,15 +101,15 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
       padding: const EdgeInsets.only(bottom: 96, top: 8),
       child: InkWell(
         onTap: () {
-          final amount = int.tryParse(amountController.text);
-          if (textController.text.trimRight().trimLeft().isEmpty || amountController.text.isEmpty || amount == null) {
+          final amount = int.tryParse(amountFocusNode.text);
+          if (textFocusNode.text.trimRight().trimLeft().isEmpty || amountFocusNode.text.isEmpty || amount == null) {
             return;
           }
           setState(() {
             createdAnItem = true;
-            widget.moduleContentController.createdItemsByCount[textController.text] = amount;
-            textController.clear();
-            amountController.clear();
+            widget.moduleContentController.createdItemsByCount[textFocusNode.text] = amount;
+            textFocusNode.text = '';
+            amountFocusNode.text = '';
           });
           scrollController.jumpTo(scrollController.position.maxScrollExtent);
         },
@@ -169,7 +200,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
             Expanded(
               flex: 8,
               child: CustomTextfield(
-                textController: textController,
+                focusNode: textFocusNode,
                 enabledAutofocus: createdAnItem,
               ),
             ),
@@ -178,7 +209,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
             ),
             Expanded(
               child: CustomTextfield(
-                textController: amountController,
+                focusNode: amountFocusNode,
               ),
             ),
           ],

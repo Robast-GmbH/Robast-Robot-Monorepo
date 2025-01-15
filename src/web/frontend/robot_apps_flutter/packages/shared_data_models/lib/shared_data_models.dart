@@ -6,7 +6,6 @@ export 'src/controller/location_selection_controller.dart';
 export 'src/controller/map_controller.dart';
 export 'src/controller/module_content_controller.dart';
 export 'src/controller/submodule_size_controller.dart';
-export 'src/controller/text_controller.dart';
 export 'src/controller/user_groups_selection_controller.dart';
 export 'src/controller/user_name_controller.dart';
 export 'src/controller/user_selection_controller.dart';

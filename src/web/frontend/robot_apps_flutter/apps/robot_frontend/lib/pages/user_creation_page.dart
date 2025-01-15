@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/custom_focus_node.dart';
 import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
@@ -12,11 +13,12 @@ import 'package:shared_data_models/shared_data_models.dart';
 class UserCreationPage extends StatelessWidget {
   UserCreationPage({super.key});
 
-  final TextController firstNameController = TextController();
-  final TextController lastNameController = TextController();
+  final firstNameController = CustomFocusNode(key: GlobalKey(), text: '');
+  final lastNameController = CustomFocusNode(key: GlobalKey(), text: '');
 
   @override
   Widget build(BuildContext context) {
+    firstNameController.next = lastNameController;
     return CustomScaffold(
       title: 'User erstellen',
       child: Padding(
@@ -40,7 +42,7 @@ class UserCreationPage extends StatelessWidget {
                           ),
                           Expanded(
                               child: CustomTextfield(
-                            textController: firstNameController,
+                            focusNode: firstNameController,
                           )),
                         ],
                       ),
@@ -65,7 +67,7 @@ class UserCreationPage extends StatelessWidget {
                           ),
                           Expanded(
                               child: CustomTextfield(
-                            textController: lastNameController,
+                            focusNode: lastNameController,
                           )),
                         ],
                       ),
@@ -108,7 +110,7 @@ class UserCreationPage extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: Provider.of<KeyboardProvider>(context).key != null ? 400 : 16,
+              height: Provider.of<KeyboardProvider>(context).focusNode != null ? 400 : 16,
             ),
           ],
         ),

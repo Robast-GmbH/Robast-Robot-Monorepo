@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/models/custom_focus_node.dart';
 import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/manuals_page.dart';
@@ -99,14 +100,14 @@ class CustomScaffold extends StatelessWidget {
               );
             }
             if (isEmergencyStopPressed ?? false) {
-              Provider.of<KeyboardProvider>(context, listen: false).key = null;
+              Provider.of<KeyboardProvider>(context, listen: false).unfocus();
               Navigator.of(context).popUntil((route) => route is PageRoute);
               return const EmergencyStopView();
             }
             return Stack(
               children: [
                 GestureDetector(
-                  onTap: () => Provider.of<KeyboardProvider>(context, listen: false).key = null,
+                  onTap: () => Provider.of<KeyboardProvider>(context, listen: false).unfocus(),
                   child: Container(
                     width: double.infinity,
                     height: double.infinity,
@@ -120,10 +121,10 @@ class CustomScaffold extends StatelessWidget {
                     ),
                   ),
                 ),
-                Selector<KeyboardProvider, GlobalKey?>(
-                    selector: (context, provider) => provider.key,
-                    builder: (context, key, child) {
-                      if (key == null) {
+                Selector<KeyboardProvider, CustomFocusNode?>(
+                    selector: (context, provider) => provider.focusNode,
+                    builder: (context, focusNode, child) {
+                      if (focusNode == null) {
                         return const SizedBox();
                       }
                       bool shiftPressed = false;
@@ -134,22 +135,35 @@ class CustomScaffold extends StatelessWidget {
                           child: VirtualKeyboard(
                             fontSize: 32,
                             height: 400,
+                            borderColor: Colors.grey,
                             defaultLayouts: const [VirtualKeyboardDefaultLayouts.German],
-                            textController: TextEditingController(text: Provider.of<KeyboardProvider>(context, listen: false).text),
+                            keys: focusNode.layout == VirtualKeyboardDefaultLayouts.Numeric
+                                ? [
+                                    ['1', '2', '3'],
+                                    ['4', '5', '6'],
+                                    ['7', '8', '9'],
+                                    ['BACKSPACE', '0', 'RETURN']
+                                  ]
+                                : null,
+                            textController: TextEditingController(text: focusNode.text),
                             onKeyPress: (key) {
-                              final provider = Provider.of<KeyboardProvider>(context, listen: false);
                               if (key.keyType == VirtualKeyboardKeyType.Action) {
                                 switch (key.action) {
                                   case VirtualKeyboardKeyAction.Backspace:
-                                    if (provider.text!.isNotEmpty) {
-                                      provider.text = provider.text!.substring(0, provider.text!.length - 1);
+                                    if (focusNode.text.isNotEmpty) {
+                                      focusNode.text = focusNode.text.substring(0, focusNode.text.length - 1);
                                     }
                                     break;
                                   case VirtualKeyboardKeyAction.Return:
-                                    provider.unfocus();
+                                    if (focusNode.onSubmit != null) {
+                                      focusNode.onSubmit?.call();
+                                    } else {
+                                      Provider.of<KeyboardProvider>(context, listen: false).focusNext();
+                                    }
+
                                     return;
                                   case VirtualKeyboardKeyAction.Space:
-                                    provider.text = '${provider.text!} ';
+                                    focusNode.text = '${focusNode.text} ';
                                     break;
                                   case VirtualKeyboardKeyAction.Shift:
                                     shiftPressed = !shiftPressed;
@@ -158,9 +172,9 @@ class CustomScaffold extends StatelessWidget {
                                     break;
                                 }
                               } else {
-                                provider.text = provider.text! + (shiftPressed ? key.capsText! : key.text!);
+                                focusNode.text = focusNode.text + (shiftPressed ? key.capsText! : key.text!);
                               }
-                              provider.setTextState!();
+                              focusNode.setTextState?.call();
                             },
                           ),
                         ),

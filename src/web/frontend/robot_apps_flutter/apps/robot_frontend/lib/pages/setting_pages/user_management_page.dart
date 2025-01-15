@@ -53,7 +53,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                     ),
                   ),
                   SizedBox(
-                    height: Provider.of<KeyboardProvider>(context).key != null ? 332 : 16,
+                    height: Provider.of<KeyboardProvider>(context).focusNode != null ? 332 : 16,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
