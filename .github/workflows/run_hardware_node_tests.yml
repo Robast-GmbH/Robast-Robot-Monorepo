@@ -59,6 +59,8 @@ jobs:
               sudo apt install lcov -y &&
               sudo rosdep update; sudo rosdep install --from-paths src --ignore-src -r -y && 
               export CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_github_config.xml &&
+              . /opt/ros/humble/setup.sh &&
+              . /robast/humble/setup.sh &&
               colcon build --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=\"${CMAKE_CXX_FLAGS} --coverage\" -DCMAKE_C_FLAGS=\"${CMAKE_C_FLAGS} --coverage\" -Wall -Wextra -Wpedantic && 
               colcon test --event-handler=console_direct+ &&
               colcon test-result --all &&
