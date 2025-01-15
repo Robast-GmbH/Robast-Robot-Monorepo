@@ -54,6 +54,7 @@ jobs:
               -v /home:/home
               --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}:devel
               /bin/sh -c "cd /workspace/ &&
+              sudo chmod -R 755 /home/robast &&
               sudo apt-get update && 
               sudo apt-get upgrade -y &&
               sudo apt install lcov -y &&
