@@ -18,7 +18,7 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV ROS_DOMAIN_ID=23
 ENV ROS_DISTRO=${ROS_BUILD_DISTRO}
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
   cmake \
   gdb \
   git \
@@ -70,7 +70,7 @@ ENV ROS_DISTRO=${ROS_BUILD_DISTRO}
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
     apt-get upgrade -yq && \
-    apt-get install -yq \
+    apt-get install -yq --no-install-recommends \
     bash-completion \
     build-essential \
     cmake \
