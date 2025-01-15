@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
 FROM ghcr.io/robast-gmbh/monorepo/robast-source:${ROS_BUILD_DISTRO} as build
 ARG ROS_BUILD_DISTRO
 COPY . /ws/src/hardware_nodes
+USER root
 RUN apt-get update && apt-get install -y git
 
 
