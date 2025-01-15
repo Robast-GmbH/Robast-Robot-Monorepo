@@ -126,42 +126,39 @@ class CustomScaffold extends StatelessWidget {
                       if (key == null) {
                         return const SizedBox();
                       }
+                      bool shiftPressed = false;
                       return Align(
                         alignment: Alignment.bottomCenter,
                         child: ColoredBox(
                           color: Colors.white,
                           child: VirtualKeyboard(
-                            type: VirtualKeyboardType.Alphanumeric,
                             fontSize: 32,
                             height: 400,
-                            defaultLayouts: const [VirtualKeyboardDefaultLayouts.English],
+                            defaultLayouts: const [VirtualKeyboardDefaultLayouts.German],
                             textController: TextEditingController(text: Provider.of<KeyboardProvider>(context, listen: false).text),
                             onKeyPress: (key) {
-                              print('key:');
                               final provider = Provider.of<KeyboardProvider>(context, listen: false);
                               if (key.keyType == VirtualKeyboardKeyType.Action) {
                                 switch (key.action) {
                                   case VirtualKeyboardKeyAction.Backspace:
-                                    print('backspace and ${provider.text}');
                                     if (provider.text!.isNotEmpty) {
                                       provider.text = provider.text!.substring(0, provider.text!.length - 1);
                                     }
                                     break;
                                   case VirtualKeyboardKeyAction.Return:
-                                    provider.text = '${provider.text!}\n';
-                                    break;
+                                    provider.unfocus();
+                                    return;
                                   case VirtualKeyboardKeyAction.Space:
                                     provider.text = '${provider.text!} ';
                                     break;
                                   case VirtualKeyboardKeyAction.Shift:
+                                    shiftPressed = !shiftPressed;
                                     break;
                                   default:
-                                    print('pressed unsupported action');
                                     break;
                                 }
-                              } else if (key is VirtualKeyboardKey) {
-                                print(key.text);
-                                provider.text = provider.text! + key.text!;
+                              } else {
+                                provider.text = provider.text! + (shiftPressed ? key.capsText! : key.text!);
                               }
                               provider.setTextState!();
                             },
