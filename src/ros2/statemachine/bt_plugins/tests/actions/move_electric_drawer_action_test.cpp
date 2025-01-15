@@ -81,22 +81,25 @@ namespace test2
 
           AND_THEN("the MoveElectricDrawer node should publish the correct message")
           {
+            bool callback_triggered = false;
             auto subscription = node_electric_drawer->create_subscription<communication_interfaces::msg::DrawerTask>(
                 "move_electric_drawer",
                 10,
-                [](const communication_interfaces::msg::DrawerTask::SharedPtr msg)
+                [&callback_triggered](const communication_interfaces::msg::DrawerTask::SharedPtr msg)
                 {
                   REQUIRE(msg->speed == 200);
                   REQUIRE(msg->target_position == 200);
                   REQUIRE(msg->stall_guard_value == 0);
                   REQUIRE(msg->drawer_address.module_id == 1);
                   REQUIRE(msg->drawer_address.drawer_id == 1);
+                  callback_triggered = true;
                 });
 
             bt.tickOnce();                             // onStart
             auto result = bt.tickOnce();               // onRunning
             rclcpp::spin_some(node_electric_drawer);   // Process subscription callback
             REQUIRE(result == BT::NodeStatus::SUCCESS);
+            REQUIRE(callback_triggered);
           }
         }
       }
