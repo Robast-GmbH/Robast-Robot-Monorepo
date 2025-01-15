@@ -1,5 +1,5 @@
 ARG ROS_BUILD_DISTRO=humble
-FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} as devel
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS devel
 ARG ROS_BUILD_DISTRO
 
 RUN apt-get update && apt-get install -y \
@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
 
 
 ############################## Build ##################################
-FROM ghcr.io/robast-gmbh/monorepo/robast-source:${ROS_BUILD_DISTRO} as build
+FROM ghcr.io/robast-gmbh/monorepo/robast-source:${ROS_BUILD_DISTRO} AS build
 ARG ROS_BUILD_DISTRO
 COPY . /ws/src/hardware_nodes
 USER root
@@ -43,7 +43,7 @@ RUN rosdep update && \
   colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 ############################## Release ##################################
-FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} as release
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS release
 ARG ROS_BUILD_DISTRO
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast

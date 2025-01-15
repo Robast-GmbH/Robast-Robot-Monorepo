@@ -50,8 +50,8 @@ ARG ROS_BUILD_DISTRO
 
 USER root
 
-COPY --from=statemachine-build /opt/ros /opt/ros
-COPY --from=statemachine-build /robast /robast
+COPY --from=build /opt/ros /opt/ros
+COPY --from=build /robast /robast
 
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y \
