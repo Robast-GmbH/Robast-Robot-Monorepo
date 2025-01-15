@@ -37,7 +37,7 @@ RUN mkdir -p /robast/src/BT && \
   mv /tmp/BehaviorTree.CPP /robast/src/BT && \
   apt-get update && \
   rosdep update && \
-  rosdep install --from-paths /ws/src/ros2 --ignore-src -r -y \
+  rosdep install --from-paths /ws/src/ --ignore-src -r -y \
   . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
   . /robast/${ROS_BUILD_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
