@@ -3,7 +3,6 @@ FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} as base
 ARG GAZEBO_VERSION=fortress
 USER root
 
-
 RUN apt-get update && apt-get install -y \
     gnupg2 \
     lsb-release \
