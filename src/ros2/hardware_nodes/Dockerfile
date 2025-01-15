@@ -32,7 +32,7 @@ RUN rosdep update && \
 
 WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast \
-  && mv /monorepo/src/ros2/utils/qos_bridge /ws/src/ros2/qos_bridge \
+  && mv /monorepo/src/ros2/qos_bridge /ws/src/ros2/qos_bridge \
   && mv /monorepo/src/Hardware/cpp/libs ws/
 
 # TODO@Tobi: Running colcon build with -DBUILD_TESTING=OFF should be removed once build artifacts are used for tests with volume mounts
