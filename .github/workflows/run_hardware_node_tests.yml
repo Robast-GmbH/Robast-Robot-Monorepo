@@ -57,7 +57,7 @@ jobs:
               sudo apt-get update && 
               sudo apt-get upgrade -y &&
               sudo apt install lcov -y &&
-              rosdep update; rosdep install --from-paths src --ignore-src -r -y && 
+              sudo rosdep update; sudo rosdep install --from-paths src --ignore-src -r -y && 
               export CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_github_config.xml &&
               colcon build --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=\"${CMAKE_CXX_FLAGS} --coverage\" -DCMAKE_C_FLAGS=\"${CMAKE_C_FLAGS} --coverage\" -Wall -Wextra -Wpedantic && 
               colcon test --event-handler=console_direct+ &&
@@ -77,4 +77,4 @@ jobs:
       uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: /home/coverage-${{env.Project}}.info
+        files: /home/coverage-${{env.Project}}.info
