@@ -1,4 +1,4 @@
-name: Create Docker Image building_docker
+name: Create Robast base images
 
 # Trigger workflow on push to main branch and on workflow dispatch
 on:
