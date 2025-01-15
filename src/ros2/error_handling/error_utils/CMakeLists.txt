@@ -81,7 +81,21 @@ set_target_properties(error_definitions_pybind PROPERTIES PREFIX "" SUFFIX ".so"
 
 # Install Pybind11 module
 install(TARGETS error_definitions_pybind
-  LIBRARY DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
 )
 
+# Copy install_py_module.sh to the install directory
+install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/install_py_module.sh
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
 
+# Ensure the script is copied before executing it
+add_custom_command(TARGET error_definitions_pybind POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/bin
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/install_py_module.sh ${CMAKE_INSTALL_PREFIX}/bin/
+)
+
+# # Execute the install_py_module.sh script after installation
+# add_custom_command(TARGET error_definitions_pybind POST_BUILD
+#   COMMAND ${CMAKE_COMMAND} -E env bash ${CMAKE_INSTALL_PREFIX}/bin/install_py_module.sh
+# )
