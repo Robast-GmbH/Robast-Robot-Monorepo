@@ -39,6 +39,7 @@ RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast \
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
+  . /robast/${ROS_BUILD_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 ############################## Release ##################################
