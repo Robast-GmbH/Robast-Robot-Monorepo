@@ -82,7 +82,7 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 WORKDIR /workspace
 
 ############################## Build ##################################
-FROM ghcr.io/robast-gmbh/monorepo/building-docker:${ROS_BUILD_DISTRO} as build
+FROM ghcr.io/robast-gmbh/monorepo/robast-source:${ROS_BUILD_DISTRO} as build
 ARG ROS_BUILD_DISTRO
 COPY --from=devel / /
 COPY . /ws/src/navigation
@@ -117,6 +117,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
+
 COPY --from=build /ws/src/navigation/nav_bringup/config_simulation/nav_params/diff__tr0_4__res0_05.json /workspace/src/navigation/nav_bringup/config_simulation/nav_params/diff__tr0_4__res0_05.json
 COPY --from=build /ws/src/navigation/nav_bringup/behavior_trees/humble/ /workspace/src/navigation/nav_bringup/behavior_trees/humble/
 
@@ -162,8 +163,8 @@ USER ubuntu
 ENV is_simulation=False
 ENV config_directory=config
 ENV robot_name=rb_theron
-ENV init_x=1.46
-ENV init_y=-2.89
+ENV init_x=0.0
+ENV init_y=0.0
 ENV init_z=0.0
-ENV init_yaw=1.57
+ENV init_yaw=0.0
 ENV prefix=''
