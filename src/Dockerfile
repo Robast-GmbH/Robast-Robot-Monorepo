@@ -122,7 +122,6 @@ WORKDIR /workspace
 ARG ROS_BUILD_DISTRO=humble
 FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS robast-source
 
-COPY web/ /monorepo/src/web/
 COPY Hardware/ /monorepo/src/Hardware/
 COPY robot_backend/ /monorepo/src/robot_backend/
 COPY ros2/utils/qos_bridge /monorepo/src/ros2/qos_bridge/

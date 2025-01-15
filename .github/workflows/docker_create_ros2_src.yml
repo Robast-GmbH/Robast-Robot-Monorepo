@@ -6,7 +6,11 @@ on:
     branches:
       - main
     paths:
-      - src/ros2/**
+      - src/Dockerfile
+      - src/Hardware/**
+      - src/robot_bachend/**
+      - src/ros2/communication_interfaces/**
+      - src/ros2/error_handling/**
   workflow_dispatch:
 
 jobs:
