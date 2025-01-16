@@ -31,7 +31,7 @@ rclcpp_action::CancelResponse SoundPlayerNode::handle_cancel(const std::shared_p
 void SoundPlayerNode::handle_accepted(const std::shared_ptr<GoalHandlePlaySound> goal_handle)
 {
   using namespace std::placeholders;
-  std::thread{std::bind(&SoundPlayerNode::execute, this, _1), goal_handle}.detach();
+  std::jthread{std::bind(&SoundPlayerNode::execute, this, std::placeholders::_1), goal_handle}.detach();
 }
 
 void SoundPlayerNode::execute(const std::shared_ptr<GoalHandlePlaySound> goal_handle)
