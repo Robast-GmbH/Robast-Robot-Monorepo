@@ -43,6 +43,7 @@
 #include "drawer_bridge/drawer_defines.h"
 #include "drawer_bridge/qos_config.hpp"
 #include "error_utils/error_definitions.hpp"
+#include "error_utils/generic_error_converter.hpp"
 #include "module_config/module_config_defines.hpp"
 #include "std_msgs/msg/bool.hpp"
 
