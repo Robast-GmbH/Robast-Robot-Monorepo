@@ -29,7 +29,8 @@ namespace drawer
         _drawer_lock{drawer_lock},
         _encoder_monitor{std::make_unique<motor::EncoderMonitor>(_encoder, encoder_config)},
         _config{e_drawer_config},
-        _motor_monitor{std::make_unique<motor::MotorMonitor>(_encoder, encoder_config, _motor, motor_monitor_config)}
+        _motor_monitor{std::make_unique<motor::MotorMonitor>(_encoder, encoder_config, _motor, motor_monitor_config)},
+        _speed_controller{std::make_unique<SpeedController>(_encoder, _motor, _config, _endstop_switch)}
   {
     init();
   }
@@ -84,7 +85,7 @@ namespace drawer
 
   bool ElectricalDrawer::is_drawer_moving_in() const
   {
-    return !_is_drawer_moving_out && !_is_idling;
+    return !_speed_controller->is_drawer_moving_out() && !_is_idling;
   }
 
   uint8_t ElectricalDrawer::get_current_position() const
@@ -92,22 +93,14 @@ namespace drawer
     return _encoder->get_normed_current_position();
   }
 
-  uint8_t ElectricalDrawer::get_target_position() const
-  {
-    return _target_position_uint8;
-  }
-
   uint8_t ElectricalDrawer::get_target_speed() const
   {
     return get_normed_target_speed_uint8(_motor->get_target_speed());
   }
 
-  void ElectricalDrawer::set_target_speed_with_decelerating_ramp(uint8_t target_speed)
+  void ElectricalDrawer::set_target_speed_with_decelerating_ramp(const uint8_t target_speed)
   {
-    _motor->set_target_speed_with_decelerating_ramp(
-      get_normed_target_speed_uint32(target_speed),
-      _encoder->convert_uint8_position_to_drawer_position_scale(_config->get_drawer_moving_in_deceleration_distance()),
-      _encoder->get_current_position());
+    _speed_controller->set_target_speed_with_decelerating_ramp(target_speed);
   }
 
   void ElectricalDrawer::handle_drawer_idle_state()
@@ -204,7 +197,7 @@ namespace drawer
 
       if (e_drawer_task.value().is_homing)
       {
-        start_homing_movement(e_drawer_task.value().target_speed);
+        _speed_controller->start_homing_movement(e_drawer_task.value().target_speed);
       }
       else
       {
@@ -245,15 +238,14 @@ namespace drawer
       _encoder->get_normed_current_position(),
       PUSH_TO_CLOSE_NOT_TRIGGERED);
 
-    _is_drawer_moving_out = _target_position_uint8 > _encoder->get_normed_current_position();
+    _speed_controller->set_is_drawer_moving_out(_target_position_uint8 > _encoder->get_normed_current_position());
 
     set_target_speed_and_direction(target_speed, use_acceleration_ramp);
   }
 
-  void ElectricalDrawer::start_homing_movement(const uint8_t target_speed)
+  void ElectricalDrawer::set_target_speed_and_direction(const uint8_t target_speed, const bool use_acceleration_ramp)
   {
-    _motor->set_direction(stepper_motor::Direction::clockwise);
-    _motor->set_target_speed_instantly(get_normed_target_speed_uint32(target_speed));
+    _speed_controller->set_target_speed_and_direction(target_speed, use_acceleration_ramp);
   }
 
   void ElectricalDrawer::handle_drawer_active_state()
@@ -264,8 +256,11 @@ namespace drawer
       return;
     }
 
-    handle_initial_drawer_homing();
-    if (!_drawer_was_homed_once || !_is_drawer_opening_in_progress)
+    if (_speed_controller->handle_initial_drawer_homing())
+    {
+      _is_idling = true;
+    }
+    if (!_speed_controller->was_drawer_homed_once() || !_is_drawer_opening_in_progress)
     {
       return;
     }
@@ -274,19 +269,7 @@ namespace drawer
 
     _encoder->update_position(_motor->get_active_speed());
 
-    _is_drawer_moving_out ? handle_drawer_moving_out() : handle_drawer_moving_in();
-  }
-
-  void ElectricalDrawer::handle_initial_drawer_homing()
-  {
-    if (!_drawer_was_homed_once && _endstop_switch->is_switch_pressed())
-    {
-      _motor->set_target_speed_instantly(TARGET_SPEED_ZERO);
-      _encoder->set_current_position(STALL_GUARD_DISABLED);
-      _drawer_was_homed_once = true;
-      _is_idling = true;
-      debug_printf_green("[ElectricalDrawer]: Drawer was homed successfully!\n");
-    }
+    _speed_controller->is_drawer_moving_out() ? handle_drawer_moving_out() : handle_drawer_moving_in();
   }
 
   void ElectricalDrawer::handle_drawer_lock_control()
@@ -392,7 +375,7 @@ namespace drawer
   void ElectricalDrawer::add_e_drawer_task_to_queue(const utils::EDrawerTask &e_drawer_task)
   {
     // Before we add a new task to the queue, we need to check if the drawer was homed once
-    if (!_drawer_was_homed_once)
+    if (!_speed_controller->was_drawer_homed_once())
     {
       debug_printf_warning("[ElectricalDrawer]: Drawer was not homed once yet, so add homing task to queue!\n");
       _e_drawer_task_queue->enqueue({DRAWER_TARGET_HOMING_POSITION,
@@ -423,36 +406,9 @@ namespace drawer
     _e_drawer_task_queue->enqueue(e_drawer_task);
   }
 
-  uint32_t ElectricalDrawer::get_normed_target_speed_uint32(const uint8_t target_speed) const
-  {
-    uint32_t max_speed = _config->get_drawer_max_speed();
-    uint32_t target_speed_casted = static_cast<uint32_t>(target_speed);
-
-    return (target_speed_casted * max_speed) / MAX_SPEED_UINT8;
-  }
-
   uint8_t ElectricalDrawer::get_normed_target_speed_uint8(const uint32_t target_speed) const
   {
     return (target_speed * MAX_SPEED_UINT8) / _config->get_drawer_max_speed();
-  }
-
-  void ElectricalDrawer::set_target_speed_and_direction(const uint8_t target_speed, const bool use_acceleration_ramp)
-  {
-    uint32_t normed_target_speed_uint32 = get_normed_target_speed_uint32(target_speed);
-    _is_drawer_moving_out ? _motor->set_direction(stepper_motor::Direction::counter_clockwise)
-                          : _motor->set_direction(stepper_motor::Direction::clockwise);
-
-    if (use_acceleration_ramp)
-    {
-      _motor->set_target_speed_with_accelerating_ramp(normed_target_speed_uint32,
-                                                      _config->get_drawer_default_acceleration());
-    }
-    else
-    {
-      _motor->set_target_speed_instantly(normed_target_speed_uint32);
-    }
-
-    _encoder->init_encoder_before_next_movement(_is_drawer_moving_out);
   }
 
   void ElectricalDrawer::handle_decelerating_for_moving_in_drawer()
@@ -465,23 +421,31 @@ namespace drawer
       _encoder->get_current_position());
   }
 
+  // TODO: MOVE THAT INTO SPEED CONTROLLERS
   void ElectricalDrawer::handle_decelerating_for_moving_out_drawer()
   {
-    if (!_triggered_deceleration_for_drawer_moving_out &&
-        (_encoder->get_normed_current_position() + _config->get_drawer_moving_out_deceleration_distance()) >=
-          _target_position_uint8)
+    const uint8_t current_position = _encoder->get_normed_current_position();
+    uint8_t deceleration_distance = _config->get_drawer_moving_out_deceleration_distance();
+
+    if (_target_position_uint8 < deceleration_distance)
+    {
+      deceleration_distance = deceleration_distance / 10;
+    }
+
+    const bool should_decelerate = (current_position + deceleration_distance) >= _target_position_uint8;
+    if (!_triggered_deceleration_for_drawer_moving_out && should_decelerate)
     {
       debug_printf(
         "[ElectricalDrawer]: E-drawer is moving out and will now be decelerated! normed_current_position_uint8 = "
         "%d, "
         "_target_position_uint8 = %d\n",
-        _encoder->get_normed_current_position(),
+        current_position,
         _target_position_uint8);
       _triggered_deceleration_for_drawer_moving_out = true;
-      _motor->set_target_speed_with_decelerating_ramp(_config->get_drawer_moving_out_final_speed(),
-                                                      _encoder->convert_uint8_position_to_drawer_position_scale(
-                                                        _config->get_drawer_moving_out_deceleration_distance()),
-                                                      _encoder->get_current_position());
+      _motor->set_target_speed_with_decelerating_ramp(
+        _config->get_drawer_moving_out_final_speed(),
+        _encoder->convert_uint8_position_to_drawer_position_scale(deceleration_distance),
+        _encoder->get_current_position());
     }
   }
 
