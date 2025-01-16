@@ -236,7 +236,7 @@
                             led_topic="/led_cmd"
                             leds="{leds}"/>
         <GeneratePartialPosition drawer_address="{drawer}"
-                                 first_tray_position="40"
+                                 first_tray_position="45"
                                  last_tray_position="254"
                                  tray_count="8"
                                  target_position="{target_position}"/>
