@@ -214,22 +214,30 @@ if(BUILD_TESTING)
   add_library(test_helper SHARED tests/test_helper.cpp)
   list(APPEND test_libs test_helper)
 
-  # add_executable(led_test tests/actions/change_led_action_test.cpp)
-  # list(APPEND test_executables led_test)
+  # Actions
   add_executable(open_drawer_test tests/actions/open_drawer_action_test.cpp)
   list(APPEND test_executables open_drawer_test)
-  add_executable(drawer_status_condition_test tests/conditions/drawer_status_condition_test.cpp)
-  list(APPEND test_executables drawer_status_condition_test)
   add_executable(nfc_to_drawer_action_test tests/actions/nfc_to_drawer_action_test.cpp)
   list(APPEND test_executables nfc_to_drawer_action_test)
   add_executable(move_electric_drawer_action_test tests/actions/move_electric_drawer_action_test.cpp)
   list(APPEND test_executables move_electric_drawer_action_test)
-  add_executable(error_decorator_test tests/decorators/error_decorator_test.cpp)
-  list(APPEND test_executables error_decorator_test)
-  add_executable(calculate_direction_test tests/calculate_direction_test.cpp)
-  list(APPEND test_executables calculate_direction_test)
   add_executable(generate_partial_position_action_test tests/actions/generate_partial_position_action_test.cpp)
   list(APPEND test_executables generate_partial_position_action_test)
+
+  # Conditions
+  add_executable(drawer_status_condition_test tests/conditions/drawer_status_condition_test.cpp)
+  list(APPEND test_executables drawer_status_condition_test)
+  add_executable(electric_drawer_status_condition_test tests/conditions/electric_drawer_status_condition_test.cpp)
+  list(APPEND test_executables electric_drawer_status_condition_test)
+
+  # Decorater
+  add_executable(error_decorator_test tests/decorators/error_decorator_test.cpp)
+  list(APPEND test_executables error_decorator_test)
+
+  # Miscellaneous
+  add_executable(calculate_direction_test tests/calculate_direction_test.cpp)
+  list(APPEND test_executables calculate_direction_test)
+
 
   ament_target_dependencies(${test_libs}
   ${dependencies})
