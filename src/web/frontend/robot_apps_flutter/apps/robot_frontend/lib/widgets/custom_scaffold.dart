@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
 import 'package:robot_frontend/models/custom_focus_node.dart';
 import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
@@ -100,7 +100,7 @@ class CustomScaffold extends StatelessWidget {
               );
             }
             if (isEmergencyStopPressed ?? false) {
-              Provider.of<KeyboardProvider>(context, listen: false).unfocus();
+              Provider.of<KeyboardProvider>(context, listen: false).focusSilently(null);
               Navigator.of(context).popUntil((route) => route is PageRoute);
               return const EmergencyStopView();
             }
@@ -134,7 +134,7 @@ class CustomScaffold extends StatelessWidget {
                           color: Colors.white,
                           child: VirtualKeyboard(
                             fontSize: 32,
-                            height: 400,
+                            height: keyboardHeight,
                             borderColor: Colors.grey,
                             defaultLayouts: const [VirtualKeyboardDefaultLayouts.German],
                             keys: focusNode.layout == VirtualKeyboardDefaultLayouts.Numeric

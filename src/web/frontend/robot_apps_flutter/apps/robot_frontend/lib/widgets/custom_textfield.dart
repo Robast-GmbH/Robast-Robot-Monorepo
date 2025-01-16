@@ -2,16 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
 import 'package:robot_frontend/models/custom_focus_node.dart';
 import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 
 class CustomTextfield extends StatefulWidget {
-  const CustomTextfield({this.focusNode, this.onChanged, this.enabledAutofocus = false, super.key});
+  const CustomTextfield({this.focusNode, this.onChanged, this.enabledAutofocus = false, this.mainAxisAlignment = MainAxisAlignment.start, super.key});
 
   final CustomFocusNode? focusNode;
   final bool enabledAutofocus;
   final void Function(String)? onChanged;
+  final MainAxisAlignment mainAxisAlignment;
 
   @override
   State<CustomTextfield> createState() => _CustomTextfieldState();
@@ -87,13 +88,15 @@ class _CustomTextfieldState extends State<CustomTextfield> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                   child: Row(
+                    mainAxisAlignment: widget.mainAxisAlignment,
                     children: [
                       Text(
                         _focusNode.text,
                         maxLines: 1,
-                        style: const TextStyle(fontSize: 26, color: RobotColors.primaryText),
+                        style: const TextStyle(fontSize: 32, color: RobotColors.primaryText),
+                        overflow: TextOverflow.ellipsis,
                       ),
                       if (isFocused)
                         Container(

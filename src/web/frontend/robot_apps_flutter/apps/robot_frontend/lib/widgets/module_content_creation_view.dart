@@ -1,63 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
 import 'package:robot_frontend/models/custom_focus_node.dart';
+import 'package:robot_frontend/models/module_content_controller.dart';
 import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 import 'package:robot_frontend/widgets/custom_textfield.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
-import 'package:shared_data_models/shared_data_models.dart';
-import 'package:virtual_keyboard_custom_layout/virtual_keyboard_custom_layout.dart';
 
 class ModuleContentCreationView extends StatefulWidget {
   const ModuleContentCreationView({
     required this.moduleContentController,
     this.label = 'Fracht',
+    this.autoCreateFirstItem = false,
     super.key,
   });
 
   final String label;
   final ModuleContentController moduleContentController;
+  final bool autoCreateFirstItem;
 
   @override
   State<ModuleContentCreationView> createState() => _ModuleContentCreationViewState();
 }
 
 class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
-  final textFocusNode = CustomFocusNode(key: GlobalKey(), text: '');
-  late final CustomFocusNode amountFocusNode;
   final scrollController = ScrollController();
-  bool createdAnItem = false;
 
   void createItem() {
-    final amount = int.tryParse(amountFocusNode.text);
-    if (textFocusNode.text.trimRight().trimLeft().isEmpty || amountFocusNode.text.isEmpty || amount == null) {
-      return;
-    }
-    setState(() {
-      createdAnItem = true;
-      widget.moduleContentController.createdItemsByCount[textFocusNode.text] = amount;
-      textFocusNode.text = '';
-      amountFocusNode.text = '';
-    });
+    widget.moduleContentController.createItem();
+    setState(() {});
+    Provider.of<KeyboardProvider>(context, listen: false).focusNode = widget.moduleContentController.createdItemNameNodes.last;
     scrollController.jumpTo(scrollController.position.maxScrollExtent);
-    Provider.of<KeyboardProvider>(context, listen: false).focusNode = textFocusNode;
   }
 
   @override
   void initState() {
-    amountFocusNode = CustomFocusNode(
-      key: GlobalKey(),
-      text: '',
-      layout: VirtualKeyboardDefaultLayouts.Numeric,
-      onSubmit: createItem,
-    );
+    if (widget.autoCreateFirstItem) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        createItem();
+      });
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    textFocusNode.next = amountFocusNode;
-    final controller = widget.moduleContentController;
+    final contentController = widget.moduleContentController;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -79,10 +67,18 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
                   Expanded(
                     child: ListView(
                       controller: scrollController,
-                      children: widget.moduleContentController.initialItemsByCount.entries.map<Widget>(buildContentListTile).toList() +
-                          controller.createdItemsByCount.entries.map(buildContentListTile).toList() +
+                      children: contentController.initialItemsByAmountFocusNode.entries
+                              .map(
+                                (entry) => buildContentListTile(entry.key, entry.value),
+                              )
+                              .toList() +
+                          List.generate(contentController.createdItemNameNodes.length, (index) {
+                            return buildItemsByChangeCreationView(
+                              textFocusNode: contentController.createdItemNameNodes[index],
+                              amountFocusNode: contentController.createdItemAmountNodes[index],
+                            );
+                          }) +
                           [
-                            buildItemsByChangeCreationView(),
                             buildItemsByChangeCreationButton(),
                           ],
                     ),
@@ -100,19 +96,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 96, top: 8),
       child: InkWell(
-        onTap: () {
-          final amount = int.tryParse(amountFocusNode.text);
-          if (textFocusNode.text.trimRight().trimLeft().isEmpty || amountFocusNode.text.isEmpty || amount == null) {
-            return;
-          }
-          setState(() {
-            createdAnItem = true;
-            widget.moduleContentController.createdItemsByCount[textFocusNode.text] = amount;
-            textFocusNode.text = '';
-            amountFocusNode.text = '';
-          });
-          scrollController.jumpTo(scrollController.position.maxScrollExtent);
-        },
+        onTap: createItem,
         child: const RoundedContainer(
           child: Padding(
             padding: EdgeInsets.symmetric(vertical: 4),
@@ -127,92 +111,91 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
     );
   }
 
-  Widget buildContentListTile(MapEntry<String, int> entry) {
-    final controller = widget.moduleContentController;
+  Widget buildContentListTile(String name, CustomFocusNode amountFocusNode) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: RoundedContainer(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: buildListTileText(entry.key),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  IconButton(
-                    iconSize: 48,
-                    onPressed: () {
-                      if (controller.contentItemsByChange.containsKey(entry.key)) {
-                        setState(() {
-                          controller.contentItemsByChange[entry.key] = controller.contentItemsByChange[entry.key]! - 1;
-                        });
-                      } else {
-                        setState(() {
-                          controller.contentItemsByChange[entry.key] = -1;
-                        });
-                      }
-                    },
-                    icon: const Icon(Icons.remove),
-                    color: RobotColors.secondaryIcon,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: buildListTileText(
-                      (entry.value + (controller.contentItemsByChange.containsKey(entry.key) ? controller.contentItemsByChange[entry.key]! : 0)).toString(),
-                    ),
-                  ),
-                  IconButton(
-                    iconSize: 48,
-                    onPressed: () {
-                      if (controller.contentItemsByChange.containsKey(entry.key)) {
-                        setState(() {
-                          controller.contentItemsByChange[entry.key] = controller.contentItemsByChange[entry.key]! + 1;
-                        });
-                      } else {
-                        setState(() {
-                          controller.contentItemsByChange[entry.key] = 1;
-                        });
-                      }
-                    },
-                    icon: const Icon(Icons.add),
-                    color: RobotColors.secondaryIcon,
-                  ),
-                ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                flex: 8,
+                child: buildListTileText(name),
               ),
-            ),
-          ],
+              const SizedBox(
+                width: 32,
+              ),
+              Expanded(
+                child: CustomTextfield(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  focusNode: amountFocusNode,
+                ),
+              ),
+              const SizedBox(
+                width: 16,
+              ),
+              IconButton(
+                  iconSize: 40,
+                  onPressed: () {
+                    Provider.of<KeyboardProvider>(context, listen: false).unfocus();
+                    amountFocusNode.text = widget.moduleContentController.initialItemsByCount[name].toString();
+                    setState(() {});
+                  },
+                  icon: const Icon(
+                    Icons.refresh,
+                    color: RobotColors.secondaryIcon,
+                  )),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  RoundedContainer buildItemsByChangeCreationView() {
-    return RoundedContainer(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              flex: 8,
-              child: CustomTextfield(
-                focusNode: textFocusNode,
-                enabledAutofocus: createdAnItem,
+  Widget buildItemsByChangeCreationView({required CustomFocusNode textFocusNode, required CustomFocusNode amountFocusNode}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: RoundedContainer(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                flex: 8,
+                child: CustomTextfield(
+                  focusNode: textFocusNode,
+                ),
               ),
-            ),
-            const SizedBox(
-              width: 32,
-            ),
-            Expanded(
-              child: CustomTextfield(
-                focusNode: amountFocusNode,
+              const SizedBox(
+                width: 32,
               ),
-            ),
-          ],
+              Expanded(
+                child: CustomTextfield(
+                  focusNode: amountFocusNode,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                ),
+              ),
+              const SizedBox(
+                width: 16,
+              ),
+              IconButton(
+                  iconSize: 40,
+                  onPressed: () {
+                    Provider.of<KeyboardProvider>(context, listen: false).unfocus();
+                    final contenController = widget.moduleContentController;
+                    contenController.createdItemNameNodes.remove(textFocusNode);
+                    contenController.createdItemAmountNodes.remove(amountFocusNode);
+                    setState(() {});
+                  },
+                  icon: const Icon(
+                    Icons.delete,
+                    color: RobotColors.secondaryIcon,
+                  ))
+            ],
+          ),
         ),
       ),
     );

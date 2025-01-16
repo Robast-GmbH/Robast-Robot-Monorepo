@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
 import 'package:robot_frontend/models/provider/hygiene_provider.dart';
 import 'package:robot_frontend/models/provider/inactivity_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
