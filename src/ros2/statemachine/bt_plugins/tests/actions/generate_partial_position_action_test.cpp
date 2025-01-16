@@ -83,7 +83,7 @@ namespace test
 
               uint8_t target_position;
               blackboard->get("target_position", target_position);
-              REQUIRE(target_position == 20);   // Check the target position
+              REQUIRE(target_position == 40);   // Check the target position
             }
           }
         }

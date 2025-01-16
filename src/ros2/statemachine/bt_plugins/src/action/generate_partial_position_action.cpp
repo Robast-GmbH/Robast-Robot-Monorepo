@@ -39,8 +39,11 @@ namespace statemachine
       return BT::NodeStatus::FAILURE;
     }
 
+    // Because the first tray is the one in the last position, we need to reverse the order
+    const uint8_t reversed_tray_id = tray_count - tray_id;
+
     uint8_t target_position =
-        first_tray_position + (tray_id - 1) * (last_tray_position - first_tray_position) / (tray_count - 1);
+        first_tray_position + reversed_tray_id * (last_tray_position - first_tray_position) / (tray_count - 1);
     setOutput("target_position", target_position);
     return BT::NodeStatus::SUCCESS;
   }
