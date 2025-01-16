@@ -1,26 +1,29 @@
-name: Create Docker Image building_docker
+name: Create Robast base images
 
-#trigger workflow every day at 00:00
+# Trigger workflow on push to main branch and on workflow dispatch
 on:
   push:
     branches:
-        - main
+      - main
     paths:
-        - src/ros2/**
+      - src/Dockerfile
+      - src/Hardware/**
+      - src/robot_backend/**
+      - src/ros2/communication_interfaces/**
+      - src/ros2/error_handling/**
   workflow_dispatch:
 
 jobs:
-  build:
+  build-dev-base:
     runs-on: ubuntu-latest
     env:
       Ros-Distro: humble
-      Project-Name: building-docker
 
     steps:
-    - name: Checkout repository and submodules
+    - name: Checkout repository
       uses: actions/checkout@v4
       with:
-        fetch-depth: 2
+        fetch-depth: 1
     
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
@@ -29,17 +32,87 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: configures Docker Buildx to create a builder instance for running the image build.
+    - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
-    
-    - name: Build ${{ env.Project-Name }} dev docker
+
+    - name: Build and push robast-dev-base
       uses: docker/build-push-action@v6
       with:
         context: src/
         platforms: linux/amd64,linux/arm64/v8
         push: true
         file: src/Dockerfile
+        target: robast-dev-base
         tags: |
-              ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:${{ env.Ros-Distro }}
+          ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}
+        cache-from: type=gha
+        cache-to: type=gha
+
+  build-dev-core:
+    runs-on: ubuntu-latest
+    env:
+      Ros-Distro: humble
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure Docker Buildx
+      uses: docker/setup-buildx-action@v3 
+
+    - name: Build and push robast-dev-core
+      uses: docker/build-push-action@v6
+      with:
+        context: src/
+        platforms: linux/amd64,linux/arm64/v8
+        push: true
+        file: src/Dockerfile
+        target: robast-dev-core
+        tags: |
+          ghcr.io/robast-gmbh/monorepo/robast-dev-core:${{ env.Ros-Distro }}
+        cache-from: type=gha
+        cache-to: type=gha
+
+  build-source:
+    runs-on: ubuntu-latest
+    env:
+      Ros-Distro: humble
+    needs: build-dev-base
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure Docker Buildx
+      uses: docker/setup-buildx-action@v3 
+
+    - name: Build and push robast-source
+      uses: docker/build-push-action@v6
+      with:
+        context: src/
+        platforms: linux/amd64,linux/arm64/v8
+        push: true
+        file: src/Dockerfile
+        target: robast-source
+        tags: |
+          ghcr.io/robast-gmbh/monorepo/robast-source:${{ env.Ros-Distro }}
         cache-from: type=gha
         cache-to: type=gha

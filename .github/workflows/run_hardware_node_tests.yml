@@ -51,30 +51,19 @@ jobs:
               -v $(pwd)/../error_handling/error_utils:/workspace/src/error_handling/error_utils
               -v $(pwd)/../dds_configs:/workspace/dds_configs
               -v $(pwd)/../../Hardware/cpp/libs:/workspace/libs 
-              -v /home:/home
-              --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}:devel
+              --rm ghcr.io/robast-gmbh/monorepo/${{ env.Project }}:release
               /bin/sh -c "cd /workspace/ &&
               sudo apt-get update && 
               sudo apt-get upgrade -y &&
               sudo apt install lcov -y &&
               rosdep update; rosdep install --from-paths src --ignore-src -r -y && 
               export CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_github_config.xml &&
+              . /opt/ros/humble/setup.sh &&
+              . /robast/humble/setup.sh &&
               colcon build --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=\"${CMAKE_CXX_FLAGS} --coverage\" -DCMAKE_C_FLAGS=\"${CMAKE_C_FLAGS} --coverage\" -Wall -Wextra -Wpedantic && 
               colcon test --event-handler=console_direct+ &&
               colcon test-result --all &&
               lcov --directory . --capture --output-file coverage-${{env.Project}}.info &&
               lcov --remove coverage-${{env.Project}}.info '/usr/*' --output-file coverage-${{env.Project}}.info &&
-              lcov --list coverage-${{env.Project}}.info &&
-              cp /workspace/coverage-${{env.Project}}.info /home/coverage-${{env.Project}}.info"
+              lcov --list coverage-${{env.Project}}.info"
       
-    - name: Wait for coverage report file
-      run: |
-          sleep 5
-          ls /home/coverage-${{env.Project}}.info
-
-
-    - name: Upload coverage report to Codecov
-      uses: codecov/codecov-action@v5
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        file: /home/coverage-${{env.Project}}.info
