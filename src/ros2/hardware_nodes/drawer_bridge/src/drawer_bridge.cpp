@@ -358,27 +358,29 @@ namespace drawer_bridge
   {
     std::vector<robast_can_msgs::CanSignal> can_signals = drawer_error_feedback_can_msg.get_can_signals();
 
+    ErrorBaseMsg error_msg = ErrorBaseMsg();
+
     DrawerAddress drawer_address = DrawerAddress();
     drawer_address.module_id = can_signals.at(robast_can_msgs::can_signal::id::error_feedback::MODULE_ID).get_data();
     drawer_address.drawer_id = can_signals.at(robast_can_msgs::can_signal::id::error_feedback::DRAWER_ID).get_data();
 
-    ErrorBaseMsg error_msg = ErrorBaseMsg();
-    error_msg.error_code = can_signals.at(robast_can_msgs::can_signal::id::error_feedback::ERROR_CODE).get_data();
-
-    switch (error_msg.error_code)
+    switch (can_signals.at(robast_can_msgs::can_signal::id::error_feedback::ERROR_CODE).get_data())
     {
       case robast_can_msgs::can_data::error_code::TIMEOUT_DRAWER_NOT_OPENED:
+        error_msg.error_code = ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED;
         error_msg.error_description =
           "The drawer was not opened and therefore a timeout occurred. Drawer is now locked again.";
         error_msg.error_data =
           error_utils::message_to_string<ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED_INTERFACE>(drawer_address);
         break;
       case robast_can_msgs::can_data::error_code::DRAWER_CLOSED_IN_IDLE_STATE:
+        error_msg.error_code = ERROR_CODES_DRAWER_CLOSED_IN_IDLE_STATE;
         error_msg.error_description = "The drawer was closed in the idle state, which is not the intended behavior.";
         error_msg.error_data =
           error_utils::message_to_string<ERROR_CODES_DRAWER_CLOSED_IN_IDLE_STATE_INTERFACE>(drawer_address);
         break;
       case robast_can_msgs::can_data::error_code::MOTOR_DRIVER_STATE_CONTROL_NOT_SUPPORTED_BY_MODULE:
+        error_msg.error_code = ERROR_CODES_MOTOR_DRIVER_CONTROL_NOT_SUPPORTED_BY_MODULE;
         error_msg.error_description = "The motor driver state control is not supported by the module.";
         error_msg.error_data =
           error_utils::message_to_string<ERROR_CODES_MOTOR_DRIVER_CONTROL_NOT_SUPPORTED_BY_MODULE_INTERFACE>(
