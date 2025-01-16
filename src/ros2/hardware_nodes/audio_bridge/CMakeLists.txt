@@ -15,7 +15,7 @@ add_executable(sound_playback src/sound_playback.cpp)
 target_include_directories(sound_playback PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-target_compile_features(sound_playback PUBLIC c_std_99 20)  # Require C99 and C++20
+target_compile_features(sound_playback PUBLIC c_std_99 cxx_std_20)  # Require C99 and C++20
 
 ament_target_dependencies(sound_playback
   rclcpp
