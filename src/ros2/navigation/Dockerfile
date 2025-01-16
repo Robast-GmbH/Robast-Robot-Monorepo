@@ -89,10 +89,6 @@ COPY . /ws/src/navigation
 USER root
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/; mkdir /robast; \
-  mv /monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
-  && mv /monorepo/src/ros2/dds_configs /robast/dds_configs
-
 
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
@@ -119,6 +115,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
+COPY --from=build /dds_configs /robast/dds_configs
 
 COPY --from=build /ws/src/navigation/nav_bringup/config_simulation/nav_params/diff__tr0_4__res0_05.json /workspace/src/navigation/nav_bringup/config_simulation/nav_params/diff__tr0_4__res0_05.json
 COPY --from=build /ws/src/navigation/nav_bringup/behavior_trees/humble/ /workspace/src/navigation/nav_bringup/behavior_trees/humble/
