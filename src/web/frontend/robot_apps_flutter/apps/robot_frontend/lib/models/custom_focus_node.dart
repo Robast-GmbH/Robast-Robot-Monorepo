@@ -6,7 +6,6 @@ class CustomFocusNode {
     required this.key,
     required this.text,
     this.setTextState,
-    this.onSubmit,
     this.next,
     this.layout = VirtualKeyboardDefaultLayouts.German,
   });
@@ -14,7 +13,6 @@ class CustomFocusNode {
   GlobalKey key;
   String text;
   VoidCallback? setTextState;
-  VoidCallback? onSubmit;
   CustomFocusNode? next;
   VirtualKeyboardDefaultLayouts layout;
 }

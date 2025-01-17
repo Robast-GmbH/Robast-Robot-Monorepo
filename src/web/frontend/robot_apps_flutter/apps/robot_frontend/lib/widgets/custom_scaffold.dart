@@ -155,12 +155,7 @@ class CustomScaffold extends StatelessWidget {
                                     }
                                     break;
                                   case VirtualKeyboardKeyAction.Return:
-                                    if (focusNode.onSubmit != null) {
-                                      focusNode.onSubmit?.call();
-                                    } else {
-                                      Provider.of<KeyboardProvider>(context, listen: false).focusNext();
-                                    }
-
+                                    Provider.of<KeyboardProvider>(context, listen: false).focusNext();
                                     return;
                                   case VirtualKeyboardKeyAction.Space:
                                     focusNode.text = '${focusNode.text} ';

@@ -24,7 +24,6 @@ class KeyboardProvider extends ChangeNotifier {
       _focusNode = _focusNode?.next;
       notifyListeners();
     } else if (focusNode != null) {
-      _focusNode?.onSubmit?.call();
       _focusNode = null;
 
       notifyListeners();
