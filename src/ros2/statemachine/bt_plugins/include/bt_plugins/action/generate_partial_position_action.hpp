@@ -8,7 +8,6 @@
 
 namespace statemachine
 {
-  constexpr uint8_t FIRST_LID_POSITION_OFFSET = 30;
   constexpr uint8_t LAST_LID_POSITION = 254;
 
   class GeneratePartialPosition : public BT::SyncActionNode
