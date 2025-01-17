@@ -6,6 +6,9 @@ namespace statemachine
       : BT::SyncActionNode(name, config)
   {
     _node = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
+
+    getInput("tray_count", _tray_count);
+    getInput("front_offset", _front_offset);
   }
 
   BT::NodeStatus GeneratePartialPosition::tick()
@@ -19,31 +22,26 @@ namespace statemachine
       return BT::NodeStatus::FAILURE;
     }
 
-    uint8_t first_tray_position;
-    getInput("first_tray_position", first_tray_position);
-
-    uint8_t last_tray_position;
-    getInput("last_tray_position", last_tray_position);
-    if (last_tray_position <= first_tray_position)
+    if (LAST_LID_POSITION <= _front_offset)
     {
       RCLCPP_ERROR(rclcpp::get_logger("GeneratePartialPosition"),
-                   "Last tray position must be greater than first tray position.");
+                   "Front offset cannot be greater than last position, which is %d.",
+                   LAST_LID_POSITION);
       return BT::NodeStatus::FAILURE;
     }
 
-    uint8_t tray_count;
-    getInput("tray_count", tray_count);
-    if (tray_count == 0)
+    if (_tray_count == 0)
     {
       RCLCPP_ERROR(rclcpp::get_logger("GeneratePartialPosition"), "Tray count cannot be 0.");
       return BT::NodeStatus::FAILURE;
     }
 
     // Because the first tray is the one in the last position, we need to reverse the order
-    const uint8_t reversed_tray_id = tray_count - tray_id;
+    const uint8_t reversed_tray_id = (_tray_count + 1) - tray_id;
 
-    uint8_t target_position =
-        first_tray_position + reversed_tray_id * (last_tray_position - first_tray_position) / (tray_count - 1);
+    const uint8_t target_position =
+        _front_offset + (reversed_tray_id * (LAST_LID_POSITION - _front_offset) / _tray_count);
+
     setOutput("target_position", target_position);
     return BT::NodeStatus::SUCCESS;
   }

@@ -33,17 +33,15 @@ namespace test
       used_drawer_address.module_id = 1;
       used_drawer_address.drawer_id = 2;
       blackboard->set("drawer_address", used_drawer_address);
-      blackboard->set("first_tray_position", static_cast<uint8_t>(10));
-      blackboard->set("last_tray_position", static_cast<uint8_t>(50));
-      blackboard->set("tray_count", static_cast<uint8_t>(5));
+      blackboard->set("front_offset", static_cast<uint8_t>(54));
+      blackboard->set("tray_count", static_cast<uint8_t>(4));
 
       std::string generate_position_tree_xml =
           R"(
           <root BTCPP_format="4" >
               <BehaviorTree ID="MainTree">
                   <GeneratePartialPosition drawer_address="{drawer_address}"
-                  first_tray_position="{first_tray_position}"
-                  last_tray_position="{last_tray_position}"
+                  front_offset="{front_offset}"
                   tray_count="{tray_count}"
                   target_position="{target_position}"/>
               </BehaviorTree>
@@ -70,7 +68,7 @@ namespace test
                                                  return node->registrationName() == nodename;
                                                });
 
-              REQUIRE(found);   // Ensure the plugin node is found
+              REQUIRE(found);
             }
           }
 
@@ -83,7 +81,7 @@ namespace test
 
               uint8_t target_position;
               blackboard->get("target_position", target_position);
-              REQUIRE(target_position == 40);   // Check the target position
+              REQUIRE(target_position == 204);
             }
           }
         }

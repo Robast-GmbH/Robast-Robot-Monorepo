@@ -9,6 +9,7 @@
 namespace statemachine
 {
   constexpr uint8_t FIRST_LID_POSITION_OFFSET = 30;
+  constexpr uint8_t LAST_LID_POSITION = 254;
 
   class GeneratePartialPosition : public BT::SyncActionNode
   {
@@ -31,14 +32,16 @@ namespace statemachine
     {
       return {BT::InputPort<communication_interfaces::msg::DrawerAddress>(
                   "drawer_address", "address of the tray we want to get the position for"),
-              BT::InputPort<uint8_t>("first_tray_position", 0, "position of the first tray"),
-              BT::InputPort<uint8_t>("last_tray_position", 0, "position of the last tray"),
+              BT::InputPort<uint8_t>("front_offset", 0, "offset because of front cover"),
               BT::InputPort<uint8_t>("tray_count", 0, "number of trays"),
               BT::OutputPort<uint8_t>("target_position")};
     }
 
    private:
     rclcpp::Node::SharedPtr _node;
+
+    uint8_t _tray_count;
+    uint8_t _front_offset;
   };
 
 }   // namespace statemachine

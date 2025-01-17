@@ -58,8 +58,7 @@
         </Action>
         <Action ID="GeneratePartialPosition">
             <input_port name="drawer_address" default="{drawer}"/>
-            <input_port name="first_tray_position" default="40">uint8</input_port>
-            <input_port name="last_tray_position" default="253">uint8</input_port>
+            <input_port name="front_offset" default="10">uint8</input_port>
             <input_port name="tray_count" default="8">uint8</input_port>
             <output_port name="target_position" default="{target_position}">uint8</output_port>
         </Action>
