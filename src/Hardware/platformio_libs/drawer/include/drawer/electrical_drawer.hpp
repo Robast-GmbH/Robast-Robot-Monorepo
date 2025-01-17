@@ -8,7 +8,6 @@
 
 #include "can_toolbox/can_utils.hpp"
 #include "drawer/electrical_drawer_config.hpp"
-#include "drawer/speed_controller.hpp"
 #include "interfaces/i_drawer.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "lock/electrical_drawer_lock.hpp"
@@ -23,9 +22,11 @@
 
 namespace drawer
 {
+  constexpr uint8_t MAX_SPEED_UINT8 = 255;
   constexpr uint8_t DRAWER_TARGET_HOMING_POSITION = 0;
   constexpr uint8_t DRAWER_HOMING_POSITION = 0;
-
+  constexpr uint8_t STALL_GUARD_DISABLED = 0;
+  constexpr uint8_t TARGET_SPEED_ZERO = 0;
   constexpr bool IS_HOMING = true;
   constexpr bool IS_NOT_HOMING = false;
   constexpr bool DO_NOT_USE_ACCELERATION_RAMP = false;
@@ -66,13 +67,15 @@ namespace drawer
 
     uint8_t get_current_position() const;
 
+    uint8_t get_target_position() const;
+
     uint8_t get_target_speed() const;
 
     bool is_drawer_moving_in() const;
 
     void set_target_speed_and_direction(const uint8_t target_speed, const bool use_acceleration_ramp);
 
-    void set_target_speed_with_decelerating_ramp(const uint8_t target_speed);
+    void set_target_speed_with_decelerating_ramp(uint8_t target_speed);
 
    private:
     const uint32_t _module_id;
@@ -102,9 +105,10 @@ namespace drawer
 
     const std::unique_ptr<motor::MotorMonitor> _motor_monitor;
 
-    const std::unique_ptr<SpeedController> _speed_controller;
+    bool _drawer_was_homed_once = false;
 
     bool _is_drawer_opening_in_progress = false;
+    bool _is_drawer_moving_out;
     bool _triggered_deceleration_for_drawer_moving_out = false;
     bool _is_idling = true;
     bool _triggered_deceleration_for_drawer_moving_in = false;
@@ -135,6 +139,12 @@ namespace drawer
 
     void check_if_drawer_is_pulled_out();
 
+    void start_normal_drawer_movement(const uint8_t target_speed, const bool use_acceleration_ramp);
+
+    void start_homing_movement(const uint8_t target_speed);
+
+    void handle_initial_drawer_homing();
+
     void handle_drawer_just_opened() override;
 
     void handle_drawer_just_closed() override;
@@ -164,8 +174,6 @@ namespace drawer
     uint32_t get_normed_target_speed_uint32(const uint8_t target_speed) const;
 
     uint8_t get_normed_target_speed_uint8(const uint32_t target_speed) const;
-
-    void start_normal_drawer_movement(const uint8_t target_speed, const bool use_acceleration_ramp);
   };
 }   // namespace drawer
 
