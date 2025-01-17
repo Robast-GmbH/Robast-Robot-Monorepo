@@ -8,7 +8,7 @@
 
 #include "can_toolbox/can_utils.hpp"
 #include "drawer/electrical_drawer_config.hpp"
-#include "drawer/speed_controller.hpp"
+#include "drawer/motion_controller.hpp"
 #include "interfaces/i_drawer.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "lock/electrical_drawer_lock.hpp"
@@ -23,23 +23,18 @@
 
 namespace drawer
 {
-  constexpr uint8_t DRAWER_TARGET_HOMING_POSITION = 0;
-  constexpr uint8_t DRAWER_HOMING_POSITION = 0;
 
   constexpr bool IS_HOMING = true;
   constexpr bool IS_NOT_HOMING = false;
   constexpr bool DO_NOT_USE_ACCELERATION_RAMP = false;
   constexpr bool PUSH_TO_CLOSE_TRIGGERED = true;
-  constexpr bool PUSH_TO_CLOSE_NOT_TRIGGERED = false;
   constexpr bool MOTOR_IS_STALLED = true;
-  constexpr bool MOTOR_IS_NOT_STALLED = false;
   constexpr bool ENDSTOP_SWITCH_IS_PUSHED = true;
-  constexpr bool LOCK_SWITCH_IS_NOT_PUSHED = false;
   constexpr bool CONFIRM_MOTOR_CONTROL_CHANGE = true;
 
   class ElectricalDrawer : public interfaces::IDrawer
   {
-   public:
+  public:
     ElectricalDrawer(const uint32_t module_id,
                      const uint8_t id,
                      const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
@@ -74,7 +69,7 @@ namespace drawer
 
     void set_target_speed_with_decelerating_ramp(const uint8_t target_speed);
 
-   private:
+  private:
     const uint32_t _module_id;
     const uint8_t _id;
 
@@ -94,32 +89,20 @@ namespace drawer
     const std::shared_ptr<stepper_motor::Motor> _motor;
 
     std::unique_ptr<utils::Queue<utils::EDrawerTask>> _e_drawer_task_queue =
-      std::make_unique<utils::Queue<utils::EDrawerTask>>();
+        std::make_unique<utils::Queue<utils::EDrawerTask>>();
 
     const std::shared_ptr<ElectricalDrawerConfig> _config;
 
     const std::unique_ptr<motor::EncoderMonitor> _encoder_monitor;
 
-    const std::unique_ptr<motor::MotorMonitor> _motor_monitor;
-
-    const std::unique_ptr<SpeedController> _speed_controller;
+    const std::unique_ptr<MotionController> _motion_controller;
 
     bool _is_drawer_opening_in_progress = false;
-    bool _triggered_deceleration_for_drawer_moving_out = false;
-    bool _is_idling = true;
-    bool _triggered_deceleration_for_drawer_moving_in = false;
-
-    uint8_t _target_position_uint8 = 0;
 
     bool _triggered_closing_lock_after_opening = false;
 
     uint32_t _timestamp_stall_guard_triggered_in_ms = 0;
-    uint32_t _timestamp_movement_started_in_ms = 0;
-    uint32_t _timestamp_movement_finished_in_ms = 0;
     uint32_t _timestamp_drawer_opened_in_ms = 0;
-
-    bool _is_motor_monitor_stall_guard_triggered = false;
-    bool _is_tmc_stall_guard_triggered = false;
 
     /* FUNCTIONS */
 
@@ -145,28 +128,10 @@ namespace drawer
 
     void handle_drawer_moving_out();
 
-    void handle_decelerating_for_moving_in_drawer();
-
-    void handle_decelerating_for_moving_out_drawer();
-
-    void handle_finished_moving_in_drawer();
-
-    void handle_finished_moving_out_drawer();
-
-    bool is_stall_guard_triggered();
-
     void handle_stall_guard_triggered();
 
-    void reset_encoder_if_endstop_is_pushed();
-
     void debug_prints_moving_e_drawer();
-
-    uint32_t get_normed_target_speed_uint32(const uint8_t target_speed) const;
-
-    uint8_t get_normed_target_speed_uint8(const uint32_t target_speed) const;
-
-    void start_normal_drawer_movement(const uint8_t target_speed, const bool use_acceleration_ramp);
   };
-}   // namespace drawer
+} // namespace drawer
 
-#endif   // DRAWER_ELECTRICAL_DRAWER_HPP
+#endif // DRAWER_ELECTRICAL_DRAWER_HPP
