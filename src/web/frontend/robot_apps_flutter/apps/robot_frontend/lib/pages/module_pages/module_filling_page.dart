@@ -41,6 +41,7 @@ class _ModuleFillingPageState extends State<ModuleFillingPage> {
               child: ModuleContentCreationView(
                 moduleContentController: moduleContentController,
                 label: 'Inhalt',
+                showCategoryLabels: true,
               ),
             ),
             if (Provider.of<KeyboardProvider>(context).focusNode != null)

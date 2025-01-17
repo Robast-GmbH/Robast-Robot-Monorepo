@@ -66,10 +66,22 @@ class _CustomTextfieldState extends State<CustomTextfield> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      key: _focusNode.key,
       onTap: () {
         print(_focusNode.key.toString());
         print("onTap");
         focus();
+        Future.delayed(const Duration(milliseconds: 100), () {
+          final context = _focusNode.key.currentContext;
+          if (context != null) {
+            Scrollable.ensureVisible(
+              context,
+              duration: const Duration(milliseconds: 500),
+              alignment: 0.4,
+              curve: Curves.easeInOut,
+            );
+          }
+        });
       },
       child: Container(
         color: Colors.transparent,

@@ -4,18 +4,14 @@ import 'package:virtual_keyboard_custom_layout/virtual_keyboard_custom_layout.da
 
 class ModuleContentController {
   final initialItemsByCount = <String, int>{};
-  final initialItemsByAmountFocusNode = <String, CustomFocusNode>{};
+  final initialItemsByChange = <String, int>{};
   final createdItemNameNodes = <CustomFocusNode>[];
   final createdItemAmountNodes = <CustomFocusNode>[];
 
   void setInitialItems(Map<String, int> itemsByCount) {
     for (final key in itemsByCount.keys) {
       initialItemsByCount[key] = itemsByCount[key]!;
-      initialItemsByAmountFocusNode[key] = CustomFocusNode(
-        key: GlobalKey(),
-        text: itemsByCount[key].toString(),
-        layout: VirtualKeyboardDefaultLayouts.Numeric,
-      );
+      initialItemsByChange[key] = 0;
     }
   }
 
@@ -45,13 +41,6 @@ class ModuleContentController {
 
   Map<String, int> createItemsByChange() {
     final tempCreatedItemsByCount = getCreatedItemsByCountWithCurrentInputs();
-
-    final initialItemsByChange = <String, int>{};
-    for (final entry in initialItemsByCount.entries) {
-      final change = parseItemCount(initialItemsByAmountFocusNode[entry.key]?.text) - entry.value;
-      initialItemsByChange[entry.key] = change;
-    }
-
     final itemsByChange = <String, int>{};
     itemsByChange.addAll(tempCreatedItemsByCount);
     itemsByChange.addAll(initialItemsByChange);
@@ -79,7 +68,7 @@ class ModuleContentController {
     for (int i = 0; i < createdItemNameNodes.length; i++) {
       final itemName = createdItemNameNodes[i].text.trimLeft().trimRight();
       final itemAmount = parseItemCount(createdItemAmountNodes[i].text);
-      if (itemName.isNotEmpty && itemAmount > 0 && !initialItemsByAmountFocusNode.containsKey(itemName)) {
+      if (itemName.isNotEmpty && itemAmount > 0 && !initialItemsByChange.containsKey(itemName)) {
         tempCreatedItemsByCount[itemName] = itemAmount;
       }
     }
