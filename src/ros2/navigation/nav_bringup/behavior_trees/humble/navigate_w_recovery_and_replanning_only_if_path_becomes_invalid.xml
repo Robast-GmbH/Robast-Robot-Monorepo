@@ -21,7 +21,7 @@
                     <CheckPersonInFront topic="person_distance"
                                         detection_range="10"/>
                     <Sequence>
-                      <PlaySoundAction sound="aus_dem_weg.mp3"/>
+                      <PlaySoundAction file_name="aus_dem_weg.mp3"/>
                       <Wait wait_duration="5"/>
                     </Sequence>
                     <AlwaysSuccess/>
@@ -98,7 +98,7 @@
     <Control ID="PipelineSequence"
              editable="true"/>
     <Action ID="PlaySoundAction">
-      <input_port name="sound">Name of the sound to be played</input_port>
+      <input_port name="file_name">Name of the sound to be played</input_port>
     </Action>
     <Decorator ID="RateController"
                editable="true">

@@ -23,7 +23,7 @@
     </Action>
 
     <Action ID="PlaySoundAction">
-      <input_port name="sound">Name of the sound to be played</input_port>
+      <input_port name="file_name">Name of the sound to be played</input_port>
     </Action>
 
     <!-- ############################### CONDITION NODES ############################## -->

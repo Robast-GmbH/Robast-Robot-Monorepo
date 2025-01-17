@@ -20,5 +20,5 @@ BT_REGISTER_NODES(factory)
     return std::make_unique<nav2_behavior_tree::PlaySoundAction>(name, "play_sound", config);
   };
 
-  factory.registerBuilder<nav2_behavior_tree::PlaySoundAction>("PlaySound", builder);
+  factory.registerBuilder<nav2_behavior_tree::PlaySoundAction>("PlaySoundAction", builder);
 }
