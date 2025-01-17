@@ -133,7 +133,7 @@ class CustomScaffold extends StatelessWidget {
                         child: ColoredBox(
                           color: Colors.white,
                           child: VirtualKeyboard(
-                            fontSize: 32,
+                            fontSize: 48,
                             height: keyboardHeight,
                             borderColor: Colors.grey,
                             defaultLayouts: const [VirtualKeyboardDefaultLayouts.German],
@@ -158,7 +158,9 @@ class CustomScaffold extends StatelessWidget {
                                     Provider.of<KeyboardProvider>(context, listen: false).focusNext();
                                     return;
                                   case VirtualKeyboardKeyAction.Space:
-                                    focusNode.text = '${focusNode.text} ';
+                                    if (focusNode.text.length < focusNode.maxTextLength) {
+                                      focusNode.text = '${focusNode.text} ';
+                                    }
                                     break;
                                   case VirtualKeyboardKeyAction.Shift:
                                     shiftPressed = !shiftPressed;
@@ -166,7 +168,7 @@ class CustomScaffold extends StatelessWidget {
                                   default:
                                     break;
                                 }
-                              } else {
+                              } else if (focusNode.text.length < focusNode.maxTextLength) {
                                 focusNode.text = focusNode.text + (shiftPressed ? key.capsText! : key.text!);
                               }
                               focusNode.setTextState?.call();

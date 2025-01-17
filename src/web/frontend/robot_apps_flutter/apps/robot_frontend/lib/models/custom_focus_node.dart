@@ -4,15 +4,18 @@ import 'package:virtual_keyboard_custom_layout/virtual_keyboard_custom_layout.da
 class CustomFocusNode {
   CustomFocusNode({
     required this.key,
-    required this.text,
+    this.layout = VirtualKeyboardDefaultLayouts.German,
+    this.maxTextLength = 50,
+    this.text = "",
     this.setTextState,
     this.next,
-    this.layout = VirtualKeyboardDefaultLayouts.German,
   });
 
-  GlobalKey key;
+  final GlobalKey key;
+  final VirtualKeyboardDefaultLayouts layout;
+  final int maxTextLength;
+
   String text;
   VoidCallback? setTextState;
   CustomFocusNode? next;
-  VirtualKeyboardDefaultLayouts layout;
 }

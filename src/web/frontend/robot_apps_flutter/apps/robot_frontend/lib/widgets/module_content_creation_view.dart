@@ -39,7 +39,8 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
   void initState() {
     if (widget.autoCreateFirstItem) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        createItem();
+        widget.moduleContentController.createItem();
+        setState(() {});
       });
     }
     super.initState();

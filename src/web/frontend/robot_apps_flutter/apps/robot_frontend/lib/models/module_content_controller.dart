@@ -26,6 +26,7 @@ class ModuleContentController {
   void createItem() {
     final amountNode = CustomFocusNode(
       key: GlobalKey(),
+      maxTextLength: 2,
       text: '',
       layout: VirtualKeyboardDefaultLayouts.Numeric,
     );
