@@ -6,7 +6,6 @@ class KeyboardProvider extends ChangeNotifier {
   CustomFocusNode? get focusNode => _focusNode;
   set focusNode(CustomFocusNode? focusNode) {
     if (focusNode?.key == _focusNode?.key) return;
-    print('setKey');
     _focusNode = focusNode;
     notifyListeners();
   }

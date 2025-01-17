@@ -33,8 +33,6 @@ class ManualsManager {
       await file.writeAsBytes(manualData);
       final apiLastModified = DateTime.now();
       file.setLastModifiedSync(apiLastModified);
-
-      print("File '$fileName' downloaded and cached.");
     } else {
       throw Exception('Failed to download file: $fileName');
     }
@@ -53,8 +51,6 @@ class ManualsManager {
 
       if (!isUpToDate) {
         await downloadAndCacheFile(fileName, lastModified);
-      } else {
-        print("File '$fileName' is up-to-date.");
       }
     }
 
@@ -66,7 +62,6 @@ class ManualsManager {
         final completeFilePath = '$cacheDir/$filePath';
         final file = File(completeFilePath);
         file.deleteSync();
-        print("File '$filePath' removed.");
       }
     }
   }
