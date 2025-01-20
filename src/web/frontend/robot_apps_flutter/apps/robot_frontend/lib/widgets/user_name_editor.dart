@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
+import 'package:robot_frontend/models/custom_focus_node.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/buttons/custom_dropdown_button.dart';
+import 'package:robot_frontend/widgets/custom_textfield.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 
@@ -19,14 +21,14 @@ class UserNameEditor extends StatefulWidget {
 }
 
 class _UserNameEditorState extends State<UserNameEditor> {
-  late final TextEditingController firstNameController;
-  late final TextEditingController lastNameController;
+  late final CustomFocusNode firstNameController;
+  late final CustomFocusNode lastNameController;
 
   @override
   void initState() {
     super.initState();
-    firstNameController = TextEditingController(text: widget.controller.firstName);
-    lastNameController = TextEditingController(text: widget.controller.lastName);
+    firstNameController = CustomFocusNode(key: GlobalKey(), text: widget.controller.firstName);
+    lastNameController = CustomFocusNode(key: GlobalKey(), text: widget.controller.lastName);
   }
 
   @override
@@ -56,10 +58,9 @@ class _UserNameEditorState extends State<UserNameEditor> {
             ),
             Expanded(
               flex: 3,
-              child: TextField(
-                controller: firstNameController,
-                onChanged: (value) => widget.controller.firstName = value,
-                style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),
+              child: CustomTextfield(
+                focusNode: firstNameController,
+                onChanged: (firstName) => widget.controller.firstName = firstName,
               ),
             ),
             const SizedBox(
@@ -67,10 +68,9 @@ class _UserNameEditorState extends State<UserNameEditor> {
             ),
             Expanded(
               flex: 3,
-              child: TextField(
-                controller: lastNameController,
-                onChanged: (value) => widget.controller.lastName = value,
-                style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),
+              child: CustomTextfield(
+                focusNode: lastNameController,
+                onChanged: (lastName) => widget.controller.lastName = lastName,
               ),
             ),
           ],
