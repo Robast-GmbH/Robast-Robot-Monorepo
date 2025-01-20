@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
-import 'package:robot_frontend/models/controller/location_selection_controller.dart';
-import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
-import 'package:robot_frontend/models/controller/user_selection_controller.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
-import 'package:robot_frontend/widgets/custom_elevated_button.dart';
-import 'package:robot_frontend/widgets/location_selector.dart';
+import 'package:robot_frontend/widgets/buttons/custom_elevated_button.dart';
+import 'package:robot_frontend/widgets/dialogs/nfc_missing_dialog.dart';
+import 'package:robot_frontend/widgets/selectors/location_selector.dart';
 import 'package:robot_frontend/widgets/rounded_container.dart';
-import 'package:robot_frontend/widgets/user_groups_selector.dart';
-import 'package:robot_frontend/widgets/user_selector.dart';
+import 'package:robot_frontend/widgets/selectors/time_selector.dart';
+import 'package:robot_frontend/widgets/selectors/user_groups_selector.dart';
+import 'package:robot_frontend/widgets/selectors/user_selector.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class ContentDistributionView extends StatefulWidget {
   const ContentDistributionView({
@@ -19,18 +18,21 @@ class ContentDistributionView extends StatefulWidget {
     required this.userSelectionControllers,
     required this.userGroupsSelectionControllers,
     required this.locationSelectionControllers,
+    required this.deliveryTimeControllers,
     super.key,
   }) : assert(
           preselectedSubmodules.length == userSelectionControllers.length &&
               preselectedSubmodules.length == locationSelectionControllers.length &&
-              preselectedSubmodules.length == userGroupsSelectionControllers.length,
-          'preselectedSubmodules, userSelectionControllers, userGroupsSelectionControllers and locationSelectionControllers must have the same length',
+              preselectedSubmodules.length == userGroupsSelectionControllers.length &&
+              preselectedSubmodules.length == deliveryTimeControllers.length,
+          'preselectedSubmodules, userSelectionControllers, userGroupsSelectionControllers, locationSelectionControllers and deliveryTimeControllers must have the same length',
         );
 
   final List<SubmoduleAddress> preselectedSubmodules;
   final List<UserSelectionController> userSelectionControllers;
   final List<UserGroupsSelectionController> userGroupsSelectionControllers;
   final List<LocationSelectionController> locationSelectionControllers;
+  final List<DeliveryTimeController> deliveryTimeControllers;
 
   @override
   State<ContentDistributionView> createState() => _ContentDistributionViewState();
@@ -41,7 +43,7 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
     for (var i = 0; i < widget.preselectedSubmodules.length; i++) {
       final userSelectionController = widget.userSelectionControllers[i];
       final userGroupsSelectionController = widget.userGroupsSelectionControllers[i];
-      if (userSelectionController.selectedUser == null && userGroupsSelectionController.selectionAsStringList().isEmpty) {
+      if (userSelectionController.selectedUser == null && userGroupsSelectionController.userGroups.isEmpty) {
         return false;
       }
       final locationController = widget.locationSelectionControllers[i];
@@ -70,71 +72,82 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                 return ListView(
                   children: List.generate(widget.preselectedSubmodules.length, (index) {
                     final submodule = selectedSubmodules[index];
-                    return RoundedContainer(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8, bottom: 4),
-                              child: Text(
-                                'Modul ${submodule.address.moduleID} Submodul ${submodule.address.submoduleID}',
-                                style: const TextStyle(fontSize: 32, color: RobotColors.primaryText),
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: RoundedContainer(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8, bottom: 4),
+                                child: Text(
+                                  'Modul ${Provider.of<ModuleProvider>(context, listen: false).getSubmodulePosition(submodule)} Submodul ${submodule.address.submoduleID}',
+                                  style: const TextStyle(fontSize: 32, color: RobotColors.primaryText),
+                                ),
                               ),
-                            ),
-                            RoundedContainer(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                child: Row(
-                                  children: [
-                                    const Text(
-                                      'Inhalte',
-                                      style: TextStyle(fontSize: 24, color: RobotColors.secondaryText),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        submodule.contentToString(),
-                                        textAlign: TextAlign.end,
-                                        style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),
+                              RoundedContainer(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                  child: Row(
+                                    children: [
+                                      const Text(
+                                        'Inhalte',
+                                        style: TextStyle(fontSize: 24, color: RobotColors.secondaryText),
                                       ),
-                                    ),
-                                  ],
+                                      Expanded(
+                                        child: Text(
+                                          submodule.contentToString(),
+                                          textAlign: TextAlign.end,
+                                          style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Expanded(
-                                  flex: 2,
-                                  child: LocationSelector(
-                                    controller: widget.locationSelectionControllers[index],
-                                    label: 'Zielort',
-                                    onChanged: () => setState(() {}),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: LocationSelector(
+                                      controller: widget.locationSelectionControllers[index],
+                                      label: 'Zielort',
+                                      onChanged: () => setState(() {}),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: UserSelector(
-                                    controller: widget.userSelectionControllers[index],
-                                    onChanged: () => setState(() {}),
+                                  const SizedBox(
+                                    width: 8,
                                   ),
-                                ),
-                                SizedBox(width: 8),
-                                Expanded(
-                                  child: UserGroupsSelector(
-                                    controller: widget.userGroupsSelectionControllers[index],
-                                    onChanged: () => setState(() {}),
+                                  Expanded(
+                                    child: TimeSelector(
+                                      deliveryTimeController: widget.deliveryTimeControllers[index],
+                                    ),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: UserSelector(
+                                      controller: widget.userSelectionControllers[index],
+                                      onChanged: () => setState(() {}),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: UserGroupsSelector(
+                                      controller: widget.userGroupsSelectionControllers[index],
+                                      onChanged: () => setState(() {}),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
@@ -151,6 +164,20 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                 child: CustomElevatedButton(
                   enabled: validateContentToTargetAssignments(),
                   onPressed: () async {
+                    final usersWithMissingNfc = widget.userSelectionControllers
+                        .map((controller) => controller.selectedUser)
+                        .where((user) => user != null && (user.nfcID?.isEmpty ?? true))
+                        .toList();
+                    if (usersWithMissingNfc.isNotEmpty) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => NfcMissingDialog(
+                          identifiers: usersWithMissingNfc.map((user) => '${user!.firstName} ${user.lastName}').toList(),
+                        ),
+                      );
+                      return;
+                    }
+
                     final submodules = Provider.of<ModuleProvider>(context, listen: false).submodules;
                     final taskProvider = Provider.of<TaskProvider>(context, listen: false);
                     for (var i = 0; i < widget.preselectedSubmodules.length; i++) {
@@ -158,13 +185,14 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                       final submodule = submodules.firstWhere((element) => element.address == submoduleAddress);
                       final controller = widget.userSelectionControllers[i];
                       final user = controller.selectedUser;
-                      final userGroups = widget.userGroupsSelectionControllers[i].selectionAsStringList();
+                      final userGroups = widget.userGroupsSelectionControllers[i].userGroups;
                       await taskProvider.createDirectDropoffTask(
                         robotName: 'rb_theron',
                         dropoffTargetID: widget.locationSelectionControllers[i].room!,
                         user: user,
                         userGroups: userGroups,
                         submodule: submodule,
+                        earliestStartTime: widget.deliveryTimeControllers[i].timeAsSecondsSinceEpoch(),
                       );
                     }
                     if (context.mounted) {

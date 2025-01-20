@@ -9,9 +9,12 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <build_depend>pybind11-dev</build_depend>
+  <exec_depend>python3</exec_depend>
+
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
-  <depend>rclcpp</depend>
+  <test_depend>communication_interfaces</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

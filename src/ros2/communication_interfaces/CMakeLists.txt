@@ -22,37 +22,31 @@ find_package(nav_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 
-
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/ChangeFootprint.action"
   "action/ChangeFootprintPadding.action"
   "action/ComputeInterimGoal.action"
-  "action/DrawerInteraction.action"
-  "action/DrawerUserAccess.action"
+  "action/ElectricalDrawerMotorControl.action"
   "action/ImportYamlPoses.action"
+  "action/ModuleConfig.action"
 
   "srv/HandleDrawer.srv"
-  "srv/ShelfSetupInfo.srv"
   "srv/ShowDrawerInterface.srv"
   "srv/WriteNfcNtagPayload.srv"
   "srv/ReadNfcTag.srv"
   "srv/ReadNfcNtagPayload.srv"
 
-  "msg/Box.msg"
   "msg/DrawerAddress.msg"
   "msg/DrawerStatus.msg"
   "msg/DrawerTask.msg"
   "msg/ElectricalDrawerStatus.msg"
+  "msg/Heartbeat.msg"
   "msg/Led.msg"
   "msg/LedCmd.msg"
-  "msg/Module.msg"
-  "msg/ModuleConfig.msg"
   "msg/NfcReadStatus.msg"
   "msg/NfcWriteStatus.msg"
-  "msg/Task.msg"
-  "msg/TaskStatus.msg"
-  "msg/Ticket.msg"
   "msg/TrayTask.msg"
+  "msg/StateFeedback.msg"
 
   "error_msgs/ErrorBaseMsg.msg"
   DEPENDENCIES builtin_interfaces geometry_msgs std_msgs nav_msgs

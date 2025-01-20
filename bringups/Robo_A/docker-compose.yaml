@@ -1,55 +1,57 @@
-version: '3.9'
-
 services:
-  # navigation:
-  #   image: ghcr.io/robast-gmbh/monorepo/navigation:release
-  #   environment:
-  #     - ROS_DOMAIN_ID=0
-  #     - UID=1000
-  #   volumes:
-  #     - ./start_scripts/:/start_scripts/:cached
-  #     - /tmp/.X11-unix:/tmp/.X11-unix
-  #     - /dev/shm:/dev/shm
-  #   command: /bin/sh -c "./start_scripts/nav_start.sh"
-  #   stop_signal: SIGINT
-  #   network_mode: "host"
+  navigation:
+    image: ghcr.io/robast-gmbh/monorepo/navigation:release-humble
+    environment:
+      - ROS_DOMAIN_ID=23
+      - init_x=0.0
+      - init_y=0.0
+      - init_z=0.0
+      - init_yaw=0.0
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    volumes:
+      - ./start_scripts/:/start_scripts/:ro
+      - ./logs/:/logs/:rw
+    stop_signal: SIGINT
+    restart: unless-stopped
+    pull_policy: always
+    network_mode: "host"
+    command: /bin/sh -c "/start_scripts/ping_and_wait.sh && /start_scripts/nav_start.sh"
 
-  #statemachine:
-  #  image: ghcr.io/robast-gmbh/monorepo/statemachine:release
-  #  environment:
-  #    - ROS_DOMAIN_ID=23
-  #    - UID=1000
-  #    - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-  #  volumes:
-  #    - ./start_scripts/:/start_scripts/:cached
-  #  command: /bin/sh -c "./start_scripts/statemachine_start.sh"
-  #  stop_signal: SIGINT
-  #  restart: unless-stopped
-  #  network_mode: "host"
+  laser_fusion:
+    image: ghcr.io/robast-gmbh/monorepo/sensors/ira_laser_tools:humble
+    environment:
+      - ROS_DOMAIN_ID=23
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+      - UID=1000
+    volumes:
+      - ./DDS/:/robast/dds_configs/:ro
+    stop_signal: SIGINT
+    restart: unless-stopped
+    network_mode: "host"
 
-  #hardware_nodes:
-  #  image: ghcr.io/robast-gmbh/monorepo/hardware_nodes:release
-  #  environment:
-  #    - ROS_DOMAIN_ID=23
-  #    - UID=1000
-  #    - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-  #  volumes:
-  #    - ./start_scripts/:/start_scripts/:cached
-  #    - /dev/shm:/dev/shm
-  #  command: /bin/sh -c "./start_scripts/hardware_nodes_start.sh"
-  #  stop_signal: SIGINT
-  #  restart: unless-stopped
-  #  network_mode: "host"
+  robot_backend:
+    image: ghcr.io/robast-gmbh/monorepo/robot_backend:release-humble
+    environment:
+      - ROS_DOMAIN_ID=23
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    volumes:
+      - ./start_scripts/:/start_scripts/:ro
+      - ./log/:/home/robast/log/:rw
+    stop_signal: SIGINT
+    restart: unless-stopped
+    pull_policy: always
+    network_mode: "host"
+    entrypoint: ["/bin/sh", "-c", "sudo chmod -R 777 /home/robast/log && /start_scripts/ping_and_wait.sh && /start_scripts/backend_start.sh"]
 
-  # sick_safevisionary:
-  #   image: ghcr.io/robast-gmbh/monorepo/sick_safevisionary:release
-  #   environment:
-  #     - ROS_DOMAIN_ID=0
-  #     - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-  #   volumes:
-  #     - ./start_scripts/:/start_scripts/:cached
-  #     - ../../src/ros2/dds_configs/:/ws/dds_configs/:cached
-  #   command: /bin/bash -c "source /ws/install/setup.bash; ros2 launch sick_safevisionary_driver driver_node.launch.py frame_id:=robot_sick_safevisionary_link"
-  #   stop_signal: SIGINT
-  #   restart: unless-stopped
-  #   network_mode: "host"
+  middleware:
+    image: ghcr.io/robast-gmbh/monorepo/middleware:profi
+    environment:
+      - ROS_DOMAIN_ID=23
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    volumes:
+      - ./start_scripts/:/start_scripts/:ro
+    stop_signal: SIGINT
+    restart: unless-stopped
+    pull_policy: always
+    network_mode: "host"
+    command: /bin/sh -c "/start_scripts/ping_and_wait.sh && /start_scripts/middleware_start.sh"

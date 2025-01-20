@@ -3,12 +3,16 @@
 
 #include <cstdint>
 
+#include "debug/debug.hpp"
+
 namespace motor
 {
   class MotorConfig
   {
    public:
     MotorConfig() = default;
+
+    void print_all_configs() const;
 
     void set_is_shaft_direction_inverted(const bool is_shaft_direction_inverted);
     void set_tcoolthrs(const uint32_t tcoolthrs);

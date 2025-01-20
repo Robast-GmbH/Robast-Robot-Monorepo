@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class ModuleView extends StatelessWidget {
   const ModuleView({
@@ -33,7 +33,7 @@ class ModuleView extends StatelessWidget {
                 child: Container(
                   decoration: BoxDecoration(
                     color: enabled ? Colors.black.withOpacity(0.2) : Colors.black.withOpacity(0.05),
-                    border: isReserved
+                    border: isReserved && enabled
                         ? Border.all(
                             color: Colors.black87,
                             width: 8,

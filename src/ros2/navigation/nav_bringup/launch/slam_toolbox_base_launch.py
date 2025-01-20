@@ -1,8 +1,6 @@
 import os
 import yaml
 
-import yaml
-
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
@@ -26,10 +24,20 @@ from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
+    init_x = None
+    init_y = None
+    init_yaw = None
 
-    init_x = os.environ['init_x']
-    init_y = os.environ["init_y"]
-    init_yaw = os.environ["init_yaw"]
+    if os.path.isfile('/logs/last_pose.yaml'):
+        with open('/logs/last_pose.yaml', 'r') as file:
+            config = yaml.safe_load(file)
+            init_x = config['map_pose']['position']['x']
+            init_y = config['map_pose']['position']['y']
+            init_yaw = config['map_pose']['orientation']['yaw']
+    else:
+        init_x = os.getenv('init_x')
+        init_y = os.getenv('init_y')
+        init_yaw = os.getenv('init_yaw')
     
     nav_bringup_dir = get_package_share_directory("nav_bringup")
 

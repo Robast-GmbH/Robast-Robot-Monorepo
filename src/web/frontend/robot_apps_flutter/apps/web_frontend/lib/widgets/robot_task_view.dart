@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_data_models/shared_data_models.dart';
+import 'package:web_frontend/constants/web_colors.dart';
 import 'package:web_frontend/models/provider/task_provider.dart';
+import 'package:web_frontend/pages/tasks_history_page.dart';
+import 'package:web_frontend/widgets/expandable_subtask_tile.dart';
+import 'package:web_frontend/widgets/rounded_container.dart';
 
 class RobotTaskView extends StatefulWidget {
   const RobotTaskView({required this.robotName, super.key});
@@ -13,48 +17,130 @@ class RobotTaskView extends StatefulWidget {
 }
 
 class _RobotTaskViewState extends State<RobotTaskView> {
+  late Future<RobotTaskStatus?> fetchRobotTasks;
   @override
   void initState() {
     super.initState();
-    Provider.of<RMFProvider>(context, listen: false).startPeriodicTasksUpdate();
+    fetchRobotTasks = Provider.of<TaskProvider>(context, listen: false).getRobotTasks(robotName: widget.robotName);
   }
 
   @override
   void deactivate() {
-    Provider.of<RMFProvider>(context, listen: false).stopPeriodicTasksUpdate();
     super.deactivate();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Selector<RMFProvider, List<Task>>(
-      selector: (_, provider) => provider.tasks,
-      builder: (context, tasks, child) {
-        final filteredTasks = tasks.where((task) => task.assigneeName == widget.robotName).toList();
-        return ListView.builder(
-          itemCount: filteredTasks.length,
-          itemBuilder: (context, index) {
-            return Card(
-              elevation: 5,
-              margin: const EdgeInsets.all(16),
-              child: ListTile(
-                leading: CircleAvatar(
-                  child: Text(filteredTasks[index].id.characters.last),
-                ),
-                title: Text('Task ID: ${filteredTasks[index].id}'),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: RoundedContainer(
+        color: Colors.white.withOpacity(0.2),
+        child: Center(
+          child: FutureBuilder<RobotTaskStatus?>(
+            future: fetchRobotTasks,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const CircularProgressIndicator();
+              }
+              if (snapshot.data == null) {
+                return const Text('Fail not handled');
+              }
+              final robotTaskStatus = snapshot.data!;
+              final activeTask = robotTaskStatus.activeTask;
+              final queuedTasks = robotTaskStatus.queuedTasks;
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Category: ${filteredTasks[index].name}'),
-                    const Text('State: To be implemented'),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 8, top: 16),
+                      child: Text(
+                        'Aktiv',
+                        style: TextStyle(fontSize: 24, color: WebColors.secondaryText),
+                      ),
+                    ),
+                    if (activeTask != null)
+                      ExpandableSubtaskTile(
+                        subtask: activeTask,
+                      )
+                    else
+                      const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          'Kein Auftrag aktiv',
+                          style: TextStyle(color: WebColors.secondaryText, fontSize: 20),
+                        ),
+                      ),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 8, top: 16),
+                      child: Text(
+                        'In Warteschlange',
+                        style: TextStyle(fontSize: 24, color: WebColors.secondaryText),
+                      ),
+                    ),
+                    if (queuedTasks.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          'Keine Aufträge in Warteschlange',
+                          style: TextStyle(color: WebColors.secondaryText, fontSize: 20),
+                        ),
+                      )
+                    else
+                      Expanded(
+                        child: ListView(
+                          children: List.generate(
+                            queuedTasks.length,
+                            (index) => Column(
+                              children: [
+                                ExpandableSubtaskTile(
+                                  subtask: queuedTasks[index],
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<TasksHistoryPage>(
+                            builder: (context) => TasksHistoryPage(
+                              robotName: widget.robotName,
+                            ),
+                          ),
+                        );
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 8, top: 16, bottom: 16),
+                        child: Row(
+                          children: [
+                            Text(
+                              'Vergangene Aufträge',
+                              style: TextStyle(fontSize: 24, color: WebColors.secondaryText),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Icon(
+                              Icons.arrow_forward,
+                              size: 24,
+                              color: WebColors.secondaryIcon,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-                trailing: const Icon(Icons.more_vert),
-              ),
-            );
-          },
-        );
-      },
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }

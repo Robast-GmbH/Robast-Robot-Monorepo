@@ -27,24 +27,6 @@ class RobotApiUtilities {
     }
   }
 
-  Future<List<SubmoduleModule>?> getSubmodules() async {
-    final modules = <SubmoduleModule>[];
-    try {
-      final response = await http.get(Uri.parse('$prefix/submodules'));
-      if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body) as List<dynamic>;
-        for (final module in jsonData) {
-          modules.add(
-            SubmoduleModule.fromJson(data: module as Map<String, dynamic>),
-          );
-        }
-      }
-      return modules;
-    } catch (e) {
-      return null;
-    }
-  }
-
   Future<bool> openSubmodule({
     required int moduleID,
     required int submoduleID,
@@ -132,6 +114,168 @@ class RobotApiUtilities {
       }
     } catch (e) {
       return false;
+    }
+  }
+
+  Future<bool> getIsRobotLost() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(
+        Uri.parse('$prefix/robot_lost'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        return data['data'] as bool;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> setInitialRobotPoint({required Pose pose}) async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.post(
+        Uri.parse('$prefix/set_initial_point?x=${pose.x}&y=${pose.y}&z=${pose.yaw}'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<BatteryStatus?> getBatteryStatus() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(
+        Uri.parse('$prefix/battery_status'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        if (data['status'] == 'success') {
+          return BatteryStatus.fromJson(data['data'] as Map<String, dynamic>);
+        }
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<int?> getRemainingDisinfections() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(
+        Uri.parse('$prefix/disinfection_module_status'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        if (data['status'] == 'success') {
+          return data['remaining_disinfections'] as int;
+        }
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<bool> refillDisinfectionFluidContainer() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.post(
+        Uri.parse('$prefix/refill_disinfection_fluid_container'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool?> getEmergencyStopPressed() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(
+        Uri.parse('$prefix/emergency_stop_pressed'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        return data['data'] as bool;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<Set<int>?> getHeartbeatTimeoutErrors() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(
+        Uri.parse('$prefix/heartbeat_timeout_errors'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as List<dynamic>;
+        return data
+            .map(
+              (e) => int.parse(
+                (e as Map<String, dynamic>)['error_data'] as String,
+              ),
+            )
+            .toSet();
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<Set<int>?> getLivingDevices() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(
+        Uri.parse('$prefix/living_devices'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as List<dynamic>;
+        return data.map((e) => e as int).toSet();
+      }
+      return null;
+    } catch (e) {
+      return null;
     }
   }
 }

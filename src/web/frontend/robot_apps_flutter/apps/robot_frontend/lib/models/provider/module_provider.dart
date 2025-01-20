@@ -1,39 +1,59 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class ModuleProvider extends ChangeNotifier {
-  List<Submodule> _submodules = [];
-  List<Submodule> get submodules => _submodules;
-  Timer? _submodulesUpdateTimer;
+  List<List<Submodule>> _modules = [];
+  List<List<Submodule>> get modules => _modules;
+
+  List<Submodule> get submodules => _modules.fold([], (prev, module) {
+        prev.addAll(module);
+        return prev;
+      });
+  Timer? _modulesUpdateTimer;
   bool isInSubmoduleProcess = false;
 
   final _middlewareApiUtilities = MiddlewareApiUtilities();
 
   Future<void> startSubmodulesUpdateTimer({VoidCallback? onModuleProcess}) async {
-    _submodulesUpdateTimer?.cancel();
-    final submodules = await _middlewareApiUtilities.modules.getSubmodules(robotName: 'rb_theron');
-    _setSubmodules(submodules);
+    _modulesUpdateTimer?.cancel();
+    await fetchModules();
 
-    _submodulesUpdateTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
-      await fetchSubmodules();
-      if (_submodules.any((element) => element.moduleProcess.status != ModuleProcessStatus.idle)) {
+    _modulesUpdateTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
+      await fetchModules();
+      if (submodules.any((element) => element.moduleProcess.status != ModuleProcessStatus.idle)) {
         onModuleProcess?.call();
       }
     });
   }
 
   void stopSubmodulesUpdateTimer() {
-    _submodulesUpdateTimer?.cancel();
+    _modulesUpdateTimer?.cancel();
   }
 
-  Future<void> fetchSubmodules() async {
+  Future<void> fetchModules() async {
     final submodules = await _middlewareApiUtilities.modules.getSubmodules(robotName: 'rb_theron');
-    _setSubmodules(submodules);
+    if (submodules.isNotEmpty) {
+      submodules.sort((a, b) => a.position.compareTo(b.position));
+      _setModules(submodules);
+    }
   }
 
-  void _setSubmodules(List<Submodule> submodules) {
-    _submodules = submodules;
+  void _setModules(List<Submodule> submodules) {
+    final updatedModules = <List<Submodule>>[];
+    int currentModuleIndex = 0;
+    int positionIndex = -1;
+    for (final submodule in submodules) {
+      if (submodule.position != currentModuleIndex) {
+        currentModuleIndex = submodule.position;
+        updatedModules.add([submodule]);
+        positionIndex++;
+      } else {
+        updatedModules[positionIndex].add(submodule);
+      }
+    }
+    _modules = updatedModules;
     notifyListeners();
   }
 
@@ -99,6 +119,13 @@ class ModuleProvider extends ChangeNotifier {
     );
   }
 
+  Future<void> cancelSubmoduleProcess(Submodule submoduleInProcess) async {
+    await _middlewareApiUtilities.modules.cancelSubmoduleProcess(
+      robotName: submoduleInProcess.robotName,
+      submoduleAddress: submoduleInProcess.address,
+    );
+  }
+
   Future<bool> reserveSubmodule({
     required SubmoduleAddress submoduleAddress,
     String taskID = '',
@@ -121,5 +148,19 @@ class ModuleProvider extends ChangeNotifier {
       robotName: 'rb_theron',
       submoduleAddress: submoduleAddress,
     );
+  }
+
+  int getSubmodulePosition(Submodule submodule) {
+    return _modules.indexWhere((element) => element.contains(submodule)) + 1;
+  }
+
+  Future<void> cancelAllActiveModuleProcesses() async {
+    for (final submodule in submodules) {
+      if (submodule.moduleProcess.status != ModuleProcessStatus.idle) {
+        await closeSubmodule(submodule);
+        await cancelSubmoduleProcess(submodule);
+      }
+      isInSubmoduleProcess = false;
+    }
   }
 }

@@ -13,17 +13,17 @@ namespace drawer
    public:
     ManualDrawer(const uint32_t module_id,
                  const uint8_t id,
-                 const std::shared_ptr<robast_can_msgs::CanDb> can_db,
+                 const std::shared_ptr<can_toolbox::CanUtils> can_utils,
                  const std::shared_ptr<switch_lib::Switch> endstop_switch,
                  const std::shared_ptr<lock::ElectricalDrawerLock> drawer_lock);
-
-    std::optional<robast_can_msgs::CanMessage> can_out() override;
 
     void update_state() override;
 
     void unlock() override;
 
     void add_e_drawer_task_to_queue(const utils::EDrawerTask &e_drawer_task) override;
+
+    void set_motor_driver_state(const bool enabled, const uint8_t motor_id) const override;
 
    private:
     const uint32_t _module_id;
@@ -33,7 +33,7 @@ namespace drawer
 
     const std::shared_ptr<lock::ElectricalDrawerLock> _drawer_lock;
 
-    const std::unique_ptr<can_toolbox::CanUtils> _can_utils;
+    const std::shared_ptr<can_toolbox::CanUtils> _can_utils;
 
     bool _triggered_closing_lock_after_opening = false;
 

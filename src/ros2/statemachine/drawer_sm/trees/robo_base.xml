@@ -3,6 +3,10 @@
       main_tree_to_execute="BehaviorTree">
   <BehaviorTree ID="BehaviorTree">
     <Sequence>
+      <SetDefaultLEDColor red="{red}"
+                          green="{green}"
+                          blue="{blue}"
+                          brightness="{brightness}"/>
       <GetBlackboardEntry key="drawer_address"
                           value="{drawer}"/>
       <KeepRunningUntilFailure>
@@ -10,82 +14,322 @@
           <IsRobotChargingCondition target_value="true"
                                     topic="/robot/battery_estimator/data"
                                     battery_level="{battery}"/>
+          <SubTree ID="show_charging_state"
+                   _autoremap="true"/>
           <Sequence>
-            <InitLEDVector size="128"
+            <InitLEDVector size="119"
                            led_vector="{leds}"/>
             <PartialColorizeLED LEDs="{leds}"
-                                blue="255"
-                                brightness="100"
-                                green="0"
+                                blue="{blue}"
+                                brightness="{brightness}"
+                                green="{green}"
                                 lower_bound="0.0"
-                                red="0"
-                                upper_bound="{battery}"
-                                LEDs_colored="{leds}"/>
-            <PartialColorizeLED LEDs="{leds}"
-                                blue="0"
-                                brightness="0"
-                                green="0"
-                                lower_bound="{battery}"
-                                red="0"
+                                red="{red}"
                                 upper_bound="100.0"
                                 LEDs_colored="{leds}"/>
             <IfThenElse>
-              <LEDChangedCondition led_vector="{leds}"/>
-              <LEDPublisherAction drawer_address="{drawer}"
-                                  fading_time_ms="100"
-                                  led_topic="/led_cmd"
-                                  leds="{leds}"/>
-              <AlwaysSuccess/>
-            </IfThenElse>
-          </Sequence>
-          <Sequence>
-            <InitLEDVector size="128"
-                           led_vector="{leds}"/>
-            <PartialColorizeLED LEDs="{leds}"
-                                blue="0"
-                                brightness="25"
-                                green="255"
-                                lower_bound="0.0"
-                                red="0"
-                                upper_bound="100.0"
-                                LEDs_colored="{leds}"/>
-            <IfThenElse>
-              <BoolTopicCondition target_value="true"
-                                  topic="/robot/safety_module/emergency_stop"/>
+              <DoubleCompareCondition target_value="10.0"
+                                      value="{battery}"
+                                      comparison="&lt;"/>
               <PartialColorizeLED LEDs="{leds}"
-                                  blue="0"
-                                  brightness="100"
-                                  green="0"
+                                  blue="87"
+                                  brightness="255"
+                                  green="80"
                                   lower_bound="0.0"
-                                  red="255"
+                                  red="100"
                                   upper_bound="100.0"
                                   LEDs_colored="{leds}"/>
               <AlwaysSuccess/>
             </IfThenElse>
-            <IfThenElse>
-              <BoolTopicCondition target_value="true"
-                                  topic="/robot/safety_module/safety_stop"/>
-              <PartialColorizeLED LEDs="{leds}"
-                                  blue="0"
-                                  brightness="100"
-                                  green="0"
-                                  lower_bound="27.0"
-                                  red="255"
-                                  upper_bound="50.0"
-                                  LEDs_colored="{leds}"/>
-              <AlwaysSuccess/>
-            </IfThenElse>
+            <SubTree ID="E-Stop"
+                     _autoremap="true"/>
             <IfThenElse>
               <LEDChangedCondition led_vector="{leds}"/>
               <LEDPublisherAction drawer_address="{drawer}"
                                   fading_time_ms="100"
-                                  led_topic="/led_cmd"
+                                  led_topic="/safety/led_cmd"
                                   leds="{leds}"/>
               <AlwaysSuccess/>
             </IfThenElse>
           </Sequence>
         </IfThenElse>
       </KeepRunningUntilFailure>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="E-Stop">
+    <IfThenElse>
+      <BoolTopicCondition target_value="true"
+                          topic="/robot/safety_module/emergency_stop"/>
+      <PartialColorizeLED LEDs="{leds}"
+                          blue="0"
+                          brightness="255"
+                          green="0"
+                          lower_bound="0"
+                          red="255"
+                          upper_bound="100"
+                          LEDs_colored="{leds}"/>
+      <SubTree ID="safety_stop"
+               _autoremap="true"/>
+    </IfThenElse>
+  </BehaviorTree>
+
+  <BehaviorTree ID="blinker">
+    <Sequence>
+      <EvaluateDriveDirection global_path_topic="/plan"
+                              cmd_vel_topic="/robot/robotnik_base_control/cmd_vel_unsafe"
+                              prediction_horizon="50"
+                              global_frame="map"
+                              base_frame="robot/base_link"
+                              direction="{direction}"/>
+      <PublishStringTopic topic="/direction"
+                          message="{direction}"/>
+      <Switch5 case_1="sleeping"
+               case_2="standing"
+               case_3="left"
+               case_4="right"
+               case_5="forward"
+               variable="{direction}">
+        <IfThenElse>
+          <PathTopicCondition topic="/plan"
+                              valid_path_age_in_ms="2000"
+                              num_of_minimal_poses="10"/>
+          <Sequence>
+            <PartialColorizeLED LEDs="{leds}"
+                                blue="0"
+                                brightness="255"
+                                green="80"
+                                lower_bound="0"
+                                red="255"
+                                upper_bound="100"
+                                LEDs_colored="{leds}"/>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="100"
+                                led_topic="/safety/led_cmd"
+                                leds="{leds}"/>
+            <Delay delay_msec="500">
+              <PartialColorizeLED LEDs="{leds}"
+                                  blue="{blue}"
+                                  brightness="{brightness}"
+                                  green="{green}"
+                                  lower_bound="0.0"
+                                  red="{red}"
+                                  upper_bound="100.0"
+                                  LEDs_colored="{leds}"/>
+            </Delay>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="300"
+                                led_topic="/safety/led_cmd"
+                                leds="{leds}"/>
+            <Delay delay_msec="500">
+              <PartialColorizeLED LEDs="{leds}"
+                                  blue="0"
+                                  brightness="255"
+                                  green="80"
+                                  lower_bound="0"
+                                  red="255"
+                                  upper_bound="100"
+                                  LEDs_colored="{leds}"/>
+            </Delay>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="100"
+                                led_topic="/safety/led_cmd"
+                                leds="{leds}"/>
+            <Delay delay_msec="500">
+              <PartialColorizeLED LEDs="{leds}"
+                                  blue="{blue}"
+                                  brightness="{brightness}"
+                                  green="{green}"
+                                  lower_bound="0.0"
+                                  red="{red}"
+                                  upper_bound="100.0"
+                                  LEDs_colored="{leds}"/>
+            </Delay>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="300"
+                                led_topic="/safety/led_cmd"
+                                leds="{leds}"/>
+            <Delay delay_msec="550">
+              <AlwaysSuccess/>
+            </Delay>
+          </Sequence>
+          <AlwaysSuccess/>
+        </IfThenElse>
+        <AlwaysSuccess/>
+        <Sequence>
+          <PartialColorizeLED LEDs="{leds}"
+                              blue="{blue}"
+                              brightness="{brightness}"
+                              green="{green}"
+                              lower_bound="0.0"
+                              red="{red}"
+                              upper_bound="100.0"
+                              LEDs_colored="{leds}"/>
+          <PartialColorizeLED LEDs="{leds}"
+                              blue="0"
+                              brightness="255"
+                              green="80"
+                              lower_bound="48.0"
+                              red="255"
+                              upper_bound="77.0"
+                              LEDs_colored="{leds}"/>
+          <LEDPublisherAction drawer_address="{drawer}"
+                              fading_time_ms="100"
+                              led_topic="/safety/led_cmd"
+                              leds="{leds}"/>
+          <Delay delay_msec="800">
+            <PartialColorizeLED LEDs="{leds}"
+                                blue="{blue}"
+                                brightness="{brightness}"
+                                green="{green}"
+                                lower_bound="0.0"
+                                red="{red}"
+                                upper_bound="100.0"
+                                LEDs_colored="{leds}"/>
+          </Delay>
+          <LEDPublisherAction drawer_address="{drawer}"
+                              fading_time_ms="300"
+                              led_topic="/safety/led_cmd"
+                              leds="{leds}"/>
+          <Delay delay_msec="800">
+            <AlwaysSuccess/>
+          </Delay>
+        </Sequence>
+        <Sequence>
+          <PartialColorizeLED LEDs="{leds}"
+                              blue="{blue}"
+                              brightness="{brightness}"
+                              green="{green}"
+                              lower_bound="0.0"
+                              red="{red}"
+                              upper_bound="100.0"
+                              LEDs_colored="{leds}"/>
+          <PartialColorizeLED LEDs="{leds}"
+                              blue="0"
+                              brightness="255"
+                              green="80"
+                              lower_bound="0.0"
+                              red="255"
+                              upper_bound="27.0"
+                              LEDs_colored="{leds}"/>
+          <PartialColorizeLED LEDs="{leds}"
+                              blue="0"
+                              brightness="255"
+                              green="80"
+                              lower_bound="98.0"
+                              red="255"
+                              upper_bound="100.0"
+                              LEDs_colored="{leds}"/>
+          <LEDPublisherAction drawer_address="{drawer}"
+                              fading_time_ms="100"
+                              led_topic="/safety/led_cmd"
+                              leds="{leds}"/>
+          <PartialColorizeLED LEDs="{leds}"
+                              blue="{blue}"
+                              brightness="{brightness}"
+                              green="{green}"
+                              lower_bound="0.0"
+                              red="{red}"
+                              upper_bound="100.0"
+                              LEDs_colored="{leds}"/>
+          <Delay delay_msec="800">
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="300"
+                                led_topic="/safety/led_cmd"
+                                leds="{leds}"/>
+          </Delay>
+          <Delay delay_msec="800">
+            <AlwaysSuccess/>
+          </Delay>
+        </Sequence>
+        <AlwaysSuccess/>
+        <AlwaysSuccess/>
+      </Switch5>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="safety_stop">
+    <IfThenElse>
+      <BoolTopicCondition target_value="true"
+                          topic="/robot/safety_module/safety_stop"/>
+      <Sequence>
+        <PartialColorizeLED LEDs="{leds}"
+                            blue="0"
+                            brightness="100"
+                            green="50"
+                            lower_bound="0.0"
+                            red="255"
+                            upper_bound="100.0"
+                            LEDs_colored="{leds}"/>
+        <IfThenElse>
+          <CheckSafetyRegister key="REAR_LASER_SAFE_ZONE_FREE"
+                               topic="/robot/safety_module/raw_registers"/>
+          <IfThenElse>
+            <CheckSafetyRegister key="FRONT_LASER_SAFE_ZONE_FREE"
+                                 topic="/robot/safety_module/raw_registers"/>
+            <AlwaysSuccess/>
+            <Sequence>
+              <PartialColorizeLED LEDs="{leds}"
+                                  blue="0"
+                                  brightness="100"
+                                  green="0"
+                                  lower_bound="70.4"
+                                  red="255"
+                                  upper_bound="100.0"
+                                  LEDs_colored="{leds}"/>
+              <PartialColorizeLED LEDs="{leds}"
+                                  blue="0"
+                                  brightness="100"
+                                  green="0"
+                                  lower_bound="0.0"
+                                  red="255"
+                                  upper_bound="4.0"
+                                  LEDs_colored="{leds}"/>
+            </Sequence>
+          </IfThenElse>
+          <PartialColorizeLED LEDs="{leds}"
+                              blue="0"
+                              brightness="100"
+                              green="0"
+                              lower_bound="20.0"
+                              red="255"
+                              upper_bound="54.0"
+                              LEDs_colored="{leds}"/>
+        </IfThenElse>
+      </Sequence>
+      <SubTree ID="blinker"
+               _autoremap="true"/>
+    </IfThenElse>
+  </BehaviorTree>
+
+  <BehaviorTree ID="show_charging_state">
+    <Sequence>
+      <InitLEDVector size="119"
+                     led_vector="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}"
+                          blue="255"
+                          brightness="100"
+                          green="0"
+                          lower_bound="0.0"
+                          red="0"
+                          upper_bound="{battery}"
+                          LEDs_colored="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}"
+                          blue="0"
+                          brightness="0"
+                          green="0"
+                          lower_bound="{battery}"
+                          red="0"
+                          upper_bound="100.0"
+                          LEDs_colored="{leds}"/>
+      <IfThenElse>
+        <LEDChangedCondition led_vector="{leds}"/>
+        <LEDPublisherAction drawer_address="{drawer}"
+                            fading_time_ms="100"
+                            led_topic="/safety/led_cmd"
+                            leds="{leds}"/>
+        <AlwaysSuccess/>
+      </IfThenElse>
     </Sequence>
   </BehaviorTree>
 
@@ -98,6 +342,37 @@
       <input_port name="topic"
                   default="/topic_name"/>
     </Condition>
+    <Condition ID="CheckSafetyRegister"
+               editable="true">
+      <input_port name="key"
+                  default="FRONT_LASER_SAFE_ZONE_FREE"/>
+      <input_port name="topic"
+                  default="/robot/safety_module/raw_registers"/>
+    </Condition>
+    <Condition ID="DoubleCompareCondition"
+               editable="true">
+      <input_port name="target_value"
+                  default="0.0"/>
+      <input_port name="value"
+                  default="0.0"/>
+      <input_port name="comparison"
+                  default="=="/>
+    </Condition>
+    <Action ID="EvaluateDriveDirection"
+            editable="true">
+      <input_port name="global_path_topic"
+                  default="/plan"/>
+      <input_port name="cmd_vel_topic"
+                  default="/robot/robotnik_base_control/cmd_vel_unsafe"/>
+      <input_port name="prediction_horizon"
+                  default="60">nav2 plan steps. approx 5cm per step</input_port>
+      <input_port name="global_frame"
+                  default="map"/>
+      <input_port name="base_frame"
+                  default="base_link"/>
+      <output_port name="direction"
+                   default="standing">sleeping, standing, left, right, forward</output_port>
+    </Action>
     <Action ID="GetBlackboardEntry">
       <input_port name="key"
                   default="drawer_address">string</input_port>
@@ -151,6 +426,32 @@
                   default="0.0">double</input_port>
       <output_port name="LEDs_colored"
                    default="{leds}"/>
+    </Action>
+    <Condition ID="PathTopicCondition">
+      <input_port name="topic"
+                  default="/plan"/>
+      <input_port name="valid_path_age_in_ms"
+                  default="2000">uint16</input_port>
+      <input_port name="num_of_minimal_poses"
+                  default="10">uint16</input_port>
+    </Condition>
+    <Action ID="PublishStringTopic"
+            editable="true">
+      <input_port name="topic"
+                  default="/topic">string</input_port>
+      <input_port name="message"
+                  default="message">string</input_port>
+    </Action>
+    <Action ID="SetDefaultLEDColor"
+            editable="true">
+      <output_port name="red"
+                   default="{red}"/>
+      <output_port name="green"
+                   default="{green}"/>
+      <output_port name="blue"
+                   default="{blue}"/>
+      <output_port name="brightness"
+                   default="{brightness}"/>
     </Action>
   </TreeNodesModel>
 

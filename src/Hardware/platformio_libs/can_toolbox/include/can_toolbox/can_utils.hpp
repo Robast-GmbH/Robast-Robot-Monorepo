@@ -35,6 +35,15 @@ namespace can_toolbox
                                        const uint8_t normed_current_position,
                                        const bool is_push_to_close_triggered) const;
 
+    void enqueue_e_drawer_motor_control_msg(const uint32_t module_id,
+                                            const uint8_t motor_id,
+                                            const bool enable_motor,
+                                            const bool confirm_control_change) const;
+
+    void enqueue_heartbeat_msg(const uint32_t module_id, const uint16_t interval_in_ms) const;
+
+    void enqueue_acknowledgement_msg(const uint32_t module_id, const uint16_t reference_msg_id) const;
+
    private:
     const std::unique_ptr<utils::Queue<robast_can_msgs::CanMessage>> _feedback_can_msg_queue =
       std::make_unique<utils::Queue<robast_can_msgs::CanMessage>>();
@@ -57,6 +66,16 @@ namespace can_toolbox
                                                              const bool is_drawer_stall_guard_triggered,
                                                              const uint8_t normed_current_position,
                                                              const bool is_push_to_close_triggered) const;
+
+    robast_can_msgs::CanMessage create_e_drawer_motor_control_msg(const uint32_t module_id,
+                                                                  const uint8_t motor_id,
+                                                                  const bool enable_motor,
+                                                                  const bool confirm_control_change) const;
+
+    robast_can_msgs::CanMessage create_heartbeat_msg(const uint32_t module_id, const uint16_t interval_in_ms) const;
+
+    robast_can_msgs::CanMessage create_acknowledgement_msg(const uint32_t module_id,
+                                                           const uint16_t reference_msg_id) const;
   };
 }   // namespace can_toolbox
 #endif   // CAN_CONTROLLER_CAN_UTILS_HPP

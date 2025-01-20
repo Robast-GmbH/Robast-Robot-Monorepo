@@ -3,12 +3,16 @@
 
 #include <cstdint>
 
+#include "debug/debug.hpp"
+
 namespace motor
 {
   class MotorMonitorConfig
   {
    public:
     MotorMonitorConfig() = default;
+
+    void print_all_configs() const;
 
     void set_active_speed_threshold(const uint32_t active_speed_threshold);
     void set_lower_position_threshold(const uint32_t lower_position_threshold);

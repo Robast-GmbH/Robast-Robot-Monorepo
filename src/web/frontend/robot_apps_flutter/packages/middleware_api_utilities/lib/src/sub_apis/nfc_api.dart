@@ -15,7 +15,10 @@ class NFCApi {
   }
 
   Future<String> readNFC({required String robotName}) async {
-    final response = await RequestService.tryGet(uri: Uri.parse('$prefix/read_nfc_tag?robot_name=$robotName'));
+    final response = await RequestService.tryGet(
+      uri: Uri.parse('$prefix/read_nfc_tag?robot_name=$robotName'),
+      timeoutInMS: 30000,
+    );
     if (response != null) {
       final data = RequestService.responseToMap(response: response);
       return (data['nfc_tag'] as Map<String, dynamic>)['data'] as String;

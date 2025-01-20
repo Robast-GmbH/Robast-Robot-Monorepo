@@ -24,7 +24,7 @@ target_include_directories(library_can
     PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
     $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-) 
+)
 
 if(BUILD_TESTING)   
     include(FetchContent)
@@ -35,7 +35,24 @@ if(BUILD_TESTING)
         GIT_TAG        v3.6.0 
     )
     FetchContent_MakeAvailable(Catch2)
-    
+
+    find_package(pybind11 REQUIRED)
+    find_package(Python3 REQUIRED COMPONENTS Development)
+
+    ## Create Python bindings module
+    add_library(can_db_defines_bindings MODULE
+        ${CMAKE_CURRENT_LIST_DIR}/src/can_db_defines_bindings.cpp
+    )
+
+    # Set properties for Python module so that we can import it with the correct name
+    set_target_properties(can_db_defines_bindings PROPERTIES
+        PREFIX ""
+        SUFFIX ".so"
+    )
+
+    # Link the library_can, pybind11 module, and Python libraries
+    target_link_libraries(can_db_defines_bindings PRIVATE library_can pybind11::module Python3::Python)
+
     add_executable(
         can_test test/tests_robast_can_msgs.cpp ${unit_test_srcs}
     )

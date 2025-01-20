@@ -33,6 +33,11 @@
       <input_port name="target_state">Target state the data field value is checked for</input_port>
     </Condition>
 
+    <Condition ID="StringTopicCondition">
+      <input_port name="topic">Name of the topic, whose data field is checked for target value</input_port>
+      <input_port name="target_value">Target value the data field value is checked for</input_port>
+    </Condition>
+
     <Condition ID="IsIncremented">
       <input_port name="variable_name">name of the state bool in the Blackboard</input_port>
     </Condition>
@@ -41,6 +46,11 @@
       <input_port name="first_integer">BT-Key for the first integer that is compared to the second one</input_port>
       <input_port name="second_integer">BT-Key for the second integer that is compared to the first one</input_port>
     </Condition>
+
+    <Condition ID="CheckPersonInFront">
+      <input_port name="topic">Name of the topic, whose data field is checked for target value</input_port>
+      <input_port name="detection_range">Range in meter in which the person is detected</input_port>
+    </Condition>"
 
     <Condition ID="VariableUpdated">
       <input_port name="variable_name">name of the int in the Blackboard that should be checked</input_port>

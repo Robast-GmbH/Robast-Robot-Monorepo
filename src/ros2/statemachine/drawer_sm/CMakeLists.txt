@@ -5,8 +5,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -18,6 +16,7 @@ find_package(std_msgs REQUIRED)
 find_package(communication_interfaces REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
 find_package(bt_plugins REQUIRED)
+find_package(bt_base_nodes REQUIRED)
 
 set(dependencies
   rclcpp
@@ -27,6 +26,7 @@ set(dependencies
   communication_interfaces
   behaviortree_cpp
   bt_plugins
+  bt_base_nodes
 )
 
 include_directories(
@@ -62,7 +62,6 @@ else()
     message(STATUS "Boost coroutines disabled by CMake option.")
 endif()
 
-
 ament_target_dependencies(drawer_sm_startup_debug
   ${dependencies}
 )
@@ -74,16 +73,16 @@ target_include_directories(drawer_sm_startup_debug
 )
 
 install(TARGETS
-drawer_sm_startup_debug
-DESTINATION lib/${PROJECT_NAME})
+  drawer_sm_startup_debug
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 install(DIRECTORY
-config
-trees
-DESTINATION share/${PROJECT_NAME})
-
-
-install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+  config
+  trees
+  launch
+  DESTINATION share/${PROJECT_NAME}
+)
 
 if(BUILD_TESTING)
   find_package(ament_cmake_lint_cmake REQUIRED)
@@ -91,7 +90,6 @@ if(BUILD_TESTING)
   find_package(ament_cmake_xmllint REQUIRED)
   ament_xmllint()
 endif()
-
 
 ament_export_include_directories(include)
 

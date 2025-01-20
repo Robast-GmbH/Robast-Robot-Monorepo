@@ -1,23 +1,29 @@
+import 'dart:async';
 import 'dart:convert';
-
 import 'package:http/http.dart' as http;
 
 class RequestService {
   static Future<http.Response?> tryGet({
     required Uri uri,
+    int timeoutInMS = 500,
   }) async {
+    final client = http.Client();
     try {
-      final response = await http.get(uri, headers: {
-        'charset': 'utf-8',
-      },);
+      final response = await client.get(
+        uri,
+        headers: {
+          'charset': 'utf-8',
+        },
+      ).timeout(Duration(milliseconds: timeoutInMS));
 
-      if (response.statusCode == 200) {
-        return response;
-      } else {
+      if (response.statusCode != 200) {
         return null;
       }
+      return response;
     } catch (e) {
       return null;
+    } finally {
+      client.close();
     }
   }
 
@@ -30,11 +36,13 @@ class RequestService {
       'Content-Type': 'application/json',
     };
     try {
-      final response = await http.post(
-        uri,
-        headers: headers,
-        body: data != null ? jsonEncode(data) : null,
-      );
+      final response = await http
+          .post(
+            uri,
+            headers: headers,
+            body: data != null ? jsonEncode(data) : null,
+          )
+          .timeout(const Duration(seconds: 10));
       if (response.statusCode == 200) {
         return response;
       } else {
@@ -54,11 +62,13 @@ class RequestService {
       'Content-Type': 'application/json',
     };
     try {
-      final response = await http.put(
-        uri,
-        headers: headers,
-        body: data != null ? jsonEncode(data) : null,
-      );
+      final response = await http
+          .put(
+            uri,
+            headers: headers,
+            body: data != null ? jsonEncode(data) : null,
+          )
+          .timeout(const Duration(seconds: 10));
       if (response.statusCode == 200) {
         return response;
       } else {

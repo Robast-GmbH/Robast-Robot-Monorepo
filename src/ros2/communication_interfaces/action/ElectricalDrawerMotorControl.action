@@ -1,0 +1,10 @@
+#goal
+DrawerAddress module_address
+uint8 motor_id
+bool enable_motor
+---
+#result
+bool success
+---
+#feedback
+std_msgs/Empty feedback

@@ -1,4 +1,3 @@
-// TODO: @Tobi this is just theorycraft. We need a new docker including the robotnik msgs first.
 #ifndef DRAWER_STATEMACHINE_IS_ROBOT_CHARGING_HPP_
 #define DRAWER_STATEMACHINE_IS_ROBOT_CHARGING_HPP_
 

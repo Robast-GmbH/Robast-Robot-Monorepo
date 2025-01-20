@@ -1,42 +1,118 @@
-
-<!--
-  This Behavior Tree replans the global path only if the path becomes invalid and it also has
-  recovery actions specific to planning / control as well as general system issues.
-  This will be continuous if a kinematically valid planner is selected.
--->
-<root main_tree_to_execute="MainTree">
+<?xml version="1.0" encoding="UTF-8"?>
+<root BTCPP_format="3"
+      main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
-    <RecoveryNode number_of_retries="7" name="NavigateRecovery">
-      <PipelineSequence name="NavigateWithReplanning">
-        <RateController hz="1.0">
-          <RecoveryNode number_of_retries="1" name="ComputePathToPose">
-            <Fallback>
-              <ReactiveSequence>
-                <Inverter>
-                  <GlobalUpdatedGoal/>
-                </Inverter>
-                <IsPathValid path="{path}"/>
-              </ReactiveSequence>
-              <ComputePathToPose goal="{goal}" path="{path}" planner_id="GridBased"/>
-            </Fallback>
-            <ClearEntireCostmap name="ClearGlobalCostmap-Context" service_name="global_costmap/clear_entirely_global_costmap"/>
+    <Sequence>
+      <RecoveryNode name="NavigateRecovery"
+                    number_of_retries="7">
+        <PipelineSequence name="NavigateWithReplanning">
+          <RateController hz="1.0">
+            <RecoveryNode name="ComputePathToPose"
+                          number_of_retries="1">
+              <Fallback>
+                <ReactiveSequence>
+                  <Inverter>
+                    <GlobalUpdatedGoal/>
+                  </Inverter>
+                  <IsPathValid path="{path}"/>
+                </ReactiveSequence>
+                <Sequence>
+                  <IfThenElse>
+                    <CheckPersonInFront topic="person_distance"
+                                        detection_range="10"/>
+                    <Wait wait_duration="5"/>
+                    <AlwaysSuccess/>
+                  </IfThenElse>
+                  <ComputePathToPose goal="{goal}"
+                                     path="{path}"
+                                     planner_id="GridBased"/>
+                </Sequence>
+              </Fallback>
+              <ClearEntireCostmap name="ClearGlobalCostmap-Context"
+                                  service_name="global_costmap/clear_entirely_global_costmap"/>
+            </RecoveryNode>
+          </RateController>
+          <IfThenElse>
+            <StringTopicCondition name="IsRobotSleeping"
+                                  topic="/direction"
+                                  target_value="sleeping"/>
+            <Wait wait_duration="2"/>
+            <AlwaysSuccess/>
+          </IfThenElse>
+          <RecoveryNode name="FollowPath"
+                        number_of_retries="2">
+            <FollowPath path="{path}"
+                        controller_id="FollowPath"/>
+            <ClearEntireCostmap name="ClearLocalCostmap-Context"
+                                service_name="local_costmap/clear_entirely_local_costmap"/>
           </RecoveryNode>
-        </RateController>
-        <RecoveryNode number_of_retries="2" name="FollowPath">
-          <FollowPath path="{path}" controller_id="FollowPath"/>
-          <ClearEntireCostmap name="ClearLocalCostmap-Context" service_name="local_costmap/clear_entirely_local_costmap"/>
-        </RecoveryNode>
-      </PipelineSequence>
-      <ReactiveFallback name="RecoveryFallback">
-        <GoalUpdated/>
-        <RoundRobin name="RecoveryActions">
-          <Sequence name="ClearingActions">
-            <ClearEntireCostmap name="ClearLocalCostmap-Subtree" service_name="local_costmap/clear_entirely_local_costmap"/>
-            <ClearEntireCostmap name="ClearGlobalCostmap-Subtree" service_name="global_costmap/clear_entirely_global_costmap"/>
-          </Sequence>
-          <Wait wait_duration="2"/>
-        </RoundRobin>
-      </ReactiveFallback>
-    </RecoveryNode>
+        </PipelineSequence>
+        <ReactiveFallback name="RecoveryFallback">
+          <GoalUpdated/>
+          <RoundRobin name="RecoveryActions">
+            <Sequence name="ClearingActions">
+              <ClearEntireCostmap name="ClearLocalCostmap-Subtree"
+                                  service_name="local_costmap/clear_entirely_local_costmap"/>
+              <ClearEntireCostmap name="ClearGlobalCostmap-Subtree"
+                                  service_name="global_costmap/clear_entirely_global_costmap"/>
+            </Sequence>
+            <Wait wait_duration="2"/>
+          </RoundRobin>
+        </ReactiveFallback>
+      </RecoveryNode>
+    </Sequence>
   </BehaviorTree>
+
+  <!-- Description of Node Models (used by Groot) -->
+  <TreeNodesModel>
+    <Condition ID="CheckPersonInFront">
+      <input_port name="topic">Name of the topic, whose data field is checked for target value</input_port>
+      <input_port name="detection_range">Range in which the person is detected</input_port>
+    </Condition>
+    <Action ID="ClearEntireCostmap"
+            editable="true">
+      <input_port name="service_name"/>
+    </Action>
+    <Action ID="ComputePathToPose"
+            editable="true">
+      <input_port name="goal"/>
+      <input_port name="path"/>
+      <input_port name="planner_id"/>
+    </Action>
+    <Action ID="FollowPath"
+            editable="true">
+      <input_port name="path"/>
+      <input_port name="controller_id"/>
+    </Action>
+    <Action ID="GlobalUpdatedGoal"
+            editable="true"/>
+    <Action ID="GoalUpdated"
+            editable="true"/>
+    <Action ID="IsPathValid"
+            editable="true">
+      <input_port name="path"/>
+    </Action>
+    <Control ID="PipelineSequence"
+             editable="true"/>
+    <Decorator ID="RateController"
+               editable="true">
+      <input_port name="hz"/>
+    </Decorator>
+    <Control ID="RecoveryNode"
+             editable="true">
+      <input_port name="number_of_retries"/>
+    </Control>
+    <Control ID="RoundRobin"
+             editable="true"/>
+    <Action ID="StringTopicCondition"
+            editable="true">
+      <input_port name="topic"/>
+      <input_port name="target_value"/>
+    </Action>
+    <Action ID="Wait"
+            editable="true">
+      <input_port name="wait_duration"/>
+    </Action>
+  </TreeNodesModel>
+
 </root>

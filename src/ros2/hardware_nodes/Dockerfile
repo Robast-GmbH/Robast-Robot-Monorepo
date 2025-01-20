@@ -1,92 +1,65 @@
-ARG ROS_DISTRO=jazzy
-FROM ros:${ROS_DISTRO}-ros-base AS devel 
-
-RUN echo "ubuntu:ubuntu" | chpasswd && \
-    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
-
-RUN echo "source install/setup.bash" >> /home/$USER/.bashrc
-
+ARG ROS_BUILD_DISTRO=humble
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS devel
+ARG ROS_BUILD_DISTRO
 
 RUN apt-get update && apt-get install -y \
-  build-essential \
-  python3-colcon-common-extensions \
-  python3-pip \
-  python3-rosdep \
-  ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
   libboost-all-dev \
-  ros-${ROS_DISTRO}-ros-testing \
-  ros-${ROS_DISTRO}-ament-cmake-test \
-  ros-${ROS_DISTRO}-launch-testing \
   libpqxx-dev \
-  gdb \
-  git \
+  ros-${ROS_BUILD_DISTRO}-ament-cmake-test \
+  ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
+  ros-${ROS_BUILD_DISTRO}-ros-testing \
+  ros-${ROS_BUILD_DISTRO}-launch-testing \
+  && rm -rf /var/cache/apk/* \
   && rosdep init || echo "rosdep already initialized"
-
-RUN apt install ros-${ROS_DISTRO}-ros2-socketcan -y
-
-ENV ROS_DOMAIN_ID=0
-# dds setup / configuration
-ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
-ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
-ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
-
-USER ubuntu
 
 
 ############################## Build ##################################
-FROM ros:jazzy-ros-base AS build
-ARG GIT_TOKEN
-COPY --from=devel / /
+FROM ghcr.io/robast-gmbh/monorepo/robast-source:${ROS_BUILD_DISTRO} AS build
+ARG ROS_BUILD_DISTRO
 COPY . /ws/src/hardware_nodes
+USER root
 RUN apt-get update && apt-get install -y git
 
 
 # TODO: No idea why but it seems that this version is broken: ros-humble-ros2-socketcan/jammy 1.3.0-1jammy.20240729.003002 amd64
 # Therefore we need to install it manually for now
 WORKDIR /ros2_socketcan_ws
-RUN git clone -b ${ROS_DISTRO} https://github.com/autowarefoundation/ros2_socketcan.git
+RUN git clone -b ${ROS_BUILD_DISTRO} https://github.com/autowarefoundation/ros2_socketcan.git
 RUN rosdep update && \
   rosdep install --from-paths /ros2_socketcan_ws/ros2_socketcan --ignore-src -r -y && \
-  . /opt/ros/${ROS_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_DISTRO}/
-
-
-WORKDIR /tmp
-RUN git clone -b main https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
-
+  . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
+  colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/ && mkdir /robast \
-  && mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
-  && mv /tmp/Monorepo/src/ros2/error_handling /ws/src/ros2/error_handling \
-  && mv /tmp/Monorepo/src/Hardware/cpp/libs ws/ \
-  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
+RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast \
+  && mv /monorepo/src/ros2/qos_bridge /ws/src/ros2/qos_bridge \
+  && mv /monorepo/src/Hardware/cpp/libs ws/
 
+# TODO@Tobi: Running colcon build with -DBUILD_TESTING=OFF should be removed once build artifacts are used for tests with volume mounts
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
-  . /opt/ros/${ROS_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_DISTRO}/
+  . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
+  . /robast/${ROS_BUILD_DISTRO}/setup.sh && \
+  colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 ############################## Release ##################################
-FROM ros:jazzy-ros-base AS release
-
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS release
+ARG ROS_BUILD_DISTRO
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
 
-RUN apt-get update && apt-get upgrade -y &&\
-    apt-get install -y \
-    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
-    ros-${ROS_DISTRO}-ros2-socketcan \
-    libboost-all-dev
+USER root
+
+RUN apt-get update && apt-get upgrade -y && \
+  apt-get install -y \
+  libboost-all-dev \
+  ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
+  && rm -rf /var/cache/apk/*
 
 ENV ROS_DOMAIN_ID=0
-# dds setup / configuration
-ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
-ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
-ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 
-RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
+RUN echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
 
-USER ubuntu
+USER robast
+WORKDIR /robast
+  

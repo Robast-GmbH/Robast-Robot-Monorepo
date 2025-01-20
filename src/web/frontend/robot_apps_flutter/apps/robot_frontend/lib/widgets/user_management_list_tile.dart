@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/constants/robot_colors.dart';
-import 'package:robot_frontend/models/controller/location_selection_controller.dart';
-import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
-import 'package:robot_frontend/models/controller/user_name_controller.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
-import 'package:robot_frontend/widgets/location_selector.dart';
-import 'package:robot_frontend/widgets/nfc_assignment_dialog.dart';
-import 'package:robot_frontend/widgets/user_groups_selector.dart';
+import 'package:robot_frontend/widgets/selectors/location_selector.dart';
+import 'package:robot_frontend/widgets/dialogs/nfc_assignment_dialog.dart';
+import 'package:robot_frontend/widgets/selectors/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/user_name_editor.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class UserManagementListTile extends StatefulWidget {
   const UserManagementListTile({required this.user, required this.onUserUpdate, super.key});
@@ -33,10 +30,7 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
       ..firstName = widget.user.firstName
       ..lastName = widget.user.lastName;
 
-    userGroupsSelectionController
-      ..isPatient = widget.user.userGroups.contains('PATIENT')
-      ..isStaff = widget.user.userGroups.contains('STAFF')
-      ..isAdmin = widget.user.userGroups.contains('ADMIN');
+    userGroupsSelectionController.userGroups.addAll(widget.user.userGroups);
 
     locationSelectionController
       ..setStation(widget.user.station == '' ? null : widget.user.station)
@@ -77,11 +71,12 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                   iconSize: 32,
                   color: RobotColors.primaryIcon,
                   onPressed: () {
-                    final userGroups = userGroupsSelectionController.selectionAsStringList();
+                    final userGroups = userGroupsSelectionController.userGroups;
                     Provider.of<UserProvider>(context, listen: false).updateUser(
                       updatedUser: User(
                         id: widget.user.id,
                         nfcID: widget.user.nfcID,
+                        mail: widget.user.mail,
                         title: userNameController.title,
                         firstName: userNameController.firstName,
                         lastName: userNameController.lastName,

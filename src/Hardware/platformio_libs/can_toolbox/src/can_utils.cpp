@@ -4,6 +4,7 @@ using CanMessage = robast_can_msgs::CanMessage;
 namespace error_feedback = robast_can_msgs::can_signal::id::error_feedback;
 namespace drawer_feedback = robast_can_msgs::can_signal::id::drawer_feedback;
 namespace e_drawer_feedback = robast_can_msgs::can_signal::id::e_drawer_feedback;
+namespace electrical_drawer_motor_control = robast_can_msgs::can_signal::id::electrical_drawer_motor_control;
 
 namespace can_toolbox
 {
@@ -20,7 +21,7 @@ namespace can_toolbox
                                             const uint8_t drawer_id,
                                             const uint8_t error_code) const
   {
-    CanMessage error_feedback_msg = create_error_feedback_msg(module_id, drawer_id, error_code);
+    const CanMessage error_feedback_msg = create_error_feedback_msg(module_id, drawer_id, error_code);
     _feedback_can_msg_queue->enqueue(error_feedback_msg);
   }
 
@@ -29,7 +30,7 @@ namespace can_toolbox
                                              const bool is_endstop_switch_pushed,
                                              const bool is_lock_switch_pushed) const
   {
-    CanMessage drawer_closed_feedback_msg =
+    const CanMessage drawer_closed_feedback_msg =
       create_drawer_feedback_msg(module_id, drawer_id, is_endstop_switch_pushed, is_lock_switch_pushed);
     _feedback_can_msg_queue->enqueue(drawer_closed_feedback_msg);
   }
@@ -42,14 +43,34 @@ namespace can_toolbox
                                                const uint8_t normed_current_position,
                                                const bool is_push_to_close_triggered) const
   {
-    CanMessage electrical_drawer_feedback_msg = create_e_drawer_feedback_msg(module_id,
-                                                                             drawer_id,
-                                                                             is_endstop_switch_pushed,
-                                                                             is_lock_switch_pushed,
-                                                                             is_drawer_stall_guard_triggered,
-                                                                             normed_current_position,
-                                                                             is_push_to_close_triggered);
+    const CanMessage electrical_drawer_feedback_msg = create_e_drawer_feedback_msg(module_id,
+                                                                                   drawer_id,
+                                                                                   is_endstop_switch_pushed,
+                                                                                   is_lock_switch_pushed,
+                                                                                   is_drawer_stall_guard_triggered,
+                                                                                   normed_current_position,
+                                                                                   is_push_to_close_triggered);
     _feedback_can_msg_queue->enqueue(electrical_drawer_feedback_msg);
+  }
+
+  void CanUtils::enqueue_e_drawer_motor_control_msg(const uint32_t module_id,
+                                                    const uint8_t motor_id,
+                                                    const bool enable_motor,
+                                                    const bool confirm_control_change) const
+  {
+    const CanMessage electrical_drawer_motor_control_msg =
+      create_e_drawer_motor_control_msg(module_id, motor_id, enable_motor, confirm_control_change);
+    _feedback_can_msg_queue->enqueue(electrical_drawer_motor_control_msg);
+  }
+
+  void CanUtils::enqueue_heartbeat_msg(const uint32_t module_id, const uint16_t interval_in_ms) const
+  {
+    _feedback_can_msg_queue->enqueue(create_heartbeat_msg(module_id, interval_in_ms));
+  }
+
+  void CanUtils::enqueue_acknowledgement_msg(const uint32_t module_id, const uint16_t reference_msg_id) const
+  {
+    _feedback_can_msg_queue->enqueue(create_acknowledgement_msg(module_id, reference_msg_id));
   }
 
   CanMessage CanUtils::create_error_feedback_msg(const uint32_t module_id,
@@ -112,5 +133,52 @@ namespace can_toolbox
     can_msg_electrical_drawer_feedback.set_can_signals(can_signals_electrical_drawer_feedback);
 
     return can_msg_electrical_drawer_feedback;
+  }
+
+  CanMessage CanUtils::create_e_drawer_motor_control_msg(const uint32_t module_id,
+                                                         const uint8_t motor_id,
+                                                         const bool enable_motor,
+                                                         const bool confirm_control_change) const
+  {
+    CanMessage can_msg_electrical_drawer_motor_control =
+      _can_db->can_messages.at(robast_can_msgs::can_msg::ELECTRICAL_DRAWER_MOTOR_CONTROL);
+    std::vector can_signals_electrical_drawer_motor_control = can_msg_electrical_drawer_motor_control.get_can_signals();
+
+    can_signals_electrical_drawer_motor_control.at(electrical_drawer_motor_control::MODULE_ID).set_data(module_id);
+    can_signals_electrical_drawer_motor_control.at(electrical_drawer_motor_control::MOTOR_ID).set_data(motor_id);
+    can_signals_electrical_drawer_motor_control.at(electrical_drawer_motor_control::ENABLE_MOTOR)
+      .set_data(enable_motor);
+    can_signals_electrical_drawer_motor_control.at(electrical_drawer_motor_control::CONFIRM_CONTROL_CHANGE)
+      .set_data(confirm_control_change);
+
+    can_msg_electrical_drawer_motor_control.set_can_signals(can_signals_electrical_drawer_motor_control);
+
+    return can_msg_electrical_drawer_motor_control;
+  }
+
+  CanMessage CanUtils::create_heartbeat_msg(const uint32_t module_id, const uint16_t interval_in_ms) const
+  {
+    CanMessage can_msg_heartbeat = _can_db->can_messages.at(robast_can_msgs::can_msg::HEARTBEAT);
+    std::vector can_signals_heartbeat = can_msg_heartbeat.get_can_signals();
+
+    can_signals_heartbeat.at(robast_can_msgs::can_signal::id::heartbeat::MODULE_ID).set_data(module_id);
+    can_signals_heartbeat.at(robast_can_msgs::can_signal::id::heartbeat::INTERVAL_IN_MS).set_data(interval_in_ms);
+
+    can_msg_heartbeat.set_can_signals(can_signals_heartbeat);
+
+    return can_msg_heartbeat;
+  }
+
+  CanMessage CanUtils::create_acknowledgement_msg(const uint32_t module_id, const uint16_t reference_msg_id) const
+  {
+    CanMessage can_msg_ack = _can_db->can_messages.at(robast_can_msgs::can_msg::ACKNOWLEDGMENT);
+    std::vector can_signals_ack = can_msg_ack.get_can_signals();
+
+    can_signals_ack.at(robast_can_msgs::can_signal::id::acknowledgment::MODULE_ID).set_data(module_id);
+    can_signals_ack.at(robast_can_msgs::can_signal::id::acknowledgment::REFERENCED_MSG_ID).set_data(reference_msg_id);
+
+    can_msg_ack.set_can_signals(can_signals_ack);
+
+    return can_msg_ack;
   }
 }   // namespace can_toolbox

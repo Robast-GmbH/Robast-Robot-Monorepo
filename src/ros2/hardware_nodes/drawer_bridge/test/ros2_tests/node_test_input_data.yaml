@@ -5,22 +5,35 @@ led_cmd:
   start_index: 0
   fade_time_in_ms: 1000
 
-led:
+led_state_1:
   red: 11
   green: 22
   blue: 33
   brightness: 44
 
+led_state_2:
+  red: 55
+  green: 66
+  blue: 77
+  brightness: 88
+
 open_drawer:
   module_id: 0x010203
   drawer_id: 2
 
-is_drawer_open_can_frame:
-  id: 2
-  dlc: 5
+drawer_feedback_can_frame:
   data: [0x01, 0x02, 0x03, 0x02, 0x00, 0x00, 0x00, 0x00]
 
 error_feedback_can_frame:
-  id: 5
-  dlc: 5
   data: [0x01, 0x02, 0x03, 0x01, 0b00000100, 0x00, 0x00, 0x00]
+
+module_config:
+  module_id: 0x010203
+  drawer_id: 1
+  config_id: 5
+  config_value: 10
+
+electrical_drawer_motor_control:
+  module_id: 0x010203
+  motor_id: 1
+  enable_motor: true

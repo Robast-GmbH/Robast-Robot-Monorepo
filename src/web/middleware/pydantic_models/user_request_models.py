@@ -3,6 +3,8 @@ from typing import Optional
 
 
 class CreateUserRequest(BaseModel):
+    mail: str | None = None
+    nfc_id: str | None = None
     title: str
     first_name: str
     last_name: str
@@ -14,6 +16,7 @@ class CreateUserRequest(BaseModel):
 class UpdateUserRequest(BaseModel):
     id: str
     nfc_id: Optional[str] = None
+    mail: Optional[str] = None
     title: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
@@ -24,3 +27,8 @@ class UpdateUserRequest(BaseModel):
 
 class DeleteUserRequest(BaseModel):
     id: str
+
+
+class LoginRequest(BaseModel):
+    mail: str
+    password: str

@@ -4,22 +4,98 @@ project(error_utils)
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(Python REQUIRED COMPONENTS Interpreter Development)
+find_package(pybind11 REQUIRED)
+find_package(communication_interfaces REQUIRED)
 
 # Add include directories
 include_directories(include)
 
-# Create library
+# Create library for C++ usage
 add_library(${PROJECT_NAME} INTERFACE)
 
 # Add dependencies to the library
 ament_target_dependencies(${PROJECT_NAME} INTERFACE rclcpp)
 
-# Install library
+if(BUILD_TESTING)
+  include(FetchContent)
+
+  FetchContent_Declare(
+      Catch2
+      GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+      GIT_TAG        v3.8.0
+  )
+  FetchContent_MakeAvailable(Catch2)
+  
+  add_executable(
+      generic_error_converter_test test/test_generic_error_converter.cpp
+  )
+
+  target_link_libraries(generic_error_converter_test
+      Catch2::Catch2
+      Catch2::Catch2WithMain
+  )
+
+  set(test_dependencies
+    communication_interfaces
+  )
+
+  ament_target_dependencies(generic_error_converter_test ${test_dependencies})
+  include(Catch)
+  catch_discover_tests(generic_error_converter_test)
+
+  target_include_directories(generic_error_converter_test
+      PRIVATE
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
+  )
+
+  include(CTest)
+
+  find_package(ament_cmake_flake8 REQUIRED)
+  ament_flake8()
+  find_package(ament_cmake_xmllint REQUIRED)
+  ament_xmllint()
+  find_package(ament_cmake_pep257 REQUIRED)
+  ament_pep257()
+  find_package(ament_cmake_cppcheck REQUIRED)
+  ament_cppcheck()
+endif()
+
+# Install library (C++ headers)
 install(DIRECTORY include/
   DESTINATION include
 )
-
+# Optionally, export Python bindings (if needed for other ROS packages)
+ament_export_libraries(error_definitions_pybind)
 # Export package information
 ament_export_include_directories(include)
-# ament_export_libraries(${PROJECT_NAME})
 ament_package()
+
+# Add Pybind11 module
+add_library(error_definitions_pybind MODULE src/error_definitions_pybind.cpp)
+target_include_directories(error_definitions_pybind PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(error_definitions_pybind PRIVATE pybind11::module)
+
+# Ensure the Pybind11 module has the correct name and extension
+set_target_properties(error_definitions_pybind PROPERTIES PREFIX "" SUFFIX ".so")
+
+# Install Pybind11 module
+install(TARGETS error_definitions_pybind
+  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+
+# Copy install_py_module.sh to the install directory
+install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/install_py_module.sh
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+)
+
+# Ensure the script is copied before executing it
+add_custom_command(TARGET error_definitions_pybind POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/bin
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/install_py_module.sh ${CMAKE_INSTALL_PREFIX}/bin/
+)
+
+# # Execute the install_py_module.sh script after installation
+# add_custom_command(TARGET error_definitions_pybind POST_BUILD
+#   COMMAND ${CMAKE_COMMAND} -E env bash ${CMAKE_INSTALL_PREFIX}/bin/install_py_module.sh
+# )

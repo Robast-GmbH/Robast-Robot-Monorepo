@@ -4,32 +4,36 @@ version: 1.0.0+1
 publish_to: none
 
 environment:
-  sdk: "^3.3.0"
+  sdk: ^3.3.0
 
 dependencies:
   flutter:
     sdk: flutter
-  flutter_localizations:
-    sdk: flutter
-  flutter_svg: ^0.22.0
+  flutter_inappwebview: ^6.0.0
+  flutter_svg: ^2.0.10+1
   google_fonts: ^6.2.1
   http: ^1.2.1
-  intl: ^0.19.0
+  intl: ^0.18.0
+  media_kit_libs_linux: any
   middleware_api_utilities: ^0.1.0+1
   provider: ^6.1.2
   robot_api_utilities: ^0.1.0+1
   shared_data_models: ^0.1.0+1
   shared_preferences: ^2.2.3
-  shared_widgets: ^0.1.0+1
   uuid: ^4.4.2
+  media_kit: ^1.1.11 # Primary package.
+  media_kit_video: ^1.2.5 # For video rendering.
+  media_kit_libs_video: ^1.0.5 # Native video dependencies.
   zoom_widget: ^2.0.1
+  path_provider: ^2.1.5
+  pdfrx: ^1.0.88
 
 dev_dependencies:
   bloc_test: ^9.1.6
+  flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
   mocktail: ^1.0.3
-  very_good_analysis: ^5.1.0
 
 flutter:
   uses-material-design: true
@@ -38,3 +42,7 @@ flutter:
     - assets/happy.svg
     - assets/logo.svg
     - assets/logo_blink.svg
+    - assets/white_qrcode.png
+    # - assets/robast_video.mp4
+    # - assets/team.jpeg
+    - assets/cairelogo.jpeg

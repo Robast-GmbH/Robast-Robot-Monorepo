@@ -1,6 +1,7 @@
-ARG ROS_DISTRO=jazzy
-FROM ros:${ROS_DISTRO}-perception AS devel
+ARG ROS_BUILD_DISTRO=jazzy
+FROM ros:${ROS_BUILD_DISTRO}-perception AS devel
 
+ARG ROS_BUILD_DISTRO
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
 apt-get upgrade -yq && \
@@ -86,32 +87,24 @@ WORKDIR /workspace
 USER ubuntu
 
 ############################## Build ##################################
-FROM ros:${ROS_DISTRO}-ros-base AS build
-ARG ROS_DISTRO
-ARG GIT_TOKEN
-ARG GIT_BRANCH=main
+FROM ghcr.io/robast-gmbh/monorepo/robast-source:${ROS_BUILD_DISTRO} AS build
+ARG ROS_BUILD_DISTRO
 COPY --from=devel / /
 COPY . /ws/src/navigation
-RUN apt-get update && apt-get install -y git
-
-WORKDIR /tmp
-RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
-
+USER root
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
-  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
-
 
 
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
+  . /robast/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_DISTRO}/ --packages-skip robast_map_update_module robast_nav_recoveries
 
 ############################## Release ##################################
-FROM ros:${ROS_DISTRO}-perception AS release
-ARG ROS_DISTRO
+FROM ros:${ROS_BUILD_DISTRO}-perception AS release
+ARG ROS_BUILD_DISTRO
 RUN apt-get update && apt-get install -y \
   cmake \
   wget \
@@ -128,11 +121,16 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
+COPY --from=build /dds_configs /robast/dds_configs
 
-RUN apt-get update && apt-get upgrade -y\
+COPY --from=build /ws/src/navigation/nav_bringup/config_simulation/nav_params/diff__tr0_4__res0_05.json /workspace/src/navigation/nav_bringup/config_simulation/nav_params/diff__tr0_4__res0_05.json
+COPY --from=build /ws/src/navigation/nav_bringup/behavior_trees/humble/ /workspace/src/navigation/nav_bringup/behavior_trees/humble/
+
+RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y \
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     libzmq3-dev \
+    iputils-ping \
     ros-${ROS_DISTRO}-slam-toolbox \
     ros-${ROS_DISTRO}-robot-localization
 
@@ -145,11 +143,26 @@ ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 RUN apt-get update \
   && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
 
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -q && \
+apt-get upgrade -yq && \
+apt-get install -yq wget curl git build-essential vim sudo lsb-release locales bash-completion tzdata gosu gnupg2 && \
+rm -rf /var/lib/apt/lists/*
+RUN echo "Set disable_coredump false" >> /etc/sudo.conf
+RUN useradd --create-home --home-dir /home/ubuntu --shell /bin/bash --user-group --groups adm,sudo ubuntu && \
+echo ubuntu:ubuntu | chpasswd && \
+echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+ENV USER=ubuntu
+ARG DEBIAN_FRONTEND=
+
+USER ubuntu
+  
 ENV is_simulation=False
 ENV config_directory=config
 ENV robot_name=rb_theron
-ENV init_x=1.46
-ENV init_y=-2.89
+ENV init_x=0.0
+ENV init_y=0.0
 ENV init_z=0.0
-ENV init_yaw=1.57
+ENV init_yaw=0.0
 ENV prefix=''

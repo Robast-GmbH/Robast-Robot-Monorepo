@@ -2,6 +2,7 @@
 
 #include "drawer_controller/global.hpp"
 #include "led/led_strip.hpp"
+#include "utils/e_drawer_config_manager.hpp"
 
 // VERY IMPORTANT: Set the hardware version of the drawer controller pcb here (currently 3 and 4 are supported):
 #define HARDWARE_VERSION 4
@@ -20,18 +21,24 @@
 #endif
 
 // These are the very basic top level configurations for the drawer controller you need to set.
-constexpr bool MODULE_CONTAINS_A_DRAWER = false;
-constexpr bool IS_ELECTRICAL_DRAWER = false;
-constexpr uint32_t MODULE_ID = 0;
-constexpr uint8_t LOCK_ID = 0;
-constexpr bool USE_ENCODER = false;
-constexpr bool IS_SHAFT_DIRECTION_INVERTED = false;
-constexpr switch_lib::Switch::SwitchType ENDSTOP_SWITCH_TYPE = switch_lib::Switch::normally_open;
-// LED CONFIGS
-constexpr uint8_t NUM_OF_LEDS = 128;   // 18 LEDs at the old drawer and 21 LEDs at the new drawer
-constexpr bool USE_COLOR_FADE = false;
+// Besides that there are a lot of other configs that are managed by the ConfigManager and can be set via CAN messages.
+constexpr config::UserConfig USER_CONFIG{.module_version = config::version::CURA,
+                                         .module_prefix = module_id::ModulePrefix::MANUAL_DRAWER_30x40,
+                                         .unique_module_id = 1,
+                                         .lock_id = 1,
+                                         .is_shaft_direction_inverted = true,
+                                         .endstop_switch_type = switch_lib::Switch::normally_open,
+                                         .use_color_fade = false,
+                                         .allow_partial_led_changes = false};
 
-std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
+constexpr config::ModuleHardwareConfig MODULE_HARDWARE_CONFIG =
+  config::get_module_hardware_config<USER_CONFIG.module_version>(USER_CONFIG.module_prefix);
+
+constexpr uint32_t MODULE_ID = module_id::generate_module_id(USER_CONFIG.module_prefix, USER_CONFIG.unique_module_id);
+
+std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.total_num_of_leds>> led_strip;
+
+std::unique_ptr<utils::EDrawerConfigManager> config_manager;
 
 // Initialize can_controller based on HARDWARE_VERSION
 #if HARDWARE_VERSION == 3
@@ -72,7 +79,7 @@ void add_can_msg_to_queue(std::optional<robast_can_msgs::CanMessage>& received_m
   }
   else
   {
-    Serial.println("[Main]: Error: Could not take the mutex. This should not occur.");
+    serial_println_error("[Main]: Error: Could not take the mutex. This should not occur.");
   }
 }
 
@@ -155,7 +162,7 @@ void process_can_msgs_task_loop(void* pvParameters)
     }
     else
     {
-      Serial.println("Error: Could not take the mutex. This should not occur.");
+      serial_println_error("[Main]: Error: Could not take the mutex. This should not occur.");
     }
 
     if (received_message.has_value())
@@ -169,25 +176,26 @@ void process_can_msgs_task_loop(void* pvParameters)
         break;
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_TASK:
         {
-          utils::EDrawerTask e_drawer_task = can_message_converter->convert_to_e_drawer_task(received_message.value());
+          const utils::EDrawerTask e_drawer_task =
+            can_message_converter->convert_to_e_drawer_task(received_message.value());
           i_drawer->add_e_drawer_task_to_queue(e_drawer_task);
         }
         break;
         case robast_can_msgs::can_id::LED_HEADER:
         {
-          led::LedHeader led_header = can_message_converter->convert_to_led_header(received_message.value());
+          const led::LedHeader led_header = can_message_converter->convert_to_led_header(received_message.value());
           led_strip->initialize_led_state_change(led_header);
         }
         break;
-        case robast_can_msgs::can_id::SINGLE_LED_STATE:
+        case robast_can_msgs::can_id::LED_STATE:
         {
-          led::LedState led_state = can_message_converter->convert_to_led_state(received_message.value());
+          const led::LedState led_state = can_message_converter->convert_to_led_state(received_message.value());
           led_strip->set_led_state(led_state);
         }
         break;
         case robast_can_msgs::can_id::MODULE_CONFIG:
         {
-          bool config_set_successfully =
+          const bool config_set_successfully =
             config_manager->set_config(received_message->get_can_signals()
                                          .at(robast_can_msgs::can_signal::id::module_config::CONFIG_ID)
                                          .get_data(),
@@ -196,23 +204,36 @@ void process_can_msgs_task_loop(void* pvParameters)
                                          .get_data());
           if (!config_set_successfully)
           {
-            Serial.println("[Main]: Warning - Tried to set config for invalid config id!");
+            serial_println_warning("[Main]: Warning - Tried to set config for invalid config id!");
           }
         }
+        case robast_can_msgs::can_id::ELECTRICAL_DRAWER_MOTOR_CONTROL:
+        {
+          const bool enable_motor =
+            received_message->get_can_signals()
+              .at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::ENABLE_MOTOR)
+              .get_data() == 1;
+          const uint8_t motor_id = received_message->get_can_signals()
+                                     .at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::MOTOR_ID)
+                                     .get_data();
+          i_drawer->set_motor_driver_state(enable_motor, motor_id);
+        }
         default:
-          debug_println("[Main]: Received unsupported CAN message.");
+          serial_println_warning("[Main]: Received unsupported CAN message.");
           break;
       }
     }
 
     led_strip->handle_led_control();
 
-    if (MODULE_CONTAINS_A_DRAWER)
+    if (MODULE_HARDWARE_CONFIG.module_contains_a_drawer)
     {
       i_drawer->update_state();
     }
 
-    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = i_drawer->can_out();
+    heartbeat->generate_heartbeat();
+
+    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = can_utils->get_element_from_feedback_msg_queue();
 
     if (to_be_sent_message.has_value())
     {
@@ -224,7 +245,16 @@ void process_can_msgs_task_loop(void* pvParameters)
 void setup()
 {
   Serial.begin(115200);
-  debug_println("[Main]: Start...");
+  serial_printf_green("[Main]: Start the module with the module id: %d.\n", MODULE_ID);
+
+  config_manager = std::make_unique<utils::EDrawerConfigManager>();
+  config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
+                             USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
+  config_manager->print_all_configs();
+
+  rotating_file_logger =
+    std::make_shared<logging::RotatingFileHandler>(config_manager->get_rotating_file_handler_config());
+  rotating_file_logger->print_all_logs();
 
   std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(1);
   wire_port_expander->begin(peripherals::i2c::I2C_SDA, peripherals::i2c::I2C_SCL);
@@ -244,13 +274,16 @@ void setup()
   endstop_switch = std::make_shared<switch_lib::Switch>(gpio_wrapper,
                                                         gpio_defines::pin_id::SENSE_INPUT_DRAWER_1_CLOSED,
                                                         SWITCH_PRESSED_THRESHOLD,
-                                                        ENDSTOP_SWITCH_TYPE,
+                                                        USER_CONFIG.endstop_switch_type,
                                                         SWITCH_WEIGHT_NEW_VALUES);
 
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   can_message_converter = std::make_unique<utils::CanMessageConverter>();
+  can_utils = std::make_shared<can_toolbox::CanUtils>(can_db);
 
-  led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>>(USE_COLOR_FADE);
+  led_strip =
+    std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.total_num_of_leds>>(
+      MODULE_ID, USER_CONFIG.use_color_fade, USER_CONFIG.allow_partial_led_changes, can_utils);
 
   // Very important to initialize this before the can_controller is created
   can_queue_mutex = xSemaphoreCreateMutex();
@@ -275,37 +308,31 @@ void setup()
                                                              SWITCH_PRESSED_THRESHOLD,
                                                              SWITCH_WEIGHT_NEW_VALUES);
 
-  drawer_config = std::make_shared<drawer::ElectricalDrawerConfig>();
-  encoder_config = std::make_shared<motor::EncoderConfig>();
-  motor_config = std::make_shared<motor::MotorConfig>();
-  motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
+  heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, config_manager->get_heartbeat_config());
 
-  config_manager =
-    std::make_unique<utils::ConfigManager>(drawer_config, encoder_config, motor_config, motor_monitor_config);
-  config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED, IS_SHAFT_DIRECTION_INVERTED ? 1 : 0);
-
-  if (IS_ELECTRICAL_DRAWER)
+  if (MODULE_HARDWARE_CONFIG.is_electrical_drawer)
   {
     i_drawer = std::make_shared<drawer::ElectricalDrawer>(
       MODULE_ID,
-      LOCK_ID,
-      can_db,
+      USER_CONFIG.lock_id,
       gpio_wrapper,
+      can_utils,
       stepper_1_pin_id_config,
-      USE_ENCODER,
+      MODULE_HARDWARE_CONFIG.use_encoder,
       gpio_wrapper->get_gpio_num_for_pin_id(gpio_defines::pin_id::STEPPER_1_ENCODER_A),
       gpio_wrapper->get_gpio_num_for_pin_id(gpio_defines::pin_id::STEPPER_1_ENCODER_B),
       STEPPER_MOTOR_1_ADDRESS,
-      motor_config,
+      config_manager->get_motor_config(),
       endstop_switch,
       drawer_lock,
-      drawer_config,
-      encoder_config,
-      motor_monitor_config);
+      config_manager->get_drawer_config(),
+      config_manager->get_encoder_config(),
+      config_manager->get_motor_monitor_config());
   }
   else
   {
-    i_drawer = std::make_shared<drawer::ManualDrawer>(MODULE_ID, LOCK_ID, can_db, endstop_switch, drawer_lock);
+    i_drawer =
+      std::make_shared<drawer::ManualDrawer>(MODULE_ID, USER_CONFIG.lock_id, can_utils, endstop_switch, drawer_lock);
   }
 
   // Initialize CAN Controller right before can task receive loop is started, otherwise rx_queue might overflow
@@ -329,7 +356,7 @@ void setup()
                           &Task2,                     /* Task handle to keep track of created task */
                           1);                         /* pin task to core 1 */
 
-  debug_println("[Main]: Finished setup()!");
+  debug_printf_green("[Main]: Finished setup()!\n");
 }
 
 void loop()

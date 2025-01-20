@@ -32,12 +32,10 @@ Project error handles:
 // 2nd and 3rd digits indicates the project
 // 4th and 5th digits indicates the specific error
 
-
 // trace_codes
 // first digit is a 2
 // 2nd and 3rd digits indicates the project
 // 4th and 5th digits indicates the specific error
-
 
 // info_codes
 // first digit is a 3
@@ -53,8 +51,15 @@ Project error handles:
 // first digit is a 5
 // 2nd and 3rd digits indicates the project
 // 4th and 5th digits indicates the specific error
-#define ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED           50301
-#define ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED_INTERFACE communication_interfaces::msg::DrawerAddress
+#define ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED                              50301
+#define ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED_INTERFACE                    communication_interfaces::msg::DrawerAddress
+#define ERROR_CODES_DRAWER_CLOSED_IN_IDLE_STATE                            50302
+#define ERROR_CODES_DRAWER_CLOSED_IN_IDLE_STATE_INTERFACE                  communication_interfaces::msg::DrawerAddress
+#define ERROR_CODES_MOTOR_DRIVER_CONTROL_NOT_SUPPORTED_BY_MODULE           50303
+#define ERROR_CODES_MOTOR_DRIVER_CONTROL_NOT_SUPPORTED_BY_MODULE_INTERFACE communication_interfaces::msg::DrawerAddress
+
+#define ERROR_CODES_HEARTBEAT_TIMEOUT                                      50304
+#define ERROR_CODES_HEARTBEAT_TIMEOUT_INTERFACE                            std::string
 
 // fatal_codes
 // first digit is a 6

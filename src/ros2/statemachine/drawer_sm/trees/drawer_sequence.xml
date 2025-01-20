@@ -42,17 +42,28 @@
             <PublishDrawerStatus topic_name="/bt_drawer_open"
                                  status="false"
                                  drawer_address="{drawer}"/>
+            <PublishStateFeedback state_feedback="closed"
+                                  state_feedback_topic="/module_state_update"
+                                  drawer_address="{drawer}"/>
           </Sequence>
         </BaseErrorDecorator>
         <Sequence>
           <GetBlackboardEntry key="drawer_address"
                               value="{drawer}"/>
+          <PublishStateFeedback state_feedback="opening_timed_out"
+                                state_feedback_topic="/module_state_update"
+                                drawer_address="{drawer}"/>
           <SubTree ID="LED_Default"
                    _autoremap="true"/>
           <LEDPublisherAction drawer_address="{drawer}"
                               fading_time_ms="100"
                               led_topic="/led_cmd"
                               leds="{leds}"/>
+          <Delay delay_msec="1000">
+            <PublishStateFeedback state_feedback="closed"
+                                  state_feedback_topic="/module_state_update"
+                                  drawer_address="{drawer}"/>
+          </Delay>
         </Sequence>
       </Fallback>
     </ResetDecorator>
@@ -60,7 +71,7 @@
 
   <BehaviorTree ID="LED_Close">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="155"
@@ -75,14 +86,18 @@
 
   <BehaviorTree ID="LED_Default">
     <Sequence>
-      <InitLEDVector size="18"
+      <ImportEnvironmentLEDColor red="{red}"
+                                 green="{green}"
+                                 blue="{blue}"
+                                 brightness="{brightness}"/>
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
-                          blue="155"
-                          brightness="25"
-                          green="155"
+                          blue="{blue}"
+                          brightness="{brightness}"
+                          green="{green}"
                           lower_bound="0.0"
-                          red="0"
+                          red="{red}"
                           upper_bound="100.0"
                           LEDs_colored="{leds}"/>
     </Sequence>
@@ -90,7 +105,7 @@
 
   <BehaviorTree ID="LED_Open">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="128"
@@ -100,12 +115,15 @@
                           red="128"
                           upper_bound="100.0"
                           LEDs_colored="{leds}"/>
+      <PublishStateFeedback state_feedback="open"
+                            state_feedback_topic="/module_state_update"
+                            drawer_address="{drawer}"/>
     </Sequence>
   </BehaviorTree>
 
   <BehaviorTree ID="LED_Test">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="200"
@@ -128,7 +146,7 @@
 
   <BehaviorTree ID="LED_unlocked">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="105"
@@ -138,6 +156,9 @@
                           red="0"
                           upper_bound="100.0"
                           LEDs_colored="{leds}"/>
+      <PublishStateFeedback state_feedback="opening"
+                            state_feedback_topic="/module_state_update"
+                            drawer_address="{drawer}"/>
     </Sequence>
   </BehaviorTree>
 
@@ -158,6 +179,17 @@
                   default="drawer_address">string</input_port>
       <output_port name="value"
                    default="{drawer}"/>
+    </Action>
+    <Action ID="ImportEnvironmentLEDColor"
+            editable="true">
+      <output_port name="red"
+                   default="{red}"/>
+      <output_port name="green"
+                   default="{green}"/>
+      <output_port name="blue"
+                   default="{blue}"/>
+      <output_port name="brightness"
+                   default="{brightness}"/>
     </Action>
     <Action ID="InitLEDVector">
       <input_port name="size"
@@ -205,6 +237,15 @@
                   default="/bt_drawer_open"/>
       <input_port name="status"
                   default="false"/>
+      <input_port name="drawer_address"
+                  default="{drawer}"/>
+    </Action>
+    <Action ID="PublishStateFeedback"
+            editable="true">
+      <input_port name="state_feedback"
+                  default="Idle"/>
+      <input_port name="state_feedback_topic"
+                  default="/state_feedback"/>
       <input_port name="drawer_address"
                   default="{drawer}"/>
     </Action>

@@ -1,6 +1,5 @@
-import 'package:middleware_api_utilities/src/models/submodule.dart';
-import 'package:middleware_api_utilities/src/models/submodule_address.dart';
 import 'package:middleware_api_utilities/src/services/request_service.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class ModulesApi {
   ModulesApi({required this.prefix});
@@ -184,6 +183,21 @@ class ModulesApi {
   }) async {
     final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/finish_submodule_process'),
+      data: {
+        'robot_name': robotName,
+        'module_id': submoduleAddress.moduleID,
+        'submodule_id': submoduleAddress.submoduleID,
+      },
+    );
+    return RequestService.wasRequestSuccessful(response: response);
+  }
+
+  Future<bool> cancelSubmoduleProcess({
+    required String robotName,
+    required SubmoduleAddress submoduleAddress,
+  }) async {
+    final response = await RequestService.tryPost(
+      uri: Uri.parse('$prefix/modules/cancel_submodule_process'),
       data: {
         'robot_name': robotName,
         'module_id': submoduleAddress.moduleID,

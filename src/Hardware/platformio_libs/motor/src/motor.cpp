@@ -20,10 +20,10 @@ namespace stepper_motor
         _motor_config{motor_config},
         _is_stalled{false},
         _stall_guard_reader{std::make_unique<switch_lib::Switch>(gpio_wrapper,
-                                                                stepper_pin_id_config.stepper_diag_pin_id,
-                                                                _STALL_GUARD_READER_THRESHOLD,
-                                                                switch_lib::Switch::normally_open,
-                                                                _STALL_GUARD_READER_WEIGHT_NEW_READINGS)},
+                                                                 stepper_pin_id_config.stepper_diag_pin_id,
+                                                                 _STALL_GUARD_READER_THRESHOLD,
+                                                                 switch_lib::Switch::normally_open,
+                                                                 _STALL_GUARD_READER_WEIGHT_NEW_READINGS)},
         _current_stall_guard_value{_STALL_DEFAULT_VALUE}
   {
     _gpio_wrapper->set_pin_mode(_stepper_enn_tmc2209_pin_id, interfaces::gpio::IS_OUTPUT);
@@ -37,6 +37,8 @@ namespace stepper_motor
     _gpio_wrapper->digital_write(_stepper_stdby_tmc2209_pin_id, LOW);
 
     _SERIAL_PORT.begin(115200);
+
+    while (!_SERIAL_PORT);   // Wait for serial port to connect
 
     setup_driver();
 
@@ -144,7 +146,7 @@ namespace stepper_motor
     {
       return;
     }
-    debug_println("[Motor]: Enable motor driver!");
+    debug_printf_green("[Motor]: Enable motor driver!\n");
     _gpio_wrapper->digital_write(_stepper_enn_tmc2209_pin_id, LOW);
     _driver_is_enabled = true;
   }
@@ -155,7 +157,7 @@ namespace stepper_motor
     {
       return;
     }
-    debug_println("[Motor]: Disabling motor driver!");
+    debug_printf_color(ANSI_COLOR_CYAN, "[Motor]: Disabling motor driver!\n");
     _gpio_wrapper->digital_write(_stepper_enn_tmc2209_pin_id, HIGH);
     _driver_is_enabled = false;
   }
@@ -191,9 +193,8 @@ namespace stepper_motor
       return;
     }
 
-    // print active speed and target speed
-    debug_printf(
-      "[Motor, handle_motor_control]: Active speed: %u, Target speed: %u\n", get_active_speed(), get_target_speed());
+    // debug_printf(
+    //   "[Motor, handle_motor_control]: Active speed: %u, Target speed: %u\n", get_active_speed(), get_target_speed());
 
     (get_active_speed() < get_target_speed()) ? handle_time_dependent_acceleration()
                                               : handle_position_dependent_deceleration(current_position_int32);
@@ -207,7 +208,7 @@ namespace stepper_motor
 
     if (_is_stalled)
     {
-      debug_printf("[Motor]: Stall detected for TSTEP %u\n", _driver->TSTEP());
+      debug_printf_warning("[Motor]: Stall detected for TSTEP %u\n", _driver->TSTEP());
     }
   }
 
@@ -216,8 +217,6 @@ namespace stepper_motor
     uint32_t delta_speed_uint32 = get_dt_since_start_in_ms() * _acceleration;
 
     uint32_t new_active_speed_uint32 = _starting_speed_before_ramp_uint32 + delta_speed_uint32;
-
-    debug_printf("[Motor, handle_time_dependent_acceleration]: New active speed: %d\n", new_active_speed_uint32);
 
     if (new_active_speed_uint32 > get_target_speed())
     {
@@ -234,7 +233,6 @@ namespace stepper_motor
     uint32_t new_active_speed_uint32 = calculate_new_active_speed(current_position_int32);
     _speed_ramp_in_progress = new_active_speed_uint32 >= get_target_speed();
     new_active_speed_uint32 = _speed_ramp_in_progress ? new_active_speed_uint32 : get_target_speed();
-    debug_printf("[Motor, handle_position_dependent_deceleration]: New active speed: %d\n", new_active_speed_uint32);
     set_active_speed(new_active_speed_uint32);
   }
 
@@ -275,7 +273,7 @@ namespace stepper_motor
 
   void Motor::set_active_speed(uint32_t active_speed)
   {
-    debug_printf("[Motor]: Setting active speed to %u\n", active_speed);
+    // debug_printf("[Motor]: Setting active speed to %u\n", active_speed);
 
     _active_speed = active_speed;
 
@@ -333,6 +331,7 @@ namespace stepper_motor
     debug_printf("[Motor]: Setting target speed instantly to %u\n", target_speed);
     set_active_speed(target_speed);
     _target_speed = target_speed;
+    _speed_ramp_in_progress = false;
   }
 
   uint32_t Motor::get_target_speed() const

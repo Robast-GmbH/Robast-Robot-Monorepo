@@ -16,7 +16,7 @@ namespace can_toolbox
   template <gpio_num_t spi_miso, gpio_num_t spi_mosi, gpio_num_t spi_clk, gpio_num_t spi_cs, gpio_num_t mcp2515_int_pin>
   class CanController
   {
-  public:
+   public:
     CanController(const uint32_t module_id,
                   const std::shared_ptr<robast_can_msgs::CanDb> can_db,
                   const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
@@ -30,7 +30,7 @@ namespace can_toolbox
 
     bool is_message_available();
 
-  private:
+   private:
     const uint32_t _module_id;
     const std::shared_ptr<robast_can_msgs::CanDb> _can_db;
     const std::shared_ptr<interfaces::IGpioWrapper> _gpio_wrapper;
@@ -38,7 +38,7 @@ namespace can_toolbox
 
     static constexpr uint32_t _CAN_BIT_RATE = 250 * 1000;
 
-    static constexpr uint32_t _QUARTZ_FREQUENCY = 8 * 1000 * 1000; // 8 MHz
+    static constexpr uint32_t _QUARTZ_FREQUENCY = 8 * 1000 * 1000;   // 8 MHz
 
     static constexpr uint16_t _RECEIVE_BUFFER_SIZE = 150;
 
@@ -59,14 +59,14 @@ namespace can_toolbox
 
   template <gpio_num_t spi_miso, gpio_num_t spi_mosi, gpio_num_t spi_clk, gpio_num_t spi_cs, gpio_num_t mcp2515_int_pin>
   std::unique_ptr<ACAN2515> CanController<spi_miso, spi_mosi, spi_clk, spi_cs, mcp2515_int_pin>::_acan_2515 =
-      std::make_unique<ACAN2515>(spi_cs, SPI, mcp2515_int_pin);
+    std::make_unique<ACAN2515>(spi_cs, SPI, mcp2515_int_pin);
 
   template <gpio_num_t spi_miso, gpio_num_t spi_mosi, gpio_num_t spi_clk, gpio_num_t spi_cs, gpio_num_t mcp2515_int_pin>
   CanController<spi_miso, spi_mosi, spi_clk, spi_cs, mcp2515_int_pin>::CanController(
-      const uint32_t module_id,
-      const std::shared_ptr<robast_can_msgs::CanDb> can_db,
-      const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
-      const uint8_t oe_txb0104_pin_id)
+    const uint32_t module_id,
+    const std::shared_ptr<robast_can_msgs::CanDb> can_db,
+    const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
+    const uint8_t oe_txb0104_pin_id)
       : _module_id{module_id}, _can_db{can_db}, _gpio_wrapper{gpio_wrapper}, _oe_txb0104_pin_id{oe_txb0104_pin_id} {};
 
   template <gpio_num_t spi_miso, gpio_num_t spi_mosi, gpio_num_t spi_clk, gpio_num_t spi_cs, gpio_num_t mcp2515_int_pin>
@@ -95,7 +95,7 @@ namespace can_toolbox
       debug_println_with_base(errorCode2515, HEX);
     }
 
-    pinMode(mcp2515_int_pin, INPUT); // Configuring pin for /INT input
+    pinMode(mcp2515_int_pin, INPUT);   // Configuring pin for /INT input
   }
 
   template <gpio_num_t spi_miso, gpio_num_t spi_mosi, gpio_num_t spi_clk, gpio_num_t spi_cs, gpio_num_t mcp2515_int_pin>
@@ -123,9 +123,9 @@ namespace can_toolbox
       can_message = robast_can_msgs::decode_can_message(_rx_msg_id, frame.data, _rx_msg_dlc, _can_db->can_messages);
 
       if (can_message.has_value() && can_message.value()
-                                             .get_can_signals()
-                                             .at(robast_can_msgs::can_signal::id::drawer_unlock::MODULE_ID)
-                                             .get_data() == _module_id)
+                                         .get_can_signals()
+                                         .at(robast_can_msgs::can_signal::id::drawer_unlock::MODULE_ID)
+                                         .get_data() == _module_id)
       {
         return can_message;
       }
@@ -148,12 +148,12 @@ namespace can_toolbox
 
   template <gpio_num_t spi_miso, gpio_num_t spi_mosi, gpio_num_t spi_clk, gpio_num_t spi_cs, gpio_num_t mcp2515_int_pin>
   void CanController<spi_miso, spi_mosi, spi_clk, spi_cs, mcp2515_int_pin>::send_can_message(
-      robast_can_msgs::CanMessage can_msg)
+    robast_can_msgs::CanMessage can_msg)
   {
     try
     {
       robast_can_msgs::CanFrame can_frame =
-          robast_can_msgs::encode_can_message_into_can_frame(can_msg, _can_db->can_messages);
+        robast_can_msgs::encode_can_message_into_can_frame(can_msg, _can_db->can_messages);
 
       CANMessage mcp2515_frame;
       mcp2515_frame.id = can_frame.get_id();
@@ -166,17 +166,17 @@ namespace can_toolbox
       const bool ok = _acan_2515->tryToSend(mcp2515_frame);
       if (ok)
       {
-        debug_println("Message Sent Successfully!");
+        serial_printf_green("Message Sent Successfully!\n");
       }
       else
       {
-        debug_println("Error accured while sending CAn message!");
+        serial_println_error("Error accured while sending CAN message!");
       }
     }
     catch (const std::invalid_argument &exception)
     {
-      debug_print("Exception accurred while encoding CAN message into can frame. Exception message: ");
-      debug_println(exception.what());
+      serial_printf_error("Exception accurred while encoding CAN message into can frame. Exception message: %s\n",
+                          exception.what());
     }
   }
 
@@ -186,6 +186,6 @@ namespace can_toolbox
     return _acan_2515->available();
   }
 
-} // namespace can_toolbox
+}   // namespace can_toolbox
 
-#endif // CAN_TOOLBOX_CAN_CONTROLLER_MCP2515_HPP
+#endif   // CAN_TOOLBOX_CAN_CONTROLLER_MCP2515_HPP

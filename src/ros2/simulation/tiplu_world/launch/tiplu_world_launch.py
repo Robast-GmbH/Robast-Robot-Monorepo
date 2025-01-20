@@ -38,6 +38,7 @@ def launch_robot_state_publisher(context, *args, **settings):
             "ros2_control_hardware_type_positon_joint": "gz_ros2_control",
             "ros_distro": settings["ros_distro"],
             "position_joint_type": position_joint_type,
+            "robot_type": settings["robot_type"],
         },
     ).toxml()
 
@@ -216,6 +217,7 @@ def generate_launch_description():
             "robot": robot,
             "prefix": prefix,
             "ros_distro": ros_distro,
+            "robot_type": robot_type,
         },
     )
 

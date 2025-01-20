@@ -5,7 +5,11 @@ import requests
 
 from user_system.user_system_router import user_system_router
 from module_manager.module_manager_router import module_manager_router
+from manuals_manager.manuals_router import manuals_router
 from task_system.task_system_router import task_system_router
+from hygiene_manager.hygiene_router import hygiene_router
+from fire_alarm.fire_alarm_router import fire_alarm_router
+from log_manager.log_router import log_router
 import configs.url_config as url_config
 from models.url_helper import URLHelper
 
@@ -19,7 +23,11 @@ app.add_middleware(
 )
 app.include_router(user_system_router, prefix="/users")
 app.include_router(module_manager_router, prefix="/modules")
+app.include_router(manuals_router, prefix="/manuals")
 app.include_router(task_system_router, prefix="/tasks")
+app.include_router(hygiene_router, prefix="/hygiene")
+app.include_router(fire_alarm_router, prefix="/fire_alarm")
+app.include_router(log_router, prefix="/logs")
 
 
 name_to_ip = url_config.ROBOT_NAME_TO_IP
@@ -64,9 +72,10 @@ def read_robot_pos(robot_url: str = Depends(get_robot_url)):
     return response
 
 
-@app.get("/battery_level", tags=["Robot Status"])
-def read_robot_battery_level(robot_url: str = Depends(get_robot_url)):
-    return {"battery_level": 1.0}
+@app.get("/battery_status", tags=["Robot Status"])
+def read_robot_battery_status(robot_url: str = Depends(get_robot_url)):
+    response = requests.get(f"{robot_url}/battery_status").json()
+    return response
 
 
 @app.get("/disinfection_triggered", tags=["Robot Status"])
@@ -79,6 +88,12 @@ def read_disinfection_triggered(
     return response
 
 
+@app.get("/disinfection_module_status", tags=["Robot Status"])
+def read_disinfection_module_status(robot_url: str = Depends(get_robot_url)):
+    response = requests.get(f"{robot_url}/disinfection_module_status").json()
+    return response
+
+
 """
 =========================
 Navigation API Endpoints
@@ -88,9 +103,15 @@ Navigation API Endpoints
 
 @app.post("/goal_pose", tags=["Navigation"])
 def post_goal_pose(
-    x: float, y: float, z: float, robot_url: str = Depends(get_robot_url)
+    x: float,
+    y: float,
+    z: float,
+    use_reorientation: bool = False,
+    robot_url: str = Depends(get_robot_url),
 ):
-    response = requests.post(f"{robot_url}/goal_pose?x={x}&y={y}&z={z}").content
+    response = requests.post(
+        f"{robot_url}/goal_pose?x={x}&y={y}&z={z}&use_reorientation={use_reorientation}"
+    ).content
     return response
 
 
@@ -100,9 +121,9 @@ def post_cancel_goal(robot_url: str = Depends(get_robot_url)):
     return response
 
 
-@app.get("/is_navigating", tags=["Navigation"])
+@app.get("/is_navigation_completed", tags=["Navigation"])
 def read_is_navigating(robot_url: str = Depends(get_robot_url)):
-    response = requests.get(f"{robot_url}/is_navigating").json()
+    response = requests.get(f"{robot_url}/is_navigation_completed").json()
     return response
 
 
@@ -127,6 +148,12 @@ def post_unblock_nav(robot_url: str = Depends(get_robot_url)):
 @app.get("/is_navigation_blocked", tags=["Navigation"])
 def read_is_nav_blocked(robot_url: str = Depends(get_robot_url)):
     response = requests.get(f"{robot_url}/is_navigation_blocked").json()
+    return response
+
+
+@app.get("/requires_replan", tags=["Navigation"])
+def read_requires_replan(robot_url: str = Depends(get_robot_url)):
+    response = requests.get(f"{robot_url}/requires_replan").json()
     return response
 
 

@@ -59,8 +59,8 @@ namespace lock
 
     bool _is_drawer_auto_close_timeout_triggered = false;
 
-    unsigned long _timestamp_last_lock_change = 0;
-    unsigned long _timestamp_last_lock_opening = 0;
+    uint32_t _timestamp_last_lock_change = 0;
+    uint32_t _timestamp_last_lock_opening = 0;
 
     float _moving_average_sensor_lock_pin = 0;
 

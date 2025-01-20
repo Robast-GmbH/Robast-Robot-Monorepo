@@ -1,7 +1,9 @@
+ARG ROS_BUILD_DISTRO=humble
+FROM ghcr.io/robast-gmbh/monorepo/building-docker:${ROS_BUILD_DISTRO} AS build
 FROM nvcr.io/nvidia/l4t-base:r36.2.0
-ARG GIT_TOKEN
 
-ENV ROS_DISTRO=humble
+ARG ROS_BUILD_DISTRO
+ENV ROS_DISTRO=${ROS_BUILD_DISTRO}
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
@@ -35,12 +37,11 @@ ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
 
 COPY . /ws/src/nvidia_hardware_nodes/disinfection_module
 
-WORKDIR /tmp
-RUN git clone -b main https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+WORKDIR /robast
+COPY --from=build /monorepo/src/ros2/dds_configs /robast/dds_configs
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/ && mkdir /robast \
-    && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs \
+RUN mkdir -p /ws/src/ros2/ \
     && rosdep update \
     && rosdep install --from-paths /ws/src --ignore-src -r -y \
     && . /opt/ros/${ROS_DISTRO}/setup.sh \

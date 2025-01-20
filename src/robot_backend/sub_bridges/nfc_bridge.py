@@ -6,15 +6,15 @@ from threading import Timer
 class NfcBridge(BaseBridge):
     def __init__(self, ros: Ros) -> None:
         super().__init__(ros)
+        self.__read_nfc_service = self.create_service(
+            "/read_nfc",
+            "communication_interfaces/srv/ReadNfcTag",
+        )
 
     def read_nfc_tag(self, timeout_in_s: int) -> dict[str, str]:
         if not self.__validate_uint16(timeout_in_s):
             return {"status": "failure", "message": "timeout_in_s must be a uint16"}
-        self.start_service(
-            name="/read_nfc",
-            service_type="communication_interfaces/srv/ReadNfcTag",
-            values={"timeout_in_s": timeout_in_s},
-        ),
+        self.__read_nfc_service.start_request(values={"timeout_in_s": timeout_in_s}),
         Timer(5, self.__clear_nfc).start()
         return {"status": "success", "nfc_tag": self.get_nfc_tag()}
 

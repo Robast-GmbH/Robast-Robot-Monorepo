@@ -3,13 +3,11 @@
   "version": "1.0.0",
   "description": "A library that contains classes to encapsulate data used for CAN bus communication and some helper functions to do so.",
   "keywords": "can",
-  "repository":
-  {
+  "repository": {
     "type": "git",
     "url": "https://github.com/Robast-GmbH/Monorepo.git"
   },
-  "authors":
-  [
+  "authors": [
     {
       "name": "Jacob Ritterbach",
       "email": "j.ritterbach@robast.de",
@@ -19,5 +17,19 @@
   "license": "MIT",
   "frameworks": "*",
   "platforms": "*",
-  "headers": ["can_db.hpp", "can_db_defines.h", "can_frame.h", "can_helper.h", "can_message.h", "can_signal.h"]
+  "headers": [
+    "can_db.hpp",
+    "can_db_defines.h",
+    "can_frame.h",
+    "can_helper.h",
+    "can_message.h",
+    "can_signal.h"
+  ],
+  "build": {
+    "srcDir": "src",
+    "srcFilter": [
+      "+<*>",
+      "-<*bindings.cpp>"
+    ]
+  }
 }

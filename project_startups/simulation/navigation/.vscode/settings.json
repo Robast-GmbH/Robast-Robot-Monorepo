@@ -148,5 +148,11 @@
     },
     "[xml]": {
         "editor.formatOnSave": false // disables formatting for xml files (since formatting for our xacros is garbage so far)
+    },
+    "[yaml]": {
+        "editor.defaultFormatter": "redhat.vscode-yaml"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
     }
 }

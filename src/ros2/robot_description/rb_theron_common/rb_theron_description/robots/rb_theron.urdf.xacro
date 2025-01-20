@@ -29,6 +29,8 @@
 
 	<!-- This name should match the "-name" argument we need to declare when spawing the robot into ign gazebo -->
 	<xacro:property name="robot_name" value="rb_theron"/>
+	<xacro:arg name="robot_type" default="cura"/>
+	<xacro:property name="robot_type_prop" value="$(arg robot_type)"/>
 
 	<!-- Wheel parameters -->
 	<!--xacro:property name="wheel_offset_x" value="0" />
@@ -113,10 +115,20 @@
 	<xacro:sensor_imu_hector prefix="$(arg prefix)imu" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}">
 		<origin xyz="-0.1975 0.0 0.1598" rpy="0 0 0"/>
 	</xacro:sensor_imu_hector>
-
-	<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="front_laser" hq="${hq}" min_angle="-1.9507619" max_angle="1.9507619" gpu="true">
-		<origin xyz="0.250 0.0 0.1643" rpy="0 3.1416 3.1416"/>
-	</xacro:sensor_sick_nanoscan3>
+	
+	<xacro:if value="${robot_type_prop == 'cura'}">
+		<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="front_laser" hq="${hq}" min_angle="-2.356" max_angle="2.356" gpu="true">
+			<origin xyz="0.2675 -0.215 0.1613" rpy="0 -3.1416 2.3562"/>
+		</xacro:sensor_sick_nanoscan3>
+		<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)rear_laser" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="rear_laser" hq="${hq}" min_angle="-2.356" max_angle="2.356" gpu="true">
+			<origin xyz="-0.2675 0.215 0.1613" rpy="0 -3.1416 -0.7854"/>
+		</xacro:sensor_sick_nanoscan3>
+	</xacro:if>
+	<xacro:unless value="${robot_type_prop == 'cura'}">
+		<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="front_laser" hq="${hq}" min_angle="-1.9507619" max_angle="1.9507619" gpu="true">
+			<origin xyz="0.250 0.0 0.1643" rpy="0 3.1416 3.1416"/>
+		</xacro:sensor_sick_nanoscan3> 
+	</xacro:unless>
 
 	<xacro:sensor_zed2 prefix="$(arg prefix)zed" parent="$(arg prefix)base_link" prefix_topic="zed2">
 		<origin xyz="0.27 0 1.43" rpy="0 0.416 0"/>

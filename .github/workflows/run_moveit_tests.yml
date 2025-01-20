@@ -20,12 +20,12 @@ jobs:
 
     steps:
     - name: Checkout repository and submodules
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
           submodules: recursive
 
     - name: Login to GitHub Container Registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -40,6 +40,7 @@ jobs:
           -v $(pwd)/../ros2_control:/workspace/src/ros2_control
           -v $(pwd)/../utils:/workspace/src/utils
           -v $(pwd)/../dds_configs:/workspace/dds_configs
+          -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces
           --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}:devel-humble
           /bin/sh -c "cd /workspace/ &&
           sudo apt-get update &&
@@ -47,7 +48,7 @@ jobs:
           rosdep update && rosdep install --from-paths src --ignore-src -r -y &&
           export CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_github_config.xml &&
           . /opt/ros/${{ env.Ros-Distro }}/setup.sh &&
-          . /workspace_moveit2/install/setup.sh &&
+          . /workspace_moveit_task_constructor/install/setup.sh &&
           . /workspace_ros_control/install/setup.sh  &&
           colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic &&
           colcon test &&

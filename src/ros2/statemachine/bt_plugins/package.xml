@@ -19,6 +19,11 @@
   <depend>communication_interfaces</depend>
   <depend>error_utils</depend>
   <depend>bt_base_types</depend>
+  <depend>nav_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>tf2</depend>
+  <depend>nav2_util</depend>
+  <depend>robotnik_safety_msgs</depend>
 
   <export>
     <build_type>ament_cmake</build_type>

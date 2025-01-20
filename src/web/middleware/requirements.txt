@@ -1,3 +1,5 @@
 fastapi
 uvicorn
 requests
+SQLAlchemy
+python-multipart

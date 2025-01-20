@@ -4,8 +4,10 @@ project(bt_plugins)
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Default to C++20
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 20)
+endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -16,6 +18,16 @@ find_package(behaviortree_cpp REQUIRED)
 find_package(error_utils REQUIRED)
 find_package(bt_base_types REQUIRED)
 find_package(robotnik_msgs REQUIRED)
+find_package(robotnik_safety_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(tf2_eigen REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(nav2_util REQUIRED)
+find_package(rclcpp_action REQUIRED)
+
 
 set(dependencies
   rclcpp
@@ -25,7 +37,15 @@ set(dependencies
   behaviortree_cpp
   error_utils
   bt_base_types
+  nav_msgs
   robotnik_msgs
+  robotnik_safety_msgs
+  geometry_msgs
+  tf2
+  tf2_geometry_msgs
+  tf2_ros
+  nav2_util
+  rclcpp_action
 )
 include_directories(
   include
@@ -80,6 +100,9 @@ list(APPEND plugin_libs drawer_change_state_request_action_bt_node)
 add_library(open_drawer_action_bt_node SHARED src/action/open_drawer_action.cpp)
 list(APPEND plugin_libs open_drawer_action_bt_node)
 
+add_library(set_default_led_color_action_bt_node SHARED src/action/set_default_led_color_action.cpp)
+list(APPEND plugin_libs set_default_led_color_action_bt_node)
+
 add_library(move_electric_drawer_action_bt_node SHARED src/action/move_electric_drawer_action.cpp)
 list(APPEND plugin_libs move_electric_drawer_action_bt_node)
 
@@ -101,6 +124,12 @@ list(APPEND plugin_libs base_error_decorator_node)
 add_library(partial_colorize_leds_action_bt_node SHARED src/action/partial_colorize_leds_action.cpp)
 list(APPEND plugin_libs partial_colorize_leds_action_bt_node)
 
+add_library(publish_state_feedback_action_bt_node SHARED src/action/publish_state_feedback_action.cpp)
+list(APPEND plugin_libs publish_state_feedback_action_bt_node)
+
+add_library(evaluate_drive_direction_action_bt_node SHARED src/action/evaluate_drive_direction_action.cpp)
+list(APPEND plugin_libs evaluate_drive_direction_action_bt_node)
+
 add_library(publish_led_action_bt_node SHARED src/action/publish_led_action.cpp)
 list(APPEND plugin_libs publish_led_action_bt_node)
 
@@ -113,6 +142,12 @@ list(APPEND plugin_libs publish_drawer_status_action_bt_node)
 add_library(partial_drawer_leds_action_bt_node SHARED src/action/partial_drawer_leds_action.cpp)
 list(APPEND plugin_libs partial_drawer_leds_action_bt_node)
 
+add_library(lock_partial_drawer_action_bt_node SHARED src/action/lock_partial_drawer_action.cpp)
+list(APPEND plugin_libs lock_partial_drawer_action_bt_node)
+
+add_library(import_environment_led_color_action_bt_node SHARED src/action/import_environment_led_color_action.cpp)
+list(APPEND plugin_libs import_environment_led_color_action_bt_node)
+
 add_library(bool_topic_condition_node SHARED src/condition/bool_topic_condition.cpp)
 list(APPEND plugin_libs bool_topic_condition_node)
 
@@ -122,8 +157,26 @@ list(APPEND plugin_libs led_changed_condition_node)
 add_library(is_robot_charging_condition_node SHARED src/condition/is_robot_charging_condition.cpp)
 list(APPEND plugin_libs is_robot_charging_condition_node)
 
+add_library(check_safety_register_condition_node SHARED src/condition/check_safety_register_condition.cpp)
+list(APPEND plugin_libs check_safety_register_condition_node)
+
+add_library(double_compare_condition_node SHARED src/condition/double_compare_condition.cpp)
+list(APPEND plugin_libs double_compare_condition_node)
+
 add_library(reactive_if_then_else_node SHARED src/control/reactive_if_then_else.cpp)
 list(APPEND plugin_libs reactive_if_then_else_node)
+
+add_library(heartbeat_condition_node SHARED src/condition/heartbeat_condition.cpp)
+list(APPEND plugin_libs heartbeat_condition_node)
+
+add_library(path_topic_condition_node SHARED src/condition/path_topic_condition.cpp)
+list(APPEND plugin_libs path_topic_condition_node)
+
+add_library(robast_error_pub_node SHARED src/action/robast_error_pub_action.cpp)
+list(APPEND plugin_libs robast_error_pub_node)
+
+add_library(publish_string_topic_action_node SHARED src/action/publish_string_topic.cpp)
+list(APPEND plugin_libs publish_string_topic_action_node)
 
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})
@@ -170,6 +223,8 @@ if(BUILD_TESTING)
   list(APPEND test_executables move_electric_drawer_action_test)
   add_executable(error_decorator_test tests/decorators/error_decorator_test.cpp)
   list(APPEND test_executables error_decorator_test)
+  add_executable(calculate_direction_test tests/calculate_direction_test.cpp)
+  list(APPEND test_executables calculate_direction_test)
   
 
   ament_target_dependencies(${test_libs}
@@ -188,7 +243,7 @@ if(BUILD_TESTING)
       include(Catch)
     catch_discover_tests(${test})
   endforeach()
-
+  
   include(CTest)
 
   # find_package(ament_cmake_lint_cmake REQUIRED)

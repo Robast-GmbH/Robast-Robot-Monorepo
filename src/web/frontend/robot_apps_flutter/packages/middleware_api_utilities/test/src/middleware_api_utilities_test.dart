@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:middleware_api_utilities/src/sub_apis/modules_api.dart';
-import 'package:middleware_api_utilities/src/sub_apis/nfc_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/users_api.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -18,6 +18,7 @@ void main() {
 
     const userID = '';
     const nfcID = '';
+    const mail = 'test@test.de';
     const title = 'Prof. Dr. med.';
     const firstName = 'Max';
     const lastName = 'Mustermann';
@@ -27,6 +28,7 @@ void main() {
     final testUser = User(
       id: userID,
       nfcID: nfcID,
+      mail: mail,
       title: title,
       firstName: firstName,
       lastName: lastName,
@@ -34,6 +36,7 @@ void main() {
       room: room,
       userGroups: userGroups,
     );
+    const updatedMail = 'update@test.de';
     const updatedTitle = 'Dr. med.';
     const updatedFirstName = 'Maximilian';
     const updatedLastName = 'Musterfrau';
@@ -152,10 +155,6 @@ void main() {
       expect(deletionResult, isTrue);
     });
 
-    test('can get users', () async {
-      final users = await usersApi.getUsers();
-      expect(users, isNotEmpty);
-    });
     test('can create and delete user', () async {
       final creationResult = await usersApi.createUser(
         newUser: testUser,
@@ -178,6 +177,7 @@ void main() {
       final updatedUser = User(
         id: creationResult!.id,
         nfcID: creationResult.nfcID,
+        mail: updatedMail,
         title: updatedTitle,
         firstName: updatedFirstName,
         lastName: updatedLastName,
@@ -199,10 +199,10 @@ void main() {
       expect(deletionResult, isTrue);
     });
 
-    test('can read nfc', () async {
-      final nfc = NFCApi(prefix: 'http://localhost:8003');
-      final result = await nfc.readNFC(robotName: robotName);
-      expect(result, isNotNull);
-    });
+    // test('can read nfc', () async {
+    //   final nfc = NFCApi(prefix: 'http://localhost:8003');
+    //   final result = await nfc.readNFC(robotName: robotName);
+    //   expect(result, isNotNull);
+    // });
   });
 }

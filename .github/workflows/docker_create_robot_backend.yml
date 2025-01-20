@@ -1,0 +1,37 @@
+name: Create Docker Image Robot Backend
+#trigger workflow every day at 00:00
+on:
+  workflow_dispatch:
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      Ros-Distro: humble
+      Project-Name: robot_backend
+
+    steps:
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: configures Docker Buildx to create a builder instance for running the image build.
+      uses: docker/setup-buildx-action@v3 
+    
+    - name: Build ${{ env.Project-Name }} release docker
+      uses: docker/build-push-action@v6
+      with:
+        context: src/${{ env.Project-Name }}/
+        platforms: linux/amd64
+        push: true
+        file: src/${{ env.Project-Name }}/Dockerfile
+        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release-${{ env.Ros-Distro }}
