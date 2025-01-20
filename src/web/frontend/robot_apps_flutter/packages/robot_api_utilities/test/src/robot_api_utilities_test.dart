@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('RobotApiUtilities', () {
-    const testPrefix = 'http://10.10.23.8:8001';
+    const testPrefix = 'http://10.10.23.12:8001';
 
     test('can be instantiated', () {
       expect(RobotApiUtilities(prefix: ''), isNotNull);
@@ -26,6 +26,12 @@ void main() {
       final robotApiUtilities = RobotApiUtilities(prefix: testPrefix);
       final livingDevices = await robotApiUtilities.getLivingDevices();
       expect(livingDevices, isNotNull);
+    });
+
+    test('can get error log', () async {
+      final robotApiUtilities = RobotApiUtilities(prefix: testPrefix);
+      final errorLog = await robotApiUtilities.getErrorLog();
+      expect(errorLog, isNotNull);
     });
   });
 }

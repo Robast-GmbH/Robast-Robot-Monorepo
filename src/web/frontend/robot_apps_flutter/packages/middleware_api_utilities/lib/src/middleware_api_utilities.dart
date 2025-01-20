@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:http/http.dart' as http;
 import 'package:middleware_api_utilities/src/services/request_service.dart';
 import 'package:middleware_api_utilities/src/sub_apis/fire_alarm_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/hygiene_api.dart';

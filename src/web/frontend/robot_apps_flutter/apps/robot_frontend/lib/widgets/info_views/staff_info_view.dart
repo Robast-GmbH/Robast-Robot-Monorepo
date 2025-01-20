@@ -1,12 +1,28 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:provider/provider.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
+import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/manuals_page.dart';
 import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
+import 'package:robot_frontend/widgets/rounded_container.dart';
 
-class InfoView extends StatelessWidget {
-  const InfoView({super.key});
+class StaffInfoView extends StatefulWidget {
+  const StaffInfoView({super.key});
 
-  final videoPath = 'assets/robast_video.mp4';
+  @override
+  State<StaffInfoView> createState() => _StaffInfoViewState();
+}
+
+class _StaffInfoViewState extends State<StaffInfoView> {
+  late Future<List<String>?> loadErrorLog;
+
+  @override
+  void initState() {
+    loadErrorLog = Provider.of<RobotProvider>(context, listen: false).getErrorProtocol();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,47 +33,62 @@ class InfoView extends StatelessWidget {
             children: [
               Expanded(
                 child: CustomButtonView(
-                  text: "Robast Robotic Assistant GmbH",
                   onPressed: () {},
-                  content: const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 8),
-                      InfoRow(
-                        title: "Ziel",
-                        value: "Entwicklung eines autonomen Serviceroboters für die Prozessautomatisierung im Krankenhaus",
-                      ),
-                      InfoRow(title: "Gründung", value: "2021"),
-                      InfoRow(title: "Teamgröße", value: "7 Personen"),
-                      InfoRow(title: "Standort", value: "Hamburg Harburg"),
-                      InfoRow(
-                        title: "Partner",
-                        value: "Tiplu GmbH, IFB Hamburg, Fraunhofer IAPT",
-                      ),
-                    ],
+                  header: const Text(
+                    'Fehlerprotokoll',
+                    style: TextStyle(color: RobotColors.primaryText, fontSize: 40, fontWeight: FontWeight.w400),
                   ),
+                  content: FutureBuilder(
+                      future: loadErrorLog,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState != ConnectionState.done) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: GestureDetector(
+                              onTap: () => setState(() {
+                                loadErrorLog = Provider.of<RobotProvider>(context, listen: false).getErrorProtocol();
+                              }),
+                              child: const Column(
+                                children: [
+                                  Text('Fehler beim Laden des Fehlerprotokolls'),
+                                  Text('Erneut versuchen', style: TextStyle(color: RobotColors.secondaryText)),
+                                ],
+                              ),
+                            ),
+                          );
+                        }
+                        return ListView.builder(
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              final splittedData = snapshot.data![index].split(' - ');
+                              final date = splittedData.first;
+                              final error = jsonDecode(splittedData.last.split('received: ').last.replaceAll("'", '"')) as Map<String, dynamic>;
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                child: RoundedContainer(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          date,
+                                          style: const TextStyle(color: RobotColors.secondaryText, fontSize: 28),
+                                        ),
+                                        ...error.entries.map((entry) {
+                                          return InfoRow(title: entry.key, value: entry.value.toString());
+                                        }),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            });
+                      }),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: CustomButtonView(
-                  text: 'Unser Team',
-                  onPressed: () {},
-                  content: Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Center(
-                        child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.asset(
-                        'assets/team.jpeg',
-                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.group, size: 100, color: RobotColors.primaryText),
-                        fit: BoxFit.fitWidth,
-                        width: double.infinity,
-                      ),
-                    )),
-                  ),
-                ),
-              ),
+              )
             ],
           ),
         ),
