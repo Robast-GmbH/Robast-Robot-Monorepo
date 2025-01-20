@@ -161,7 +161,7 @@ namespace drawer
   void MotionController::handle_decelerating_for_moving_out_drawer()
   {
     const uint8_t current_position = _encoder->get_normed_current_position();
-    const uint8_t deceleration_distance = get_moving_out_deceleration_distance();
+    const uint8_t deceleration_distance = get_scaled_moving_out_deceleration_distance();
 
     const bool should_decelerate = (current_position + deceleration_distance) >= _target_position_uint8;
     if (!_triggered_deceleration_for_drawer_moving_out && should_decelerate)
@@ -303,11 +303,11 @@ namespace drawer
     return (target_speed_casted * max_speed) / MAX_SPEED_UINT8;
   }
 
-  uint8_t MotionController::get_moving_out_deceleration_distance() const
+  uint8_t MotionController::get_scaled_moving_out_deceleration_distance() const
   {
     uint8_t deceleration_distance = _e_drawer_config->get_drawer_moving_out_deceleration_distance();
 
-    uint16_t intermediate_result = _target_position_uint8 * deceleration_distance;
+    const uint16_t intermediate_result = _target_position_uint8 * deceleration_distance;
 
     deceleration_distance = intermediate_result / UINT8_MAX;
 

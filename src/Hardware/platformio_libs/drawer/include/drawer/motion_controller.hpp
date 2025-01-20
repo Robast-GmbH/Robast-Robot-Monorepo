@@ -4,12 +4,12 @@
 #include <memory>
 #include <optional>
 
+#include "can_toolbox/can_utils.hpp"
 #include "drawer/electrical_drawer_config.hpp"
+#include "lock/electrical_drawer_lock.hpp"
 #include "motor/encoder.hpp"
 #include "motor/motor.hpp"
 #include "motor/motor_monitor.hpp"
-#include "can_toolbox/can_utils.hpp"
-#include "lock/electrical_drawer_lock.hpp"
 
 namespace drawer
 {
@@ -25,7 +25,7 @@ namespace drawer
 
   class MotionController
   {
-  public:
+   public:
     MotionController(const uint32_t module_id,
                      const uint8_t id,
                      const std::shared_ptr<motor::Encoder> encoder,
@@ -79,7 +79,7 @@ namespace drawer
 
     uint8_t get_target_speed() const;
 
-  private:
+   private:
     const uint32_t _module_id;
     const uint8_t _id;
 
@@ -112,9 +112,9 @@ namespace drawer
 
     uint32_t get_normed_target_speed_uint32(const uint8_t target_speed) const;
 
-    uint8_t get_moving_out_deceleration_distance() const;
+    uint8_t get_scaled_moving_out_deceleration_distance() const;
   };
 
-} // namespace drawer
+}   // namespace drawer
 
-#endif // DRAWER_SPEED_CONTROLLER_HPP
+#endif   // DRAWER_SPEED_CONTROLLER_HPP
