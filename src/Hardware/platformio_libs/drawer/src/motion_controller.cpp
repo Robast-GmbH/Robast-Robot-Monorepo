@@ -4,24 +4,42 @@ namespace drawer
 {
   MotionController::MotionController(const uint32_t module_id,
                                      const uint8_t id,
-                                     const std::shared_ptr<motor::Encoder> encoder,
-                                     const std::shared_ptr<stepper_motor::Motor> motor,
+                                     const bool use_encoder,
+                                     const uint8_t encoder_pin_a,
+                                     const uint8_t encoder_pin_b,
+                                     const uint8_t motor_driver_address,
+                                     const std::shared_ptr<motor::EncoderConfig> encoder_config,
+                                     const std::shared_ptr<motor::MotorConfig> motor_config,
+                                     const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config,
+                                     const stepper_motor::StepperPinIdConfig &stepper_pin_id_config,
+                                     const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                                      const std::shared_ptr<ElectricalDrawerConfig> e_drawer_config,
                                      const std::shared_ptr<switch_lib::Switch> endstop_switch,
                                      const std::shared_ptr<can_toolbox::CanUtils> can_utils,
-                                     const std::optional<std::shared_ptr<lock::ElectricalDrawerLock>> drawer_lock,
-                                     const std::shared_ptr<motor::EncoderConfig> encoder_config,
-                                     const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config)
+                                     const std::optional<std::shared_ptr<lock::ElectricalDrawerLock>> drawer_lock)
       : _module_id{module_id},
         _id{id},
-        _encoder{encoder},
-        _motor{motor},
+        _encoder{std::make_unique<motor::Encoder>(use_encoder, encoder_pin_a, encoder_pin_b, encoder_config)},
+        _encoder_monitor{std::make_unique<motor::EncoderMonitor>(_encoder, encoder_config)},
+        _motor{std::make_unique<stepper_motor::Motor>(
+          motor_driver_address, gpio_wrapper, stepper_pin_id_config, motor_config)},
+        _motor_monitor{std::make_unique<motor::MotorMonitor>(_encoder, encoder_config, _motor, motor_monitor_config)},
+        _gpio_wrapper{gpio_wrapper},
         _e_drawer_config{e_drawer_config},
         _endstop_switch{endstop_switch},
         _can_utils{can_utils},
-        _drawer_lock{drawer_lock},
-        _motor_monitor{std::make_unique<motor::MotorMonitor>(_encoder, encoder_config, _motor, motor_monitor_config)}
+        _drawer_lock{drawer_lock}
   {
+    _motor->init();
+  }
+
+  void MotionController::set_motor_driver_state(const bool enabled, const uint8_t motor_id) const
+  {
+    debug_printf_warning("[MotionController]: Setting motor driver state to %d\n", enabled);
+    // TODO@Jacob: Once we have more then one motor, we need to change this to a switch case and use the motor_id
+    enabled ? _motor->enable_driver() : _motor->disable_driver();
+
+    _can_utils->enqueue_e_drawer_motor_control_msg(_module_id, motor_id, enabled, CONFIRM_MOTOR_CONTROL_CHANGE);
   }
 
   void MotionController::set_target_speed_and_direction(const uint8_t target_speed, const bool use_acceleration_ramp)
@@ -293,6 +311,16 @@ namespace drawer
   uint8_t MotionController::get_target_speed() const
   {
     return get_normed_target_speed_uint8(_motor->get_target_speed());
+  }
+
+  uint8_t MotionController::get_current_position() const
+  {
+    return _encoder->get_normed_current_position();
+  }
+
+  bool MotionController::is_drawer_moving_in() const
+  {
+    return !is_drawer_moving_out() && !is_idling();
   }
 
   uint32_t MotionController::get_normed_target_speed_uint32(const uint8_t target_speed) const
