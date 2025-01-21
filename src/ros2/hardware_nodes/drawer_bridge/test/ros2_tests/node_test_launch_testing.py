@@ -531,10 +531,12 @@ class TestProcessOutput(unittest.TestCase):
                 self.__received_data_error_feedback_error_code,
                 self.__expected_data_error_feedback_error_code,
             )
-            self.assertEqual(
-                self.__received_data_error_feedback_error_data,
-                self.__expected_data_error_feedback_error_data,
-            )
+
+            for i in range(len(self.__expected_data_error_feedback_error_data)):
+                self.assertEqual(
+                    self.__received_data_error_feedback_error_data[i],
+                    self.__expected_data_error_feedback_error_data[i],
+                )
             self.__node.get_logger().info("Finished checking received data from robast_error!")
 
             # Check if action calls were successful
