@@ -30,6 +30,7 @@
 #include "can_msgs/msg/frame.hpp"
 #include "communication_interfaces/action/electrical_drawer_motor_control.hpp"
 #include "communication_interfaces/action/module_config.hpp"
+#include "communication_interfaces/msg/drawer_address.hpp"
 #include "communication_interfaces/msg/drawer_status.hpp"
 #include "communication_interfaces/msg/drawer_task.hpp"
 #include "communication_interfaces/msg/electrical_drawer_status.hpp"

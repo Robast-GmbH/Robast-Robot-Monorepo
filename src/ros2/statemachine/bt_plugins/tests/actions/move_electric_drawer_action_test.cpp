@@ -24,20 +24,19 @@ namespace test2
       }
 
       const std::vector<std::string> plugins = {
-          "move_electric_drawer_action_bt_node",
-          "get_blackboard_value_action_bt_node",
+        "move_electric_drawer_action_bt_node",
+        "get_blackboard_value_action_bt_node",
       };
       static rclcpp::Node::SharedPtr node_electric_drawer = std::make_shared<rclcpp::Node>("test_move_drawer");
-      static BT::NodeConfig *config_;
-      config_ = new BT::NodeConfig();
       auto blackboard = BT::Blackboard::create();
       blackboard->set<std::chrono::milliseconds>("bt_loop_duration", std::chrono::milliseconds(10));
+
       communication_interfaces::msg::DrawerAddress used_drawer_address;
       used_drawer_address.module_id = 1;
       used_drawer_address.drawer_id = 1;
       blackboard->set<communication_interfaces::msg::DrawerAddress>("drawer_address", used_drawer_address);
       std::string electric_tree_xml =
-          R"(
+        R"(
             <root BTCPP_format="4" >
                 <BehaviorTree ID="MainTree">
                     <Sequence>
@@ -83,17 +82,17 @@ namespace test2
           {
             bool callback_triggered = false;
             auto subscription = node_electric_drawer->create_subscription<communication_interfaces::msg::DrawerTask>(
-                "move_electric_drawer",
-                10,
-                [&callback_triggered](const communication_interfaces::msg::DrawerTask::SharedPtr msg)
-                {
-                  REQUIRE(msg->speed == 200);
-                  REQUIRE(msg->target_position == 200);
-                  REQUIRE(msg->stall_guard_value == 0);
-                  REQUIRE(msg->drawer_address.module_id == 1);
-                  REQUIRE(msg->drawer_address.drawer_id == 1);
-                  callback_triggered = true;
-                });
+              "move_electric_drawer",
+              10,
+              [&callback_triggered](const communication_interfaces::msg::DrawerTask::SharedPtr msg)
+              {
+                REQUIRE(msg->speed == 200);
+                REQUIRE(msg->target_position == 200);
+                REQUIRE(msg->stall_guard_value == 0);
+                REQUIRE(msg->drawer_address.module_id == 1);
+                REQUIRE(msg->drawer_address.drawer_id == 1);
+                callback_triggered = true;
+              });
 
             bt.tickOnce();                             // onStart
             auto result = bt.tickOnce();               // onRunning

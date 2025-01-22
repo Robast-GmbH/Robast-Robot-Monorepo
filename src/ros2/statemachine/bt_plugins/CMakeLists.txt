@@ -223,6 +223,8 @@ if(BUILD_TESTING)
   list(APPEND test_executables move_electric_drawer_action_test)
   add_executable(generate_partial_position_action_test tests/actions/generate_partial_position_action_test.cpp)
   list(APPEND test_executables generate_partial_position_action_test)
+  add_executable(robast_error_pub_action_test tests/actions/robast_error_pub_action_test.cpp)
+  list(APPEND test_executables robast_error_pub_action_test)
 
   # Conditions
   add_executable(drawer_status_condition_test tests/conditions/drawer_status_condition_test.cpp)
