@@ -20,7 +20,7 @@ namespace drawer
   constexpr bool IS_NOT_HOMING = false;
   constexpr bool DO_NOT_USE_ACCELERATION_RAMP = false;
   constexpr bool PUSH_TO_CLOSE_TRIGGERED = true;
-  constexpr bool MOTOR_IS_STALLED = true;
+
   constexpr bool ENDSTOP_SWITCH_IS_PUSHED = true;
 
   class ElectricalDrawer : public interfaces::IDrawer
@@ -58,11 +58,8 @@ namespace drawer
 
     const std::shared_ptr<drawer::MotionController> _motion_controller;
 
-    bool _is_drawer_opening_in_progress = false;
-
     bool _triggered_closing_lock_after_opening = false;
 
-    uint32_t _timestamp_stall_guard_triggered_in_ms = 0;
     uint32_t _timestamp_drawer_opened_in_ms = 0;
 
     /* FUNCTIONS */
@@ -72,8 +69,6 @@ namespace drawer
     void handle_drawer_active_state();
 
     void start_next_e_drawer_task();
-
-    void check_if_push_to_close_is_triggered();
 
     void check_if_drawer_is_pulled_out();
 
@@ -87,9 +82,13 @@ namespace drawer
 
     void handle_drawer_moving_out();
 
-    void handle_stall_guard_triggered();
+    void handle_push_to_close_triggered();
 
     void debug_prints_moving_e_drawer();
+
+    bool is_drawer_closed() const;
+
+    void check_for_drawer_not_opened_error() const;
   };
 }   // namespace drawer
 

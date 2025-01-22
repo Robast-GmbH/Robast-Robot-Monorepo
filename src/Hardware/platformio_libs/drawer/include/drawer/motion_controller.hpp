@@ -14,6 +14,7 @@
 #include "motor/motor.hpp"
 #include "motor/motor_config.hpp"
 #include "motor/motor_monitor.hpp"
+#include "utils/e_drawer_task.hpp"
 
 namespace drawer
 {
@@ -26,6 +27,7 @@ namespace drawer
   constexpr bool CONFIRM_MOTOR_CONTROL_CHANGE = true;
   constexpr bool LOCK_SWITCH_IS_NOT_PUSHED = false;
   constexpr bool PUSH_TO_CLOSE_NOT_TRIGGERED = false;
+  constexpr bool MOTOR_IS_STALLED = true;
   constexpr bool MOTOR_IS_NOT_STALLED = false;
 
   class MotionController
@@ -53,15 +55,11 @@ namespace drawer
 
     void set_target_speed_with_decelerating_ramp(const uint8_t target_speed);
 
-    void start_homing_movement(const uint8_t target_speed);
-
     bool handle_initial_drawer_homing();
 
     bool was_drawer_homed_once() const;
 
     bool is_drawer_moving_out() const;
-
-    void start_normal_drawer_movement(const uint8_t target_speed, const bool use_acceleration_ramp);
 
     void reset_encoder_if_endstop_is_pushed();
 
@@ -69,7 +67,7 @@ namespace drawer
 
     void handle_decelerating_for_moving_out_drawer();
 
-    void handle_finished_moving_out_drawer();
+    bool handle_finished_moving_out_drawer();
 
     void handle_decelerating_for_moving_in_drawer();
 
@@ -79,21 +77,31 @@ namespace drawer
 
     bool is_idling() const;
 
-    uint32_t get_timestamp_movement_finished_in_ms() const;
-
-    void set_timestamp_movement_started_in_ms(const uint32_t timestamp_movement_started_in_ms);
-
-    void set_target_position_uint8(const uint8_t target_position_uint8);
-
-    uint8_t get_target_position_uint8() const;
-
     uint8_t get_normed_target_speed_uint8(const uint32_t target_speed) const;
 
     uint8_t get_target_speed() const;
 
     uint8_t get_current_position() const;
 
+    uint8_t get_normed_current_position() const;
+
     bool is_drawer_moving_in() const;
+
+    bool is_push_to_close_is_triggered() const;
+
+    void handle_stall_guard_triggered();
+
+    void handle_motor_control() const;
+
+    void update_position() const;
+
+    void start_e_drawer_task(const utils::EDrawerTask &e_drawer_task);
+
+    bool is_task_redundant(const uint8_t new_target_position) const;
+
+    bool is_drawer_pulled_out() const;
+
+    bool is_drawer_opening_in_progress() const;
 
    private:
     const uint32_t _module_id;
@@ -115,6 +123,8 @@ namespace drawer
 
     bool _is_idling = true;
 
+    bool _is_drawer_opening_in_progress = false;
+
     bool _drawer_was_homed_once = false;
     bool _is_drawer_moving_out;
 
@@ -128,10 +138,15 @@ namespace drawer
 
     uint32_t _timestamp_movement_started_in_ms = 0;
     uint32_t _timestamp_movement_finished_in_ms = 0;
+    uint32_t _timestamp_stall_guard_triggered_in_ms = 0;
 
     uint32_t get_normed_target_speed_uint32(const uint8_t target_speed) const;
 
     uint8_t get_scaled_moving_out_deceleration_distance() const;
+
+    void start_homing_movement(const uint8_t target_speed);
+
+    void start_normal_drawer_movement(const uint8_t target_speed, const bool use_acceleration_ramp);
   };
 
 }   // namespace drawer
