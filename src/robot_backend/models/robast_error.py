@@ -1,6 +1,6 @@
 from typing import Any, Dict
 import uuid
-from deserializer import Deserializer
+from models.deserializer import Deserializer
 
 # import sys
 
