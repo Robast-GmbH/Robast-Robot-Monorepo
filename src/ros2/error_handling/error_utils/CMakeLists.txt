@@ -5,8 +5,13 @@ project(error_utils)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(Python REQUIRED COMPONENTS Interpreter Development)
-find_package(pybind11 REQUIRED)
 find_package(communication_interfaces REQUIRED)
+
+add_custom_target(run_script ALL
+    COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/generate_error_mapping.py
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+
 
 # Add include directories
 include_directories(include)
@@ -65,37 +70,6 @@ endif()
 install(DIRECTORY include/
   DESTINATION include
 )
-# Optionally, export Python bindings (if needed for other ROS packages)
-ament_export_libraries(error_definitions_pybind)
-# Export package information
+
 ament_export_include_directories(include)
 ament_package()
-
-# Add Pybind11 module
-add_library(error_definitions_pybind MODULE src/error_definitions_pybind.cpp)
-target_include_directories(error_definitions_pybind PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(error_definitions_pybind PRIVATE pybind11::module)
-
-# Ensure the Pybind11 module has the correct name and extension
-set_target_properties(error_definitions_pybind PROPERTIES PREFIX "" SUFFIX ".so")
-
-# Install Pybind11 module
-install(TARGETS error_definitions_pybind
-  LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-)
-
-# Copy install_py_module.sh to the install directory
-install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/install_py_module.sh
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
-)
-
-# Ensure the script is copied before executing it
-add_custom_command(TARGET error_definitions_pybind POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/bin
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/install_py_module.sh ${CMAKE_INSTALL_PREFIX}/bin/
-)
-
-# # Execute the install_py_module.sh script after installation
-# add_custom_command(TARGET error_definitions_pybind POST_BUILD
-#   COMMAND ${CMAKE_COMMAND} -E env bash ${CMAKE_INSTALL_PREFIX}/bin/install_py_module.sh
-# )
