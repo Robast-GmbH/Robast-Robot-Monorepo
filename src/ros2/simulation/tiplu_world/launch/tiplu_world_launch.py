@@ -16,14 +16,14 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
 from launch.event_handlers import OnProcessExit
-from launch.conditions import IfCondition, UnlessCondition
+from launch.conditions import IfCondition
 
 
 # TODO @all: There are still some small issues with loading packages,
 # TODO @all: but it starts and seems to work fine.
 
 
-def launch_robot_state_publisher(context, *args, **settings):
+def launch_robot_state_publisher(context, **settings):
     position_joint_type = LaunchConfiguration("position_joint_type").perform(context)
 
     robot_xml = xacro.process_file(
@@ -35,7 +35,7 @@ def launch_robot_state_publisher(context, *args, **settings):
         mappings={
             "prefix": settings["prefix"],
             "ros2_control_hardware_type": "gz_ros2_control",
-            "ros2_control_hardware_type_positon_joint": "gz_ros2_control",
+            "ros2_control_hardware_type_position_joint": "gz_ros2_control",
             "ros_distro": settings["ros_distro"],
             "position_joint_type": position_joint_type,
             "robot_type": settings["robot_type"],
@@ -56,7 +56,7 @@ def launch_robot_state_publisher(context, *args, **settings):
     return [start_robot_state_publisher_cmd]
 
 
-def create_world_urdf(context, *args, **settings):
+def create_world_urdf(context, **settings):
     world_model = LaunchConfiguration("world_model").perform(context)
 
     # In order to swap out 'package://' paths with absolute path we need to:
@@ -112,6 +112,7 @@ def generate_launch_description():
     init_y = os.environ["init_y"]
     init_yaw = os.environ["init_yaw"]
     prefix = os.environ["prefix"]
+    robot_type = os.environ.get("robot_type", "cura")
     robot = os.environ["robot"]
 
 
