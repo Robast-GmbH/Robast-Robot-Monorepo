@@ -23,16 +23,6 @@ COPY . /ws/src/hardware_nodes
 USER root
 RUN apt-get update && apt-get install -y git
 
-
-# TODO: No idea why but it seems that this version is broken: ros-humble-ros2-socketcan/jammy 1.3.0-1jammy.20240729.003002 amd64
-# Therefore we need to install it manually for now
-WORKDIR /ros2_socketcan_ws
-RUN git clone -b ${ROS_BUILD_DISTRO} https://github.com/autowarefoundation/ros2_socketcan.git
-RUN rosdep update && \
-  rosdep install --from-paths /ros2_socketcan_ws/ros2_socketcan --ignore-src -r -y && \
-  . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
-
 WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast \
   && mv /monorepo/src/ros2/qos_bridge /ws/src/ros2/qos_bridge \
