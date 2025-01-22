@@ -27,6 +27,7 @@ class ErrorBridge(BaseBridge):
         return {
             str(error_code): self.__get_errors_by_code(error_code)
             for error_code in self.__error_by_id_by_code.keys()
+            if self.__error_by_id_by_code[error_code]
         }
 
     def __on_error(self, msg: Dict[str, Any]) -> None:
