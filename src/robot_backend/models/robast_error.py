@@ -22,9 +22,7 @@ class RobastError:
 
         error_interface = error_code_by_interface.get(code)
         if error_interface == "communication_interfaces::msg::DrawerAddress":
-            self.data = Deserializer.deserialize_drawer_address(
-                bytes(data, "utf-8"), error_interface
-            )
+            self.data = Deserializer.deserialize_drawer_address(bytes(data, "utf-8"))
         elif error_interface == "std::string":
             self.data = data
         else:
