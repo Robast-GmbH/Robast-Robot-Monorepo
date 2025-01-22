@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
 
 class StatusBar extends StatelessWidget {

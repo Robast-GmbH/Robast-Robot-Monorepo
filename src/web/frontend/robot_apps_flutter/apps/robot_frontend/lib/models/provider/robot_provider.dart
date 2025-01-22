@@ -146,4 +146,9 @@ class RobotProvider extends ChangeNotifier {
     _isRobotLost = await _robotAPI.getIsRobotLost();
     notifyListeners();
   }
+
+  Future<List<String>?> getErrorProtocol() async {
+    final errorLog = await _robotAPI.getErrorLog();
+    return errorLog?.where((logMessage) => logMessage.contains('error_code')).toList().reversed.toList();
+  }
 }

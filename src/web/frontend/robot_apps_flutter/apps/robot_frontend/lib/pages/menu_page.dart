@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
 import 'package:robot_frontend/models/provider/hygiene_provider.dart';
 import 'package:robot_frontend/models/provider/inactivity_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
@@ -13,7 +13,8 @@ import 'package:robot_frontend/widgets/clock_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/home_views/patient_home_view.dart';
 import 'package:robot_frontend/widgets/home_views/staff_home_view.dart';
-import 'package:robot_frontend/widgets/info_view.dart';
+import 'package:robot_frontend/widgets/info_views/patient_info_view.dart';
+import 'package:robot_frontend/widgets/info_views/staff_info_view.dart';
 import 'package:robot_frontend/widgets/notification_views/notification_view.dart';
 
 import 'package:robot_frontend/widgets/robot_map_view.dart';
@@ -67,9 +68,9 @@ class _MenuPageState extends State<MenuPage> {
       title: 'Infos',
       icon: Icons.info_outline,
       userGroupWidgets: {
-        'ADMIN': InfoView.new,
-        'STAFF': InfoView.new,
-        'PATIENT': InfoView.new,
+        'ADMIN': StaffInfoView.new,
+        'STAFF': StaffInfoView.new,
+        'PATIENT': PatientInfoView.new,
       },
     ),
     SidebarMenuPoint(

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
+import 'package:robot_frontend/models/module_content_controller.dart';
 import 'package:robot_frontend/models/provider/inactivity_provider.dart';
+import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/pages/module_pages/module_process_page.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
@@ -24,7 +26,7 @@ class _ModuleFillingPageState extends State<ModuleFillingPage> {
   @override
   void initState() {
     super.initState();
-    moduleContentController.initialItemsByCount.addAll(widget.submodule.itemsByCount);
+    moduleContentController.setInitialItems(widget.submodule.itemsByCount);
   }
 
   @override
@@ -39,8 +41,13 @@ class _ModuleFillingPageState extends State<ModuleFillingPage> {
               child: ModuleContentCreationView(
                 moduleContentController: moduleContentController,
                 label: 'Inhalt',
+                showCategoryLabels: true,
               ),
             ),
+            if (Provider.of<KeyboardProvider>(context).focusNode != null)
+              const SizedBox(
+                height: 280,
+              ),
             Padding(
               padding: const EdgeInsets.only(top: 12),
               child: RoundedButton(

@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
+import 'package:robot_frontend/models/custom_focus_node.dart';
+import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/manuals_page.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
 import 'package:robot_frontend/widgets/emergency_stop_view.dart';
-import 'package:robot_frontend/widgets/status_bar.dart';
 import 'package:robot_frontend/widgets/status_indicator_view.dart';
 import 'package:robot_frontend/widgets/titled_view.dart';
+import 'package:virtual_keyboard_custom_layout/virtual_keyboard_custom_layout.dart';
 
 class CustomScaffold extends StatelessWidget {
   const CustomScaffold({
@@ -32,6 +34,7 @@ class CustomScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('rebuild CustomScaffold');
     return Scaffold(
       body: BackgroundView(
         inactivityTimerEnabled: inactivityTimerEnabled,
@@ -82,7 +85,7 @@ class CustomScaffold extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Expanded(
+                  const Expanded(
                     child: Center(
                         child: Padding(
                       padding: EdgeInsets.symmetric(horizontal: 256),
@@ -97,15 +100,84 @@ class CustomScaffold extends StatelessWidget {
               );
             }
             if (isEmergencyStopPressed ?? false) {
+              Provider.of<KeyboardProvider>(context, listen: false).focusSilently(null);
               Navigator.of(context).popUntil((route) => route is PageRoute);
               return const EmergencyStopView();
             }
-            return TitledView(
-              title: title,
-              showBackButton: showBackButton,
-              onBackButtonPressed: onBackButtonPressed,
-              collapsedTitle: collapsedTitle,
-              child: child,
+            return Stack(
+              children: [
+                GestureDetector(
+                  onTap: () => Provider.of<KeyboardProvider>(context, listen: false).unfocus(),
+                  child: Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: Colors.transparent,
+                    child: TitledView(
+                      title: title,
+                      showBackButton: showBackButton,
+                      onBackButtonPressed: onBackButtonPressed,
+                      collapsedTitle: collapsedTitle,
+                      child: child,
+                    ),
+                  ),
+                ),
+                Selector<KeyboardProvider, CustomFocusNode?>(
+                    selector: (context, provider) => provider.focusNode,
+                    builder: (context, focusNode, child) {
+                      if (focusNode == null) {
+                        return const SizedBox();
+                      }
+                      bool shiftPressed = false;
+                      return Align(
+                        alignment: Alignment.bottomCenter,
+                        child: ColoredBox(
+                          color: Colors.white,
+                          child: VirtualKeyboard(
+                            fontSize: 48,
+                            height: keyboardHeight,
+                            borderColor: Colors.grey,
+                            defaultLayouts: const [VirtualKeyboardDefaultLayouts.German],
+                            keys: focusNode.layout == VirtualKeyboardDefaultLayouts.Numeric
+                                ? [
+                                    ['1', '2', '3'],
+                                    ['4', '5', '6'],
+                                    ['7', '8', '9'],
+                                    ['BACKSPACE', '0', 'RETURN']
+                                  ]
+                                : null,
+                            textController: TextEditingController(text: focusNode.text),
+                            onKeyPress: (key) {
+                              if (key.keyType == VirtualKeyboardKeyType.Action) {
+                                switch (key.action) {
+                                  case VirtualKeyboardKeyAction.Backspace:
+                                    if (focusNode.text.isNotEmpty) {
+                                      focusNode.text = focusNode.text.substring(0, focusNode.text.length - 1);
+                                    }
+                                    break;
+                                  case VirtualKeyboardKeyAction.Return:
+                                    Provider.of<KeyboardProvider>(context, listen: false).focusNext();
+                                    return;
+                                  case VirtualKeyboardKeyAction.Space:
+                                    if (focusNode.text.length < focusNode.maxTextLength) {
+                                      focusNode.text = '${focusNode.text} ';
+                                    }
+                                    break;
+                                  case VirtualKeyboardKeyAction.Shift:
+                                    shiftPressed = !shiftPressed;
+                                    break;
+                                  default:
+                                    break;
+                                }
+                              } else if (focusNode.text.length < focusNode.maxTextLength) {
+                                focusNode.text = focusNode.text + (shiftPressed ? key.capsText! : key.text!);
+                              }
+                              focusNode.setTextState?.call();
+                            },
+                          ),
+                        ),
+                      );
+                    }),
+              ],
             );
           },
         ),

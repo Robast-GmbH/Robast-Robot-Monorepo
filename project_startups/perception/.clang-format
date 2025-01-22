@@ -4,22 +4,17 @@ BasedOnStyle: Google
 IndentWidth: 2
 ContinuationIndentWidth: 2
 ColumnLimit: 120
-
 UseTab: Never
 AllowShortIfStatementsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
-AllowShortLambdasOnASingleLine: None
+BreakBeforeBraces: Allman
 BinPackParameters: false # If false, a function call’s arguments will either be all on the same line or will have one line each.
 BinPackArguments: false # If false, a function call’s parameters will either be all on the same line or will have one line each.
-BreakBeforeBraces: Allman
 AlignTrailingComments: true
 SpacesBeforeTrailingComments: 3
+AllowShortLambdasOnASingleLine: None
 NamespaceIndentation: All # enables the indenting for a namespace
-
-#  #define SHORT_NAME       42
-#  #define LONGER_NAME      0x007f   # does nice spacing for macros
 AlignConsecutiveMacros: Consecutive
-
 UseCRLF: false # use \n instead of \r\n
-
-SpaceAfterCStyleCast: true  # does (int) x instead of (int)x
+SpaceAfterCStyleCast: true # does (int) x instead of (int)x
+IndentAccessModifiers: true # aligns access modifiers

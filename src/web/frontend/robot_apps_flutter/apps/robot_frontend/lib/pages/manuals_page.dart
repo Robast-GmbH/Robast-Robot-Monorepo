@@ -49,6 +49,7 @@ class _ManualsPageState extends State<ManualsPage> {
                     label: manuals[index],
                     onPressed: () async {
                       final baseDir = await manualsManager.getCacheDir();
+                      if (!context.mounted) return;
                       Navigator.push(
                         context,
                         MaterialPageRoute(

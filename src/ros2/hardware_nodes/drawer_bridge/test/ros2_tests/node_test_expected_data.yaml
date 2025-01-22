@@ -6,4 +6,4 @@ drawer_feedback:
 
 error_feedback:
   error_code: 50301
-  error_data: "\x03\x02\x01"
+  error_data: "\\x03\\x02\\x01\\x00\\x01"

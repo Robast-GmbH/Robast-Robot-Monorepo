@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
 
 class UserCreationDialog extends StatelessWidget {
   const UserCreationDialog({required this.firstNameController, required this.lastNameController, super.key});
