@@ -1,17 +1,10 @@
 from typing import Any, Dict
 import uuid
 from models.deserializer import Deserializer
+import sys
 
-# import sys
-
-# sys.path.append("/workspace/src/error_handling/error_utils")
-# from error_codes import error_code_by_interface
-error_code_by_interface = {
-    50301: "communication_interfaces::msg::DrawerAddress",
-    50302: "communication_interfaces::msg::DrawerAddress",
-    50303: "communication_interfaces::msg::DrawerAddress",
-    50304: "std::string",
-}
+sys.path.append("/robast/humble/error_utils/bin")
+from error_codes import error_codes_by_interface
 
 
 class RobastError:
@@ -20,7 +13,7 @@ class RobastError:
         self.code = code
         self.description = description
 
-        error_interface = error_code_by_interface.get(code)
+        error_interface = error_codes_by_interface.get(code)
         if error_interface == "communication_interfaces::msg::DrawerAddress":
             self.data = Deserializer.deserialize_drawer_address(bytes(data, "utf-8"))
         elif error_interface == "std::string":
