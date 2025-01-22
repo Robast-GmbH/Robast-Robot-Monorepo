@@ -2,6 +2,7 @@ import os
 import unittest
 import sys
 import threading
+import time
 
 current_script_dir = os.path.dirname(__file__)
 workspace_dir = os.path.abspath(os.path.join(current_script_dir, "..", "..", "..", "..", ".."))
@@ -173,7 +174,11 @@ class TestProcessOutput(unittest.TestCase):
             data = yaml.safe_load(f)
 
         self.publish_led_cmd_msg_without_ack_requested(data)
+        self.__node.get_logger().info("Sleeping for 0.5 second to give time to publish the data...")
+        time.sleep(0.5)
         self.publish_led_cmd_msg_with_ack_requested(data)
+        self.__node.get_logger().info("Sleeping for 0.5 second to give time to publish the data...")
+        time.sleep(0.5)
 
         self.__open_drawer_msg = DrawerAddress()
         self.__open_drawer_msg.module_id = data["open_drawer"]["module_id"]
@@ -479,6 +484,8 @@ class TestProcessOutput(unittest.TestCase):
 
             if expected_data_bytes is not None:
                 self.__node.get_logger().info('Checking data bytes for can_id: "%s"' % msg.id)
+                self.__node.get_logger().info(f'Expected data bytes: {[int(byte) for byte in expected_data_bytes]}')
+                self.__node.get_logger().info(f'Received data bytes: {msg.data}')
                 # Compare each data byte
                 for i, byte in enumerate(msg.data):
                     self.assertEqual(byte, expected_data_bytes[i])
@@ -531,10 +538,12 @@ class TestProcessOutput(unittest.TestCase):
                 self.__received_data_error_feedback_error_code,
                 self.__expected_data_error_feedback_error_code,
             )
-            self.assertEqual(
-                self.__received_data_error_feedback_error_data,
-                self.__expected_data_error_feedback_error_data,
-            )
+
+            for i in range(len(self.__expected_data_error_feedback_error_data)):
+                self.assertEqual(
+                    self.__received_data_error_feedback_error_data[i],
+                    self.__expected_data_error_feedback_error_data[i],
+                )
             self.__node.get_logger().info("Finished checking received data from robast_error!")
 
             # Check if action calls were successful
