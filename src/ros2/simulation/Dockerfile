@@ -1,6 +1,7 @@
-ARG ROS_VERSION=jazzy
+ARG ROS_BUILD_DISTRO=jazzy
 FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS base
 ARG GAZEBO_VERSION=harmonic
+USER root
 
 RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
 

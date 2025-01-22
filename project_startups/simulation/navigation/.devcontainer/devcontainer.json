@@ -1,14 +1,15 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-
 	"name": "Robast Navigation",
 	"dockerComposeFile": "../../docker-compose.yml",
 	"service": "navigation",
 	"workspaceFolder": "/workspace",
 	"shutdownAction": "stopCompose",
 	"remoteUser": "ubuntu",
-	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}",
-					"X11_FORWARDING":"1"},
+	"remoteEnv": {
+		"DISPLAY": "${localEnv:DISPLAY}",
+		"X11_FORWARDING": "1"
+	},
 	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"

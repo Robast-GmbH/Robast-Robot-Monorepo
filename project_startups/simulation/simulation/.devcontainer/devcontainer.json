@@ -6,7 +6,7 @@
 	"service": "simulation",
 	"workspaceFolder": "/workspace",
 	"shutdownAction": "stopCompose",
-	"remoteUser": "ubuntu",
+	"remoteUser": "robast",
 	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
 	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
 	"settings": {
