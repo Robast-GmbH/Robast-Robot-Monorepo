@@ -9,11 +9,10 @@ RUN apt-get update -q && \
     apt-get upgrade -yq && \
     apt-get install -yq bash-completion build-essential curl gosu locales lsb-release sudo tzdata vim wget && \
     rm -rf /var/lib/apt/lists/*
-RUN echo "Set disable_coredump false" >> /etc/sudo.conf
-RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
-    echo robast:robast | chpasswd && \
-    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER=robast
+
+RUN echo "ubuntu:ubuntu" | chpasswd && \
+    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+ENV USER=ubuntu
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV ROS_DOMAIN_ID=23
 ENV ROS_DISTRO=${ROS_BUILD_DISTRO}
@@ -57,7 +56,7 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/dds_configs/cyclone_DDS_config.xml
 
-USER robast
+USER ubuntu
 WORKDIR /workspace
 
 #---------------------------------------------------------------------------------------------------#
@@ -86,11 +85,11 @@ RUN apt-get update -q && \
     rosdep init || echo "rosdep already initialized" && \
     rm -rf /var/lib/apt/lists/*
 
-RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
-    echo robast:robast | chpasswd && \
-    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER=robast
+RUN echo "ubuntu:ubuntu" | chpasswd && \
+    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ARG DEBIAN_FRONTEND=
+ENV USER=ubuntu
+
 
 WORKDIR /tmp_src
 COPY ros2/communication_interfaces/ /tmp_src/communication_interfaces/
@@ -112,7 +111,7 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/dds_configs/cyclone_DDS_config.xml
 
-USER robast
+USER ubuntu
 WORKDIR /workspace
 
 #---------------------------------------------------------------------------------------------------#

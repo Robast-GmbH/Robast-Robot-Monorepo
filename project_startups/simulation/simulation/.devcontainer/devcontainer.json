@@ -1,12 +1,11 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-
 	"name": "Robast Simulation",
 	"dockerComposeFile": "../../docker-compose.yml",
 	"service": "simulation",
 	"workspaceFolder": "/workspace",
 	"shutdownAction": "stopCompose",
-	"remoteUser": "robast",
+	"remoteUser": "ubuntu",
 	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
 	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
 	"settings": {
