@@ -2,8 +2,11 @@ from typing import Any, Dict
 import uuid
 from models.deserializer import Deserializer
 import sys
+import os
 
-sys.path.append("/robast/humble/error_utils/bin")
+ros_distro = os.environ.get("ROS_DISTRO")
+
+sys.path.append(f"/robast/{ros_distro}/error_utils/bin")
 from error_codes import error_codes_by_interface
 
 
