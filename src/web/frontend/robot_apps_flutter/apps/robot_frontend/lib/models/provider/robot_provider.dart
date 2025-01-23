@@ -130,7 +130,7 @@ class RobotProvider extends ChangeNotifier {
   }
 
   Future<bool> waitForDisinfectionTriggered({required VoidCallback onDisinfection, int timeout = 10}) async {
-    final wasSuccessful = await _robotAPI.waitForDisinfectionTriggered(timeout: timeout);
+    final wasSuccessful = await _robotAPI.waitForDisinfectionTriggered(timeout: timeout) ?? false;
     if (wasSuccessful) {
       onDisinfection();
       updateRemainingDisinfections();
@@ -139,11 +139,11 @@ class RobotProvider extends ChangeNotifier {
   }
 
   Future<bool> renewDisinfectionFluidContainer() async {
-    return await _robotAPI.refillDisinfectionFluidContainer();
+    return await _robotAPI.refillDisinfectionFluidContainer() ?? false;
   }
 
   Future<void> updateIsRobotLost() async {
-    _isRobotLost = await _robotAPI.getIsRobotLost();
+    _isRobotLost = await _robotAPI.getIsRobotLost() ?? false;
     notifyListeners();
   }
 

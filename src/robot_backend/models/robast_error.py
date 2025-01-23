@@ -1,13 +1,28 @@
 from typing import Any, Dict
 import uuid
+from models.deserializer import Deserializer
+import sys
+import os
+
+ros_distro = os.environ.get("ROS_DISTRO")
+
+sys.path.append(f"/robast/{ros_distro}/error_utils/bin")
+from error_codes import error_codes_by_interface
 
 
 class RobastError:
-    def __init__(self, code: str, data: str, description: str) -> None:
+    def __init__(self, code: int, data: str, description: str) -> None:
         self.id = uuid.uuid4()
         self.code = code
-        self.data = data
         self.description = description
+
+        error_interface = error_codes_by_interface.get(code)
+        if error_interface == "communication_interfaces::msg::DrawerAddress":
+            self.data = Deserializer.deserialize_drawer_address(bytes(data, "utf-8"))
+        elif error_interface == "std::string":
+            self.data = data
+        else:
+            self.data = f"Unknown error code: {data}"
 
     @classmethod
     def from_dict(cls, error_dict: Dict[str, Any]) -> "RobastError":

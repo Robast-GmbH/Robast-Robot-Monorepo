@@ -15,9 +15,9 @@ class RobotStatusPage extends StatelessWidget {
         child: Column(
           children: [
             Text("Batterie: ${Provider.of<RobotProvider>(context).batteryLevel.toString()}%",
-                style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText)),
+                style: const TextStyle(fontSize: 28, color: RobotColors.secondaryText)),
             Text("Verbleibende Desinfektionen: ${Provider.of<RobotProvider>(context).remainingDisinfections.toString()}",
-                style: const TextStyle(fontSize: 24, color: RobotColors.secondaryText)),
+                style: const TextStyle(fontSize: 28, color: RobotColors.secondaryText)),
           ],
         ),
       ),

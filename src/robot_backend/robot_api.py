@@ -213,11 +213,6 @@ Error API Endpoints
 """
 
 
-@app.get("/drawer_not_opened_errors", tags=["Errors"])
-def get_drawer_not_opened_errors():
-    return ros_bridge.error_bridge.get_drawer_not_opened_errors()
-
-
-@app.get("/heartbeat_timeout_errors", tags=["Errors"])
-def get_heartbeat_timeout_errors():
-    return ros_bridge.error_bridge.get_heartbeat_timeout_errors()
+@app.get("/errors", tags=["Errors"])
+def get_errors():
+    return ros_bridge.error_bridge.get_errors()
