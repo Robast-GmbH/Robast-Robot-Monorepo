@@ -2,6 +2,7 @@
 # options: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 BasedOnStyle: Google
 IndentWidth: 2
+ContinuationIndentWidth: 2
 ColumnLimit: 120
 UseTab: Never
 AllowShortIfStatementsOnASingleLine: false
@@ -13,8 +14,7 @@ AlignTrailingComments: true
 SpacesBeforeTrailingComments: 3
 AllowShortLambdasOnASingleLine: None
 NamespaceIndentation: All # enables the indenting for a namespace
-#  #define SHORT_NAME       42
-#  #define LONGER_NAME      0x007f   # does nice spacing for macros
 AlignConsecutiveMacros: Consecutive
 UseCRLF: false # use \n instead of \r\n
 SpaceAfterCStyleCast: true # does (int) x instead of (int)x
+IndentAccessModifiers: true # aligns access modifiers

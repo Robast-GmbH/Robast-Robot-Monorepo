@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
+import 'package:robot_frontend/pages/user_creation_page.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
-import 'package:robot_frontend/widgets/dialogs/user_creation_dialog.dart';
 import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
 import 'package:robot_frontend/widgets/user_management_list_tile.dart';
 import 'package:shared_data_models/shared_data_models.dart';
@@ -51,39 +52,22 @@ class _UserManagementPageState extends State<UserManagementPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 16,
+                  SizedBox(
+                    height: Provider.of<KeyboardProvider>(context).focusNode != null ? 332 : 16,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: RoundedButton(
                       onPressed: () async {
-                        final userProvider = Provider.of<UserProvider>(context, listen: false);
-                        final firstNameController = TextEditingController();
-                        final lastNameController = TextEditingController();
-                        final shouldCreateUser = await showDialog<bool>(
-                          context: context,
-                          builder: (context) => UserCreationDialog(
-                            firstNameController: firstNameController,
-                            lastNameController: lastNameController,
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => UserCreationPage(),
                           ),
                         );
-                        if (shouldCreateUser ?? false) {
-                          await userProvider.createUser(
-                            newUser: User(
-                              id: '',
-                              nfcID: null,
-                              mail: null,
-                              title: '',
-                              firstName: firstNameController.text,
-                              lastName: lastNameController.text,
-                              station: '',
-                              room: '',
-                              userGroups: [],
-                            ),
-                          );
+                        if (mounted) {
                           setState(() {
-                            loadUsers = userProvider.getUsers();
+                            loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
                           });
                         }
                       },

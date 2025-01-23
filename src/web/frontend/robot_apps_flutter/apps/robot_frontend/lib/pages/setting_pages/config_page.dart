@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
 import 'package:robot_frontend/models/provider/fire_alarm_provider.dart';
 import 'package:robot_frontend/models/provider/hygiene_provider.dart';
 import 'package:robot_frontend/models/provider/map_provider.dart';

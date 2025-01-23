@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/models/module_content_controller.dart';
 import 'package:robot_frontend/widgets/buttons/custom_button_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/selectors/location_selector.dart';

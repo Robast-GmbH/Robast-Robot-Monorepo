@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
+import 'package:robot_frontend/models/module_content_controller.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/dialogs/nfc_missing_dialog.dart';
@@ -54,6 +55,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
             Expanded(
               child: ModuleContentCreationView(
                 moduleContentController: moduleContentController,
+                autoCreateFirstItem: true,
               ),
             ),
             const SizedBox(
