@@ -32,10 +32,15 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
+        
     - name: Install PlatformIO
       run: python -m pip install platformio
 
-    - name: Build PlatformIO project
+    - name: Build PlatformIO Drawer Controller project
       working-directory: project_startups/platformio/Drawer_Controller
       run: platformio run
+
+    - name: Build PlatformIO Partial Drawer Controller project
+      working-directory: project_startups/platformio/Partial_Drawer_Controller
+      run: platformio run      
 
