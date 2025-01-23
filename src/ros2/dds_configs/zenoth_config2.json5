@@ -34,6 +34,7 @@
       ///
       /// See https://docs.rs/zenoh/latest/zenoh/config/struct.EndPoint.html
       endpoints: [
+        "tcp/172.18.0.2:7447"
       ],
   
       /// Global connect configuration,
