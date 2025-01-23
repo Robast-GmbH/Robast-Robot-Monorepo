@@ -77,3 +77,5 @@ ament_package()
 install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/error_codes.py
   DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
 )
+
+install(CODE "file(REMOVE ${CMAKE_CURRENT_SOURCE_DIR}/error_codes.py)")
