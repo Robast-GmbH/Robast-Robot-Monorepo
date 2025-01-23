@@ -6,8 +6,8 @@
 #include "gpio/gpio_wrapper_pca9535.hpp"
 #include "peripherals/gpio_defines.hpp"
 #include "peripherals/pinout_defines.hpp"
+#include "tray/partial_drawer_config_manager.hpp"
 #include "tray/tray_manager.hpp"
-#include "utils/partial_drawer_config_manager.hpp"
 
 // These are the very basic top level configurations for the drawer controller you need to set.
 // Besides that there are a lot of other configs that are managed by the ConfigManager and can be set via CAN messages.
@@ -33,7 +33,7 @@ std::shared_ptr<tray::TrayManager> tray_manager;
 
 std::unique_ptr<can_toolbox::CanController> can_controller;
 
-std::unique_ptr<utils::PartialDrawerConfigManager> config_manager;
+std::unique_ptr<tray::PartialDrawerConfigManager> config_manager;
 
 stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
   .stepper_enn_tmc2209_pin_id = peripherals::pin_id::STEPPER_1_ENN_TMC2209,
@@ -229,7 +229,7 @@ void setup()
   can_controller = std::make_unique<can_toolbox::CanController>(
     MODULE_ID, can_db, peripherals::pinout::TWAI_TX_PIN, peripherals::pinout::TWAI_RX_PIN);
 
-  config_manager = std::make_unique<utils::PartialDrawerConfigManager>();
+  config_manager = std::make_unique<tray::PartialDrawerConfigManager>();
   config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                              USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
   config_manager->print_all_configs();

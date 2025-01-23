@@ -1,8 +1,8 @@
 #include <memory>
 
+#include "drawer/e_drawer_config_manager.hpp"
 #include "drawer_controller/global.hpp"
 #include "led/led_strip.hpp"
-#include "utils/e_drawer_config_manager.hpp"
 
 // VERY IMPORTANT: Set the hardware version of the drawer controller pcb here (currently 3 and 4 are supported):
 #define HARDWARE_VERSION 4
@@ -38,7 +38,7 @@ constexpr uint32_t MODULE_ID = module_id::generate_module_id(USER_CONFIG.module_
 
 std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.total_num_of_leds>> led_strip;
 
-std::unique_ptr<utils::EDrawerConfigManager> config_manager;
+std::unique_ptr<drawer::EDrawerConfigManager> config_manager;
 
 // Initialize can_controller based on HARDWARE_VERSION
 #if HARDWARE_VERSION == 3
@@ -249,7 +249,7 @@ void setup()
   Serial.begin(115200);
   serial_printf_green("[Main]: Start the module with the module id: %d.\n", MODULE_ID);
 
-  config_manager = std::make_unique<utils::EDrawerConfigManager>();
+  config_manager = std::make_unique<drawer::EDrawerConfigManager>();
   config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                              USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
   config_manager->print_all_configs();
