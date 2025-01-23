@@ -36,6 +36,6 @@ jobs:
       run: python -m pip install platformio
 
     - name: Build PlatformIO project
-      working-directory: project_startups\platformio\Drawer_Controller
+      working-directory: project_startups/platformio/Drawer_Controller
       run: platformio run
 
