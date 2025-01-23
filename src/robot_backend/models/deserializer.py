@@ -3,6 +3,7 @@ from typing import Tuple, Dict, Any
 
 
 class Deserializer:
+    # Format string for deserializing drawer address data: an integer (I) and a byte (B)
     DRAWER_ADDRESS_FORMAT = "IB"
 
     @staticmethod
