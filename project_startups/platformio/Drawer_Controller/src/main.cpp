@@ -37,8 +37,7 @@ constexpr config::ModuleHardwareConfig MODULE_HARDWARE_CONFIG =
 constexpr uint32_t MODULE_ID = module_id::generate_module_id(USER_CONFIG.module_prefix, USER_CONFIG.unique_module_id);
 
 std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.total_num_of_leds>> led_strip;
-
-std::unique_ptr<drawer::EDrawerConfigManager> config_manager;
+THIS BUILD SHALL FAIL !!!!std::unique_ptr<drawer::EDrawerConfigManager> config_manager;
 
 // Initialize can_controller based on HARDWARE_VERSION
 #if HARDWARE_VERSION == 3
