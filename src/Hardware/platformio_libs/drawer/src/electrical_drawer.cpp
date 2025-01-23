@@ -30,7 +30,7 @@ namespace drawer
     else
     {
       serial_println_warning(
-        "[ElectricalDrawer]: Warning! Received request to unlock the lock, but no lock is installed!");
+          "[ElectricalDrawer]: Warning! Received request to unlock the lock, but no lock is installed!");
     }
   }
 
@@ -56,7 +56,10 @@ namespace drawer
 
   void ElectricalDrawer::handle_drawer_idle_state()
   {
-    _motion_controller->reset_encoder_if_endstop_is_pushed();
+    if (_endstop_switch->is_switch_pressed())
+    {
+      _motion_controller->reset_encoder();
+    }
 
     if (_motion_controller->is_push_to_close_is_triggered())
     {
@@ -99,6 +102,33 @@ namespace drawer
                    e_drawer_task.value().target_speed);
 
       _motion_controller->start_e_drawer_task(e_drawer_task.value());
+
+      if (!e_drawer_task.value().is_homing)
+      {
+        if (e_drawer_task.value().target_position == _motion_controller->get_normed_current_position())
+        {
+          _can_utils->enqueue_e_drawer_feedback_msg(_module_id,
+                                                    _id,
+                                                    _endstop_switch->is_switch_pressed(),
+                                                    LOCK_SWITCH_IS_NOT_PUSHED,
+                                                    _motion_controller->is_stall_guard_triggered(),
+                                                    _motion_controller->get_normed_current_position(),
+                                                    PUSH_TO_CLOSE_NOT_TRIGGERED);
+        }
+        else
+        {
+          // We need to reset the stall guard before we start a new movement because stall guard is a status at the moment
+          // TODO: "stall guard triggerd" should be an event not a status
+          _can_utils->enqueue_e_drawer_feedback_msg(
+              _module_id,
+              _id,
+              _endstop_switch->is_switch_pressed(),
+              _drawer_lock.has_value() ? _drawer_lock.value()->is_lock_switch_pushed() : false,
+              MOTOR_IS_NOT_STALLED,
+              _motion_controller->get_normed_current_position(),
+              PUSH_TO_CLOSE_NOT_TRIGGERED);
+        }
+      }
     }
   }
 
@@ -112,10 +142,14 @@ namespace drawer
       return;
     }
 
-    if (_motion_controller->handle_initial_drawer_homing())
+    if (!_motion_controller->was_drawer_homed_once())
     {
-      _motion_controller->set_is_idling(true);
+      if (_endstop_switch->is_switch_pressed())
+      {
+        _motion_controller->handle_finished_drawer_homing();
+      }
     }
+
     if (!_motion_controller->was_drawer_homed_once() || !_motion_controller->is_drawer_opening_in_progress())
     {
       return;
@@ -137,7 +171,7 @@ namespace drawer
     if (_drawer_lock.value()->is_drawer_auto_close_timeout_triggered())
     {
       _can_utils->enqueue_error_feedback_msg(
-        _module_id, _id, robast_can_msgs::can_data::error_code::TIMEOUT_DRAWER_NOT_OPENED);
+          _module_id, _id, robast_can_msgs::can_data::error_code::TIMEOUT_DRAWER_NOT_OPENED);
       _drawer_lock.value()->set_drawer_auto_close_timeout_triggered(false);
     }
 
@@ -151,25 +185,25 @@ namespace drawer
     {
       debug_printf_warning("[ElectricalDrawer]: Drawer was not homed once yet, so add homing task to queue!\n");
       _e_drawer_task_queue->enqueue(
-        {DRAWER_TARGET_HOMING_POSITION,
-         _motion_controller->get_normed_target_speed_uint8(_config->get_drawer_initial_homing_speed()),
-         STALL_GUARD_DISABLED,
-         IS_HOMING,
-         false});
+          {DRAWER_TARGET_HOMING_POSITION,
+           _motion_controller->get_normed_target_speed_uint8(_config->get_drawer_initial_homing_speed()),
+           STALL_GUARD_DISABLED,
+           IS_HOMING,
+           false});
     }
 
     debug_printf(
-      "[ElectricalDrawer]: Adding new e-drawer task to queue! Target position: %d, Target "
-      "speed: %d, Stall guard value: %d\n",
-      e_drawer_task.target_position,
-      e_drawer_task.target_speed,
-      e_drawer_task.stall_guard_value);
+        "[ElectricalDrawer]: Adding new e-drawer task to queue! Target position: %d, Target "
+        "speed: %d, Stall guard value: %d\n",
+        e_drawer_task.target_position,
+        e_drawer_task.target_speed,
+        e_drawer_task.stall_guard_value);
 
     if (_motion_controller->is_task_redundant(e_drawer_task.target_position))
     {
       serial_printf_warning(
-        "[ElectricalDrawer]: Warning! Received redundant task with target position %d! Discarding it!\n",
-        e_drawer_task.target_position);
+          "[ElectricalDrawer]: Warning! Received redundant task with target position %d! Discarding it!\n",
+          e_drawer_task.target_position);
       return;
     }
 
@@ -193,13 +227,13 @@ namespace drawer
     if (_motion_controller->handle_finished_moving_out_drawer())
     {
       _can_utils->enqueue_e_drawer_feedback_msg(
-        _module_id,
-        _id,
-        _endstop_switch->is_switch_pressed(),
-        _drawer_lock.has_value() ? _drawer_lock.value()->is_lock_switch_pushed() : false,
-        _motion_controller->is_stall_guard_triggered(),
-        _motion_controller->get_normed_current_position(),
-        PUSH_TO_CLOSE_NOT_TRIGGERED);
+          _module_id,
+          _id,
+          _endstop_switch->is_switch_pressed(),
+          _drawer_lock.has_value() ? _drawer_lock.value()->is_lock_switch_pushed() : false,
+          _motion_controller->is_stall_guard_triggered(),
+          _motion_controller->get_normed_current_position(),
+          PUSH_TO_CLOSE_NOT_TRIGGERED);
     };
   }
 
@@ -235,13 +269,13 @@ namespace drawer
                                 IS_NOT_HOMING,
                                 DO_NOT_USE_ACCELERATION_RAMP});
     _can_utils->enqueue_e_drawer_feedback_msg(
-      _module_id,
-      _id,
-      _endstop_switch->is_switch_pressed(),
-      _drawer_lock.has_value() ? _drawer_lock.value()->is_lock_switch_pushed() : false,
-      MOTOR_IS_NOT_STALLED,
-      _motion_controller->get_normed_current_position(),
-      PUSH_TO_CLOSE_TRIGGERED);
+        _module_id,
+        _id,
+        _endstop_switch->is_switch_pressed(),
+        _drawer_lock.has_value() ? _drawer_lock.value()->is_lock_switch_pushed() : false,
+        MOTOR_IS_NOT_STALLED,
+        _motion_controller->get_normed_current_position(),
+        PUSH_TO_CLOSE_TRIGGERED);
   }
 
   void ElectricalDrawer::handle_drawer_just_closed()
@@ -252,7 +286,7 @@ namespace drawer
     {
       if (_drawer_lock.value()->is_drawer_opening_in_progress())
       {
-        _drawer_lock.value()->set_is_drawer_opening_in_progress(false);   // reset flag for next opening of drawer
+        _drawer_lock.value()->set_is_drawer_opening_in_progress(false); // reset flag for next opening of drawer
       }
       else
       {
@@ -274,7 +308,7 @@ namespace drawer
     {
       // if the drawer was closed within the idle state, we need to send an error message because this is not intended
       _can_utils->enqueue_error_feedback_msg(
-        _module_id, _id, robast_can_msgs::can_data::error_code::DRAWER_CLOSED_IN_IDLE_STATE);
+          _module_id, _id, robast_can_msgs::can_data::error_code::DRAWER_CLOSED_IN_IDLE_STATE);
     }
     else
     {
@@ -302,7 +336,7 @@ namespace drawer
         _config->get_encoder_threshold_for_drawer_not_opened_during_stall())
     {
       _can_utils->enqueue_error_feedback_msg(
-        _module_id, _id, robast_can_msgs::can_data::error_code::TIMEOUT_DRAWER_NOT_OPENED);
+          _module_id, _id, robast_can_msgs::can_data::error_code::TIMEOUT_DRAWER_NOT_OPENED);
       if (_drawer_lock.has_value())
       {
         _drawer_lock.value()->set_expected_lock_state_current_step(lock::LockState::locked);
@@ -311,13 +345,13 @@ namespace drawer
     else
     {
       _can_utils->enqueue_e_drawer_feedback_msg(
-        _module_id,
-        _id,
-        _endstop_switch->is_switch_pressed(),
-        _drawer_lock.has_value() ? _drawer_lock.value()->is_lock_switch_pushed() : false,
-        MOTOR_IS_STALLED,
-        _motion_controller->get_normed_current_position(),
-        PUSH_TO_CLOSE_NOT_TRIGGERED);
+          _module_id,
+          _id,
+          _endstop_switch->is_switch_pressed(),
+          _drawer_lock.has_value() ? _drawer_lock.value()->is_lock_switch_pushed() : false,
+          MOTOR_IS_STALLED,
+          _motion_controller->get_normed_current_position(),
+          PUSH_TO_CLOSE_NOT_TRIGGERED);
     }
   }
-}   // namespace drawer
+} // namespace drawer

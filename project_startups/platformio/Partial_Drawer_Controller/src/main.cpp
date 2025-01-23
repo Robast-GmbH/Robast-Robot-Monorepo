@@ -2,7 +2,6 @@
 
 #include "can_toolbox/can_controller.hpp"
 #include "drawer/electrical_drawer.hpp"
-#include "drawer/motion_controller.hpp"
 #include "drawer_controller/global.hpp"
 #include "gpio/gpio_wrapper_pca9535.hpp"
 #include "peripherals/gpio_defines.hpp"
@@ -29,8 +28,6 @@ constexpr uint32_t MODULE_ID = module_id::generate_module_id(USER_CONFIG.module_
 std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.total_num_of_leds>> led_strip;
 
 std::shared_ptr<drawer::ElectricalDrawer> e_drawer;
-
-std::shared_ptr<drawer::MotionController> motion_controller;
 
 std::shared_ptr<tray::TrayManager> tray_manager;
 
@@ -169,6 +166,8 @@ void process_can_msgs_task_loop(void* pvParameters)
                                      .at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::MOTOR_ID)
                                      .get_data();
           motion_controller->set_motor_driver_state(enable_motor, motor_id);
+          can_utils->enqueue_e_drawer_motor_control_msg(
+            MODULE_ID, motor_id, enable_motor, drawer::CONFIRM_MOTOR_CONTROL_CHANGE);
         }
         default:
           serial_println_warning("[Main]: Received unsupported CAN message.");
@@ -256,10 +255,7 @@ void setup()
     config_manager->get_motor_monitor_config(),
     stepper_1_pin_id_config,
     gpio_wrapper,
-    config_manager->get_drawer_config(),
-    endstop_switch,
-    can_utils,
-    drawer_lock);
+    config_manager->get_drawer_config());
 
   e_drawer = std::make_shared<drawer::ElectricalDrawer>(MODULE_ID,
                                                         USER_CONFIG.lock_id,
@@ -297,7 +293,7 @@ void setup()
   tray_manager = std::make_shared<tray::TrayManager>(tray_pin_config,
                                                      gpio_wrapper,
                                                      wire_onboard_led_driver,
-                                                     e_drawer,
+                                                     motion_controller,
                                                      config_manager->get_motor_monitor_config(),
                                                      config_manager->get_tray_manager_config(),
                                                      SWITCH_PRESSED_THRESHOLD,

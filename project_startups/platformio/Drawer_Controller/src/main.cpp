@@ -216,7 +216,9 @@ void process_can_msgs_task_loop(void* pvParameters)
           const uint8_t motor_id = received_message->get_can_signals()
                                      .at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::MOTOR_ID)
                                      .get_data();
-          i_drawer->set_motor_driver_state(enable_motor, motor_id);
+          motion_controller->set_motor_driver_state(enable_motor, motor_id);
+          can_utils->enqueue_e_drawer_motor_control_msg(
+            MODULE_ID, motor_id, enable_motor, drawer::CONFIRM_MOTOR_CONTROL_CHANGE);
         }
         default:
           serial_println_warning("[Main]: Received unsupported CAN message.");
@@ -312,22 +314,27 @@ void setup()
 
   if (MODULE_HARDWARE_CONFIG.is_electrical_drawer)
   {
-    i_drawer = std::make_shared<drawer::ElectricalDrawer>(
+    motion_controller = std::make_shared<drawer::MotionController>(
       MODULE_ID,
       USER_CONFIG.lock_id,
-      gpio_wrapper,
-      can_utils,
-      stepper_1_pin_id_config,
       MODULE_HARDWARE_CONFIG.use_encoder,
       gpio_wrapper->get_gpio_num_for_pin_id(gpio_defines::pin_id::STEPPER_1_ENCODER_A),
       gpio_wrapper->get_gpio_num_for_pin_id(gpio_defines::pin_id::STEPPER_1_ENCODER_B),
       STEPPER_MOTOR_1_ADDRESS,
-      config_manager->get_motor_config(),
-      endstop_switch,
-      drawer_lock,
-      config_manager->get_drawer_config(),
       config_manager->get_encoder_config(),
-      config_manager->get_motor_monitor_config());
+      config_manager->get_motor_config(),
+      config_manager->get_motor_monitor_config(),
+      stepper_1_pin_id_config,
+      gpio_wrapper,
+      config_manager->get_drawer_config());
+
+    i_drawer = std::make_shared<drawer::ElectricalDrawer>(MODULE_ID,
+                                                          USER_CONFIG.lock_id,
+                                                          can_utils,
+                                                          endstop_switch,
+                                                          config_manager->get_drawer_config(),
+                                                          motion_controller,
+                                                          drawer_lock);
   }
   else
   {

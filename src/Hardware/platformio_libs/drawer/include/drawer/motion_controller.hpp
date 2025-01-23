@@ -4,10 +4,8 @@
 #include <memory>
 #include <optional>
 
-#include "can_toolbox/can_utils.hpp"
 #include "drawer/electrical_drawer_config.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
-#include "lock/electrical_drawer_lock.hpp"
 #include "motor/encoder.hpp"
 #include "motor/encoder_monitor.hpp"
 #include "motor/enconder_config.hpp"
@@ -32,7 +30,7 @@ namespace drawer
 
   class MotionController
   {
-   public:
+  public:
     MotionController(const uint32_t module_id,
                      const uint8_t id,
                      const bool use_encoder,
@@ -44,10 +42,7 @@ namespace drawer
                      const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config,
                      const stepper_motor::StepperPinIdConfig &stepper_pin_id_config,
                      const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
-                     const std::shared_ptr<ElectricalDrawerConfig> e_drawer_config,
-                     const std::shared_ptr<switch_lib::Switch> endstop_switch,
-                     const std::shared_ptr<can_toolbox::CanUtils> can_utils,
-                     const std::optional<std::shared_ptr<lock::ElectricalDrawerLock>> drawer_lock);
+                     const std::shared_ptr<ElectricalDrawerConfig> e_drawer_config);
 
     void set_motor_driver_state(const bool enabled, const uint8_t motor_id) const;
 
@@ -55,13 +50,13 @@ namespace drawer
 
     void set_target_speed_with_decelerating_ramp(const uint8_t target_speed);
 
-    bool handle_initial_drawer_homing();
+    void handle_finished_drawer_homing();
 
     bool was_drawer_homed_once() const;
 
     bool is_drawer_moving_out() const;
 
-    void reset_encoder_if_endstop_is_pushed();
+    void reset_encoder();
 
     bool is_stall_guard_triggered();
 
@@ -103,23 +98,18 @@ namespace drawer
 
     bool is_drawer_opening_in_progress() const;
 
-   private:
+  private:
     const uint32_t _module_id;
     const uint8_t _id;
 
     const std::shared_ptr<ElectricalDrawerConfig> _e_drawer_config;
-    const std::shared_ptr<switch_lib::Switch> _endstop_switch;
-    const std::shared_ptr<can_toolbox::CanUtils> _can_utils;
     const std::shared_ptr<interfaces::IGpioWrapper> _gpio_wrapper;
 
-    const std::unique_ptr<motor::Encoder> _encoder;
+    const std::shared_ptr<motor::Encoder> _encoder;
     const std::unique_ptr<motor::EncoderMonitor> _encoder_monitor;
 
-    const std::unique_ptr<stepper_motor::Motor> _motor;
+    const std::shared_ptr<stepper_motor::Motor> _motor;
     const std::unique_ptr<motor::MotorMonitor> _motor_monitor;
-
-    // optional because the lock is not always installed (e.g. in the partial drawer)
-    const std::optional<std::shared_ptr<lock::ElectricalDrawerLock>> _drawer_lock;
 
     bool _is_idling = true;
 
@@ -149,6 +139,6 @@ namespace drawer
     void start_normal_drawer_movement(const uint8_t target_speed, const bool use_acceleration_ramp);
   };
 
-}   // namespace drawer
+} // namespace drawer
 
-#endif   // DRAWER_SPEED_CONTROLLER_HPP
+#endif // DRAWER_SPEED_CONTROLLER_HPP
