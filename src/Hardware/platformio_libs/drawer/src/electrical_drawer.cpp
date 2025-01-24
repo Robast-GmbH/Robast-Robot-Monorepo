@@ -236,23 +236,31 @@ namespace drawer
 
   void ElectricalDrawer::handle_drawer_just_opened()
   {
-    bool is_drawer_retracted = _endstop_switch->is_switch_pressed();
+    const bool is_drawer_retracted = _endstop_switch->is_switch_pressed();
+
+    static bool is_lock_state_set = true;
 
     if (_drawer_lock.value()->is_drawer_opening_in_progress() && !is_drawer_retracted &&
         !_triggered_closing_lock_after_opening)
     {
+      debug_printf_green(
+        "[ElectricalDrawer, handle_drawer_just_opened]: Setting _triggered_closing_lock_after_opening to true!\n");
+
       // We want to wait a small moment before closing the lock to make sure the drawer had enough time to open
       _timestamp_drawer_opened_in_ms = millis();
 
       // This makes sure, closing the lock is only triggered once and not permanently.
       _triggered_closing_lock_after_opening = true;
+
+      is_lock_state_set = false;
     }
 
-    if (_triggered_closing_lock_after_opening &&
+    if (!is_lock_state_set &&
         millis() - _timestamp_drawer_opened_in_ms > _config->get_wait_time_to_close_lock_after_drawer_opened_in_ms())
     {
       // This makes sure the lock automatically closes as soon as the drawer is opened.
       _drawer_lock.value()->set_expected_lock_state_current_step(lock::LockState::locked);
+      is_lock_state_set = true;
       debug_printf_green("[ElectricalDrawer]: Triggered closing the lock because drawer is not retracted anymore!\n");
     }
   }
