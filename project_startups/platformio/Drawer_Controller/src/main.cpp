@@ -209,6 +209,11 @@ void process_can_msgs_task_loop(void* pvParameters)
         }
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_MOTOR_CONTROL:
         {
+          if (!MODULE_HARDWARE_CONFIG.is_electrical_drawer)
+          {
+            serial_println_warning("[Main]: Received motor control message, but module is not an electrical drawer!");
+            break;
+          }
           const bool enable_motor =
             received_message->get_can_signals()
               .at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::ENABLE_MOTOR)
