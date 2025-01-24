@@ -19,7 +19,7 @@ namespace drawer
         _encoder{std::make_shared<motor::Encoder>(use_encoder, encoder_pin_a, encoder_pin_b, encoder_config)},
         _encoder_monitor{std::make_unique<motor::EncoderMonitor>(_encoder, encoder_config)},
         _motor{std::make_shared<stepper_motor::Motor>(
-            motor_driver_address, gpio_wrapper, stepper_pin_id_config, motor_config)},
+          motor_driver_address, gpio_wrapper, stepper_pin_id_config, motor_config)},
         _motor_monitor{std::make_unique<motor::MotorMonitor>(_encoder, encoder_config, _motor, motor_monitor_config)},
         _gpio_wrapper{gpio_wrapper},
         _e_drawer_config{e_drawer_config}
@@ -36,7 +36,7 @@ namespace drawer
 
   void MotionController::set_target_speed_and_direction(const uint8_t target_speed, const bool use_acceleration_ramp)
   {
-    uint32_t normed_target_speed_uint32 = get_normed_target_speed_uint32(target_speed);
+    const uint32_t normed_target_speed_uint32 = get_normed_target_speed_uint32(target_speed);
     _is_drawer_moving_out ? _motor->set_direction(stepper_motor::Direction::counter_clockwise)
                           : _motor->set_direction(stepper_motor::Direction::clockwise);
 
@@ -57,7 +57,7 @@ namespace drawer
   {
     _motor->set_target_speed_with_decelerating_ramp(get_normed_target_speed_uint32(target_speed),
                                                     _encoder->convert_uint8_position_to_drawer_position_scale(
-                                                        _e_drawer_config->get_drawer_moving_in_deceleration_distance()),
+                                                      _e_drawer_config->get_drawer_moving_in_deceleration_distance()),
                                                     _encoder->get_current_position());
   }
 
@@ -86,11 +86,11 @@ namespace drawer
         _e_drawer_config->get_drawer_stall_guard_wait_time_after_movement_started_in_ms())
     {
       debug_printf_warning(
-          "[MotionController]: Since the movement started, %u ms passed! We need to wait %u ms until we start "
-          "detecting "
-          "a stall guard!\n",
-          millis() - _timestamp_movement_started_in_ms,
-          _e_drawer_config->get_drawer_stall_guard_wait_time_after_movement_started_in_ms());
+        "[MotionController]: Since the movement started, %u ms passed! We need to wait %u ms until we start "
+        "detecting "
+        "a stall guard!\n",
+        millis() - _timestamp_movement_started_in_ms,
+        _e_drawer_config->get_drawer_stall_guard_wait_time_after_movement_started_in_ms());
       return false;
     }
 
@@ -130,16 +130,16 @@ namespace drawer
     if (!_triggered_deceleration_for_drawer_moving_out && should_decelerate)
     {
       debug_printf(
-          "[MotionController]: E-drawer is moving out and will now be decelerated! normed_current_position_uint8 =%d, "
-          "_target_position_uint8 = %d, deceleration_distance = %d\n",
-          current_position,
-          _target_position_uint8,
-          deceleration_distance);
+        "[MotionController]: E-drawer is moving out and will now be decelerated! normed_current_position_uint8 =%d, "
+        "_target_position_uint8 = %d, deceleration_distance = %d\n",
+        current_position,
+        _target_position_uint8,
+        deceleration_distance);
       _triggered_deceleration_for_drawer_moving_out = true;
       _motor->set_target_speed_with_decelerating_ramp(
-          _e_drawer_config->get_drawer_moving_out_final_speed(),
-          _encoder->convert_uint8_position_to_drawer_position_scale(deceleration_distance),
-          _encoder->get_current_position());
+        _e_drawer_config->get_drawer_moving_out_final_speed(),
+        _encoder->convert_uint8_position_to_drawer_position_scale(deceleration_distance),
+        _encoder->get_current_position());
     }
   }
 
@@ -148,10 +148,10 @@ namespace drawer
     if (_encoder->get_normed_current_position() >= _target_position_uint8)
     {
       debug_printf(
-          "[MotionController]: Moving e-drawer out is finished! normed_current_position_uint8: %d, "
-          "_target_position_uint8: %d\n",
-          _encoder->get_normed_current_position(),
-          _target_position_uint8);
+        "[MotionController]: Moving e-drawer out is finished! normed_current_position_uint8: %d, "
+        "_target_position_uint8: %d\n",
+        _encoder->get_normed_current_position(),
+        _target_position_uint8);
 
       _motor->set_target_speed_instantly(TARGET_SPEED_ZERO);
 
@@ -173,16 +173,16 @@ namespace drawer
 
       _motor->set_target_speed_with_decelerating_ramp(_e_drawer_config->get_drawer_homing_speed(),
                                                       _encoder->convert_uint8_position_to_drawer_position_scale(
-                                                          _e_drawer_config->get_drawer_moving_in_deceleration_distance()),
+                                                        _e_drawer_config->get_drawer_moving_in_deceleration_distance()),
                                                       _encoder->get_current_position());
     }
-    else if (_encoder->get_normed_current_position() >= _e_drawer_config->get_drawer_moving_in_final_homing_distance())
+    else if (_encoder->get_normed_current_position() < _e_drawer_config->get_drawer_moving_in_final_homing_distance())
     {
       _motor->set_target_speed_instantly(_e_drawer_config->get_drawer_homing_speed());
     }
   }
 
-  bool MotionController::handle_finished_moving_in_drawer()
+  void MotionController::handle_finished_moving_in_drawer()
   {
     debug_printf_green("[MotionController]: Drawer is closed! Setting speed and encoder position to 0 !\n");
     _motor->set_target_speed_instantly(TARGET_SPEED_ZERO);
@@ -236,14 +236,14 @@ namespace drawer
     // if the drawer is not moving, we need to check if the drawer is pushed in
     // but make sure to wait a certain amount of time if the stall guard was triggered
     const uint32_t wait_time_in_ms_after_stall_guard_triggered =
-        _e_drawer_config->get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms();
+      _e_drawer_config->get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms();
     const uint32_t wait_time_in_ms_after_movement_finished =
-        _e_drawer_config->get_drawer_push_in_wait_time_after_movement_finished_in_ms();
+      _e_drawer_config->get_drawer_push_in_wait_time_after_movement_finished_in_ms();
 
     const bool is_wait_time_after_stall_guard_triggered_over =
-        (millis() - _timestamp_stall_guard_triggered_in_ms > wait_time_in_ms_after_stall_guard_triggered);
+      (millis() - _timestamp_stall_guard_triggered_in_ms > wait_time_in_ms_after_stall_guard_triggered);
     const bool is_wait_time_after_movement_finished_over =
-        (millis() - _timestamp_movement_finished_in_ms > wait_time_in_ms_after_movement_finished);
+      (millis() - _timestamp_movement_finished_in_ms > wait_time_in_ms_after_movement_finished);
 
     if (is_wait_time_after_stall_guard_triggered_over && is_wait_time_after_movement_finished_over &&
         _encoder_monitor->check_if_drawer_is_pushed_in())
@@ -306,7 +306,7 @@ namespace drawer
   {
     const uint8_t current_position = _encoder->get_normed_current_position();
     const bool is_task_redundant =
-        (new_target_position == _target_position_uint8 && (!_is_idling || current_position == _target_position_uint8));
+      (new_target_position == _target_position_uint8 && (!_is_idling || current_position == _target_position_uint8));
     return is_task_redundant;
   }
 
@@ -322,8 +322,8 @@ namespace drawer
 
   uint32_t MotionController::get_normed_target_speed_uint32(const uint8_t target_speed) const
   {
-    uint32_t max_speed = _e_drawer_config->get_drawer_max_speed();
-    uint32_t target_speed_casted = static_cast<uint32_t>(target_speed);
+    const uint32_t max_speed = _e_drawer_config->get_drawer_max_speed();
+    const uint32_t target_speed_casted = static_cast<uint32_t>(target_speed);
 
     return (target_speed_casted * max_speed) / MAX_SPEED_UINT8;
   }
@@ -348,13 +348,13 @@ namespace drawer
   void MotionController::start_normal_drawer_movement(const uint8_t target_speed, const bool use_acceleration_ramp)
   {
     debug_printf_green(
-        "[MotionController]: Starting normal drawer movement with target speed %d and target position %d!\n",
-        target_speed,
-        _target_position_uint8);
+      "[MotionController]: Starting normal drawer movement with target speed %d and target position %d!\n",
+      target_speed,
+      _target_position_uint8);
 
     _is_drawer_moving_out = _target_position_uint8 > _encoder->get_normed_current_position();
 
     set_target_speed_and_direction(target_speed, use_acceleration_ramp);
   }
 
-} // namespace drawer
+}   // namespace drawer
