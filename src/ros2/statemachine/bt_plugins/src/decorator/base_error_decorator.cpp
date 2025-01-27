@@ -19,10 +19,10 @@ namespace statemachine
     rclcpp::SubscriptionOptions sub_option;
     sub_option.callback_group = _callback_group;
     drawer_status_sub_ = _node->create_subscription<communication_interfaces::msg::ErrorBaseMsg>(
-        topic_name_,
-        qos,
-        std::bind(&BaseErrorDecorator::callbackDrawerFeedback, this, std::placeholders::_1),
-        sub_option);
+      topic_name_,
+      qos,
+      std::bind(&BaseErrorDecorator::callbackDrawerFeedback, this, std::placeholders::_1),
+      sub_option);
     blackboard_ = config.blackboard;
   }
 
@@ -55,6 +55,12 @@ namespace statemachine
 
   void BaseErrorDecorator::callbackDrawerFeedback(const communication_interfaces::msg::ErrorBaseMsg::SharedPtr msg)
   {
+    RCLCPP_INFO(rclcpp::get_logger("BaseErrorDecorator"),
+                "Received error message: %s. Error data is: %s. Error code: %d",
+                msg->error_description.c_str(),
+                msg->error_data.c_str(),
+                msg->error_code);
+
     switch (msg->error_code)
     {
       case ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED:
@@ -62,6 +68,10 @@ namespace statemachine
         if (error_utils::string_to_message<communication_interfaces::msg::DrawerAddress>(msg->error_data) ==
             blackboard_->get<communication_interfaces::msg::DrawerAddress>("drawer_address"))
         {
+          RCLCPP_INFO(rclcpp::get_logger("BaseErrorDecorator"),
+                      "Received error with error id %d for module %d",
+                      msg->error_code,
+                      blackboard_->get<communication_interfaces::msg::DrawerAddress>("drawer_address").module_id);
           _is_error_received = true;
           logError(msg->error_description);
         }
