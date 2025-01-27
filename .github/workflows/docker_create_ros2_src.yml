@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-dev-base:
+  build-dev-base-arm64:
     runs-on: self-hosted
     env:
       Ros-Distro: humble
@@ -35,11 +35,11 @@ jobs:
     - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
 
-    - name: Build and push robast-dev-base
+    - name: Build and push robast-dev-base for arm64
       uses: docker/build-push-action@v6
       with:
         context: src/
-        platforms: linux/amd64,linux/arm64/v8
+        platforms: linux/arm64/v8
         push: true
         file: src/Dockerfile
         target: robast-dev-base
@@ -48,8 +48,8 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha
 
-  build-dev-core:
-    runs-on: self-hosted
+  build-dev-base-amd64:
+    runs-on: ubuntu-latest
     env:
       Ros-Distro: humble
 
@@ -69,11 +69,46 @@ jobs:
     - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
 
-    - name: Build and push robast-dev-core
+    - name: Build and push robast-dev-base for amd64
       uses: docker/build-push-action@v6
       with:
         context: src/
-        platforms: linux/amd64,linux/arm64/v8
+        platforms: linux/amd64
+        push: true
+        file: src/Dockerfile
+        target: robast-dev-base
+        tags: |
+          ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}
+        cache-from: type=gha
+        cache-to: type=gha
+
+  build-dev-core-arm64:
+    runs-on: self-hosted
+    env:
+      Ros-Distro: humble
+    needs: build-dev-base-arm64
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure Docker Buildx
+      uses: docker/setup-buildx-action@v3 
+
+    - name: Build and push robast-dev-core for arm64
+      uses: docker/build-push-action@v6
+      with:
+        context: src/
+        platforms: linux/arm64/v8
         push: true
         file: src/Dockerfile
         target: robast-dev-core
@@ -82,11 +117,11 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha
 
-  build-source:
-    runs-on: self-hosted
+  build-dev-core-amd64:
+    runs-on: ubuntu-latest
     env:
       Ros-Distro: humble
-    needs: build-dev-base
+    needs: build-dev-base-amd64
 
     steps:
     - name: Checkout repository
@@ -104,11 +139,81 @@ jobs:
     - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
 
-    - name: Build and push robast-source
+    - name: Build and push robast-dev-core for amd64
       uses: docker/build-push-action@v6
       with:
         context: src/
-        platforms: linux/amd64,linux/arm64/v8
+        platforms: linux/amd64
+        push: true
+        file: src/Dockerfile
+        target: robast-dev-core
+        tags: |
+          ghcr.io/robast-gmbh/monorepo/robast-dev-core:${{ env.Ros-Distro }}
+        cache-from: type=gha
+        cache-to: type=gha
+
+  build-source-arm64:
+    runs-on: self-hosted
+    env:
+      Ros-Distro: humble
+    needs: build-dev-base-arm64
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure Docker Buildx
+      uses: docker/setup-buildx-action@v3 
+
+    - name: Build and push robast-source for arm64
+      uses: docker/build-push-action@v6
+      with:
+        context: src/
+        platforms: linux/arm64/v8
+        push: true
+        file: src/Dockerfile
+        target: robast-source
+        tags: |
+          ghcr.io/robast-gmbh/monorepo/robast-source:${{ env.Ros-Distro }}
+        cache-from: type=gha
+        cache-to: type=gha
+
+  build-source-amd64:
+    runs-on: ubuntu-latest
+    env:
+      Ros-Distro: humble
+    needs: build-dev-base-amd64
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure Docker Buildx
+      uses: docker/setup-buildx-action@v3 
+
+    - name: Build and push robast-source for amd64
+      uses: docker/build-push-action@v6
+      with:
+        context: src/
+        platforms: linux/amd64
         push: true
         file: src/Dockerfile
         target: robast-source
