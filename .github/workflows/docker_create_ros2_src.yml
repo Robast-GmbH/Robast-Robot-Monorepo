@@ -15,7 +15,7 @@ on:
 
 jobs:
   build-dev-base:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       Ros-Distro: humble
 
@@ -49,7 +49,7 @@ jobs:
         cache-to: type=gha
 
   build-dev-core:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       Ros-Distro: humble
 
@@ -83,7 +83,7 @@ jobs:
         cache-to: type=gha
 
   build-source:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       Ros-Distro: humble
     needs: build-dev-base
