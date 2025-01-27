@@ -36,7 +36,7 @@ namespace nav2_behavior_tree
     }
     else
     {
-      return BT::NodeStatus::RUNNING;
+      return BT::NodeStatus::FAILURE;
     }
   }
 

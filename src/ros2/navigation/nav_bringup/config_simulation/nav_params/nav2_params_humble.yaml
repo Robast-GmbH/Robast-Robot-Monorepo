@@ -67,6 +67,7 @@ bt_navigator:
       - check_topic_state_condition_bt_node
       - change_footprint_action_bt_node
       - change_footprint_padding_action_bt_node
+      - check_person_in_front_condition_bt_node
 
 bt_navigator_navigate_through_poses_rclcpp_node:
   ros__parameters:
