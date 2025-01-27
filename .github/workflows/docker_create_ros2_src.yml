@@ -232,6 +232,9 @@ jobs:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Install jq
+      run: sudo apt-get update && sudo apt-get install -y jq
 
     - name: Get digest for arm64 image
       id: digest-arm64
