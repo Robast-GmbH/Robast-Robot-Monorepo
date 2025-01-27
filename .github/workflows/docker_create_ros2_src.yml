@@ -233,9 +233,19 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Get digest for arm64 image
+      id: digest-arm64
+      run: |
+        echo "::set-output name=digest::$(docker buildx imagetools inspect ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-arm64 --format '{{json .Manifest.Digest}}')"
+
+    - name: Get digest for amd64 image
+      id: digest-amd64
+      run: |
+        echo "::set-output name=digest::$(docker buildx imagetools inspect ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-amd64 --format '{{json .Manifest.Digest}}')"
+
     - name: Create and push multi-platform manifest
       run: |
         docker manifest create ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }} \
-          --amend ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-arm64 \
-          --amend ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-amd64
-        docker manifest push ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}        
+          --amend ghcr.io/robast-gmbh/monorepo/robast-dev-base@${{ steps.digest-arm64.outputs.digest }} \
+          --amend ghcr.io/robast-gmbh/monorepo/robast-dev-base@${{ steps.digest-amd64.outputs.digest }}
+        docker manifest push ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}
