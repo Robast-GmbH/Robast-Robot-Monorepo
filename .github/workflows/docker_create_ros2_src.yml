@@ -86,7 +86,6 @@ jobs:
     runs-on: self-hosted
     env:
       Ros-Distro: humble
-    needs: build-dev-base-arm64
 
     steps:
     - name: Checkout repository
@@ -121,7 +120,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       Ros-Distro: humble
-    needs: build-dev-base-amd64
 
     steps:
     - name: Checkout repository
