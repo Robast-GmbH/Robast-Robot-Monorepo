@@ -236,12 +236,14 @@ jobs:
     - name: Get digest for arm64 image
       id: digest-arm64
       run: |
-        echo "::set-output name=digest::$(docker buildx imagetools inspect ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-arm64 --format '{{json .Manifest.Digest}}')"
+        digest=$(docker buildx imagetools inspect --raw ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-arm64 | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
+        echo "::set-output name=digest::$digest"
 
     - name: Get digest for amd64 image
       id: digest-amd64
       run: |
-        echo "::set-output name=digest::$(docker buildx imagetools inspect ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-amd64 --format '{{json .Manifest.Digest}}')"
+        digest=$(docker buildx imagetools inspect --raw ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-amd64 | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
+        echo "::set-output name=digest::$digest"
 
     - name: Create and push multi-platform manifest
       run: |
