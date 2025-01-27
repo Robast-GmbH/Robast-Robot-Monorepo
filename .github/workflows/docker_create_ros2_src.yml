@@ -222,6 +222,8 @@ jobs:
 
   create-multi-platform-manifest:
     runs-on: ubuntu-latest
+    env:
+      Ros-Distro: humble
     needs: [build-dev-base-arm64, build-dev-base-amd64]
     steps:
     - name: Login to GitHub Container Registry
