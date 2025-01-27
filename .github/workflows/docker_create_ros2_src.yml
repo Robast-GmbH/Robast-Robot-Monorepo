@@ -219,3 +219,21 @@ jobs:
           ghcr.io/robast-gmbh/monorepo/robast-source:${{ env.Ros-Distro }}-amd64
         cache-from: type=gha
         cache-to: type=gha
+
+  create-multi-platform-manifest:
+    runs-on: ubuntu-latest
+    needs: [build-dev-base-arm64, build-dev-base-amd64]
+    steps:
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Create and push multi-platform manifest
+      run: |
+        docker manifest create ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }} \
+          --amend ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-arm64 \
+          --amend ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-amd64
+        docker manifest push ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}        
