@@ -1,22 +1,21 @@
 name: Create Docker Image Statemachine
 
-#trigger workflow every day at 00:00
+# Trigger workflow every day at 00:00
 on:
   schedule:
     - cron: '0 0 07 */2 *'
   push:
     branches:
-        - main
+      - main
     paths:
-        - src/ros2/statemachine/Dockerfile
-        - src/ros2/statemachine/**
-        - src/ros2/communication_interfaces/**
+      - src/ros2/statemachine/Dockerfile
+      - src/ros2/statemachine/**
+      - src/ros2/communication_interfaces/**
   workflow_dispatch:
 
-
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-arm64:
+    runs-on: self-hosted
     env:
       Ros-Distro: humble
       Project-Name: statemachine
@@ -60,6 +59,57 @@ jobs:
         context: src/ros2/${{ env.Project-Name }}/
         target: release
         platforms: linux/arm64/v8
+        push: true
+        file: src/ros2/${{ env.Project-Name }}/Dockerfile
+        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache
+
+  build-amd64:
+    runs-on: ubuntu-latest
+    env:
+      Ros-Distro: humble
+      Project-Name: statemachine
+
+    steps:
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+    
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure Docker Buildx
+      uses: docker/setup-buildx-action@v3 
+    
+    - name: Build ${{ env.Project-Name }} devel docker
+      uses: docker/build-push-action@v6
+      with:
+        context: src/ros2/${{ env.Project-Name }}/
+        target: devel
+        push: true
+        file: src/ros2/${{ env.Project-Name }}/Dockerfile
+        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
+
+    - name: Cache Docker layers
+      uses: actions/cache@v4
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
+    - name: Build ${{ env.Project-Name }} release docker
+      uses: docker/build-push-action@v6
+      with:
+        context: src/ros2/${{ env.Project-Name }}/
+        target: release
+        platforms: linux/amd64
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
         tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release
