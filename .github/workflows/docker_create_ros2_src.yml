@@ -44,7 +44,7 @@ jobs:
         file: src/Dockerfile
         target: robast-dev-base
         tags: |
-          ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}
+          ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-arm64
         cache-from: type=gha
         cache-to: type=gha
 
@@ -78,7 +78,7 @@ jobs:
         file: src/Dockerfile
         target: robast-dev-base
         tags: |
-          ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}
+          ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-amd64
         cache-from: type=gha
         cache-to: type=gha
 
@@ -112,7 +112,7 @@ jobs:
         file: src/Dockerfile
         target: robast-dev-core
         tags: |
-          ghcr.io/robast-gmbh/monorepo/robast-dev-core:${{ env.Ros-Distro }}
+          ghcr.io/robast-gmbh/monorepo/robast-dev-core:${{ env.Ros-Distro }}-arm64
         cache-from: type=gha
         cache-to: type=gha
 
@@ -146,7 +146,7 @@ jobs:
         file: src/Dockerfile
         target: robast-dev-core
         tags: |
-          ghcr.io/robast-gmbh/monorepo/robast-dev-core:${{ env.Ros-Distro }}
+          ghcr.io/robast-gmbh/monorepo/robast-dev-core:${{ env.Ros-Distro }}-amd64
         cache-from: type=gha
         cache-to: type=gha
 
@@ -181,7 +181,7 @@ jobs:
         file: src/Dockerfile
         target: robast-source
         tags: |
-          ghcr.io/robast-gmbh/monorepo/robast-source:${{ env.Ros-Distro }}
+          ghcr.io/robast-gmbh/monorepo/robast-source:${{ env.Ros-Distro }}-arm64
         cache-from: type=gha
         cache-to: type=gha
 
@@ -216,6 +216,6 @@ jobs:
         file: src/Dockerfile
         target: robast-source
         tags: |
-          ghcr.io/robast-gmbh/monorepo/robast-source:${{ env.Ros-Distro }}
+          ghcr.io/robast-gmbh/monorepo/robast-source:${{ env.Ros-Distro }}-amd64
         cache-from: type=gha
         cache-to: type=gha
