@@ -13,13 +13,15 @@ on:
       - src/ros2/communication_interfaces/**
   workflow_dispatch:
 
+env:
+  Ros-Distro: humble
+  Registry: ghcr.io
+  Repo: robast-gmbh/monorepo
+  Project-Name: robast-dev-base
+
 jobs:
   build-arm64:
     runs-on: self-hosted
-    env:
-      Ros-Distro: humble
-      Project-Name: statemachine
-
     steps:
     - name: Checkout repository and submodules
       uses: actions/checkout@v4
@@ -43,7 +45,7 @@ jobs:
         target: devel
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
+        tags: ${{ env.registry }}/${{ env.repo }}/${{ env.Project-Name }}:devel
 
     - name: Cache Docker layers
       uses: actions/cache@v4
@@ -61,15 +63,12 @@ jobs:
         platforms: linux/arm64/v8
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release
+        tags: ${{ env.registry }}/${{ env.repo }}/${{ env.Project-Name }}:release
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
 
   build-amd64:
     runs-on: ubuntu-latest
-    env:
-      Ros-Distro: humble
-      Project-Name: statemachine
 
     steps:
     - name: Checkout repository and submodules
@@ -94,7 +93,7 @@ jobs:
         target: devel
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
+        tags: ${{ env.registry }}/${{ env.repo }}/${{ env.Project-Name }}:devel
 
     - name: Cache Docker layers
       uses: actions/cache@v4
@@ -112,6 +111,39 @@ jobs:
         platforms: linux/amd64
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release
+        tags: ${{ env.registry }}/${{ env.repo }}/${{ env.Project-Name }}:release
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
+
+  create-multi-platform-manifest:
+    runs-on: ubuntu-latest
+    needs: [build-arm64, build-amd64]
+    steps:
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.Registry }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Install jq
+      run: sudo apt-get update && sudo apt-get install -y jq
+
+    - name: Get digest for arm64 image
+      id: digest-arm64
+      run: |
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Ros-Distro }}-arm64 | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
+        echo "::set-output name=digest::$digest"
+
+    - name: Get digest for amd64 image
+      id: digest-amd64
+      run: |
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Ros-Distro }}-amd64 | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
+        echo "::set-output name=digest::$digest"
+
+    - name: Create and push multi-platform manifest
+      run: |
+        docker manifest create ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Ros-Distro }} \
+          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-arm64.outputs.digest }} \
+          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-amd64.outputs.digest }}
+        docker manifest push ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Ros-Distro }}
