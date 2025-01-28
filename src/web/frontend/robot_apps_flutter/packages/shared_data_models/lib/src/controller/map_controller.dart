@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:shared_data_models/shared_data_models.dart';
 import 'package:shared_data_models/src/models/transformation.dart';
 
@@ -12,17 +10,18 @@ class MapController {
   final String mapPath;
   final yaws = <double>[];
   final _rmfPoses = [
-    Pose(x: 9.2936, y: -7.6929),
-    Pose(x: 18.3853, y: -11.7025),
-    Pose(x: 34.7035, y: -10.7701),
-    Pose(x: 31.3, y: -12.6039),
-  ];
+    [8.1125, -12.7593],
+    [8.0814, -6.4185],
+    [26.4201, -11.0498],
+    [27.8188, -6.7293],
+  ].map((pose) => Pose(x: pose[0], y: pose[1])).toList();
+
   final _navPoses = [
-    Pose(x: 8.28, y: -0.442),
-    Pose(x: -0.951, y: 2.82),
-    Pose(x: -17.2, y: 1.96),
-    Pose(x: -13.6, y: 3.74),
-  ];
+    [9.48, 4.01],
+    [9.47, -2.0],
+    [-8.74, 2.37],
+    [-10.2, -1.69],
+  ].map((pose) => Pose(x: pose[0], y: pose[1])).toList();
 
   late final Transformation _transformation = Transformation(
     sourcePoses: _navPoses,
@@ -30,7 +29,7 @@ class MapController {
   );
 
   Pose calculateNavGoal({required Pose pose}) {
-    final scaledPose = Pose(x: pose.x * _scale, y: pose.y * _scale);
+    final scaledPose = Pose(x: pose.x * _scale, y: pose.y * _scale, yaw: pose.yaw + _transformation.rotation);
     return _transformation.tranformTargetToSource(scaledPose);
   }
 
@@ -38,13 +37,5 @@ class MapController {
     final transformedPose = _transformation.tranformSourceToTarget(pose);
     final scaledPose = Pose(x: transformedPose.x / _scale, y: transformedPose.y / _scale, yaw: pose.yaw - _transformation.rotation);
     return scaledPose;
-  }
-
-  double test(double rotation) {
-    if (rotation > pi) {
-      return rotation - 2 * pi;
-    } else {
-      return rotation;
-    }
   }
 }
