@@ -12,7 +12,7 @@ on:
 jobs:
   test-run-statemachine:
 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       Project: statemachine
       Ros-Distro: humble
