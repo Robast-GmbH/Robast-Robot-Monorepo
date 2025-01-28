@@ -212,7 +212,7 @@ jobs:
 
   create-multi-platform-manifest:
     runs-on: ubuntu-latest
-    needs: [build-dev-base-arm64, build-dev-base-amd64]
+    needs: [build-dev-base-arm64, build-dev-base-amd64, build-dev-core-arm64, build-dev-core-amd64, build-source-arm64, build-source-amd64]
     steps:
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
