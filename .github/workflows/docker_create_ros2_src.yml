@@ -22,28 +22,17 @@ env:
 jobs:
   check-self-hosted:
     runs-on: ubuntu-latest
+    outputs:
+      self-hosted-available: ${{ steps.check.outputs.self-hosted-available }}
     steps:
-    # Step 1: Call the GitHub API to list all runners
-    - name: Check self-hosted runner availability
-      id: check-runner
+    - name: Check if self-hosted runner is available
+      id: check
       run: |
-        curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-        "https://api.github.com/repos/${{ github.repository }}/actions/runners" > runners.json
-
-        # Parse the response to check for any online runners
-        ONLINE_RUNNERS=$(jq '.runners[] | select(.labels[].name == "self-hosted" and .status == "online") | .name' runners.json)
-        if [ -z "$ONLINE_RUNNERS" ]; then
-          echo "No self-hosted runners are available!"
-          exit 1
+        if [[ "$(curl -s http://localhost:8080/self-hosted-available)" == "true" ]]; then
+          echo "::set-output name=self-hosted-available::true"
         else
-          echo "Available self-hosted runners:"
-          echo "$ONLINE_RUNNERS"
+          echo "::set-output name=self-hosted-available::false"
         fi
-
-    # Step 2: Output runner information (optional)
-    - name: Output available runners
-      if: success()
-      run: echo "Self-hosted runners are available and ready to use."
 
   build-dev-base-arm64:
     runs-on: ${{ needs.check-self-hosted.outputs.self-hosted-available == 'true' && 'self-hosted' || 'ubuntu-latest' }}
