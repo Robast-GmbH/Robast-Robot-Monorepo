@@ -20,23 +20,8 @@ env:
   Project-Name: robast-dev-base
 
 jobs:
-  check-self-hosted:
-    runs-on: ubuntu-latest
-    outputs:
-      self-hosted-available: ${{ steps.check.outputs.self-hosted-available }}
-    steps:
-    - name: Check if self-hosted runner is available
-      id: check
-      run: |
-        if [[ "$(curl -s http://localhost:8080/self-hosted-available)" == "true" ]]; then
-          echo "::set-output name=self-hosted-available::true"
-        else
-          echo "::set-output name=self-hosted-available::false"
-        fi
-
   build-dev-base-arm64:
-    runs-on: ${{ needs.check-self-hosted.outputs.self-hosted-available == 'true' && 'self-hosted' || 'ubuntu-latest' }}
-    needs: check-self-hosted
+    runs-on: self-hosted
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -98,8 +83,7 @@ jobs:
         cache-to: type=gha
 
   build-dev-core-arm64:
-    runs-on: ${{ needs.check-self-hosted.outputs.self-hosted-available == 'true' && 'self-hosted' || 'ubuntu-latest' }}
-    needs: check-self-hosted
+    runs-on: self-hosted
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -161,7 +145,7 @@ jobs:
         cache-to: type=gha
 
   build-source-arm64:
-    runs-on: ${{ needs.check-self-hosted.outputs.self-hosted-available == 'true' && 'self-hosted' || 'ubuntu-latest' }}
+    runs-on: self-hosted
     needs: build-dev-base-arm64
     steps:
     - name: Checkout repository
