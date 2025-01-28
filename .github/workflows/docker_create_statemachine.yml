@@ -129,21 +129,40 @@ jobs:
     - name: Install jq
       run: sudo apt-get update && sudo apt-get install -y jq
 
-    - name: Get digest for arm64 image
-      id: digest-arm64
+    - name: Get digest for arm64 release image
+      id: digest-arm64-release
       run: |
         digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release-arm64 | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
         echo "::set-output name=digest::$digest"
 
-    - name: Get digest for amd64 image
-      id: digest-amd64
+    - name: Get digest for amd64 release image
+      id: digest-amd64-release
       run: |
         digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release-amd64 | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
         echo "::set-output name=digest::$digest"
 
-    - name: Create and push multi-platform manifest
+    - name: Get digest for arm64 devel image
+      id: digest-arm64-devel
+      run: |
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel-arm64 | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
+        echo "::set-output name=digest::$digest"
+
+    - name: Get digest for amd64 devel image
+      id: digest-amd64-devel
+      run: |
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel-amd64 | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
+        echo "::set-output name=digest::$digest"
+
+    - name: Create and push multi-platform manifest for release image
       run: |
         docker manifest create ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release \
-          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-arm64.outputs.digest }} \
-          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-amd64.outputs.digest }}
+          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-arm64-release.outputs.digest }} \
+          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-amd64-release.outputs.digest }}
         docker manifest push ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release
+
+    - name: Create and push multi-platform manifest for devel image
+      run: |
+        docker manifest create ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel \
+          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-arm64-devel.outputs.digest }} \
+          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-amd64-devel.outputs.digest }}
+        docker manifest push ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel
