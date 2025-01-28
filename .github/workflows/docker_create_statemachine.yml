@@ -31,11 +31,11 @@ jobs:
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
-        registry: ghcr.io
+        registry: ${{ env.Registry }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: configures Docker Buildx to create a builder instance for running the image build.
+    - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
     
     - name: Build ${{ env.Project-Name }} devel docker
@@ -45,7 +45,7 @@ jobs:
         target: devel
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ${{ env.registry }}/${{ env.repo }}/${{ env.Project-Name }}:devel
+        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel
 
     - name: Cache Docker layers
       uses: actions/cache@v4
@@ -63,7 +63,7 @@ jobs:
         platforms: linux/arm64/v8
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ${{ env.registry }}/${{ env.repo }}/${{ env.Project-Name }}:release
+        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
 
@@ -79,7 +79,7 @@ jobs:
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
-        registry: ghcr.io
+        registry: ${{ env.Registry }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -93,7 +93,7 @@ jobs:
         target: devel
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ${{ env.registry }}/${{ env.repo }}/${{ env.Project-Name }}:devel
+        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel
 
     - name: Cache Docker layers
       uses: actions/cache@v4
@@ -111,7 +111,7 @@ jobs:
         platforms: linux/amd64
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ${{ env.registry }}/${{ env.repo }}/${{ env.Project-Name }}:release
+        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
 
@@ -125,25 +125,25 @@ jobs:
         registry: ${{ env.Registry }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-        
+
     - name: Install jq
       run: sudo apt-get update && sudo apt-get install -y jq
 
     - name: Get digest for arm64 image
       id: digest-arm64
       run: |
-        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Ros-Distro }}-arm64 | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
         echo "::set-output name=digest::$digest"
 
     - name: Get digest for amd64 image
       id: digest-amd64
       run: |
-        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Ros-Distro }}-amd64 | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
         echo "::set-output name=digest::$digest"
 
     - name: Create and push multi-platform manifest
       run: |
-        docker manifest create ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Ros-Distro }} \
+        docker manifest create ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release \
           --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-arm64.outputs.digest }} \
           --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-amd64.outputs.digest }}
-        docker manifest push ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Ros-Distro }}
+        docker manifest push ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release
