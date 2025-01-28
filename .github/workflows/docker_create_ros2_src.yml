@@ -13,12 +13,14 @@ on:
       - src/ros2/error_handling/**
   workflow_dispatch:
 
+env:
+  Ros-Distro: humble
+  Registry: ghcr.io
+  Repo: robast-gmbh/monorepo
+
 jobs:
   build-dev-base-arm64:
     runs-on: self-hosted
-    env:
-      Ros-Distro: humble
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -28,7 +30,7 @@ jobs:
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
-        registry: ghcr.io
+        registry: ${{ env.Registry }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -44,15 +46,12 @@ jobs:
         file: src/Dockerfile
         target: robast-dev-base
         tags: |
-          ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-arm64
+          ${{ env.Registry }}/${{ env.Repo }}/robast-dev-base:${{ env.Ros-Distro }}-arm64
         cache-from: type=gha
         cache-to: type=gha
 
   build-dev-base-amd64:
     runs-on: ubuntu-latest
-    env:
-      Ros-Distro: humble
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -62,7 +61,7 @@ jobs:
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
-        registry: ghcr.io
+        registry: ${{ env.Registry }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -78,15 +77,12 @@ jobs:
         file: src/Dockerfile
         target: robast-dev-base
         tags: |
-          ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-amd64
+          ${{ env.Registry }}/${{ env.Repo }}/robast-dev-base:${{ env.Ros-Distro }}-amd64
         cache-from: type=gha
         cache-to: type=gha
 
   build-dev-core-arm64:
     runs-on: self-hosted
-    env:
-      Ros-Distro: humble
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -96,7 +92,7 @@ jobs:
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
-        registry: ghcr.io
+        registry: ${{ env.Registry }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -112,15 +108,12 @@ jobs:
         file: src/Dockerfile
         target: robast-dev-core
         tags: |
-          ghcr.io/robast-gmbh/monorepo/robast-dev-core:${{ env.Ros-Distro }}-arm64
+          ${{ env.Registry }}/${{ env.Repo }}/robast-dev-core:${{ env.Ros-Distro }}-arm64
         cache-from: type=gha
         cache-to: type=gha
 
   build-dev-core-amd64:
     runs-on: ubuntu-latest
-    env:
-      Ros-Distro: humble
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -130,7 +123,7 @@ jobs:
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
-        registry: ghcr.io
+        registry: ${{ env.Registry }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -146,16 +139,13 @@ jobs:
         file: src/Dockerfile
         target: robast-dev-core
         tags: |
-          ghcr.io/robast-gmbh/monorepo/robast-dev-core:${{ env.Ros-Distro }}-amd64
+          ${{ env.Registry }}/${{ env.Repo }}/robast-dev-core:${{ env.Ros-Distro }}-amd64
         cache-from: type=gha
         cache-to: type=gha
 
   build-source-arm64:
     runs-on: self-hosted
-    env:
-      Ros-Distro: humble
     needs: build-dev-base-arm64
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -165,7 +155,7 @@ jobs:
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
-        registry: ghcr.io
+        registry: ${{ env.Registry }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -181,16 +171,13 @@ jobs:
         file: src/Dockerfile
         target: robast-source
         tags: |
-          ghcr.io/robast-gmbh/monorepo/robast-source:${{ env.Ros-Distro }}-arm64
+          ${{ env.Registry }}/${{ env.Repo }}/robast-source:${{ env.Ros-Distro }}-arm64
         cache-from: type=gha
         cache-to: type=gha
 
   build-source-amd64:
     runs-on: ubuntu-latest
-    env:
-      Ros-Distro: humble
     needs: build-dev-base-amd64
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -200,7 +187,7 @@ jobs:
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
-        registry: ghcr.io
+        registry: ${{ env.Registry }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -216,7 +203,7 @@ jobs:
         file: src/Dockerfile
         target: robast-source
         tags: |
-          ghcr.io/robast-gmbh/monorepo/robast-source:${{ env.Ros-Distro }}-amd64
+          ${{ env.Registry }}/${{ env.Repo }}/robast-source:${{ env.Ros-Distro }}-amd64
         cache-from: type=gha
         cache-to: type=gha
 
@@ -229,7 +216,7 @@ jobs:
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
-        registry: ghcr.io
+        registry: ${{ env.Registry }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
         
@@ -239,18 +226,18 @@ jobs:
     - name: Get digest for arm64 image
       id: digest-arm64
       run: |
-        digest=$(docker buildx imagetools inspect --raw ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-arm64 | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/robast-dev-base:${{ env.Ros-Distro }}-arm64 | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
         echo "::set-output name=digest::$digest"
 
     - name: Get digest for amd64 image
       id: digest-amd64
       run: |
-        digest=$(docker buildx imagetools inspect --raw ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}-amd64 | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/robast-dev-base:${{ env.Ros-Distro }}-amd64 | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
         echo "::set-output name=digest::$digest"
 
     - name: Create and push multi-platform manifest
       run: |
-        docker manifest create ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }} \
-          --amend ghcr.io/robast-gmbh/monorepo/robast-dev-base@${{ steps.digest-arm64.outputs.digest }} \
-          --amend ghcr.io/robast-gmbh/monorepo/robast-dev-base@${{ steps.digest-amd64.outputs.digest }}
-        docker manifest push ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}
+        docker manifest create ${{ env.Registry }}/${{ env.Repo }}/robast-dev-base:${{ env.Ros-Distro }} \
+          --amend ${{ env.Registry }}/${{ env.Repo }}/robast-dev-base@${{ steps.digest-arm64.outputs.digest }} \
+          --amend ${{ env.Registry }}/${{ env.Repo }}/robast-dev-base@${{ steps.digest-amd64.outputs.digest }}
+        docker manifest push ${{ env.Registry }}/${{ env.Repo }}/robast-dev-base:${{ env.Ros-Distro }}
