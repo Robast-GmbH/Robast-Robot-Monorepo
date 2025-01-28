@@ -17,7 +17,7 @@ env:
   Ros-Distro: humble
   Registry: ghcr.io
   Repo: robast-gmbh/monorepo
-  Project-Name: robast-dev-base
+  Project-Name: statemachine
 
 jobs:
   build-arm64:
