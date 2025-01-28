@@ -1,3 +1,0 @@
-[submodule "BehaviorTree.CPP.git"]
-	path = src/ros2/statemachine/BehaviorTree.CPP
-	url = git@github.com:BehaviorTree/BehaviorTree.CPP.git
