@@ -6,13 +6,13 @@
 class InitialPoseNode : public rclcpp::Node {
 public:
     InitialPoseNode() : Node("initial_pose_node") {
-        set_initial_pose_subscriber_ = this->create_subscription<geometry_msgs::msg::Point>(
+        _set_initial_pose_subscriber = this->create_subscription<geometry_msgs::msg::Point>(
             "/set_initial_pose",
             10,
             std::bind(&InitialPoseNode::set_initial_pose_callback, this, std::placeholders::_1)
         );
 
-        initial_pose_publisher_ = this->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>(
+        _initial_pose_publisher = this->create_publisher<geometry_msgs::msg::PoseWithCovarianceStamped>(
             "/initialpose",
             10
         );
@@ -28,11 +28,11 @@ private:
         msg.pose.pose.orientation.z = std::sin(point->z / 2.0);
         msg.pose.pose.orientation.w = std::cos(point->z / 2.0);
 
-        initial_pose_publisher_->publish(msg);
+        _initial_pose_publisher->publish(msg);
     }
 
-    rclcpp::Subscription<geometry_msgs::msg::Point>::SharedPtr set_initial_pose_subscriber_;
-    rclcpp::Publisher<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr initial_pose_publisher_;
+    rclcpp::Subscription<geometry_msgs::msg::Point>::SharedPtr _set_initial_pose_subscriber;
+    rclcpp::Publisher<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr _initial_pose_publisher;
 };
 
 int main(int argc, char *argv[]) {
