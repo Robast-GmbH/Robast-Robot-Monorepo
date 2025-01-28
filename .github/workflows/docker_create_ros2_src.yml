@@ -102,16 +102,16 @@ jobs:
     - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
 
-    - name: Build and push ${{ env.project-name-core }} for arm64
+    - name: Build and push ${{ env.Project-Name-Core }} for arm64
       uses: docker/build-push-action@v6
       with:
         context: src/
         platforms: linux/arm64/v8
         push: true
         file: src/Dockerfile
-        target: ${{ env.project-name-core }}
+        target: ${{ env.Project-Name-Core }}
         tags: |
-          ${{ env.Registry }}/${{ env.Repo }}/${{ env.project-name-core }}:${{ env.Ros-Distro }}-arm64
+          ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Core }}:${{ env.Ros-Distro }}-arm64
         cache-from: type=gha
         cache-to: type=gha
 
@@ -133,16 +133,16 @@ jobs:
     - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
 
-    - name: Build and push ${{ env.project-name-core }} for amd64
+    - name: Build and push ${{ env.Project-Name-Core }} for amd64
       uses: docker/build-push-action@v6
       with:
         context: src/
         platforms: linux/amd64
         push: true
         file: src/Dockerfile
-        target: ${{ env.project-name-core }}
+        target: ${{ env.Project-Name-Core }}
         tags: |
-          ${{ env.Registry }}/${{ env.Repo }}/${{ env.project-name-core }}:${{ env.Ros-Distro }}-amd64
+          ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Core }}:${{ env.Ros-Distro }}-amd64
         cache-from: type=gha
         cache-to: type=gha
 
@@ -165,16 +165,16 @@ jobs:
     - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
 
-    - name: Build and push ${{ env.project-name-source }} for arm64
+    - name: Build and push ${{ env.Project-Name-Source }} for arm64
       uses: docker/build-push-action@v6
       with:
         context: src/
         platforms: linux/arm64/v8
         push: true
         file: src/Dockerfile
-        target: ${{ env.project-name-source }}
+        target: ${{ env.Project-Name-Source }}
         tags: |
-          ${{ env.Registry }}/${{ env.Repo }}/${{ env.project-name-source }}:${{ env.Ros-Distro }}-arm64
+          ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Source }}:${{ env.Ros-Distro }}-arm64
         cache-from: type=gha
         cache-to: type=gha
 
@@ -197,16 +197,16 @@ jobs:
     - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
 
-    - name: Build and push ${{ env.project-name-source }} for amd64
+    - name: Build and push ${{ env.Project-Name-Source }} for amd64
       uses: docker/build-push-action@v6
       with:
         context: src/
         platforms: linux/amd64
         push: true
         file: src/Dockerfile
-        target: ${{ env.project-name-source }}
+        target: ${{ env.Project-Name-Source }}
         tags: |
-          ${{ env.Registry }}/${{ env.Repo }}/${{ env.project-name-source }}:${{ env.Ros-Distro }}-amd64
+          ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Source }}:${{ env.Ros-Distro }}-amd64
         cache-from: type=gha
         cache-to: type=gha
 
