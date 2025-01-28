@@ -18,6 +18,8 @@ env:
   Registry: ghcr.io
   Repo: robast-gmbh/monorepo
   Project-Name: robast-dev-base
+  Project-Name-Core: robast-dev-core
+  Project-Name-Source: robast-source
 
 jobs:
   build-dev-base-arm64:
@@ -100,16 +102,16 @@ jobs:
     - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
 
-    - name: Build and push robast-dev-core for arm64
+    - name: Build and push ${{ env.project-name-core }} for arm64
       uses: docker/build-push-action@v6
       with:
         context: src/
         platforms: linux/arm64/v8
         push: true
         file: src/Dockerfile
-        target: robast-dev-core
+        target: ${{ env.project-name-core }}
         tags: |
-          ${{ env.Registry }}/${{ env.Repo }}/robast-dev-core:${{ env.Ros-Distro }}-arm64
+          ${{ env.Registry }}/${{ env.Repo }}/${{ env.project-name-core }}:${{ env.Ros-Distro }}-arm64
         cache-from: type=gha
         cache-to: type=gha
 
@@ -131,16 +133,16 @@ jobs:
     - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
 
-    - name: Build and push robast-dev-core for amd64
+    - name: Build and push ${{ env.project-name-core }} for amd64
       uses: docker/build-push-action@v6
       with:
         context: src/
         platforms: linux/amd64
         push: true
         file: src/Dockerfile
-        target: robast-dev-core
+        target: ${{ env.project-name-core }}
         tags: |
-          ${{ env.Registry }}/${{ env.Repo }}/robast-dev-core:${{ env.Ros-Distro }}-amd64
+          ${{ env.Registry }}/${{ env.Repo }}/${{ env.project-name-core }}:${{ env.Ros-Distro }}-amd64
         cache-from: type=gha
         cache-to: type=gha
 
@@ -163,16 +165,16 @@ jobs:
     - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
 
-    - name: Build and push robast-source for arm64
+    - name: Build and push ${{ env.project-name-source }} for arm64
       uses: docker/build-push-action@v6
       with:
         context: src/
         platforms: linux/arm64/v8
         push: true
         file: src/Dockerfile
-        target: robast-source
+        target: ${{ env.project-name-source }}
         tags: |
-          ${{ env.Registry }}/${{ env.Repo }}/robast-source:${{ env.Ros-Distro }}-arm64
+          ${{ env.Registry }}/${{ env.Repo }}/${{ env.project-name-source }}:${{ env.Ros-Distro }}-arm64
         cache-from: type=gha
         cache-to: type=gha
 
@@ -195,16 +197,16 @@ jobs:
     - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
 
-    - name: Build and push robast-source for amd64
+    - name: Build and push ${{ env.project-name-source }} for amd64
       uses: docker/build-push-action@v6
       with:
         context: src/
         platforms: linux/amd64
         push: true
         file: src/Dockerfile
-        target: robast-source
+        target: ${{ env.project-name-source }}
         tags: |
-          ${{ env.Registry }}/${{ env.Repo }}/robast-source:${{ env.Ros-Distro }}-amd64
+          ${{ env.Registry }}/${{ env.Repo }}/${{ env.project-name-source }}:${{ env.Ros-Distro }}-amd64
         cache-from: type=gha
         cache-to: type=gha
 
@@ -234,9 +236,47 @@ jobs:
         digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Ros-Distro }}-amd64 | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
         echo "::set-output name=digest::$digest"
 
+    - name: Get digest for arm64 core image
+      id: digest-core-arm64
+      run: |
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Core }}:${{ env.Ros-Distro }}-arm64 | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
+        echo "::set-output name=digest::$digest"
+
+    - name: Get digest for amd64 core image
+      id: digest-core-amd64
+      run: |
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Core }}:${{ env.Ros-Distro }}-amd64 | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
+        echo "::set-output name=digest::$digest"
+
+    - name: Get digest for arm64 source image
+      id: digest-source-arm64
+      run: |
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Source }}:${{ env.Ros-Distro }}-arm64 | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
+        echo "::set-output name=digest::$digest"
+
+    - name: Get digest for amd64 source image
+      id: digest-source-amd64
+      run: |
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Source }}:${{ env.Ros-Distro }}-amd64 | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
+        echo "::set-output name=digest::$digest"
+
     - name: Create and push multi-platform manifest
       run: |
         docker manifest create ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Ros-Distro }} \
           --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-arm64.outputs.digest }} \
           --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-amd64.outputs.digest }}
         docker manifest push ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Ros-Distro }}
+
+    - name: Create and push multi-platform manifest for core
+      run: |
+        docker manifest create ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Core }}:${{ env.Ros-Distro }} \
+          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Core }}@${{ steps.digest-core-arm64.outputs.digest }} \
+          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Core }}@${{ steps.digest-core-amd64.outputs.digest }}
+        docker manifest push ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Core }}:${{ env.Ros-Distro }}
+
+    - name: Create and push multi-platform manifest for source
+      run: |
+        docker manifest create ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Source }}:${{ env.Ros-Distro }} \
+          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Source }}@${{ steps.digest-source-arm64.outputs.digest }} \
+          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Source }}@${{ steps.digest-source-amd64.outputs.digest }}
+        docker manifest push ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name-Source }}:${{ env.Ros-Distro }}
