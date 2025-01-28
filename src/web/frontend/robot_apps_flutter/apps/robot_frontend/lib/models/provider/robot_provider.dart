@@ -151,4 +151,8 @@ class RobotProvider extends ChangeNotifier {
     final errorLog = await _robotAPI.getErrorLog();
     return errorLog?.where((logMessage) => logMessage.contains('error_code')).toList().reversed.toList();
   }
+
+  Future<bool> setInitialRobotPoint({required Pose pose}) async {
+    return await _robotAPI.setInitialRobotPoint(pose: pose) ?? false;
+  }
 }
