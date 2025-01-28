@@ -5,7 +5,6 @@ project(initial_pose_publisher)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
-find_package(ament_cmake_gtest REQUIRED)
 
 # Add the executable
 add_executable(initial_pose_publisher src/initial_pose_publisher.cpp)
@@ -24,13 +23,40 @@ install(DIRECTORY
   DESTINATION share/${PROJECT_NAME}/
 )
 
-# Add and link tests
 if(BUILD_TESTING)
-  ament_add_gtest(test_initial_pose_publisher test/test_initial_pose_publisher.cpp)
-  if(TARGET test_initial_pose_publisher)
-    ament_target_dependencies(test_initial_pose_publisher rclcpp geometry_msgs)
-  endif()
-endif()
+  include(FetchContent)
 
+  FetchContent_Declare(
+      Catch2
+      GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+      GIT_TAG        v3.8.0
+  )
+  FetchContent_MakeAvailable(Catch2)
+  
+  add_executable(
+      test_initial_pose_publisher test/test_initial_pose_publisher.cpp
+  )
+
+  target_link_libraries(test_initial_pose_publisher
+      Catch2::Catch2
+      Catch2::Catch2WithMain
+  )
+
+  set(test_dependencies
+  geometry_msgs
+  rclcpp
+  )
+
+  ament_target_dependencies(test_initial_pose_publisher ${test_dependencies})
+  include(Catch)
+  catch_discover_tests(test_initial_pose_publisher)
+
+  target_include_directories(test_initial_pose_publisher
+      PRIVATE
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
+  )
+
+  include(CTest)
+endif()
 # Export dependencies
 ament_package()

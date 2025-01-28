@@ -1,49 +1,51 @@
-#include "gtest/gtest.h"
+#include <catch2/catch_all.hpp>
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/point.hpp"
 #include "geometry_msgs/msg/pose_with_covariance_stamped.hpp"
 
-class TestInitialPoseNode : public ::testing::Test {
-protected:
-    void SetUp() override {
-        rclcpp::init(0, nullptr);
-        node_ = std::make_shared<rclcpp::Node>("test_node");
-    }
+class TestInitialPoseNode {
+public:
+  TestInitialPoseNode() {
+    rclcpp::init(0, nullptr);
+    node_ = std::make_shared<rclcpp::Node>("test_node");
+  }
 
-    void TearDown() override {
-        rclcpp::shutdown();
-    }
+  ~TestInitialPoseNode() {
+    rclcpp::shutdown();
+  }
 
-    rclcpp::Node::SharedPtr node_;
+  rclcpp::Node::SharedPtr node_;
 };
 
-TEST_F(TestInitialPoseNode, TestInitialPoseCallback) {
-    const int x = 1.0;
-    const int y = 2.0;
-    const double z = 3.14;
+TEST_CASE("TestInitialPoseCallback") {
+  TestInitialPoseNode test_node;
 
-    auto subscription = node_->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
-        "/initialpose",
-        10,
-        [&](geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg) {
-            EXPECT_EQ(msg->header.frame_id, "map");
-            EXPECT_NEAR(msg->pose.pose.position.x, x, 1e-5);
-            EXPECT_NEAR(msg->pose.pose.position.y, y, 1e-5);
-            EXPECT_NEAR(msg->pose.pose.orientation.z, std::sin(z / 2.0), 1e-5);
-            EXPECT_NEAR(msg->pose.pose.orientation.w, std::cos(z / 2.0), 1e-5);
-            rclcpp::shutdown();
-        }
-    );
+  const double x = 1.0;
+  const double y = 2.0;
+  const double z = 3.14;
 
-    auto publisher = node_->create_publisher<geometry_msgs::msg::Point>("/set_initial_pose", 10);
+  auto subscription = test_node.node_->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
+    "/initialpose",
+    10,
+    [&](geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg) {
+      REQUIRE(msg->header.frame_id == "map");
+      REQUIRE(std::abs(msg->pose.pose.position.x - x) < 1e-5);
+      REQUIRE(std::abs(msg->pose.pose.position.y - y) < 1e-5);
+      REQUIRE(std::abs(msg->pose.pose.orientation.z - std::sin(z / 2.0)) < 1e-5);
+      REQUIRE(std::abs(msg->pose.pose.orientation.w - std::cos(z / 2.0)) < 1e-5);
+      rclcpp::shutdown();
+    }
+  );
 
-    rclcpp::WallRate(1).sleep();
+  auto publisher = test_node.node_->create_publisher<geometry_msgs::msg::Point>("/set_initial_pose", 10);
 
-    auto test_msg = geometry_msgs::msg::Point();
-    test_msg.x = x;
-    test_msg.y = y;
-    test_msg.z = z;
-    publisher->publish(test_msg);
+  rclcpp::WallRate(1).sleep();
 
-    rclcpp::spin(node_);
+  auto test_msg = geometry_msgs::msg::Point();
+  test_msg.x = x;
+  test_msg.y = y;
+  test_msg.z = z;
+  publisher->publish(test_msg);
+
+  rclcpp::spin_some(test_node.node_);
 }
