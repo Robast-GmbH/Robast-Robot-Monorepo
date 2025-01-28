@@ -3,22 +3,22 @@
 #include "geometry_msgs/msg/point.hpp"
 #include "geometry_msgs/msg/pose_with_covariance_stamped.hpp"
 
-class TestInitialPoseNode {
+class TestInitialPosePublisher {
 public:
-  TestInitialPoseNode() {
+  TestInitialPosePublisher() {
     rclcpp::init(0, nullptr);
     node_ = std::make_shared<rclcpp::Node>("test_node");
   }
 
-  ~TestInitialPoseNode() {
+  ~TestInitialPosePublisher() {
     rclcpp::shutdown();
   }
 
   rclcpp::Node::SharedPtr node_;
 };
 
-TEST_CASE("TestInitialPoseCallback") {
-  TestInitialPoseNode test_node;
+TEST_CASE("TestInitialPosePublisherCallback") {
+  TestInitialPosePublisher test_node;
 
   const double x = 1.0;
   const double y = 2.0;
