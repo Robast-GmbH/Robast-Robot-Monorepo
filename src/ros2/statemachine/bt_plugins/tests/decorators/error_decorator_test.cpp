@@ -91,8 +91,6 @@ namespace decorator_tests
 
               auto result = bt.tickOnce();
 
-              // rclcpp::spin_some(test_node);
-
               REQUIRE(result == BT::NodeStatus::FAILURE);
             }
           }
