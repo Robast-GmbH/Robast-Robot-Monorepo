@@ -7,14 +7,14 @@ class TestInitialPosePublisher {
 public:
   TestInitialPosePublisher() {
     rclcpp::init(0, nullptr);
-    node_ = std::make_shared<rclcpp::Node>("test_node");
+    node = std::make_shared<rclcpp::Node>("test_node");
   }
 
   ~TestInitialPosePublisher() {
     rclcpp::shutdown();
   }
 
-  rclcpp::Node::SharedPtr node_;
+  rclcpp::Node::SharedPtr node;
 };
 
 TEST_CASE("TestInitialPosePublisherCallback") {
@@ -24,7 +24,7 @@ TEST_CASE("TestInitialPosePublisherCallback") {
   const double y = 2.0;
   const double z = 3.14;
 
-  auto subscription = test_node.node_->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
+  auto subscription = test_node.node->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
     "/initialpose",
     10,
     [&](geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg) {
@@ -37,7 +37,7 @@ TEST_CASE("TestInitialPosePublisherCallback") {
     }
   );
 
-  auto publisher = test_node.node_->create_publisher<geometry_msgs::msg::Point>("/set_initial_pose", 10);
+  auto publisher = test_node.node->create_publisher<geometry_msgs::msg::Point>("/set_initial_pose", 10);
 
   rclcpp::WallRate(1).sleep();
 
@@ -47,5 +47,5 @@ TEST_CASE("TestInitialPosePublisherCallback") {
   test_msg.z = z;
   publisher->publish(test_msg);
 
-  rclcpp::spin_some(test_node.node_);
+  rclcpp::spin_some(test_node.node);
 }
