@@ -45,7 +45,7 @@ jobs:
         target: devel
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel
+        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel-arm64
 
     - name: Cache Docker layers
       uses: actions/cache@v4
@@ -63,7 +63,7 @@ jobs:
         platforms: linux/arm64/v8
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release
+        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release-arm64
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
 
@@ -93,7 +93,7 @@ jobs:
         target: devel
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel
+        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel-amd64
 
     - name: Cache Docker layers
       uses: actions/cache@v4
@@ -111,7 +111,7 @@ jobs:
         platforms: linux/amd64
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release
+        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release-amd64
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
 
@@ -132,13 +132,13 @@ jobs:
     - name: Get digest for arm64 image
       id: digest-arm64
       run: |
-        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release-arm64 | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
         echo "::set-output name=digest::$digest"
 
     - name: Get digest for amd64 image
       id: digest-amd64
       run: |
-        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release-amd64 | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
         echo "::set-output name=digest::$digest"
 
     - name: Create and push multi-platform manifest
