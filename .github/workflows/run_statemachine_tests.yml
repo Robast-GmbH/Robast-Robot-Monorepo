@@ -30,6 +30,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Remove existing container if exists
+      run: |
+        if [ "$(docker ps -aq -f name=${{ env.Project }}_container)" ]; then
+          docker rm -f ${{ env.Project }}_container
+        fi          
+
     - name: Generate coverage report
       working-directory: src/ros2/${{ env.Project }}
       run: >
