@@ -28,13 +28,9 @@ ARG ROS_BUILD_DISTRO
 
 USER root
 
-WORKDIR /tmp
-RUN git clone -b 4.5.x https://github.com/BehaviorTree/BehaviorTree.CPP.git
-
 WORKDIR /ws
 COPY . /ws/src/statemachine
 RUN mkdir -p /robast/src/BT && \
-  mv /tmp/BehaviorTree.CPP /robast/src/BT && \
   apt-get update && \
   rosdep update && \
   rosdep install --from-paths /ws/src/ --ignore-src -r -y \
