@@ -50,7 +50,7 @@ jobs:
               -v $(pwd)/../error_handling/error_utils:/workspace/src/error_handling/error_utils
               -v $(pwd)/../dds_configs:/workspace/dds_configs
               -v $(pwd)/../../Hardware/cpp/libs:/workspace/libs 
-              --rm ghcr.io/robast-gmbh/monorepo/${{ env.Project }}:release
+              --user $(id -u):$(id -g) --rm ghcr.io/robast-gmbh/monorepo/${{ env.Project }}:release
               /bin/sh -c "cd /workspace/ &&
               sudo apt-get update && 
               sudo apt-get upgrade -y &&
