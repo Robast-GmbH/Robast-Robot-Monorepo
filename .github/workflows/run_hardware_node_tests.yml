@@ -46,7 +46,8 @@ jobs:
     - name: Run docker and execute tests
       working-directory: src/ros2/${{ env.Project }}
       run: >
-              docker run -v $(pwd):/workspace/src/${{ env.Project }} 
+              docker run -v $(pwd):/workspace/src/${{ env.Project }}
+              -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces 
               -v $(pwd)/../error_handling/error_utils:/workspace/src/error_handling/error_utils
               -v $(pwd)/../dds_configs:/workspace/dds_configs
               -v $(pwd)/../../Hardware/cpp/libs:/workspace/libs 
