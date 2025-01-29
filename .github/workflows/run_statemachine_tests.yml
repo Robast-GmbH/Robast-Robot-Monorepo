@@ -13,15 +13,12 @@ env:
   Ros-Distro: humble
   Registry: ghcr.io
   Repo: robast-gmbh/monorepo
-  Project-Name: statemachine    
+  Project-Name: statemachine
        
 jobs:
   test-run-statemachine:
     runs-on: self-hosted
     steps:
-    - name: Check running user
-      run: whoami
-
     - name: Checkout repository and submodules
       uses: actions/checkout@v4
       with:
