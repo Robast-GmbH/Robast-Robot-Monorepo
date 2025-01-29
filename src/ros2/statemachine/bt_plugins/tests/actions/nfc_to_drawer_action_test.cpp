@@ -1,31 +1,33 @@
-#include <catch2/catch_all.hpp>
 #include "bt_plugins/action/nfc_to_drawer_action.hpp"
-#include "bt_plugins/behavior_tree_engine.hpp"
-#include "behaviortree_cpp/tree_node.h"
+
+#include <catch2/catch_test_macros.hpp>
+
 #include "behaviortree_cpp/blackboard.h"
+#include "behaviortree_cpp/tree_node.h"
+#include "bt_plugins/behavior_tree_engine.hpp"
 #include "communication_interfaces/msg/drawer_address.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 namespace test
 {
-  SCENARIO("A minimal tree gets created with just the NFCToDrawer plugin which has a given NFCToDrawer config, that should be used")
+  SCENARIO(
+    "A minimal tree gets created with just the NFCToDrawer plugin which has a given NFCToDrawer config, that should be "
+    "used")
   {
     rclcpp::init(0, nullptr);
     std::string nodename = "NFCToDrawer";
     GIVEN("A BT_engine for the nfc test")
     {
       const std::vector<std::string> plugins = {
-          "nfc_to_drawer_action_bt_node",
+        "nfc_to_drawer_action_bt_node",
       };
       static rclcpp::Node::SharedPtr node = std::make_shared<rclcpp::Node>("test");
       static BT::NodeConfig *config_;
       config_ = new BT::NodeConfig();
       auto blackboard = BT::Blackboard::create();
-      blackboard->set<std::chrono::milliseconds>(
-          "bt_loop_duration",
-          std::chrono::milliseconds(10));
+      blackboard->set<std::chrono::milliseconds>("bt_loop_duration", std::chrono::milliseconds(10));
       std::string nfc_tree_xml =
-          R"(
+        R"(
                   <root BTCPP_format="4" >
                       <BehaviorTree ID="MainTree">
                           <NFCToDrawer/>
@@ -35,9 +37,7 @@ namespace test
       WHEN("The bt engine including the nfc_to_drawer is created")
       {
         using DrawerAddress = communication_interfaces::msg::DrawerAddress;
-        blackboard->set<rclcpp::Node::SharedPtr>(
-            "node",
-            node);
+        blackboard->set<rclcpp::Node::SharedPtr>("node", node);
         std::map<std::string, DrawerAddress> nfc_dictionary{{}};
         for (int i = 1; i <= 5; i++)
         {
@@ -47,8 +47,7 @@ namespace test
           nfc_dictionary[std::to_string(i)] = drawer_address;
         }
 
-        blackboard->set<std::map<std::string, DrawerAddress>>(
-            "nfc_keys", nfc_dictionary);
+        blackboard->set<std::map<std::string, DrawerAddress>>("nfc_keys", nfc_dictionary);
         auto bt_engine1 = std::make_unique<statemachine::BehaviorTreeEngine>(plugins);
         auto bt = bt_engine1->createTreeFromText(nfc_tree_xml, blackboard, "MainTree");
 
@@ -57,7 +56,9 @@ namespace test
           REQUIRE(bt.subtrees[0]);
           WHEN("this Tree exists")
           {
-            THEN("the Tree should hold all added plugins, in this case NFCToDrawer and the drawer_address should be written to the blackboard after ticking")
+            THEN(
+              "the Tree should hold all added plugins, in this case NFCToDrawer and the drawer_address should be "
+              "written to the blackboard after ticking")
             {
               auto iter = bt.subtrees[0]->nodes.begin();
               bool found = false;
@@ -96,4 +97,4 @@ namespace test
       }
     }
   }
-}
+}   // namespace test

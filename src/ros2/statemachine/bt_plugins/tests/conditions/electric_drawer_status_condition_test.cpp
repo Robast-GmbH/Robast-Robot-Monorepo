@@ -1,6 +1,6 @@
 #include "bt_plugins/condition/electric_drawer_status_condition.hpp"
 
-#include <catch2/catch_all.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include "behaviortree_cpp/blackboard.h"
 #include "behaviortree_cpp/tree_node.h"
@@ -24,10 +24,10 @@ namespace test
       }
 
       const std::vector<std::string> plugins = {
-          "electric_drawer_status_condition_bt_node",
+        "electric_drawer_status_condition_bt_node",
       };
       static rclcpp::Node::SharedPtr node_electric_drawer_status =
-          std::make_shared<rclcpp::Node>("test_electric_drawer_status");
+        std::make_shared<rclcpp::Node>("test_electric_drawer_status");
       static BT::NodeConfig *config_;
       config_ = new BT::NodeConfig();
       auto blackboard = BT::Blackboard::create();
@@ -35,7 +35,7 @@ namespace test
       blackboard->set<uint8_t>("target_value", 200);
       blackboard->set<bool>("use_stallguard", false);
       std::string electric_status_tree_xml =
-          R"(
+        R"(
             <root BTCPP_format="4" >
                 <BehaviorTree ID="MainTree">
                     <ElectricDrawerStatusCondition target_value="{target_value}" topic="/electrical_drawer_status" use_stallguard="{use_stallguard}"/>
@@ -71,15 +71,15 @@ namespace test
             }
 
             AND_THEN(
-                "the ElectricDrawerStatusCondition node should transition correctly between states and evaluate the "
-                "condition correctly")
+              "the ElectricDrawerStatusCondition node should transition correctly between states and evaluate the "
+              "condition correctly")
             {
               auto result = bt.tickOnce();
               REQUIRE(result == BT::NodeStatus::RUNNING);
 
               auto publisher =
-                  node_electric_drawer_status->create_publisher<communication_interfaces::msg::ElectricalDrawerStatus>(
-                      topic_name, 10);
+                node_electric_drawer_status->create_publisher<communication_interfaces::msg::ElectricalDrawerStatus>(
+                  topic_name, 10);
 
               communication_interfaces::msg::ElectricalDrawerStatus status_msg;
               status_msg.position = 200;
@@ -102,8 +102,8 @@ namespace test
               status_msg.is_stall_guard_triggered = false;
 
               auto publisher =
-                  node_electric_drawer_status->create_publisher<communication_interfaces::msg::ElectricalDrawerStatus>(
-                      topic_name, 10);
+                node_electric_drawer_status->create_publisher<communication_interfaces::msg::ElectricalDrawerStatus>(
+                  topic_name, 10);
               publisher->publish(status_msg);
               rclcpp::spin_some(node_electric_drawer_status);
 
