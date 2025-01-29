@@ -27,12 +27,6 @@ jobs:
     #       ${{ env.Project }}_docker_changed:
     #         - 'src/ros2/${{ env.Project }}/Dockerfile'
 
-    - name: Test network connectivity
-      run: ping -c 4 github.com
-
-    - name: Clean up workspace
-      run: rm -rf ${{ github.workspace }}/*
-
     - name: Checkout repository and submodules
       uses: actions/checkout@v4
       with:
