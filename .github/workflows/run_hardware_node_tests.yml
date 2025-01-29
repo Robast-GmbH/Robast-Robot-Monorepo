@@ -41,7 +41,6 @@ jobs:
 
     - name: configures Docker Buildx to create a builder instance for running the image build.
       uses: docker/setup-buildx-action@v3       
-    
            
     - name: Run docker and execute tests
       working-directory: src/ros2/${{ env.Project }}
@@ -66,4 +65,7 @@ jobs:
               lcov --directory . --capture --output-file coverage-${{env.Project}}.info &&
               lcov --remove coverage-${{env.Project}}.info '/usr/*' --output-file coverage-${{env.Project}}.info &&
               lcov --list coverage-${{env.Project}}.info"
+
+    - name: Remove checked out repository
+      run: rm -rf ${{ github.workspace }}              
       
