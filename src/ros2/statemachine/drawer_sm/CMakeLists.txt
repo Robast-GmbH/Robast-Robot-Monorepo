@@ -85,10 +85,39 @@ install(DIRECTORY
 )
 
 if(BUILD_TESTING)
+  include(FetchContent)
+
+  FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG        v3.8.0
+  )
+  FetchContent_MakeAvailable(Catch2)
   find_package(ament_cmake_lint_cmake REQUIRED)
   ament_lint_cmake()
   find_package(ament_cmake_xmllint REQUIRED)
   ament_xmllint()
+  # Add Catch2 dependency
+  find_package(Catch2 REQUIRED)
+
+  # Add the test executable
+  add_executable(drawer_test
+    tests/integration_tests/drawer_test.cpp
+  )
+
+  # Link the test executable with necessary dependencies
+  target_link_libraries(drawer_test
+    Catch2::Catch2
+    Catch2::Catch2WithMain
+  )
+  ament_target_dependencies(drawer_test
+    ${dependencies})
+  include(Catch)
+  catch_discover_tests(drawer_test)
+
+  include(CTest)
+
+
 endif()
 
 ament_export_include_directories(include)

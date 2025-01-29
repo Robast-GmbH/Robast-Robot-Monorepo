@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:robot_frontend/models/provider/inactivity_provider.dart';
 import 'package:robot_frontend/pages/pdf_page.dart';
 import 'package:robot_frontend/services/manuals_manager.dart';
 import 'package:robot_frontend/widgets/buttons/custom_elevated_button.dart';
@@ -31,6 +33,12 @@ class _ManualsPageState extends State<ManualsPage> {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
+      onBackButtonPressed: widget.inactivityTimerEnabled
+          ? () {
+              Provider.of<InactivityProvider>(context, listen: false).cancelTimer();
+              Navigator.of(context).pop();
+            }
+          : null,
       inactivityTimerEnabled: widget.inactivityTimerEnabled,
       ignoreMissingEmergencyStopData: true,
       title: 'Anleitungen',

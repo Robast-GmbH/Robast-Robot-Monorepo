@@ -28,8 +28,7 @@ RUN pip install -r src/robot_backend/requirements.txt && \
   rosdep install --from-paths /release/src --ignore-src -r -y && \
   . /opt/ros/${ROS_BUILD_DISTRO}/setup.sh && \
   . /robast/${ROS_BUILD_DISTRO}/setup.sh && \
-  colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release && \
-  bash /robast/humble/error_utils/bin/install_py_module.sh
+  colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 WORKDIR /workspace
 USER robast
