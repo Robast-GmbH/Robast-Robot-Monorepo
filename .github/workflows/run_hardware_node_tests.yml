@@ -48,8 +48,6 @@ jobs:
       run: >
               docker pull ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release &&
               docker run -v $(pwd):/workspace/src/${{ env.Project-Name }}
-              -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces 
-              -v $(pwd)/../error_handling/error_utils:/workspace/src/error_handling/error_utils
               -v $(pwd)/../dds_configs:/workspace/dds_configs
               -v $(pwd)/../../Hardware/cpp/libs:/workspace/libs 
               --rm ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release
