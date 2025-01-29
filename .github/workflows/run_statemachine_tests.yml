@@ -8,15 +8,16 @@ on:
       - src/ros2/communication_interfaces/**
       - .github/workflows/run_statemachine_test.yml
       - .github/workflows/docker_create_statemachine.yml
+
+env:
+  Ros-Distro: humble
+  Registry: ghcr.io
+  Repo: robast-gmbh/monorepo
+  Project-Name: statemachine    
        
 jobs:
   test-run-statemachine:
-
     runs-on: self-hosted
-    env:
-      Project: statemachine
-      Ros-Distro: humble
-
     steps:
     - name: Check running user
       run: whoami
@@ -29,16 +30,17 @@ jobs:
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
-          registry: ghcr.io
+          registry: ${{ env.Registry }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}      
 
     - name: Generate coverage report
-      working-directory: src/ros2/${{ env.Project }}
+      working-directory: src/ros2/${{ env.Project-Name }}
       run: >
-          docker run -v $(pwd):/workspace/src/${{ env.Project }}
+          docker pull ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel &&
+          docker run -v $(pwd):/workspace/src/${{ env.Project-Name }}
           -v $(pwd)/../dds_configs:/workspace/dds_configs
-          --rm --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}:devel
+          --rm --name ${{ env.Project-Name }}_container ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel
           /bin/sh -c "cd /workspace/ &&
           sudo apt-get update &&
           sudo apt-get upgrade -y &&
