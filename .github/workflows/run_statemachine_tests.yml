@@ -46,6 +46,3 @@ jobs:
           colcon build --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=\"${CMAKE_CXX_FLAGS} --coverage\" -DCMAKE_C_FLAGS=\"${CMAKE_C_FLAGS} --coverage\" -Wall -Wextra -Wpedantic &&
           colcon test --packages-skip behaviourtree_cpp &&
           colcon test-result --all"
-
-    - name: Remove checked out repository
-      run: rm -rf ${{ github.workspace }}
