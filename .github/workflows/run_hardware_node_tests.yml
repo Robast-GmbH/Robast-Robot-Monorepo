@@ -8,14 +8,15 @@ on:
       - src/ros2/communication_interfaces/**
       - .github/workflows/run_hardware_node_tests.yml
       - .github/workflows/docker_create_hardware_nodes.yml
+
+env:
+  Registry: ghcr.io
+  Repo: robast-gmbh/monorepo
+  Project-Name: hardware_nodes
        
 jobs:
   test-run-hardware_nodes:
-
     runs-on: self-hosted
-    env:
-      Project: hardware_nodes
-
     steps:
     #- uses: actions/checkout@v4 
     # - uses: dorny/paths-filter@v2.11.1
@@ -24,8 +25,8 @@ jobs:
     #     filters: |
     #       hardware_docker_changed:
     #         - 'src/ros2/hardware_nodes/Dockerfile'
-    #       ${{ env.Project }}_docker_changed:
-    #         - 'src/ros2/${{ env.Project }}/Dockerfile'
+    #       ${{ env.Project-Name }}_docker_changed:
+    #         - 'src/ros2/${{ env.Project-Name }}/Dockerfile'
 
     - name: Checkout repository and submodules
       uses: actions/checkout@v4
@@ -35,7 +36,7 @@ jobs:
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
-          registry: ghcr.io
+          registry: ${{ env.Registry }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -43,14 +44,15 @@ jobs:
       uses: docker/setup-buildx-action@v3       
            
     - name: Run docker and execute tests
-      working-directory: src/ros2/${{ env.Project }}
+      working-directory: src/ros2/${{ env.Project-Name }}
       run: >
-              docker run -v $(pwd):/workspace/src/${{ env.Project }}
+              docker pull ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release &&
+              docker run -v $(pwd):/workspace/src/${{ env.Project-Name }}
               -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces 
               -v $(pwd)/../error_handling/error_utils:/workspace/src/error_handling/error_utils
               -v $(pwd)/../dds_configs:/workspace/dds_configs
               -v $(pwd)/../../Hardware/cpp/libs:/workspace/libs 
-              --rm ghcr.io/robast-gmbh/monorepo/${{ env.Project }}:release
+              --rm ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release
               /bin/sh -c "cd /workspace/ &&
               sudo apt-get update && 
               sudo apt-get upgrade -y &&
@@ -62,6 +64,6 @@ jobs:
               colcon build --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=\"${CMAKE_CXX_FLAGS} --coverage\" -DCMAKE_C_FLAGS=\"${CMAKE_C_FLAGS} --coverage\" -Wall -Wextra -Wpedantic && 
               colcon test --event-handler=console_direct+ &&
               colcon test-result --all &&
-              lcov --directory . --capture --output-file coverage-${{env.Project}}.info &&
-              lcov --remove coverage-${{env.Project}}.info '/usr/*' --output-file coverage-${{env.Project}}.info &&
-              lcov --list coverage-${{env.Project}}.info"
+              lcov --directory . --capture --output-file coverage-${{env.Project-Name}}.info &&
+              lcov --remove coverage-${{env.Project-Name}}.info '/usr/*' --output-file coverage-${{env.Project-Name}}.info &&
+              lcov --list coverage-${{env.Project-Name}}.info"
