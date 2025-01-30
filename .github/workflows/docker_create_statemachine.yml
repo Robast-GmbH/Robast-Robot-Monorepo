@@ -14,7 +14,6 @@ on:
   workflow_dispatch:
 
 env:
-  Ros-Distro: humble
   Registry: ghcr.io
   Repo: robast-gmbh/monorepo
   Project-Name: statemachine
@@ -22,100 +21,6 @@ env:
   Devel-Tag: devel
 
 jobs:
-  build-arm64:
-    runs-on: self-hosted
-    steps:
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-    
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.Registry }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Configure Docker Buildx
-        uses: docker/setup-buildx-action@v3 
-    
-      - name: Build ${{ env.Project-Name }} ${{ env.Devel-Tag }} docker
-        uses: docker/build-push-action@v6
-        with:
-          context: src/ros2/${{ env.Project-Name }}/
-          target: devel
-          push: true
-          file: src/ros2/${{ env.Project-Name }}/Dockerfile
-          tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Devel-Tag }}-arm64
-
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Build ${{ env.Project-Name }} ${{ env.Release-Tag }} docker
-        uses: docker/build-push-action@v6
-        with:
-          context: src/ros2/${{ env.Project-Name }}/
-          target: release
-          platforms: linux/arm64/v8
-          push: true
-          file: src/ros2/${{ env.Project-Name }}/Dockerfile
-          tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Release-Tag }}-arm64
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-
-  build-amd64:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository and submodules
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-    
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.Registry }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Configure Docker Buildx
-        uses: docker/setup-buildx-action@v3 
-    
-      - name: Build ${{ env.Project-Name }} ${{ env.Devel-Tag }} docker
-        uses: docker/build-push-action@v6
-        with:
-          context: src/ros2/${{ env.Project-Name }}/
-          target: devel
-          push: true
-          file: src/ros2/${{ env.Project-Name }}/Dockerfile
-          tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Devel-Tag }}-amd64
-
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Build ${{ env.Project-Name }} ${{ env.Release-Tag }} docker
-        uses: docker/build-push-action@v6
-        with:
-          context: src/ros2/${{ env.Project-Name }}/
-          target: release
-          platforms: linux/amd64
-          push: true
-          file: src/ros2/${{ env.Project-Name }}/Dockerfile
-          tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Release-Tag }}-amd64
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-
   # Allowed expressions in the with section are `github` and `needs`.
   # Therefore we need to take the env vars and set them as outputs to access them with `needs`.
   set_output_from_env:
@@ -138,8 +43,56 @@ jobs:
       - id: set-release-tag
         run: echo "release-tag=${{ env.Release-Tag }}" >> "$GITHUB_OUTPUT"
 
+  build-arm64-devel:
+    needs: set_output_from_env
+    uses: ./.github/workflows/create_ros2_docker.yml
+    with:
+      registry: ${{ needs.set_output_from_env.outputs.registry }}
+      repo: ${{ needs.set_output_from_env.outputs.repo }}
+      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
+      tag: ${{ needs.set_output_from_env.outputs.devel-tag }}-arm64
+      target: ${{ needs.set_output_from_env.outputs.devel-tag }}
+      platforms: linux/arm64/v8
+      runner: self-hosted
+
+  build-arm64-release:
+    needs: set_output_from_env
+    uses: ./.github/workflows/create_ros2_docker.yml
+    with:
+      registry: ${{ needs.set_output_from_env.outputs.registry }}
+      repo: ${{ needs.set_output_from_env.outputs.repo }}
+      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
+      tag: ${{ needs.set_output_from_env.outputs.release-tag }}-arm64
+      target: ${{ needs.set_output_from_env.outputs.release-tag }}
+      platforms: linux/arm64/v8
+      runner: self-hosted
+
+  build-amd64-devel:
+    needs: set_output_from_env
+    uses: ./.github/workflows/create_ros2_docker.yml
+    with:
+      registry: ${{ needs.set_output_from_env.outputs.registry }}
+      repo: ${{ needs.set_output_from_env.outputs.repo }}
+      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
+      tag: ${{ needs.set_output_from_env.outputs.devel-tag }}-amd64
+      target: ${{ needs.set_output_from_env.outputs.devel-tag }}
+      platforms: linux/amd64
+      runner: ubuntu-latest
+
+  build-amd64-release:
+    needs: set_output_from_env
+    uses: ./.github/workflows/create_ros2_docker.yml
+    with:
+      registry: ${{ needs.set_output_from_env.outputs.registry }}
+      repo: ${{ needs.set_output_from_env.outputs.repo }}
+      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
+      tag: ${{ needs.set_output_from_env.outputs.release-tag }}-amd64
+      target: ${{ needs.set_output_from_env.outputs.release-tag }}
+      platforms: linux/amd64
+      runner: ubuntu-latest
+
   create-multi-platform-manifest-devel:
-    needs: [build-arm64, build-amd64, set_output_from_env]
+    needs: [set_output_from_env, build-arm64-devel, build-amd64-devel]
     uses: ./.github/workflows/create_multi_platform_manifest.yml
     with:
       registry: ${{ needs.set_output_from_env.outputs.registry }}
@@ -148,7 +101,7 @@ jobs:
       tag: ${{ needs.set_output_from_env.outputs.devel-tag }}
 
   create-multi-platform-manifest-release:
-    needs: [build-arm64, build-amd64, set_output_from_env]
+    needs: [set_output_from_env, build-arm64-release, build-amd64-release]
     uses: ./.github/workflows/create_multi_platform_manifest.yml
     with:
       registry: ${{ needs.set_output_from_env.outputs.registry }}

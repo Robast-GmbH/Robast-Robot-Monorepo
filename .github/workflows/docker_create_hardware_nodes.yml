@@ -13,7 +13,6 @@ on:
   workflow_dispatch:
 
 env:
-  Ros-Distro: humble
   Registry: ghcr.io
   Repo: robast-gmbh/monorepo
   Project-Name: hardware_nodes
@@ -31,7 +30,6 @@ jobs:
       project-name: ${{ steps.set-project-name.outputs.project-name }}
       devel-tag: ${{ steps.set-devel-tag.outputs.devel-tag }}
       release-tag: ${{ steps.set-release-tag.outputs.release-tag }}
-      ros-distro: ${{ env.Ros-Distro }}
     steps:
     - id: set-registry
       run: echo "registry=${{ env.Registry }}" >> "$GITHUB_OUTPUT"
@@ -43,8 +41,6 @@ jobs:
       run: echo "devel-tag=${{ env.Devel-Tag }}" >> "$GITHUB_OUTPUT"
     - id: set-release-tag
       run: echo "release-tag=${{ env.Release-Tag }}" >> "$GITHUB_OUTPUT"
-    - id: set-ros-distro
-      run: echo "ros-distro=${{ env.Ros-Distro }}" >> "$GITHUB_OUTPUT"
 
   build-arm64-devel:
     needs: set_output_from_env
