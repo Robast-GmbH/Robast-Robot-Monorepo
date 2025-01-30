@@ -1,16 +1,24 @@
 cmake_minimum_required(VERSION 3.5)
 project(initial_pose_publisher)
 
+
+include_directories(include/initial_pose_publisher)
+
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 
-# Add the executable
-add_executable(initial_pose_publisher src/initial_pose_publisher.cpp)
+# Create a library from the source code
+add_library(initial_pose_publisher_lib STATIC src/initial_pose_publisher.cpp)
 
-# Link libraries
-ament_target_dependencies(initial_pose_publisher rclcpp geometry_msgs)
+# Link the library to rclcpp and other dependencies
+ament_target_dependencies(initial_pose_publisher_lib rclcpp geometry_msgs)
+
+# Create an executable for the node, which will link against the library
+add_executable(initial_pose_publisher src/main.cpp)
+target_link_libraries(initial_pose_publisher initial_pose_publisher_lib)
+
 
 # Install the executable
 install(TARGETS
@@ -40,6 +48,7 @@ if(BUILD_TESTING)
   target_link_libraries(test_initial_pose_publisher
       Catch2::Catch2
       Catch2::Catch2WithMain
+      initial_pose_publisher_lib
   )
 
   set(test_dependencies
