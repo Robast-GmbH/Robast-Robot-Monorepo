@@ -116,25 +116,40 @@ jobs:
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
 
+  set_output_from_env:
+    runs-on: ubuntu-latest
+    outputs:
+      registry: ${{ steps.set-registry.outputs.registry }}
+      repo: ${{ steps.set-repo.outputs.repo }}
+      project-name: ${{ steps.set-project-name.outputs.project-name }}
+      devel-tag: ${{ steps.set-devel-tag.outputs.devel-tag }}
+      release-tag: ${{ steps.set-release-tag.outputs.release-tag }}
+    steps:
+    - id: set-registry
+      run: echo "registry=${{ env.Registry }}" >> "$GITHUB_OUTPUT"
+    - id: set-repo
+      run: echo "repo=${{ env.Repo }}" >> "$GITHUB_OUTPUT"
+    - id: set-project-name
+      run: echo "project-name=${{ env.Project-Name }}" >> "$GITHUB_OUTPUT"
+    - id: set-devel-tag
+      run: echo "devel-tag=${{ env.Devel-Tag }}" >> "$GITHUB_OUTPUT"
+    - id: set-release-tag
+      run: echo "release-tag=${{ env.Release-Tag }}" >> "$GITHUB_OUTPUT"
+
   create-multi-platform-manifest-devel:
     needs: [build-arm64, build-amd64]
-    env:
-      Registry: my-docker-registry
-      Repo: my-repo
-      Project_Name: my-project
-      Release_Tag: v1.0.0
     uses: ./.github/workflows/create_multi_platform_manifest.yml
     with:
-      registry: ${{ env.Registry }}
-      repo: ${{ env.Repo }}
-      project-name: ${{ env.Project_Name }}
-      tag: ${{ env.Release_Tag }}
+      registry: ${{ needs.set_output_from_env.outputs.registry }}
+      repo: ${{ needs.set_output_from_env.outputs.repo }}
+      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
+      tag: ${{ needs.set_output_from_env.outputs.devel-tag }}
 
   create-multi-platform-manifest-release:
     needs: [build-arm64, build-amd64]
     uses: ./.github/workflows/create_multi_platform_manifest.yml
     with:
-      registry: ${{ env.Registry }}
-      repo: ${{ env.Repo }}
-      project-name: ${{ env.Project-Name }}
-      tag: ${{ env.Release-Tag }}
+      registry: ${{ needs.set_output_from_env.outputs.registry }}
+      repo: ${{ needs.set_output_from_env.outputs.repo }}
+      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
+      tag: ${{ needs.set_output_from_env.outputs.release-tag }}
