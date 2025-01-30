@@ -13,6 +13,7 @@ on:
         required: false
         type: string
       ros_distro:
+        default: 'humble'
         required: true
         type: string
       project_name:
