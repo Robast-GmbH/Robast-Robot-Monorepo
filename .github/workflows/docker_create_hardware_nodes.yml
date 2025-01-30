@@ -56,7 +56,7 @@ jobs:
       tag: ${{ needs.set_output_from_env.outputs.devel-tag }}
       target: ${{ needs.set_output_from_env.outputs.devel-tag }}
       ros-distro: ${{ needs.set_output_from_env.outputs.ros-distro }}
-      platform: linux/arm64/v8
+      platforms: linux/arm64/v8
       runner: self-hosted
 
   build-arm64-release:
@@ -69,7 +69,7 @@ jobs:
       tag: ${{ needs.set_output_from_env.outputs.release-tag }}
       target: ${{ needs.set_output_from_env.outputs.release-tag }}
       ros-distro: ${{ needs.set_output_from_env.outputs.ros-distro }}
-      platform: linux/arm64/v8
+      platforms: linux/arm64/v8
       runner: self-hosted
 
   build-amd64-devel:
@@ -82,7 +82,7 @@ jobs:
       tag: ${{ needs.set_output_from_env.outputs.devel-tag }}
       target: ${{ needs.set_output_from_env.outputs.devel-tag }}
       ros-distro: ${{ needs.set_output_from_env.outputs.ros-distro }}
-      platform: linux/amd64
+      platforms: linux/amd64
       runner: ubuntu-latest
 
   build-amd64-release:
@@ -95,7 +95,7 @@ jobs:
       tag: ${{ needs.set_output_from_env.outputs.release-tag }}
       target: ${{ needs.set_output_from_env.outputs.release-tag }}
       ros-distro: ${{ needs.set_output_from_env.outputs.ros-distro }}
-      platform: linux/amd64
+      platforms: linux/amd64
       runner: ubuntu-latest
 
   create-multi-platform-manifest-devel:
