@@ -18,151 +18,140 @@ env:
   Registry: ghcr.io
   Repo: robast-gmbh/monorepo
   Project-Name: statemachine
+  Release-Tag: release
+  Devel-Tag: devel
 
 jobs:
   build-arm64:
     runs-on: self-hosted
     steps:
-    - name: Checkout repository and submodules
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 2
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
     
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.Registry }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.Registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Configure Docker Buildx
-      uses: docker/setup-buildx-action@v3 
+      - name: Configure Docker Buildx
+        uses: docker/setup-buildx-action@v3 
     
-    - name: Build ${{ env.Project-Name }} devel docker
-      uses: docker/build-push-action@v6
-      with:
-        context: src/ros2/${{ env.Project-Name }}/
-        target: devel
-        push: true
-        file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel-arm64
+      - name: Build ${{ env.Project-Name }} ${{ env.Devel-Tag }} docker
+        uses: docker/build-push-action@v6
+        with:
+          context: src/ros2/${{ env.Project-Name }}/
+          target: devel
+          push: true
+          file: src/ros2/${{ env.Project-Name }}/Dockerfile
+          tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Devel-Tag }}-arm64
 
-    - name: Cache Docker layers
-      uses: actions/cache@v4
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
-    - name: Build ${{ env.Project-Name }} release docker
-      uses: docker/build-push-action@v6
-      with:
-        context: src/ros2/${{ env.Project-Name }}/
-        target: release
-        platforms: linux/arm64/v8
-        push: true
-        file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release-arm64
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache
+      - name: Build ${{ env.Project-Name }} ${{ env.Release-Tag }} docker
+        uses: docker/build-push-action@v6
+        with:
+          context: src/ros2/${{ env.Project-Name }}/
+          target: release
+          platforms: linux/arm64/v8
+          push: true
+          file: src/ros2/${{ env.Project-Name }}/Dockerfile
+          tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Release-Tag }}-arm64
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
 
   build-amd64:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository and submodules
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 2
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
     
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.Registry }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.Registry }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Configure Docker Buildx
-      uses: docker/setup-buildx-action@v3 
+      - name: Configure Docker Buildx
+        uses: docker/setup-buildx-action@v3 
     
-    - name: Build ${{ env.Project-Name }} devel docker
-      uses: docker/build-push-action@v6
-      with:
-        context: src/ros2/${{ env.Project-Name }}/
-        target: devel
-        push: true
-        file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel-amd64
+      - name: Build ${{ env.Project-Name }} ${{ env.Devel-Tag }} docker
+        uses: docker/build-push-action@v6
+        with:
+          context: src/ros2/${{ env.Project-Name }}/
+          target: devel
+          push: true
+          file: src/ros2/${{ env.Project-Name }}/Dockerfile
+          tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Devel-Tag }}-amd64
 
-    - name: Cache Docker layers
-      uses: actions/cache@v4
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
-    - name: Build ${{ env.Project-Name }} release docker
-      uses: docker/build-push-action@v6
-      with:
-        context: src/ros2/${{ env.Project-Name }}/
-        target: release
-        platforms: linux/amd64
-        push: true
-        file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release-amd64
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache
+      - name: Build ${{ env.Project-Name }} ${{ env.Release-Tag }} docker
+        uses: docker/build-push-action@v6
+        with:
+          context: src/ros2/${{ env.Project-Name }}/
+          target: release
+          platforms: linux/amd64
+          push: true
+          file: src/ros2/${{ env.Project-Name }}/Dockerfile
+          tags: ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:${{ env.Release-Tag }}-amd64
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
 
-  create-multi-platform-manifest:
+  # Allowed expressions in the with section are `github` and `needs`.
+  # Therefore we need to take the env vars and set them as outputs to access them with `needs`.
+  set_output_from_env:
     runs-on: ubuntu-latest
-    needs: [build-arm64, build-amd64]
+    outputs:
+      registry: ${{ steps.set-registry.outputs.registry }}
+      repo: ${{ steps.set-repo.outputs.repo }}
+      project-name: ${{ steps.set-project-name.outputs.project-name }}
+      devel-tag: ${{ steps.set-devel-tag.outputs.devel-tag }}
+      release-tag: ${{ steps.set-release-tag.outputs.release-tag }}
     steps:
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ env.Registry }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - id: set-registry
+        run: echo "registry=${{ env.Registry }}" >> "$GITHUB_OUTPUT"
+      - id: set-repo
+        run: echo "repo=${{ env.Repo }}" >> "$GITHUB_OUTPUT"
+      - id: set-project-name
+        run: echo "project-name=${{ env.Project-Name }}" >> "$GITHUB_OUTPUT"
+      - id: set-devel-tag
+        run: echo "devel-tag=${{ env.Devel-Tag }}" >> "$GITHUB_OUTPUT"
+      - id: set-release-tag
+        run: echo "release-tag=${{ env.Release-Tag }}" >> "$GITHUB_OUTPUT"
 
-    - name: Install jq
-      run: sudo apt-get update && sudo apt-get install -y jq
+  create-multi-platform-manifest-devel:
+    needs: [build-arm64, build-amd64, set_output_from_env]
+    uses: ./.github/workflows/create_multi_platform_manifest.yml
+    with:
+      registry: ${{ needs.set_output_from_env.outputs.registry }}
+      repo: ${{ needs.set_output_from_env.outputs.repo }}
+      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
+      tag: ${{ needs.set_output_from_env.outputs.devel-tag }}
 
-    - name: Get digest for arm64 release image
-      id: digest-arm64-release
-      run: |
-        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release-arm64 | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
-        echo "::set-output name=digest::$digest"
-
-    - name: Get digest for amd64 release image
-      id: digest-amd64-release
-      run: |
-        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release-amd64 | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
-        echo "::set-output name=digest::$digest"
-
-    - name: Get digest for arm64 devel image
-      id: digest-arm64-devel
-      run: |
-        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel-arm64 | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
-        echo "::set-output name=digest::$digest"
-
-    - name: Get digest for amd64 devel image
-      id: digest-amd64-devel
-      run: |
-        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel-amd64 | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
-        echo "::set-output name=digest::$digest"
-
-    - name: Create and push multi-platform manifest for release image
-      run: |
-        docker manifest create ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release \
-          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-arm64-release.outputs.digest }} \
-          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-amd64-release.outputs.digest }}
-        docker manifest push ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release
-
-    - name: Create and push multi-platform manifest for devel image
-      run: |
-        docker manifest create ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel \
-          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-arm64-devel.outputs.digest }} \
-          --amend ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}@${{ steps.digest-amd64-devel.outputs.digest }}
-        docker manifest push ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel
+  create-multi-platform-manifest-release:
+    needs: [build-arm64, build-amd64, set_output_from_env]
+    uses: ./.github/workflows/create_multi_platform_manifest.yml
+    with:
+      registry: ${{ needs.set_output_from_env.outputs.registry }}
+      repo: ${{ needs.set_output_from_env.outputs.repo }}
+      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
+      tag: ${{ needs.set_output_from_env.outputs.release-tag }}

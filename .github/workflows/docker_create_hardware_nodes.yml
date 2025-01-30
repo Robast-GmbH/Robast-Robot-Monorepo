@@ -116,6 +116,8 @@ jobs:
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
 
+  # Allowed expressions in the with section are `github` and `needs`.
+  # Therefore we need to take the env vars and set them as outputs to access them with `needs`.
   set_output_from_env:
     runs-on: ubuntu-latest
     outputs:
