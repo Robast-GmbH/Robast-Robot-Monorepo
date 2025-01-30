@@ -1,7 +1,8 @@
-#include <catch2/catch_all.hpp>
 #include "bt_plugins/utils/calculate_direction.hpp"
-#include <geometry_msgs/msg/quaternion.hpp>
+
+#include <catch2/catch_test_macros.hpp>
 #include <geometry_msgs/msg/pose.hpp>
+#include <geometry_msgs/msg/quaternion.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 TEST_CASE("getYawFromQuaternion returns correct yaw angle", "[utils]")

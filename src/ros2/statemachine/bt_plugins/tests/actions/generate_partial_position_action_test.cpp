@@ -1,6 +1,6 @@
 #include "bt_plugins/action/generate_partial_position_action.hpp"
 
-#include <catch2/catch_all.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include "behaviortree_cpp/blackboard.h"
 #include "behaviortree_cpp/tree_node.h"
@@ -23,7 +23,7 @@ namespace test
       }
 
       const std::vector<std::string> plugins = {
-          "generate_partial_position_action_node",
+        "generate_partial_position_action_node",
       };
       auto node_generate_position = std::make_shared<rclcpp::Node>("test_generate_position");
       auto blackboard = BT::Blackboard::create();
@@ -37,7 +37,7 @@ namespace test
       blackboard->set("tray_count", static_cast<uint8_t>(4));
 
       std::string generate_position_tree_xml =
-          R"(
+        R"(
           <root BTCPP_format="4" >
               <BehaviorTree ID="MainTree">
                   <GeneratePartialPosition drawer_address="{drawer_address}"

@@ -1,4 +1,4 @@
-#include <catch2/catch_all.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include "bt_plugins/behavior_tree_engine.hpp"
 #include "behaviortree_cpp/tree_node.h"
 #include "behaviortree_cpp/blackboard.h"
