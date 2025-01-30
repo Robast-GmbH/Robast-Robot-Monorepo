@@ -137,7 +137,7 @@ jobs:
       run: echo "release-tag=${{ env.Release-Tag }}" >> "$GITHUB_OUTPUT"
 
   create-multi-platform-manifest-devel:
-    needs: [build-arm64, build-amd64]
+    needs: [build-arm64, build-amd64, set_output_from_env]
     uses: ./.github/workflows/create_multi_platform_manifest.yml
     with:
       registry: ${{ needs.set_output_from_env.outputs.registry }}
@@ -146,7 +146,7 @@ jobs:
       tag: ${{ needs.set_output_from_env.outputs.devel-tag }}
 
   create-multi-platform-manifest-release:
-    needs: [build-arm64, build-amd64]
+    needs: [build-arm64, build-amd64, set_output_from_env]
     uses: ./.github/workflows/create_multi_platform_manifest.yml
     with:
       registry: ${{ needs.set_output_from_env.outputs.registry }}
