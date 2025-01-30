@@ -12,11 +12,11 @@ on:
         default: 'robast-gmbh/monorepo'
         required: false
         type: string
-      ros_distro:
+      ros-distro:
         default: 'humble'
         required: true
         type: string
-      project_name:
+      project-name:
         required: true
         type: string
       tag:
