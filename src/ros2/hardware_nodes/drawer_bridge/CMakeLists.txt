@@ -96,7 +96,9 @@ if(BUILD_TESTING)
 
   install(TARGETS
     ${library_drawer_bridge_test}
+    ARCHIVE DESTINATION lib/${PROJECT_NAME}
     LIBRARY DESTINATION lib/${PROJECT_NAME}
+    RUNTIME DESTINATION bin/${PROJECT_NAME}
   )
 
   install(TARGETS
