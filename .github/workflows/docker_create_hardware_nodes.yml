@@ -53,9 +53,8 @@ jobs:
       registry: ${{ needs.set_output_from_env.outputs.registry }}
       repo: ${{ needs.set_output_from_env.outputs.repo }}
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
-      tag: ${{ needs.set_output_from_env.outputs.devel-tag }}
+      tag: ${{ needs.set_output_from_env.outputs.devel-tag }}-arm64
       target: ${{ needs.set_output_from_env.outputs.devel-tag }}
-      ros-distro: ${{ needs.set_output_from_env.outputs.ros-distro }}
       platforms: linux/arm64/v8
       runner: self-hosted
 
@@ -66,9 +65,8 @@ jobs:
       registry: ${{ needs.set_output_from_env.outputs.registry }}
       repo: ${{ needs.set_output_from_env.outputs.repo }}
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
-      tag: ${{ needs.set_output_from_env.outputs.release-tag }}
+      tag: ${{ needs.set_output_from_env.outputs.release-tag }}-arm64
       target: ${{ needs.set_output_from_env.outputs.release-tag }}
-      ros-distro: ${{ needs.set_output_from_env.outputs.ros-distro }}
       platforms: linux/arm64/v8
       runner: self-hosted
 
@@ -79,9 +77,8 @@ jobs:
       registry: ${{ needs.set_output_from_env.outputs.registry }}
       repo: ${{ needs.set_output_from_env.outputs.repo }}
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
-      tag: ${{ needs.set_output_from_env.outputs.devel-tag }}
+      tag: ${{ needs.set_output_from_env.outputs.devel-tag }}-amd64
       target: ${{ needs.set_output_from_env.outputs.devel-tag }}
-      ros-distro: ${{ needs.set_output_from_env.outputs.ros-distro }}
       platforms: linux/amd64
       runner: ubuntu-latest
 
@@ -92,9 +89,8 @@ jobs:
       registry: ${{ needs.set_output_from_env.outputs.registry }}
       repo: ${{ needs.set_output_from_env.outputs.repo }}
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
-      tag: ${{ needs.set_output_from_env.outputs.release-tag }}
+      tag: ${{ needs.set_output_from_env.outputs.release-tag }}-amd64
       target: ${{ needs.set_output_from_env.outputs.release-tag }}
-      ros-distro: ${{ needs.set_output_from_env.outputs.ros-distro }}
       platforms: linux/amd64
       runner: ubuntu-latest
 

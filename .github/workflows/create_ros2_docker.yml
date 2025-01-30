@@ -12,10 +12,6 @@ on:
         default: 'robast-gmbh/monorepo'
         required: false
         type: string
-      ros-distro:
-        default: 'humble'
-        required: true
-        type: string
       project-name:
         required: true
         type: string
@@ -54,15 +50,15 @@ jobs:
     - name: configures Docker Buildx to create a builder instance for running the image build.
       uses: docker/setup-buildx-action@v3
 
-    - name:  Build ${{ inputs.project_name}} ${{inputs.tag}} docker
+    - name:  Build ${{ inputs.project-name}} ${{inputs.tag}} docker
       uses: docker/build-push-action@v6
       with:
-        context: src/ros2/${{ inputs.project_name }}/
+        context: src/ros2/${{ inputs.project-name }}/
         target: ${{ inputs.target }}
         platforms: ${{ inputs.platforms }}
         push: true
-        file: src/ros2/${{ inputs.project_name }}/Dockerfile
+        file: src/ros2/${{ inputs.project-name }}/Dockerfile
         build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
-        tags: ${{ inputs.registry}}/${{ inputs.repo}}/${{ inputs.project_name }}:${{ inputs.tag }}-${{inputs.ros_distro}}
+        tags: ${{ inputs.registry}}/${{ inputs.repo}}/${{ inputs.project-name }}:${{ inputs.tag }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
