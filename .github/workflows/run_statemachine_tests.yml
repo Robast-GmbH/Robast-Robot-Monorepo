@@ -47,4 +47,5 @@ jobs:
           sudo apt install lcov -y &&
           colcon build --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=\"${CMAKE_CXX_FLAGS} --coverage\" -DCMAKE_C_FLAGS=\"${CMAKE_C_FLAGS} --coverage\" -Wall -Wextra -Wpedantic &&
           colcon test --packages-skip behaviourtree_cpp &&
-          colcon test-result --all"
+          colcon test-result --all" &&
+          docker rmi ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel
