@@ -116,16 +116,21 @@ jobs:
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
 
-  create-multi-platform-manifest-release:
+  create-multi-platform-manifest-devel:
     needs: [build-arm64, build-amd64]
+    env:
+      Registry: my-docker-registry
+      Repo: my-repo
+      Project_Name: my-project
+      Release_Tag: v1.0.0
     uses: ./.github/workflows/create_multi_platform_manifest.yml
     with:
       registry: ${{ env.Registry }}
       repo: ${{ env.Repo }}
-      project-name: ${{ env.Project-Name }}
-      tag: ${{ env.Devel-Tag }}
+      project-name: ${{ env.Project_Name }}
+      tag: ${{ env.Release_Tag }}
 
-  create-multi-platform-manifest-devel:
+  create-multi-platform-manifest-release:
     needs: [build-arm64, build-amd64]
     uses: ./.github/workflows/create_multi_platform_manifest.yml
     with:
