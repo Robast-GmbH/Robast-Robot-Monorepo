@@ -10,7 +10,10 @@ on:
     paths:
       - src/ros2/statemachine/Dockerfile
       - src/ros2/statemachine/**
-      - src/ros2/communication_interfaces/**
+  pull_request:
+    paths:
+      - src/ros2/statemachine/Dockerfile
+      - src/ros2/statemachine/**
   workflow_dispatch:
 
 env:
@@ -31,6 +34,7 @@ jobs:
       project-name: ${{ steps.set-project-name.outputs.project-name }}
       devel-tag: ${{ steps.set-devel-tag.outputs.devel-tag }}
       release-tag: ${{ steps.set-release-tag.outputs.release-tag }}
+      branch-tag: ${{ steps.set-branch-tag.outputs.branch-tag }}
     steps:
       - id: set-registry
         run: echo "registry=${{ env.Registry }}" >> "$GITHUB_OUTPUT"
@@ -42,6 +46,15 @@ jobs:
         run: echo "devel-tag=${{ env.Devel-Tag }}" >> "$GITHUB_OUTPUT"
       - id: set-release-tag
         run: echo "release-tag=${{ env.Release-Tag }}" >> "$GITHUB_OUTPUT"
+      - id: set-branch-tag
+        run: |
+          if ([ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]) && [ "${{ github.ref_name }}" = "main" ]; then
+            branch_tag=""
+          else
+            branch_name="${{ github.event.pull_request.head.ref || 'none' }}"
+            branch_tag="-RE-$(echo $branch_name | grep -oP '\d{1,5}')"
+          fi
+          echo "branch-tag=$branch_tag" >> "$GITHUB_OUTPUT"        
 
   build-arm64-devel:
     needs: set_output_from_env
@@ -51,6 +64,7 @@ jobs:
       repo: ${{ needs.set_output_from_env.outputs.repo }}
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
       tag: ${{ needs.set_output_from_env.outputs.devel-tag }}-arm64
+      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
       target: ${{ needs.set_output_from_env.outputs.devel-tag }}
       platforms: linux/arm64/v8
       runner: self-hosted
@@ -63,6 +77,7 @@ jobs:
       repo: ${{ needs.set_output_from_env.outputs.repo }}
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
       tag: ${{ needs.set_output_from_env.outputs.release-tag }}-arm64
+      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
       target: ${{ needs.set_output_from_env.outputs.release-tag }}
       platforms: linux/arm64/v8
       runner: self-hosted
@@ -75,6 +90,7 @@ jobs:
       repo: ${{ needs.set_output_from_env.outputs.repo }}
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
       tag: ${{ needs.set_output_from_env.outputs.devel-tag }}-amd64
+      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
       target: ${{ needs.set_output_from_env.outputs.devel-tag }}
       platforms: linux/amd64
       runner: ubuntu-latest
@@ -86,6 +102,7 @@ jobs:
       registry: ${{ needs.set_output_from_env.outputs.registry }}
       repo: ${{ needs.set_output_from_env.outputs.repo }}
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
+      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
       tag: ${{ needs.set_output_from_env.outputs.release-tag }}-amd64
       target: ${{ needs.set_output_from_env.outputs.release-tag }}
       platforms: linux/amd64
@@ -99,6 +116,7 @@ jobs:
       repo: ${{ needs.set_output_from_env.outputs.repo }}
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
       tag: ${{ needs.set_output_from_env.outputs.devel-tag }}
+      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
 
   create-multi-platform-manifest-release:
     needs: [set_output_from_env, build-arm64-release, build-amd64-release]
@@ -108,3 +126,4 @@ jobs:
       repo: ${{ needs.set_output_from_env.outputs.repo }}
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
       tag: ${{ needs.set_output_from_env.outputs.release-tag }}
+      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
