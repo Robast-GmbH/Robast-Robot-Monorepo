@@ -24,6 +24,17 @@ jobs:
       with:
           submodules: recursive
 
+    - name: Set branch tag
+      id: set-branch-tag
+      run: |
+        if ([ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]) && [ "${{ github.ref_name }}" = "main" ]; then
+          branch_tag=""
+        else
+          branch_name="${{ github.event.pull_request.head.ref || 'none' }}"
+          branch_tag="-RE-$(echo $branch_name | grep -oP '\d{1,5}')"
+        fi
+        echo "branch-tag=$branch_tag" >> "$GITHUB_ENV"  
+
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
@@ -34,10 +45,10 @@ jobs:
     - name: Generate coverage report
       working-directory: src/ros2/${{ env.Project-Name }}
       run: >
-          docker pull ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel &&
+          docker pull ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel${{ env.branch-tag }} &&
           docker run -v $(pwd):/workspace/src/${{ env.Project-Name }}
           -v $(pwd)/../dds_configs:/workspace/dds_configs
-          --rm --name ${{ env.Project-Name }}_container ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel
+          --rm --name ${{ env.Project-Name }}_container ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel${{ env.branch-tag }}
           /bin/sh -c "cd /workspace/ &&
           sudo apt-get update &&
           sudo apt-get upgrade -y &&
@@ -48,4 +59,4 @@ jobs:
           colcon build --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=\"${CMAKE_CXX_FLAGS} --coverage\" -DCMAKE_C_FLAGS=\"${CMAKE_C_FLAGS} --coverage\" -Wall -Wextra -Wpedantic &&
           colcon test --packages-skip behaviourtree_cpp &&
           colcon test-result --all" &&
-          docker rmi ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel
+          docker rmi ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:devel${{ env.branch-tag }}
