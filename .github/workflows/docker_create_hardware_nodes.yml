@@ -116,6 +116,7 @@ jobs:
       repo: ${{ needs.set_output_from_env.outputs.repo }}
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
       tag: ${{ needs.set_output_from_env.outputs.devel-tag }}
+      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
 
   create-multi-platform-manifest-release:
     needs: [set_output_from_env, build-arm64-release, build-amd64-release]
@@ -125,3 +126,4 @@ jobs:
       repo: ${{ needs.set_output_from_env.outputs.repo }}
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
       tag: ${{ needs.set_output_from_env.outputs.release-tag }}
+      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
