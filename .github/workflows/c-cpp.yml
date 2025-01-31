@@ -32,3 +32,20 @@ jobs:
           echo "Done"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  remove-nav-devel-branch-image:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: navigation
+      tag: devel
+
+  remove-nav-release-branch-image:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: navigation
+      tag: release
+
+        
+
+
+    
