@@ -10,6 +10,10 @@ on:
     paths:
       - src/ros2/hardware_nodes/Dockerfile
       - src/ros2/hardware_nodes/**
+  pull_request:
+    paths:
+      - src/ros2/hardware_nodes/Dockerfile
+      - src/ros2/hardware_nodes/**      
   workflow_dispatch:
 
 env:
@@ -30,6 +34,7 @@ jobs:
       project-name: ${{ steps.set-project-name.outputs.project-name }}
       devel-tag: ${{ steps.set-devel-tag.outputs.devel-tag }}
       release-tag: ${{ steps.set-release-tag.outputs.release-tag }}
+      branch-tag: ${{ steps.set-branch-tag.outputs.branch-tag }}
     steps:
     - id: set-registry
       run: echo "registry=${{ env.Registry }}" >> "$GITHUB_OUTPUT"
@@ -41,6 +46,19 @@ jobs:
       run: echo "devel-tag=${{ env.Devel-Tag }}" >> "$GITHUB_OUTPUT"
     - id: set-release-tag
       run: echo "release-tag=${{ env.Release-Tag }}" >> "$GITHUB_OUTPUT"
+    - id: set-branch-tag
+      run: |
+        branch_name="${{ github.event.pull_request.head.ref || 'none' }}"
+        branch_tag="RE-$(echo $branch_name | grep -oP '\d{1,5}')"
+        echo "branch-tag=$branch_tag" >> "$GITHUB_OUTPUT"
+
+  print-branch-tag:
+    needs: set_output_from_env
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Branch Tag
+        run: |
+          echo "Branch Tag: ${{ needs.set_output_from_env.outputs.branch-tag }}"
 
   build-arm64-devel:
     needs: set_output_from_env
