@@ -47,7 +47,16 @@ jobs:
     
         echo "branch-tag=$branch_tag" >> "$GITHUB_ENV"
 
-    - name: Remove image from ghcr.io
+    - name: Print image name to remove
       run: |
-        echo "Removing image ghcr.io/robast-gmbh/monorepo/${{ inputs.project-name }}:${{ inputs.tag }}${{ steps.set-branch-tag.outputs.branch-tag }}"
-        # TODO: Implement the removal of the image from the GitHub Container Registry
+        echo "Removing image ghcr.io/robast-gmbh/monorepo/${{ inputs.project-name }}:${{ inputs.tag }}${{ env.branch-tag }}"
+
+    - name: Prune branch image ${{ env.branch-tag }} from ghcr.io
+      uses: vlaurin/action-ghcr-prune@v0.6.0
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        organization: robast-gmbh
+        container: monorepo/${{ inputs.project-name }}
+        dry-run: true # Dry-run first, then change to `false`
+        prune-tags-regexes: |
+          ${{ env.branch-tag }}
