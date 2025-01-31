@@ -13,10 +13,16 @@ on:
         required: false
         type: string
       project-name:
+        description: 'The project name to push the image to'
         required: true
         type: string
       tag:
+        description: 'The tag to push the image to'
         required: true
+        type: string
+      branch-tag:
+        description: 'The optional branch tag to push the image to'
+        required: false
         type: string
       target:
         default: "devel"
@@ -59,6 +65,6 @@ jobs:
         push: true
         file: src/ros2/${{ inputs.project-name }}/Dockerfile
         build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
-        tags: ${{ inputs.registry}}/${{ inputs.repo}}/${{ inputs.project-name }}:${{ inputs.tag }}
+        tags: ${{ inputs.registry}}/${{ inputs.repo}}/${{ inputs.project-name }}:${{ inputs.tag }}${{ inputs.branch-tag }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache

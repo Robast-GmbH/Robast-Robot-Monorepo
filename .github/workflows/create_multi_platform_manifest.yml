@@ -21,6 +21,10 @@ on:
         default: 'humble-release'
         required: true
         type: string
+      branch-tag:
+        description: 'The optional branch tag to push the image to'
+        required: false
+        type: string
 
 jobs:
   create-manifest:
@@ -42,19 +46,19 @@ jobs:
     - name: Get digest for arm64 image
       id: digest-arm64
       run: |
-        digest=$(docker buildx imagetools inspect --raw ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}:${{ inputs.tag }}-arm64 | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
+        digest=$(docker buildx imagetools inspect --raw ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}:${{ inputs.tag }}-arm64${{ inputs.branch-tag }} | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
         echo "::set-output name=digest::$digest"
 
     - name: Get digest for amd64 image
       id: digest-amd64
       run: |
-        digest=$(docker buildx imagetools inspect --raw ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}:${{ inputs.tag }}-amd64 | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
+        digest=$(docker buildx imagetools inspect --raw ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}:${{ inputs.tag }}-amd64${{ inputs.branch-tag }} | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
         echo "::set-output name=digest::$digest"            
 
     - name: Create manifest
       run: |
-        docker manifest create ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}:${{ inputs.tag }} \
+        docker manifest create ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}:${{ inputs.tag }}${{ inputs.branch-tag }} \
         --amend ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}@${{ steps.digest-arm64.outputs.digest }} \
         --amend ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}@${{ steps.digest-amd64.outputs.digest }}
-        docker manifest push ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}:${{ inputs.tag }}
+        docker manifest push ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}:${{ inputs.tag }}${{ inputs.branch-tag }}
 
