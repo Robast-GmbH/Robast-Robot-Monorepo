@@ -26,16 +26,26 @@ jobs:
     - name: Set branch tag
       id: set-branch-tag
       run: |
-        if ([ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]) && [ "${{ github.ref_name }}" = "main" ]; then
+        get_branch_name() {
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "${{ github.head_ref || 'none' }}"
+          else
+            echo "${{ github.ref_name || 'none' }}"
+          fi
+        }
+    
+        branch_name=$(get_branch_name)
+    
+        if ([ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]) && [ "$branch_name" = "main" ]; then
           branch_tag=""
         else
-          branch_name="${{ github.ref_name || 'none' }}"
           if [[ $branch_name =~ [0-9] ]]; then
             branch_tag="-RE-$(echo $branch_name | grep -oP '\d{1,5}')"
           else
             branch_tag="-$branch_name"
           fi
         fi
+    
         echo "branch-tag=$branch_tag" >> "$GITHUB_ENV"
           
     - name: Login to GitHub Container Registry
