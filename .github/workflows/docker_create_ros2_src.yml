@@ -58,8 +58,12 @@ jobs:
           if ([ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]) && [ "${{ github.ref_name }}" = "main" ]; then
             branch_tag=""
           else
-            branch_name="${{ github.event.pull_request.head.ref || 'none' }}"
-            branch_tag="-RE-$(echo $branch_name | grep -oP '\d{1,5}')"
+            branch_name="${{ github.ref_name || 'none' }}"
+            if [[ $branch_name =~ [0-9] ]]; then
+              branch_tag="-RE-$(echo $branch_name | grep -oP '\d{1,5}')"
+            else
+              branch_tag="-$branch_name"
+            fi
           fi
           echo "branch-tag=$branch_tag" >> "$GITHUB_OUTPUT"
 
