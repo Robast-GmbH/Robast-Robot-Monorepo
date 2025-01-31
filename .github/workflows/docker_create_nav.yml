@@ -9,48 +9,57 @@ on:
         - main
     paths:
         - src/ros2/navigation/Dockerfile
-        - src/ros2/navigation/nav_brinup/config/*
-        - src/ros2/navigation/nav_brinup/launch/*
+        - src/ros2/navigation/**
+        - src/ros2/dds_configs/*
+  pull_request:
+    paths:
+        - src/ros2/navigation/Dockerfile
+        - src/ros2/navigation/**
         - src/ros2/dds_configs/*
   workflow_dispatch:
 
+env:
+  Project-Name: navigation
+
 jobs:
-  build:
+  set_output_from_env:
     runs-on: ubuntu-latest
-    env:
-      Ros-Distro: humble
-      Project-Name: navigation
-
+    outputs:
+      project-name: ${{ steps.set-project-name.outputs.project-name }}
+      branch-tag: ${{ steps.set-branch-tag.outputs.branch-tag }}
     steps:
-    - name: Checkout repository and submodules
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 2
-    
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+    - id: set-project-name
+      run: echo "project-name=${{ env.Project-Name }}" >> "$GITHUB_OUTPUT"
+    - id: set-branch-tag
+      run: |
+        if ([ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]) && [ "${{ github.ref_name }}" = "main" ]; then
+          branch_tag=""
+        else
+          branch_name="${{ github.ref_name || 'none' }}"
+          if [[ $branch_name =~ [0-9] ]]; then
+            branch_tag="-RE-$(echo $branch_name | grep -oP '\d{1,5}')"
+          else
+            branch_tag="-$branch_name"
+          fi
+        fi
+        echo "branch-tag=$branch_tag" >> "$GITHUB_OUTPUT"
 
-    - name: configures Docker Buildx to create a builder instance for running the image build.
-      uses: docker/setup-buildx-action@v3 
-    
-    - name: Build ${{ env.Project-Name }} devel docker
-      uses: docker/build-push-action@v6
-      with:
-        context: src/ros2/${{ env.Project-Name }}/
-        target: devel
-        push: true
-        file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
+  create-nav-devel:
+    needs: set_output_from_env
+    uses: ./.github/workflows/create_ros2_docker.yml
+    with:
+      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
+      tag: devel
+      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
+      context: src/ros2/${{ needs.set_output_from_env.outputs.project-name }}/
+      file: src/ros2/${{ needs.set_output_from_env.outputs.project-name }}/Dockerfile
 
-    - name: Build ${{ env.Project-Name }} release docker
-      uses: docker/build-push-action@v6
-      with:
-        context: src/ros2/${{ env.Project-Name }}/
-        target: release
-        push: true
-        file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release
+  create-nav-release:
+    needs: set_output_from_env
+    uses: ./.github/workflows/create_ros2_docker.yml
+    with:
+      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
+      tag: release
+      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
+      context: src/ros2/${{ needs.set_output_from_env.outputs.project-name }}/
+      file: src/ros2/${{ needs.set_output_from_env.outputs.project-name }}/Dockerfile
