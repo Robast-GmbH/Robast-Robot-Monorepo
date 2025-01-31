@@ -55,6 +55,8 @@ jobs:
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
       tag: ${{ needs.set_output_from_env.outputs.devel-tag }}
       branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
+      context: src/ros2/${{ needs.set_output_from_env.outputs.project-name }}
+      file: src/ros2/${{ needs.set_output_from_env.outputs.project-name }}/Dockerfile
       target: ${{ needs.set_output_from_env.outputs.devel-tag }}
 
 
@@ -65,4 +67,6 @@ jobs:
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
       tag: ${{ needs.set_output_from_env.outputs.release-tag }}
       branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
+      context: src/ros2/${{ needs.set_output_from_env.outputs.project-name }}
+      file: src/ros2/${{ needs.set_output_from_env.outputs.project-name }}/Dockerfile
       target: ${{ needs.set_output_from_env.outputs.release-tag }}

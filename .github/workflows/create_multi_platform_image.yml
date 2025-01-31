@@ -14,6 +14,14 @@ on:
           description: 'The optional branch tag to push the image to'
           required: false
           type: string
+        context:
+          description: 'The context to build the image from'
+          required: true
+          type: string
+        file:
+          description: 'The Dockerfile to build the image from'
+          required: true
+          type: string
         target:
           default: "devel"
           required: false
@@ -26,6 +34,8 @@ jobs:
       project-name: ${{ inputs.project-name }}
       tag: ${{inputs.tag }}-arm64
       branch-tag: ${{ inputs.branch-tag }}
+      context: ${{ inputs.context }}
+      file: ${{ inputs.file }}
       target: ${{ inputs.target }}
       platforms: linux/arm64/v8
       runner: self-hosted
@@ -36,6 +46,8 @@ jobs:
       project-name: ${{ inputs.project-name }}
       tag: ${{inputs.tag }}-amd64
       branch-tag: ${{ inputs.branch-tag }}
+      context: ${{ inputs.context }}
+      file: ${{ inputs.file }}
       target: ${{ inputs.target }}
       platforms: linux/amd64
       runner: ubuntu-latest

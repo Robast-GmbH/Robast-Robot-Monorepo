@@ -14,6 +14,14 @@ on:
         description: 'The optional branch tag to push the image to'
         required: false
         type: string
+      context:
+        description: 'The context to build the image from'
+        required: true
+        type: string
+      file:
+        description: 'The Dockerfile to build the image from'
+        required: true
+        type: string
       target:
         default: "devel"
         required: false
@@ -53,11 +61,11 @@ jobs:
     - name:  Build ${{ inputs.project-name}} ${{inputs.tag}} docker
       uses: docker/build-push-action@v6
       with:
-        context: src/ros2/${{ inputs.project-name }}/
+        context: ${{ inputs.context }}
         target: ${{ inputs.target }}
         platforms: ${{ inputs.platforms }}
         push: true
-        file: src/ros2/${{ inputs.project-name }}/Dockerfile
+        file: ${{ inputs.file }}
         build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
         tags: ${{ env.Registry}}/${{ env.Repo}}/${{ inputs.project-name }}:${{ inputs.tag }}${{ inputs.branch-tag }}
         cache-from: type=local,src=/tmp/.buildx-cache
