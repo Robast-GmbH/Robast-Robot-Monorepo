@@ -1,0 +1,49 @@
+name: Create Multi-Platform Image
+on:
+  workflow_call:
+    inputs:
+        project-name:
+          description: 'The project name to push the image to'
+          required: true
+          type: string
+        tag:
+          description: 'The tag to push the image to'
+          required: true
+          type: string
+        branch-tag:
+          description: 'The optional branch tag to push the image to'
+          required: false
+          type: string
+        target:
+          default: "devel"
+          required: false
+          type: string
+
+jobs:
+  create-arm64-image:
+    uses: ./.github/workflows/create_ros2_docker.yml
+    with:
+      project-name: ${{ inputs.project-name }}
+      tag: ${{inputs.tag }}-arm64
+      branch-tag: ${{ inputs.branch-tag }}
+      target: ${{ inputs.target }}
+      platforms: linux/arm64/v8
+      runner: self-hosted
+
+  create-amd64-image:
+    uses: ./.github/workflows/create_ros2_docker.yml
+    with:
+      project-name: ${{ inputs.project-name }}
+      tag: ${{inputs.tag }}-amd64
+      branch-tag: ${{ inputs.branch-tag }}
+      target: ${{ inputs.target }}
+      platforms: linux/amd64
+      runner: ubuntu-latest
+
+  create-multi-platform-manifest-devel:
+    needs: [create-arm64-image, create-amd64-image]
+    uses: ./.github/workflows/create_multi_platform_manifest.yml
+    with:
+      project-name: ${{ inputs.project-name }}
+      tag: ${{inputs.tag }}
+      branch-tag: ${{ inputs.branch-tag }}

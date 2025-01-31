@@ -2,16 +2,6 @@ name: Create Multi-Platform Manifest
 on:
   workflow_call:
     inputs:
-      registry:
-        description: 'The registry to push the image to'
-        default: 'ghcr.io'
-        required: true
-        type: string
-      repo:
-        description: 'The repository to push the image to'
-        default: 'robast-gmbh/monorepo'
-        required: true
-        type: string
       project-name:
         description: 'The project name to push the image to'
         required: true
@@ -26,6 +16,10 @@ on:
         required: false
         type: string
 
+env:
+  Registry: ghcr.io
+  Repo: robast-gmbh/monorepo        
+
 jobs:
   create-manifest:
     runs-on: ubuntu-latest
@@ -33,7 +27,7 @@ jobs:
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
-        registry: ${{ inputs.registry }}
+        registry: ${{ env.Registry }}
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -46,19 +40,19 @@ jobs:
     - name: Get digest for arm64 image
       id: digest-arm64
       run: |
-        digest=$(docker buildx imagetools inspect --raw ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}:${{ inputs.tag }}-arm64${{ inputs.branch-tag }} | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ inputs.project-name }}:${{ inputs.tag }}-arm64${{ inputs.branch-tag }} | jq -r '.manifests[] | select(.platform.architecture == "arm64") | .digest')
         echo "::set-output name=digest::$digest"
 
     - name: Get digest for amd64 image
       id: digest-amd64
       run: |
-        digest=$(docker buildx imagetools inspect --raw ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}:${{ inputs.tag }}-amd64${{ inputs.branch-tag }} | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
+        digest=$(docker buildx imagetools inspect --raw ${{ env.Registry }}/${{ env.Repo }}/${{ inputs.project-name }}:${{ inputs.tag }}-amd64${{ inputs.branch-tag }} | jq -r '.manifests[] | select(.platform.architecture == "amd64") | .digest')
         echo "::set-output name=digest::$digest"            
 
     - name: Create manifest
       run: |
-        docker manifest create ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}:${{ inputs.tag }}${{ inputs.branch-tag }} \
-        --amend ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}@${{ steps.digest-arm64.outputs.digest }} \
-        --amend ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}@${{ steps.digest-amd64.outputs.digest }}
-        docker manifest push ${{ inputs.registry }}/${{ inputs.repo }}/${{ inputs.project-name }}:${{ inputs.tag }}${{ inputs.branch-tag }}
+        docker manifest create ${{ env.Registry }}/${{ env.Repo }}/${{ inputs.project-name }}:${{ inputs.tag }}${{ inputs.branch-tag }} \
+        --amend ${{ env.Registry }}/${{ env.Repo }}/${{ inputs.project-name }}@${{ steps.digest-arm64.outputs.digest }} \
+        --amend ${{ env.Registry }}/${{ env.Repo }}/${{ inputs.project-name }}@${{ steps.digest-amd64.outputs.digest }}
+        docker manifest push ${{ env.Registry }}/${{ env.Repo }}/${{ inputs.project-name }}:${{ inputs.tag }}${{ inputs.branch-tag }}
 

@@ -17,113 +17,52 @@ on:
   workflow_dispatch:
 
 env:
-  Registry: ghcr.io
-  Repo: robast-gmbh/monorepo
   Project-Name: statemachine
   Release-Tag: release
   Devel-Tag: devel
 
 jobs:
-  # Allowed expressions in the with section are `github` and `needs`.
+  # Allowed expressions in the `with` section are `github` and `needs`.
   # Therefore we need to take the env vars and set them as outputs to access them with `needs`.
   set_output_from_env:
     runs-on: ubuntu-latest
     outputs:
-      registry: ${{ steps.set-registry.outputs.registry }}
-      repo: ${{ steps.set-repo.outputs.repo }}
       project-name: ${{ steps.set-project-name.outputs.project-name }}
       devel-tag: ${{ steps.set-devel-tag.outputs.devel-tag }}
       release-tag: ${{ steps.set-release-tag.outputs.release-tag }}
       branch-tag: ${{ steps.set-branch-tag.outputs.branch-tag }}
     steps:
-      - id: set-registry
-        run: echo "registry=${{ env.Registry }}" >> "$GITHUB_OUTPUT"
-      - id: set-repo
-        run: echo "repo=${{ env.Repo }}" >> "$GITHUB_OUTPUT"
-      - id: set-project-name
-        run: echo "project-name=${{ env.Project-Name }}" >> "$GITHUB_OUTPUT"
-      - id: set-devel-tag
-        run: echo "devel-tag=${{ env.Devel-Tag }}" >> "$GITHUB_OUTPUT"
-      - id: set-release-tag
-        run: echo "release-tag=${{ env.Release-Tag }}" >> "$GITHUB_OUTPUT"
-      - id: set-branch-tag
-        run: |
-          if ([ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]) && [ "${{ github.ref_name }}" = "main" ]; then
-            branch_tag=""
-          else
-            branch_name="${{ github.event.pull_request.head.ref || 'none' }}"
-            branch_tag="-RE-$(echo $branch_name | grep -oP '\d{1,5}')"
-          fi
-          echo "branch-tag=$branch_tag" >> "$GITHUB_OUTPUT"        
+    - id: set-project-name
+      run: echo "project-name=${{ env.Project-Name }}" >> "$GITHUB_OUTPUT"
+    - id: set-devel-tag
+      run: echo "devel-tag=${{ env.Devel-Tag }}" >> "$GITHUB_OUTPUT"
+    - id: set-release-tag
+      run: echo "release-tag=${{ env.Release-Tag }}" >> "$GITHUB_OUTPUT"
+    - id: set-branch-tag
+      run: |
+        if ([ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]) && [ "${{ github.ref_name }}" = "main" ]; then
+          branch_tag=""
+        else
+          branch_name="${{ github.event.pull_request.head.ref || 'none' }}"
+          branch_tag="-RE-$(echo $branch_name | grep -oP '\d{1,5}')"
+        fi
+        echo "branch-tag=$branch_tag" >> "$GITHUB_OUTPUT"
 
-  build-arm64-devel:
+  build-devel:
     needs: set_output_from_env
-    uses: ./.github/workflows/create_ros2_docker.yml
+    uses: ./.github/workflows/create_multi_platform_image.yml
     with:
-      registry: ${{ needs.set_output_from_env.outputs.registry }}
-      repo: ${{ needs.set_output_from_env.outputs.repo }}
-      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
-      tag: ${{ needs.set_output_from_env.outputs.devel-tag }}-arm64
-      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
-      target: ${{ needs.set_output_from_env.outputs.devel-tag }}
-      platforms: linux/arm64/v8
-      runner: self-hosted
-
-  build-arm64-release:
-    needs: set_output_from_env
-    uses: ./.github/workflows/create_ros2_docker.yml
-    with:
-      registry: ${{ needs.set_output_from_env.outputs.registry }}
-      repo: ${{ needs.set_output_from_env.outputs.repo }}
-      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
-      tag: ${{ needs.set_output_from_env.outputs.release-tag }}-arm64
-      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
-      target: ${{ needs.set_output_from_env.outputs.release-tag }}
-      platforms: linux/arm64/v8
-      runner: self-hosted
-
-  build-amd64-devel:
-    needs: set_output_from_env
-    uses: ./.github/workflows/create_ros2_docker.yml
-    with:
-      registry: ${{ needs.set_output_from_env.outputs.registry }}
-      repo: ${{ needs.set_output_from_env.outputs.repo }}
-      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
-      tag: ${{ needs.set_output_from_env.outputs.devel-tag }}-amd64
-      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
-      target: ${{ needs.set_output_from_env.outputs.devel-tag }}
-      platforms: linux/amd64
-      runner: ubuntu-latest
-
-  build-amd64-release:
-    needs: set_output_from_env
-    uses: ./.github/workflows/create_ros2_docker.yml
-    with:
-      registry: ${{ needs.set_output_from_env.outputs.registry }}
-      repo: ${{ needs.set_output_from_env.outputs.repo }}
-      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
-      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
-      tag: ${{ needs.set_output_from_env.outputs.release-tag }}-amd64
-      target: ${{ needs.set_output_from_env.outputs.release-tag }}
-      platforms: linux/amd64
-      runner: ubuntu-latest
-
-  create-multi-platform-manifest-devel:
-    needs: [set_output_from_env, build-arm64-devel, build-amd64-devel]
-    uses: ./.github/workflows/create_multi_platform_manifest.yml
-    with:
-      registry: ${{ needs.set_output_from_env.outputs.registry }}
-      repo: ${{ needs.set_output_from_env.outputs.repo }}
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
       tag: ${{ needs.set_output_from_env.outputs.devel-tag }}
       branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
+      target: ${{ needs.set_output_from_env.outputs.devel-tag }}
 
-  create-multi-platform-manifest-release:
-    needs: [set_output_from_env, build-arm64-release, build-amd64-release]
-    uses: ./.github/workflows/create_multi_platform_manifest.yml
+
+  build-release:
+    needs: set_output_from_env
+    uses: ./.github/workflows/create_multi_platform_image.yml
     with:
-      registry: ${{ needs.set_output_from_env.outputs.registry }}
-      repo: ${{ needs.set_output_from_env.outputs.repo }}
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
       tag: ${{ needs.set_output_from_env.outputs.release-tag }}
       branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
+      target: ${{ needs.set_output_from_env.outputs.release-tag }}
