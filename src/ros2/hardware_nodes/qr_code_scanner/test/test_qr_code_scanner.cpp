@@ -2,6 +2,9 @@
 
 #include "qr_code_scanner.hpp"
 
+using namespace std;
+using namespace rclcpp;
+
 class ImagePublisher : public rclcpp::Node
 {
   public:

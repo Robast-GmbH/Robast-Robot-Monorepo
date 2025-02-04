@@ -2,16 +2,17 @@
 
 QrCodeScanner::QrCodeScanner() : Node("qr_code_scanner")
 {
-  auto image_subscription_options = SubscriptionOptions();
-  image_subscription_options.callback_group = this->create_callback_group(CallbackGroupType::Reentrant);
+  auto image_subscription_options = rclcpp::SubscriptionOptions();
+  image_subscription_options.callback_group = this->create_callback_group(rclcpp::CallbackGroupType::Reentrant);
   _zed_image_subscriber = this->create_subscription<sensor_msgs::msg::CompressedImage>(
     "/robot/zed/zed_node/left_gray/image_rect_gray/compressed",
     10,
-    bind(&QrCodeScanner::image_callback, this, placeholders::_1),
+    bind(&QrCodeScanner::image_callback, this, std::placeholders::_1),
     image_subscription_options);
 
   _read_qr_code_service = this->create_service<communication_interfaces::srv::ReadQrCode>(
-    "read_qr_code", bind(&QrCodeScanner::read_qr_code_service_callback, this, placeholders::_1, placeholders::_2));
+    "read_qr_code",
+    bind(&QrCodeScanner::read_qr_code_service_callback, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 QrCodeScanner::~QrCodeScanner()
@@ -28,15 +29,15 @@ void QrCodeScanner::image_callback(const sensor_msgs::msg::CompressedImage::Shar
   }
   cv::Mat image = cv::imdecode(cv::Mat(msg->data), cv::IMREAD_COLOR);
   read_qr_codes_from_image(image, visible_qr_codes);
-  for (const auto qrCode : visible_qr_codes)
+  for (const auto &qrCode : visible_qr_codes)
   {
     RCLCPP_INFO(this->get_logger(), "QR Code: %s", qrCode.c_str());
   }
 }
 
 void QrCodeScanner::read_qr_code_service_callback(
-  const shared_ptr<communication_interfaces::srv::ReadQrCode::Request> request,
-  shared_ptr<communication_interfaces::srv::ReadQrCode::Response> response)
+  const std::shared_ptr<communication_interfaces::srv::ReadQrCode::Request> request,
+  std::shared_ptr<communication_interfaces::srv::ReadQrCode::Response> response)
 {
   visible_qr_codes.clear();
   _active_service_calls_counter++;
@@ -47,8 +48,8 @@ void QrCodeScanner::read_qr_code_service_callback(
 
   while (!found_match && timeout_counter < timeout_limit)
   {
-    found_match = ranges::find(visible_qr_codes, request->expected_data) != visible_qr_codes.end();
-    this_thread::sleep_for(chrono::milliseconds(100));
+    found_match = std::ranges::find(visible_qr_codes, request->expected_data) != visible_qr_codes.end();
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     timeout_counter++;
   }
 
@@ -56,7 +57,7 @@ void QrCodeScanner::read_qr_code_service_callback(
   response->success = found_match;
 }
 
-void QrCodeScanner::read_qr_codes_from_image(const cv::Mat &image, vector<string> &qr_codes)
+void QrCodeScanner::read_qr_codes_from_image(const cv::Mat &image, std::vector<std::string> &qr_codes)
 {
   qr_codes.clear();
   int width = image.cols;
