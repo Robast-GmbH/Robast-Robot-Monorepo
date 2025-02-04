@@ -35,6 +35,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/WriteNfcNtagPayload.srv"
   "srv/ReadNfcTag.srv"
   "srv/ReadNfcNtagPayload.srv"
+  "srv/ReadQrCode.srv"
 
   "msg/DrawerAddress.msg"
   "msg/DrawerStatus.msg"
