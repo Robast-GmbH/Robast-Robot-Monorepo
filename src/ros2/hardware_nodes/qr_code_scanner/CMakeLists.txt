@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(qr_code_scanner)
 set(CMAKE_C_STANDARD 99)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 # Find dependencies
 find_package(ament_cmake REQUIRED)
@@ -11,15 +11,15 @@ find_package(OpenCV REQUIRED)
 find_package(communication_interfaces REQUIRED)
 
 include_directories(include/qr_code_scanner)
-include_directories(include/quirc/lib)
+include_directories(/robast/libs/quirc/lib)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 # Create a library from the source code
 add_library(qr_code_scanner_lib STATIC src/qr_code_scanner.cpp
-include/quirc/lib/decode.c
-include/quirc/lib/identify.c
-include/quirc/lib/quirc.c
-include/quirc/lib/version_db.c
+/robast/libs/quirc/lib/decode.c
+/robast/libs/quirc/lib/identify.c
+/robast/libs/quirc/lib/quirc.c
+/robast/libs/quirc/lib/version_db.c
 )
 
 # Link the library to rclcpp and other dependencies

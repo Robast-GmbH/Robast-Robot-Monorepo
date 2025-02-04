@@ -1,10 +1,10 @@
+ARG QUIRC_VERSION=1.2
 ARG ROS_BUILD_DISTRO=humble
 FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS devel
 ARG ROS_BUILD_DISTRO
-
+ARG QUIRC_VERSION
+USER root
 RUN apt-get update && apt-get install -y \
-  libboost-all-dev \
-  libpqxx-dev \
   libopencv-dev \
   ros-${ROS_BUILD_DISTRO}-ament-cmake-test \
   ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
@@ -13,11 +13,16 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/cache/apk/* \
   && rosdep init || echo "rosdep already initialized"
 
+USER robast
+WORKDIR /robast/libs
+RUN curl https://github.com/dlbeer/quirc/archive/refs/tags/v${QUIRC_VERSION}.tar.gz -L | tar -xvz && mv quirc-${QUIRC_VERSION} quirc
+
 
 ############################## Build ##################################
 FROM ghcr.io/robast-gmbh/monorepo/robast-source:${ROS_BUILD_DISTRO} AS build
 ARG ROS_BUILD_DISTRO
 COPY . /ws/src/hardware_nodes
+COPY --from=devel /robast/libs /robast/libs
 USER root
 RUN apt-get update && apt-get install -y git
 
@@ -53,7 +58,6 @@ USER root
 
 RUN apt-get update && apt-get upgrade -y && \
   apt-get install -y \
-  libboost-all-dev \
   ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
   && rm -rf /var/cache/apk/*
 
