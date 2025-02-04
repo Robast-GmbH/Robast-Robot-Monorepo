@@ -28,7 +28,7 @@ void QrCodeScanner::image_callback(const sensor_msgs::msg::CompressedImage::Shar
   }
   cv::Mat image = cv::imdecode(cv::Mat(msg->data), cv::IMREAD_COLOR);
   read_qr_codes_from_image(image, visible_qr_codes);
-  for (auto qrCode : visible_qr_codes)
+  for (const auto qrCode : visible_qr_codes)
   {
     RCLCPP_INFO(this->get_logger(), "QR Code: %s", qrCode.c_str());
   }
@@ -47,9 +47,7 @@ void QrCodeScanner::read_qr_code_service_callback(
 
   while (!found_match && timeout_counter < timeout_limit)
   {
-    found_match =
-      find(visible_qr_codes.begin(), visible_qr_codes.end(), request->expected_data) != visible_qr_codes.end();
-
+    found_match = ranges::find(visible_qr_codes, request->expected_data) != visible_qr_codes.end();
     this_thread::sleep_for(chrono::milliseconds(100));
     timeout_counter++;
   }
@@ -58,7 +56,7 @@ void QrCodeScanner::read_qr_code_service_callback(
   response->success = found_match;
 }
 
-void QrCodeScanner::read_qr_codes_from_image(cv::Mat &image, vector<string> &qr_codes)
+void QrCodeScanner::read_qr_codes_from_image(const cv::Mat &image, vector<string> &qr_codes)
 {
   qr_codes.clear();
   int width = image.cols;
@@ -71,7 +69,7 @@ void QrCodeScanner::read_qr_codes_from_image(cv::Mat &image, vector<string> &qr_
   cvtColor(image, grey_mat, cv::COLOR_BGR2GRAY);
 
   // Prepare Quirc to decode the QR code
-  uint8_t *qr_image = quirc_begin(_qr_decoder, NULL, NULL);
+  uint8_t *qr_image = quirc_begin(_qr_decoder, nullptr, nullptr);
   memcpy(qr_image, grey_mat.data, width * height);
   quirc_end(_qr_decoder);
 
@@ -87,7 +85,7 @@ void QrCodeScanner::read_qr_codes_from_image(cv::Mat &image, vector<string> &qr_
     quirc_decode_error_t err = quirc_decode(&code, &data);
     if (!err)
     {
-      qr_codes.push_back((char *) data.payload);
+      qr_codes.emplace_back((char *) data.payload);
     }
   }
 }

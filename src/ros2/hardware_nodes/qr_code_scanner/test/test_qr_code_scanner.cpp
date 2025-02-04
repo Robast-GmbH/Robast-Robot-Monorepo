@@ -5,7 +5,7 @@
 class ImagePublisher : public rclcpp::Node
 {
   public:
-    ImagePublisher(string image_path) : Node("image_publisher_node")
+    explicit ImagePublisher(string image_path) : Node("image_publisher_node")
     {
       auto _image = cv::imread(image_path, cv::IMREAD_COLOR);
       REQUIRE(!_image.empty());
@@ -19,7 +19,7 @@ class ImagePublisher : public rclcpp::Node
     }
 
   private:
-    std::vector<uchar> image_to_uchar_vector(cv::Mat &image)
+    std::vector<uchar> image_to_uchar_vector(const cv::Mat &image)
     {
       std::vector<uchar> compressed_image_data;
       std::vector<int> compression_params = {cv::IMWRITE_JPEG_QUALITY, 90};   // JPEG quality setting (0-100)
@@ -60,7 +60,7 @@ TEST_CASE("TestQrCodeScanner")
   executor.add_node(image_publisher);
   executor.add_node(qr_code_scanner);
 
-  std::thread main_thread(
+  std::jthread main_thread(
     [&executor]()
     {
       executor.spin();

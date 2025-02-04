@@ -21,7 +21,7 @@ class QrCodeScanner : public rclcpp::Node
     ~QrCodeScanner();
 
   private:
-    void read_qr_codes_from_image(cv::Mat &image, vector<std::string> &qr_codes);
+    void read_qr_codes_from_image(const cv::Mat &image, vector<std::string> &qr_codes);
     void image_callback(const sensor_msgs::msg::CompressedImage::SharedPtr msg);
     void read_qr_code_service_callback(const shared_ptr<communication_interfaces::srv::ReadQrCode::Request> request,
                                        shared_ptr<communication_interfaces::srv::ReadQrCode::Response> response);
