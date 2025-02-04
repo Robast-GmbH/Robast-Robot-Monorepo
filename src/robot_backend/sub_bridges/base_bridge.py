@@ -1,5 +1,5 @@
 from typing import Optional, Callable, Any
-from roslibpy import Ros, Service, ServiceRequest
+from roslibpy import Ros
 from thread_safe_dict import ThreadSafeDict
 from models.publisher import Publisher
 from models.subscriber import Subscriber
@@ -31,4 +31,4 @@ class BaseBridge:
         return Publisher(self.__ros, topic, msg_type)
 
     def create_service(self, name: str, service_type: str) -> ServiceHandler:
-        return ServiceHandler(self.__ros, self.context, name, service_type)
+        return ServiceHandler(self.__ros, name, service_type)
