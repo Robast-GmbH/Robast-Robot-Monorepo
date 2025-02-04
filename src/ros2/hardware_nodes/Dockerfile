@@ -5,6 +5,7 @@ ARG ROS_BUILD_DISTRO
 RUN apt-get update && apt-get install -y \
   libboost-all-dev \
   libpqxx-dev \
+  libopencv-dev \
   ros-${ROS_BUILD_DISTRO}-ament-cmake-test \
   ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
   ros-${ROS_BUILD_DISTRO}-ros-testing \
