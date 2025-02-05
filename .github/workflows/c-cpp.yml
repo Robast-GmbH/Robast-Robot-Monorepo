@@ -47,6 +47,21 @@ jobs:
     uses: ./.github/workflows/remove_image_from_ghcr.yml
     with:
       project-name: hardware_nodes
+
+  remove-base-branch-images:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: robast-dev-base
+
+  remove-base-core-branch-images:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: robast-dev-core
+
+  remove-base-source-branch-images:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: robast-source
   
 
         
