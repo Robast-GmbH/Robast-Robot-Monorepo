@@ -17,6 +17,7 @@
 #include "utils/can_message_converter.hpp"
 #include "utils/queue.hpp"
 #include "watchdog/heartbeat.hpp"
+#include "drawer/motion_controller.hpp"
 
 constexpr float SWITCH_PRESSED_THRESHOLD = 0.9;
 constexpr float SWITCH_WEIGHT_NEW_VALUES = 0.25;
@@ -38,6 +39,8 @@ std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper;
 
 std::shared_ptr<lock::ElectricalDrawerLock> drawer_lock;
 
+std::shared_ptr<drawer::MotionController> motion_controller;
+
 std::shared_ptr<interfaces::IDrawer> i_drawer;
 
 std::shared_ptr<switch_lib::Switch> endstop_switch;
@@ -51,4 +54,4 @@ std::shared_ptr<logging::RotatingFileHandler> rotating_file_logger;
 // shared resource, so we need a mutex for this
 std::unique_ptr<utils::Queue<robast_can_msgs::CanMessage>> can_msg_queue;
 
-#endif   // DRAWER_CONTROLLER_GLOBAL_HPP
+#endif // DRAWER_CONTROLLER_GLOBAL_HPP

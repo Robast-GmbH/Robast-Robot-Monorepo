@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "drawer/electrical_drawer.hpp"
+#include "drawer/motion_controller.hpp"
 #include "led/onboard_led_driver.hpp"
 #include "motor/motor_monitor_config.hpp"
 #include "switch/switch.hpp"
@@ -19,7 +19,7 @@ namespace tray
     TrayManager(const std::vector<TrayPinConfig>& tray_pin_configs,
                 const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                 const std::shared_ptr<TwoWire> wire,
-                const std::shared_ptr<drawer::ElectricalDrawer> e_drawer,
+                const std::shared_ptr<drawer::MotionController> motion_controller,
                 const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config,
                 const std::shared_ptr<tray::TrayManagerConfig> tray_manager_config,
                 const float switch_pressed_threshold,
@@ -34,7 +34,7 @@ namespace tray
     void set_tray_led_brightness(const uint8_t tray_id, const uint8_t led_row, const uint8_t brightness);
 
    private:
-    const std::shared_ptr<drawer::ElectricalDrawer> _e_drawer;
+    const std::shared_ptr<drawer::MotionController> _motion_controller;
     const std::shared_ptr<motor::MotorMonitorConfig> _motor_monitor_config;
     const std::shared_ptr<tray::TrayManagerConfig> _tray_manager_config;
 
