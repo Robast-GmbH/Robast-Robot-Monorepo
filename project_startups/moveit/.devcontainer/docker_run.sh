@@ -4,6 +4,7 @@ docker run \
 	--name=moveit_devel \
 	--network=host \
 	-it \
+	--rm \	
 	--volume=/tmp/.X11-unix:/tmp/.X11-unix \
 	--volume=/home/robot/robast/Monorepo/project_startups/moveit/:/workspace/ \
 	--volume=/home/robot/robast/Monorepo/src/ros2/hardware_nodes/dryve_d1_bridge:/workspace/src/hardware_nodes/dryve_d1_bridge \
