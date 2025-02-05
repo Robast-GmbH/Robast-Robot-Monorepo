@@ -18,7 +18,11 @@ class ImagePublisher : public rclcpp::Node
       pub_options.callback_group = this->create_callback_group(CallbackGroupType::Reentrant);
       _image_publisher = this->create_publisher<sensor_msgs::msg::CompressedImage>(
         "/robot/zed/zed_node/left_gray/image_rect_gray/compressed", 10, pub_options);
-      _timer = this->create_wall_timer(100ms, std::bind(&ImagePublisher::publish_image, this));
+      _timer = this->create_wall_timer(100ms,
+                                       [this]()
+                                       {
+                                         this->publish_image();
+                                       });
     }
 
   private:

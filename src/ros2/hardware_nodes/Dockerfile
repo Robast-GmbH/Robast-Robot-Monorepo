@@ -24,7 +24,7 @@ ARG ROS_BUILD_DISTRO
 COPY . /ws/src/hardware_nodes
 COPY --from=devel /robast/libs /robast/libs
 USER root
-RUN apt-get update && apt-get install -y git
+RUN apt-get update && apt-get install -y git libopencv-dev 
 
 
 # TODO: No idea why but it seems that this version is broken: ros-humble-ros2-socketcan/jammy 1.3.0-1jammy.20240729.003002 amd64
