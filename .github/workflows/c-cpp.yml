@@ -53,6 +53,11 @@ jobs:
     with:
       project-name: hardware_nodes
 
+  remove-moveit-branch-images:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: moveit
+
   remove-base-branch-images:
     uses: ./.github/workflows/remove_image_from_ghcr.yml
     with:
