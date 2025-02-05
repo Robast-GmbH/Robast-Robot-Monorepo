@@ -19,5 +19,5 @@
     "license": "MIT",
     "frameworks": "*",
     "platforms": "*",
-    "headers": ["electrical_tray_lock.hpp", "tray_manager_config.hpp", "tray_manager.hpp", "tray_pin_config.hpp"]
+    "headers": ["electrical_tray_lock.hpp", "tray_manager_config.hpp", "tray_manager.hpp", "tray_pin_config.hpp", "partial_drawer_config_manager.hpp"]
   }
