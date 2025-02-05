@@ -43,6 +43,10 @@ jobs:
     with:
       project-name: statemachine
 
+  remove-hardware-nodes-branch-images:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: hardware_nodes
   
 
         
