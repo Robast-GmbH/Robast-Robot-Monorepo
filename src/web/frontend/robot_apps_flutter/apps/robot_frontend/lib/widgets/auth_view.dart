@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
+import 'package:robot_frontend/widgets/buttons/rounded_button.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 
 class AuthView extends StatefulWidget {
@@ -26,7 +27,6 @@ class AuthView extends StatefulWidget {
 class _AuthViewState extends State<AuthView> {
   late Future<List<User>> loadUsers;
   late Future<bool> tryStartUserSessionFuture;
-  Timer? timeoutTimer;
 
   Future<bool> tryStartUserSession() async {
     final wasSuccessful = await Provider.of<UserProvider>(context, listen: false).tryStartUserSession(
@@ -46,12 +46,6 @@ class _AuthViewState extends State<AuthView> {
       loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
     }
     tryStartUserSessionFuture = tryStartUserSession();
-  }
-
-  @override
-  void dispose() {
-    timeoutTimer?.cancel();
-    super.dispose();
   }
 
   @override
@@ -102,8 +96,8 @@ class _AuthViewState extends State<AuthView> {
               if (snapshot.connectionState != ConnectionState.done || snapshot.data!) {
                 return const SizedBox(width: 48, height: 48, child: CircularProgressIndicator());
               } else {
-                return InkWell(
-                  onTap: () {
+                return RoundedButton(
+                  onPressed: () {
                     tryStartUserSessionFuture = tryStartUserSessionFuture = tryStartUserSession();
                     widget.onRetry?.call();
                     setState(() {});

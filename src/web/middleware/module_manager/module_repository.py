@@ -3,8 +3,10 @@ from db_models.submodule import Submodule
 from pydantic_models.submodule_address import SubmoduleAddress
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import os
 
-DB_PATH = "sqlite:///modules2.db"
+home_directory = os.path.expanduser("~")
+DB_PATH = f"sqlite:///{home_directory}/databases/modules.db"
 engine = create_engine(DB_PATH)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

@@ -4,8 +4,10 @@ project(bt_plugins)
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Default to C++20
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 20)
+endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -176,6 +178,9 @@ list(APPEND plugin_libs robast_error_pub_node)
 add_library(publish_string_topic_action_node SHARED src/action/publish_string_topic.cpp)
 list(APPEND plugin_libs publish_string_topic_action_node)
 
+add_library(generate_partial_position_action_node SHARED src/action/generate_partial_position_action.cpp)
+list(APPEND plugin_libs generate_partial_position_action_node)
+
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})
   target_compile_definitions(${bt_plugin} PRIVATE BT_PLUGIN_EXPORT)
@@ -200,7 +205,7 @@ if(BUILD_TESTING)
   FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG        ab6c7375be9a8e71ee84c6f8537113f9f47daf99 # should equal tag v3.2.1
+    GIT_TAG        v3.8.0
   )
   FetchContent_MakeAvailable(Catch2)
 
@@ -209,21 +214,32 @@ if(BUILD_TESTING)
   add_library(test_helper SHARED tests/test_helper.cpp)
   list(APPEND test_libs test_helper)
 
-  # add_executable(led_test tests/actions/change_led_action_test.cpp)
-  # list(APPEND test_executables led_test)
+  # Actions
   add_executable(open_drawer_test tests/actions/open_drawer_action_test.cpp)
   list(APPEND test_executables open_drawer_test)
-  add_executable(drawer_status_condition_test tests/conditions/drawer_status_condition_test.cpp)
-  list(APPEND test_executables drawer_status_condition_test)
   add_executable(nfc_to_drawer_action_test tests/actions/nfc_to_drawer_action_test.cpp)
   list(APPEND test_executables nfc_to_drawer_action_test)
   add_executable(move_electric_drawer_action_test tests/actions/move_electric_drawer_action_test.cpp)
   list(APPEND test_executables move_electric_drawer_action_test)
+  add_executable(generate_partial_position_action_test tests/actions/generate_partial_position_action_test.cpp)
+  list(APPEND test_executables generate_partial_position_action_test)
+  add_executable(robast_error_pub_action_test tests/actions/robast_error_pub_action_test.cpp)
+  list(APPEND test_executables robast_error_pub_action_test)
+
+  # Conditions
+  add_executable(drawer_status_condition_test tests/conditions/drawer_status_condition_test.cpp)
+  list(APPEND test_executables drawer_status_condition_test)
+  add_executable(electric_drawer_status_condition_test tests/conditions/electric_drawer_status_condition_test.cpp)
+  list(APPEND test_executables electric_drawer_status_condition_test)
+
+  # Decorater
   add_executable(error_decorator_test tests/decorators/error_decorator_test.cpp)
   list(APPEND test_executables error_decorator_test)
+
+  # Miscellaneous
   add_executable(calculate_direction_test tests/calculate_direction_test.cpp)
   list(APPEND test_executables calculate_direction_test)
-  
+
 
   ament_target_dependencies(${test_libs}
   ${dependencies})

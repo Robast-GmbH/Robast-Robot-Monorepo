@@ -13,22 +13,22 @@ jobs:
 
     steps:
     - name: Checkout repository and submodules
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 2
     
     - name: Login to GitHub Container Registry
-      uses: docker/login-action@v2
+      uses: docker/login-action@v3
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: configures Docker Buildx to create a builder instance for running the image build.
-      uses: docker/setup-buildx-action@v2 
+      uses: docker/setup-buildx-action@v3 
     
     - name: Build ${{ env.Project-Name }} release docker
-      uses: docker/build-push-action@v4
+      uses: docker/build-push-action@v6
       with:
         context: src/${{ env.Project-Name }}/
         platforms: linux/amd64

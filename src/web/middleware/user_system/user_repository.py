@@ -3,13 +3,15 @@ import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db_models.user import User
+import os
 
 
-DB_URL = "sqlite:///users2.db"  # Using SQLite for demonstration, but you can change to PostgreSQL or others
+home_directory = os.path.expanduser("~")
+DB_PATH = f"sqlite:///{home_directory}/databases/users.db"
 AVAILABLE_USER_GROUPS = ["admin", "staff", "patient"]
 
 # Setting up the SQLAlchemy engine and session
-engine = create_engine(DB_URL)
+engine = create_engine(DB_PATH)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

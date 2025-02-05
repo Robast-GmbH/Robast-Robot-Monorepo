@@ -1,6 +1,9 @@
 from typing import Optional, Callable, Any
-from roslibpy import Topic, Ros, Service, ServiceRequest
+from roslibpy import Ros, Service, ServiceRequest
 from thread_safe_dict import ThreadSafeDict
+from models.publisher import Publisher
+from models.subscriber import Subscriber
+from models.service_handler import ServiceHandler
 
 
 class BaseBridge:
@@ -8,30 +11,24 @@ class BaseBridge:
         self.context = ThreadSafeDict()
         self.__ros = ros
 
-    def __create_on_msg_callback(self, topic: str) -> Callable:
-        def on_msg_callback(message: dict[str, Any]):
-            self.context[topic] = message
+    def create_subscriber(
+        self,
+        topic: str,
+        msg_type: str,
+        on_msg_callback: Optional[Callable] = None,
+        logger_cache_timeout_in_s: int = 0,
+    ) -> Subscriber:
+        return Subscriber(
+            self.__ros,
+            self.context,
+            topic,
+            msg_type,
+            on_msg_callback,
+            logger_cache_timeout_in_s,
+        )
 
-        return on_msg_callback
+    def create_publisher(self, topic: str, msg_type: str) -> Publisher:
+        return Publisher(self.__ros, topic, msg_type)
 
-    def start_subscriber(
-        self, topic: str, msg_type: str, on_msg_callback: Optional[Callable] = None
-    ) -> Topic:
-        listener = Topic(self.__ros, topic, msg_type)
-        if on_msg_callback:
-            listener.subscribe(on_msg_callback)
-        else:
-            listener.subscribe(self.__create_on_msg_callback(topic))
-        return listener
-
-    def start_publisher(self, topic: str, msg_type: str) -> Topic:
-        publisher = Topic(self.__ros, topic, msg_type)
-        return publisher
-
-    def start_service(
-        self, name: str, service_type: str, values: dict[str, Any] | None = None
-    ) -> Any:
-        service = Service(self.__ros, name, service_type)
-        request = ServiceRequest(values=values)
-        result = service.call(request)
-        self.context[name] = result
+    def create_service(self, name: str, service_type: str) -> ServiceHandler:
+        return ServiceHandler(self.__ros, self.context, name, service_type)

@@ -1,6 +1,6 @@
 
 ARG ROS_BUILD_DISTRO=humble
-FROM ros:${ROS_BUILD_DISTRO}-perception as devel
+FROM ros:${ROS_BUILD_DISTRO}-perception AS devel
 
 ARG ROS_BUILD_DISTRO
 ARG DEBIAN_FRONTEND=noninteractive
@@ -82,24 +82,22 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 WORKDIR /workspace
 
 ############################## Build ##################################
-FROM ghcr.io/robast-gmbh/monorepo/building-docker:${ROS_BUILD_DISTRO} as build
+FROM ghcr.io/robast-gmbh/monorepo/robast-source:${ROS_BUILD_DISTRO} AS build
 ARG ROS_BUILD_DISTRO
 COPY --from=devel / /
 COPY . /ws/src/navigation
+USER root
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/; mkdir /robast; \
-  mv /monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
-  && mv /monorepo/src/ros2/dds_configs /robast/dds_configs
-
 
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
+  . /robast/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_DISTRO}/ --packages-skip robast_map_update_module robast_nav_recoveries
 
 ############################## Release ##################################
-FROM ros:${ROS_BUILD_DISTRO}-perception as release
+FROM ros:${ROS_BUILD_DISTRO}-perception AS release
 ARG ROS_BUILD_DISTRO
 RUN apt-get update && apt-get install -y \
   cmake \
@@ -117,6 +115,8 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
+COPY --from=build /dds_configs /robast/dds_configs
+
 COPY --from=build /ws/src/navigation/nav_bringup/config_simulation/nav_params/diff__tr0_4__res0_05.json /workspace/src/navigation/nav_bringup/config_simulation/nav_params/diff__tr0_4__res0_05.json
 COPY --from=build /ws/src/navigation/nav_bringup/behavior_trees/humble/ /workspace/src/navigation/nav_bringup/behavior_trees/humble/
 
@@ -162,8 +162,8 @@ USER ubuntu
 ENV is_simulation=False
 ENV config_directory=config
 ENV robot_name=rb_theron
-ENV init_x=1.46
-ENV init_y=-2.89
+ENV init_x=0.0
+ENV init_y=0.0
 ENV init_z=0.0
-ENV init_yaw=1.57
+ENV init_yaw=0.0
 ENV prefix=''

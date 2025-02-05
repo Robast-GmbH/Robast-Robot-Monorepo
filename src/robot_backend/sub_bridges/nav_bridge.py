@@ -10,24 +10,24 @@ class NavBridge(BaseBridge):
     def __init__(self, ros: Ros) -> None:
         super().__init__(ros)
 
-        self.start_subscriber(
+        self.create_subscriber(
             "/navigation_remaining_time",
             "builtin_interfaces/msg/Duration",
         )
-        self.start_subscriber(
+        self.create_subscriber(
             "/goal_status",
             "std_msgs/msg/String",
         )
 
-        self.__goal_pose_publisher = self.start_publisher(
+        self.__goal_pose_publisher = self.create_publisher(
             "/set_goal_pose",
             "geometry_msgs/msg/Pose",
         )
-        self.__cancel_goal_publisher = self.start_publisher(
+        self.__cancel_goal_publisher = self.create_publisher(
             "/cancel_goal",
             "std_msgs/msg/Bool",
         )
-        self.__enable_reorientation_publisher = self.start_publisher(
+        self.__enable_reorientation_publisher = self.create_publisher(
             "/is_reorientation_enabled",
             "std_msgs/msg/Bool",
         )

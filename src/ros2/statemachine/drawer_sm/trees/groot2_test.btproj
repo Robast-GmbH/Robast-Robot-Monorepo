@@ -56,6 +56,12 @@
             <input_port name="base_frame" default="base_link"/>
             <output_port name="direction" default="standing">sleeping, standing, left, right, forward</output_port>
         </Action>
+        <Action ID="GeneratePartialPosition">
+            <input_port name="drawer_address" default="{drawer}"/>
+            <input_port name="front_offset" default="10">uint8</input_port>
+            <input_port name="tray_count" default="8">uint8</input_port>
+            <output_port name="target_position" default="{target_position}">uint8</output_port>
+        </Action>
         <Action ID="GetBlackboardEntry">
             <input_port name="key" default="drawer_address">string</input_port>
             <output_port name="value" default="{drawer}"/>
@@ -64,8 +70,8 @@
         <Condition ID="HeartbeatCondition">
             <input_port name="topic" default="/heartbeat"/>
             <input_port name="timeouts_until_failure" default="3">uint8</input_port>
-            <input_port name="latency_tolerance_in_ms" default="100">uint16</input_port>
-            <output_port name="id" default="1">string</output_port>
+            <input_port name="latency_tolerance_in_ms" default="300">uint16</input_port>
+            <output_port name="failed_heartbeat_id" default="1">string</output_port>
         </Condition>
         <Action ID="ImportEnvironmentLEDColor" editable="true">
             <output_port name="red" default="{red}"/>

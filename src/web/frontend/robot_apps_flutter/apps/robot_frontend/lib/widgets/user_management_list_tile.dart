@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
+import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/selectors/location_selector.dart';
 import 'package:robot_frontend/widgets/dialogs/nfc_assignment_dialog.dart';
@@ -71,6 +72,7 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                   iconSize: 32,
                   color: RobotColors.primaryIcon,
                   onPressed: () {
+                    Provider.of<KeyboardProvider>(context, listen: false).unfocus();
                     final userGroups = userGroupsSelectionController.userGroups;
                     Provider.of<UserProvider>(context, listen: false).updateUser(
                       updatedUser: User(

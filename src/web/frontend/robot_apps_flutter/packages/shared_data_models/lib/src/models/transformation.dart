@@ -26,7 +26,7 @@ class Transformation {
   Pose tranformTargetToSource(Pose pose) {
     return translate(
       rotate(translate(pose, targetCentroid), -rotation),
-      Pose(x: -sourceCentroid.x, y: -sourceCentroid.y),
+      Pose(x: -sourceCentroid.x, y: -sourceCentroid.y, yaw: pose.yaw),
     );
   }
 
@@ -41,7 +41,7 @@ class Transformation {
   }
 
   Pose translate(Pose pose, Pose translation) {
-    return Pose(x: pose.x - translation.x, y: pose.y - translation.y);
+    return Pose(x: pose.x - translation.x, y: pose.y - translation.y, yaw: pose.yaw);
   }
 
   double calculateRotation(List<Pose> poses1, List<Pose> poses2) {
@@ -61,6 +61,6 @@ class Transformation {
   }
 
   Pose rotate(Pose pose, double angle) {
-    return Pose(x: cos(angle) * pose.x - sin(angle) * pose.y, y: sin(angle) * pose.x + cos(angle) * pose.y);
+    return Pose(x: cos(angle) * pose.x - sin(angle) * pose.y, y: sin(angle) * pose.x + cos(angle) * pose.y, yaw: pose.yaw);
   }
 }

@@ -12,3 +12,5 @@ abstract final class RobotColors {
   static const Color error = Color.fromARGB(195, 165, 29, 29);
   static const Color disabled = Colors.white24;
 }
+
+const double keyboardHeight = 400;

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/constants/robot_colors.dart';
+import 'package:robot_frontend/constants/robot_constants.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/setting_pages/config_page.dart';
 import 'package:robot_frontend/widgets/buttons/developer_button_view.dart';
@@ -82,7 +82,9 @@ class _StatusIndicatorViewState extends State<StatusIndicatorView> {
     chargingAnimationTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       animationOffset += 1;
       animationOffset %= (maxAnimationOffset + 1) - (chargingIndex ?? 0);
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
   }
 

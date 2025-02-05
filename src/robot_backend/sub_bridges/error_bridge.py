@@ -4,7 +4,6 @@ from roslibpy import Ros
 from threading import Timer
 from typing import Any, Dict, List
 from collections import defaultdict
-import error_definitions_pybind
 
 
 class ErrorBridge(BaseBridge):
@@ -14,7 +13,7 @@ class ErrorBridge(BaseBridge):
     def __init__(self, ros: Ros) -> None:
         super().__init__(ros)
 
-        self.__robast_error_subscriber = self.start_subscriber(
+        self.__robast_error_subscriber = self.create_subscriber(
             "/robast_error_best_effort",
             ErrorBridge.ERROR_MSG,
             on_msg_callback=self.__on_error,
@@ -24,15 +23,12 @@ class ErrorBridge(BaseBridge):
             dict
         )
 
-    def get_drawer_not_opened_errors(self) -> List[Dict[str, Any]]:
-        return self.__get_errors_by_code(
-            error_definitions_pybind.ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED
-        )
-
-    def get_heartbeat_timeout_errors(self) -> List[Dict[str, Any]]:
-        return self.__get_errors_by_code(
-            error_definitions_pybind.ERROR_CODES_HEARTBEAT_TIMEOUT
-        )
+    def get_errors(self) -> Dict[str, List[Dict[str, Any]]]:
+        return {
+            str(error_code): self.__get_errors_by_code(error_code)
+            for error_code in self.__error_by_id_by_code.keys()
+            if self.__error_by_id_by_code[error_code]
+        }
 
     def __on_error(self, msg: Dict[str, Any]) -> None:
         error = RobastError.from_dict(msg)

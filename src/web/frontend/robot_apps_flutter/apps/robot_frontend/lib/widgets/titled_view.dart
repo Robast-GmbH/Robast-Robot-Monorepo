@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:robot_frontend/models/provider/keyboard_provider.dart';
 import 'package:robot_frontend/widgets/status_bar.dart';
 
 class TitledView extends StatelessWidget {
@@ -27,6 +29,7 @@ class TitledView extends StatelessWidget {
             showBackButton: showBackButton,
             onBackButtonPressed: onBackButtonPressed ??
                 () {
+                  Provider.of<KeyboardProvider>(context, listen: false).unfocus();
                   Navigator.of(context).pop();
                 },
           ),

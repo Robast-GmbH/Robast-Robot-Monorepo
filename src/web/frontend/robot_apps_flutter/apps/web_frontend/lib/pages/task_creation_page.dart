@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 import 'package:web_frontend/constants/web_colors.dart';
+import 'package:web_frontend/models/module_content_controller.dart';
 import 'package:web_frontend/models/provider/task_provider.dart';
 import 'package:web_frontend/widgets/invalid_inputs_dialog.dart';
 import 'package:web_frontend/widgets/module_content_creation_view.dart';
@@ -56,7 +57,7 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -64,7 +65,7 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                 moduleContentController: moduleContentController,
               ),
               const SizedBox(
-                height: 8,
+                height: 16,
               ),
               SubmoduleTypeSelector(
                 controller: submoduleSizeController,
@@ -76,7 +77,7 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.only(left: 8),
+                    padding: EdgeInsets.only(left: 8, bottom: 4),
                     child: Text(
                       'Sender',
                       style: TextStyle(color: WebColors.primaryText, fontSize: 24),
@@ -87,15 +88,15 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                     initWithSessionUser: true,
                   ),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   UserGroupsSelector(controller: senderUserGroupsSelectionController),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   LocationSelector(controller: startController, label: 'Start'),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   TimeSelector(deliveryTimeController: senderTimeController),
                 ],
@@ -107,7 +108,7 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.only(left: 8),
+                    padding: EdgeInsets.only(left: 8, bottom: 4),
                     child: Text(
                       'Empfänger',
                       style: TextStyle(color: WebColors.primaryText, fontSize: 24),
@@ -117,19 +118,19 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                     controller: recipientUserController,
                   ),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   UserGroupsSelector(controller: recipientUserGroupsSelectionController),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   LocationSelector(controller: targetController, label: 'Ziel'),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                   TimeSelector(deliveryTimeController: recipientTimeController),
                   const SizedBox(
-                    height: 8,
+                    height: 16,
                   ),
                 ],
               ),

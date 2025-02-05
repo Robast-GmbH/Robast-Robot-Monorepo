@@ -12,7 +12,7 @@ class DisinfectionModuleBridge(BaseBridge):
 
     def __init__(self, ros: Ros) -> None:
         super().__init__(ros)
-        self.start_subscriber(
+        self.create_subscriber(
             "/disinfection_triggered",
             "builtin_interfaces/msg/Time",
             on_msg_callback=self.__on_disinfection_triggered,

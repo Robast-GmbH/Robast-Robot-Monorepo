@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_data_models/shared_data_models.dart';
 import 'package:web_frontend/constants/web_colors.dart';
+import 'package:web_frontend/models/module_content_controller.dart';
 import 'package:web_frontend/widgets/rounded_container.dart';
 
 class ModuleContentCreationView extends StatefulWidget {
@@ -28,9 +28,7 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(
-            left: 8,
-          ),
+          padding: const EdgeInsets.only(left: 8, bottom: 4),
           child: Text(
             widget.label,
             style: const TextStyle(fontSize: 24, color: WebColors.primaryText),
@@ -152,6 +150,9 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
               child: TextField(
                 controller: textController,
                 style: const TextStyle(fontSize: 18, color: WebColors.secondaryText),
+                onChanged: (value) {
+                  widget.moduleContentController.itemName = value;
+                },
               ),
             ),
             const SizedBox(
@@ -162,6 +163,9 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
                 textAlign: TextAlign.center,
                 controller: amountController,
                 style: const TextStyle(fontSize: 18, color: WebColors.secondaryText),
+                onChanged: (value) {
+                  widget.moduleContentController.amount = value;
+                },
                 keyboardType: TextInputType.number,
               ),
             ),

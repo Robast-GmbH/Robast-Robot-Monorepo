@@ -360,8 +360,6 @@ namespace drawer_bridge
 
     ErrorBaseMsg error_msg = ErrorBaseMsg();
 
-    auto message_converter = MessageConverter<ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED_INTERFACE>();
-
     DrawerAddress drawer_address = DrawerAddress();
     drawer_address.module_id = can_signals.at(robast_can_msgs::can_signal::id::error_feedback::MODULE_ID).get_data();
     drawer_address.drawer_id = can_signals.at(robast_can_msgs::can_signal::id::error_feedback::DRAWER_ID).get_data();
@@ -372,25 +370,28 @@ namespace drawer_bridge
         error_msg.error_code = ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED;
         error_msg.error_description =
           "The drawer was not opened and therefore a timeout occurred. Drawer is now locked again.";
-        error_msg.error_data = message_converter.messageToString(drawer_address);
-        _error_msg_publisher->publish(error_msg);
+        error_msg.error_data =
+          error_utils::message_to_string<ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED_INTERFACE>(drawer_address);
         break;
       case robast_can_msgs::can_data::error_code::DRAWER_CLOSED_IN_IDLE_STATE:
         error_msg.error_code = ERROR_CODES_DRAWER_CLOSED_IN_IDLE_STATE;
         error_msg.error_description = "The drawer was closed in the idle state, which is not the intended behavior.";
-        error_msg.error_data = message_converter.messageToString(drawer_address);
-        _error_msg_publisher->publish(error_msg);
+        error_msg.error_data =
+          error_utils::message_to_string<ERROR_CODES_DRAWER_CLOSED_IN_IDLE_STATE_INTERFACE>(drawer_address);
         break;
       case robast_can_msgs::can_data::error_code::MOTOR_DRIVER_STATE_CONTROL_NOT_SUPPORTED_BY_MODULE:
         error_msg.error_code = ERROR_CODES_MOTOR_DRIVER_CONTROL_NOT_SUPPORTED_BY_MODULE;
         error_msg.error_description = "The motor driver state control is not supported by the module.";
-        error_msg.error_data = message_converter.messageToString(drawer_address);
-        _error_msg_publisher->publish(error_msg);
+        error_msg.error_data =
+          error_utils::message_to_string<ERROR_CODES_MOTOR_DRIVER_CONTROL_NOT_SUPPORTED_BY_MODULE_INTERFACE>(
+            drawer_address);
         break;
-
       default:
-        break;
+        RCLCPP_WARN(this->get_logger(), "Tried to publish an error message with an unknown error code!");
+        return;
     }
+
+    _error_msg_publisher->publish(error_msg);
   }
 
   void DrawerBridge::publish_heartbeat(const robast_can_msgs::CanMessage& heartbeat_can_msg)
