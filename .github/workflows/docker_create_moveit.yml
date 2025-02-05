@@ -55,7 +55,7 @@ jobs:
 
   build-devel:
     needs: set_output_from_env
-    uses: ./.github/workflows/create_multi_platform_image.yml
+    uses: ./.github/workflows/create_ros2_docker.yml
     with:
       project-name: ${{ needs.set_output_from_env.outputs.project-name }}
       tag: ${{ needs.set_output_from_env.outputs.devel-tag }}-humble
