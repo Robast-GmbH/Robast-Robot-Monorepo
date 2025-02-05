@@ -1,6 +1,7 @@
 #include <catch2/catch_all.hpp>
 #include <chrono>
 #include <thread>
+
 #include "initial_pose_publisher.hpp"
 
 class TestInitialPosePublisher
@@ -30,7 +31,7 @@ TEST_CASE("TestInitialPosePublisherCallback")
   rclcpp::init(0, nullptr);
   TestInitialPosePublisher test_node;
 
-  std::thread background_thread(run_background_node);
+  std::jthread background_thread(run_background_node);
 
   const double x = 1.0;
   const double y = 2.0;
@@ -64,7 +65,7 @@ TEST_CASE("TestInitialPosePublisherCallback")
   executor.add_node(test_node.node);
 
   // Spin the main node for 5 seconds
-  std::thread main_thread(
+  std::jthread main_thread(
     [&executor]()
     {
       executor.spin();
