@@ -245,12 +245,8 @@ namespace drawer
     const bool is_wait_time_after_movement_finished_over =
       (millis() - _timestamp_movement_finished_in_ms > wait_time_in_ms_after_movement_finished);
 
-    if (is_wait_time_after_stall_guard_triggered_over && is_wait_time_after_movement_finished_over &&
-        _encoder_monitor->check_if_drawer_is_pushed_in())
-    {
-      return true;
-    }
-    return false;
+    return is_wait_time_after_stall_guard_triggered_over && is_wait_time_after_movement_finished_over &&
+           _encoder_monitor->check_if_drawer_is_pushed_in();
   }
 
   void MotionController::handle_stall_guard_triggered()
