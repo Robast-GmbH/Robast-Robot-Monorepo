@@ -6,10 +6,6 @@ on:
         description: 'The project name to remove the image from'
         required: true
         type: string
-      tag:
-        description: 'The tag to remove the image from'
-        required: true
-        type: string
 
 jobs:
   remove-image:
@@ -53,6 +49,6 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         organization: robast-gmbh
         container: monorepo/${{ inputs.project-name }}
-        dry-run: false # Dry-run first, then change to `false`
+        dry-run: true # Dry-run first, then change to `false`
         prune-tags-regexes: |
           ${{ env.branch-tag }}
