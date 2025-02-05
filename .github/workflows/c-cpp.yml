@@ -33,6 +33,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  remove-simulation-branch-images:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: simulation    
+
   remove-nav-branch-images:
     uses: ./.github/workflows/remove_image_from_ghcr.yml
     with:
