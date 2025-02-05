@@ -66,7 +66,9 @@ jobs:
         platforms: ${{ inputs.platforms }}
         push: true
         file: ${{ inputs.file }}
-        build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
+        build-args: |
+          GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
+          BRANCH_TAG=${{ inputs.branch-tag }}
         tags: ${{ env.Registry}}/${{ env.Repo}}/${{ inputs.project-name }}:${{ inputs.tag }}${{ inputs.branch-tag }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache
