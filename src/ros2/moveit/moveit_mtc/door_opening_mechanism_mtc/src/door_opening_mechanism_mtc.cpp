@@ -17,8 +17,6 @@ namespace door_opening_mechanism_mtc
     declare_parameter<std::string>("topic_name_trigger_door_opening", "/trigger_door_opening");
     declare_parameter<double>("door_handle_pose_timeout", 2.0);
 
-    _planning_group_name = get_parameter("moveit2_planning_group_name").as_string();
-    _planning_pipeline = get_parameter("planning_pipeline").as_string();
     _topic_name_pose_stamped = get_parameter("topic_name_pose_stamped").as_string();
     _topic_name_trigger_door_opening = get_parameter("topic_name_trigger_door_opening").as_string();
     _door_handle_pose_timeout = get_parameter("door_handle_pose_timeout").as_double();
