@@ -23,18 +23,13 @@ This package contains code that uses the MoveIt Task Constructor Framework.
 
 #### door_opening_mechanism_mtc
 
-For now this is a simple demo to get a first running example with using mtc for our robot. This node listens for a 
-pose of the door handle and then plans a movement to this position and back to a starting pose. To start this example
-you need to start the tasks:
-1. `ros2 launch moveit_door_opening_mechanism_config moveit_rviz_simulation_launch.py` (runs rviz and MoveIt)
-2. `ros2 launch door_opening_mechanism_mtc door_opening_mechanism_mtc_launch.py` (runs mtc)
-3. `ros2 launch door_opening_mechanism_simulation door_opening_mechanism_simulation_send_fake_pose_launch.py` (sends a door handle pose to the mtc node to trigger mtc)
+For now this is a simple demo, which attempts to open a door in real life (and already successfully did). This node listens for a 
+pose of the door handle and then plans and executes a movement to open the door. To start this example
+you need to run the following thing:
+1. Start the `perception` docker and run `ros2 launch door_handle_detection yolo.launch.py` to get door handle detections.
+2. Start the `moveit` docker and run `ros2 launch moveit_door_opening_mechanism_config moveit_real_world_launch.py` (runs ros2 control and moveit)
+3. In the `moveit` docker run `ros2 launch door_opening_mechanism_mtc door_opening_mechanism_mtc_launch.py` (runs mtc)
 
-#### How to run an example?
-
-In order to run a MoveIt application in the simulation you have to start the following things:
-1. Gazebo (e.g. the task `ros2 launch tiplu_world tiplu_world_launch.py`)
-2. Run MoveIt Application in the MoveIt docker
 
 ### moveit_pro_configs
 
