@@ -36,6 +36,10 @@ class _VideoViewState extends State<VideoView> {
     if (videoAvailable) {
       return Video(
         controller: controller,
+        fill: Colors.transparent,
+        controls: (state) {
+          return const SizedBox();
+        },
       );
     } else {
       return const Center(child: Icon(Icons.personal_video, size: 100, color: RobotColors.primaryIcon));
