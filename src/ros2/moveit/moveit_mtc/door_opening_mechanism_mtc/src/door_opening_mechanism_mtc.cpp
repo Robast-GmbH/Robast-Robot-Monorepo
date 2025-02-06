@@ -11,40 +11,37 @@ namespace door_opening_mechanism_mtc
 
   void DoorMechanismMtc::handle_node_parameter()
   {
-    // For some reason I had to use automatically_declare_parameters_from_overrides(true) in the main.cpp file,
-    // which makes problems defining the parameters here. So I just hardcode them for now.
-    // TODO: Fix that
+    declare_parameter<std::string>("moveit2_planning_group_name", "mobile_base_arm");
+    declare_parameter<std::string>("planning_pipeline", "ompl_humble");
+    declare_parameter<std::string>("topic_name_pose_stamped", "/stereo/door_handle_pose");
+    declare_parameter<std::string>("topic_name_trigger_door_opening", "/trigger_door_opening");
+    declare_parameter<double>("door_handle_pose_timeout", 2.0);
 
-    // declare_parameter<std::string>("moveit2_planning_group_name", "mobile_base_arm");
-    // declare_parameter<std::string>("planning_pipeline", "ompl_humble");
-    // declare_parameter<std::string>("topic_name_pose_stamped", "/stereo/door_handle_pose");
-    // declare_parameter<std::string>("topic_name_trigger_door_opening", "/trigger_door_opening");
-    // declare_parameter<double>("door_handle_pose_timeout", 2.0);
+    _planning_group_name = get_parameter("moveit2_planning_group_name").as_string();
+    _planning_pipeline = get_parameter("planning_pipeline").as_string();
+    _topic_name_pose_stamped = get_parameter("topic_name_pose_stamped").as_string();
+    _topic_name_trigger_door_opening = get_parameter("topic_name_trigger_door_opening").as_string();
+    _door_handle_pose_timeout = get_parameter("door_handle_pose_timeout").as_double();
 
-    // _planning_group_name = get_parameter("moveit2_planning_group_name").as_string();
-    // _planning_pipeline = get_parameter("planning_pipeline").as_string();
-    // _topic_name_pose_stamped = get_parameter("topic_name_pose_stamped").as_string();
-    // _topic_name_trigger_door_opening = get_parameter("topic_name_trigger_door_opening").as_string();
-    // _door_handle_pose_timeout = get_parameter("door_handle_pose_timeout").as_double();
-
-    _planning_group_name = "mobile_base_arm";
-    _planning_pipeline = "ompl_humble";
-    _topic_name_pose_stamped = "/stereo/door_handle_pose";
-    _topic_name_trigger_door_opening = "/trigger_door_opening";
-    _door_handle_pose_timeout = 2.0;
+    RCLCPP_INFO(_LOGGER, "Node parameters:");
+    RCLCPP_INFO(_LOGGER, "  moveit2_planning_group_name: %s", _planning_group_name.c_str());
+    RCLCPP_INFO(_LOGGER, "  planning_pipeline: %s", _planning_pipeline.c_str());
+    RCLCPP_INFO(_LOGGER, "  topic_name_pose_stamped: %s", _topic_name_pose_stamped.c_str());
+    RCLCPP_INFO(_LOGGER, "  topic_name_trigger_door_opening: %s", _topic_name_trigger_door_opening.c_str());
+    RCLCPP_INFO(_LOGGER, "  door_handle_pose_timeout: %f", _door_handle_pose_timeout);
   }
 
   void DoorMechanismMtc::create_subscriptions()
   {
     _door_handle_pose_subscription = create_subscription<geometry_msgs::msg::PoseStamped>(
-        _topic_name_pose_stamped,
-        10,
-        std::bind(&DoorMechanismMtc::door_handle_pose_callback, this, std::placeholders::_1));
+      _topic_name_pose_stamped,
+      10,
+      std::bind(&DoorMechanismMtc::door_handle_pose_callback, this, std::placeholders::_1));
 
     _trigger_door_opening_subscription = create_subscription<std_msgs::msg::Empty>(
-        _topic_name_trigger_door_opening,
-        10,
-        std::bind(&DoorMechanismMtc::trigger_door_opening_callback, this, std::placeholders::_1));
+      _topic_name_trigger_door_opening,
+      10,
+      std::bind(&DoorMechanismMtc::trigger_door_opening_callback, this, std::placeholders::_1));
   }
 
   void DoorMechanismMtc::door_handle_pose_callback(const geometry_msgs::msg::PoseStamped& msg)
@@ -67,7 +64,7 @@ namespace door_opening_mechanism_mtc
     // Check that the latest door handle pose is not too old
     if (now() - _latest_door_handle_pose.header.stamp >
         rclcpp::Duration(std::chrono::duration_cast<std::chrono::nanoseconds>(
-            std::chrono::duration<double>(_door_handle_pose_timeout))))
+          std::chrono::duration<double>(_door_handle_pose_timeout))))
     {
       RCLCPP_ERROR(_LOGGER, "Latest door handle pose is too old!");
       return;
@@ -83,7 +80,7 @@ namespace door_opening_mechanism_mtc
     do_task(_latest_door_handle_pose);
   }
 
-  void DoorMechanismMtc::do_task(const geometry_msgs::msg::PoseStamped door_handle_pose)
+  void DoorMechanismMtc::do_task(const geometry_msgs::msg::PoseStamped& door_handle_pose)
   {
     _task = create_task(door_handle_pose);
 
@@ -128,7 +125,7 @@ namespace door_opening_mechanism_mtc
     return;
   }
 
-  mtc::Task DoorMechanismMtc::create_task(geometry_msgs::msg::PoseStamped door_handle_pose)
+  mtc::Task DoorMechanismMtc::create_task(const geometry_msgs::msg::PoseStamped& door_handle_pose)
   {
     RCLCPP_INFO(_LOGGER, "Creating task!");
 
@@ -185,7 +182,7 @@ namespace door_opening_mechanism_mtc
 
     // Connect the initial stage with the generated IK solution using the sampling planner.
     auto connector_stage = std::make_unique<moveit::task_constructor::stages::Connect>(
-        "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
+      "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
     connector_stage->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT, {"eef", "group"});
     task.add(std::move(connector_stage));
 
@@ -196,13 +193,13 @@ namespace door_opening_mechanism_mtc
 
     // Generate a pose (this gets put in the IK wrapper below)
     auto generate_pose_above_door_handle_stage =
-        std::make_unique<moveit::task_constructor::stages::GeneratePose>("generate pose above door handle");
+      std::make_unique<moveit::task_constructor::stages::GeneratePose>("generate pose above door handle");
     generate_pose_above_door_handle_stage->setPose(pose_above_door_handle);
     generate_pose_above_door_handle_stage->setMonitoredStage(task.stages()->findChild("current"));
 
     // Compute IK
     auto ik_wrapper = std::make_unique<moveit::task_constructor::stages::ComputeIK>(
-        "generate pose IK", std::move(generate_pose_above_door_handle_stage));
+      "generate pose IK", std::move(generate_pose_above_door_handle_stage));
     ik_wrapper->setMaxIKSolutions(3);
     ik_wrapper->setMinSolutionDistance(1.0);
     ik_wrapper->setTimeout(0.3);
@@ -213,7 +210,7 @@ namespace door_opening_mechanism_mtc
 
     // Connect the two stages
     auto connector_stage_door_handle_push_down = std::make_unique<moveit::task_constructor::stages::Connect>(
-        "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
+      "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
     connector_stage_door_handle_push_down->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT,
                                                                           {"eef", "group"});
     task.add(std::move(connector_stage_door_handle_push_down));
@@ -225,13 +222,13 @@ namespace door_opening_mechanism_mtc
 
     // Generate a pose (this gets put in the IK wrapper below)
     auto generate_pose_below_door_handle_stage =
-        std::make_unique<moveit::task_constructor::stages::GeneratePose>("generate pose below door handle");
+      std::make_unique<moveit::task_constructor::stages::GeneratePose>("generate pose below door handle");
     generate_pose_below_door_handle_stage->setPose(pose_below_door_handle);
     generate_pose_below_door_handle_stage->setMonitoredStage(task.stages()->findChild("current"));
 
     // Compute IK
     auto ik_wrapper_below_door_handle = std::make_unique<moveit::task_constructor::stages::ComputeIK>(
-        "generate pose below door handle IK", std::move(generate_pose_below_door_handle_stage));
+      "generate pose below door handle IK", std::move(generate_pose_below_door_handle_stage));
     ik_wrapper_below_door_handle->setMaxIKSolutions(3);
     ik_wrapper_below_door_handle->setMinSolutionDistance(1.0);
     ik_wrapper_below_door_handle->setTimeout(0.3);
@@ -243,7 +240,7 @@ namespace door_opening_mechanism_mtc
 
     // Connect the two stages
     auto connector_push_open_door = std::make_unique<moveit::task_constructor::stages::Connect>(
-        "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
+      "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
     connector_push_open_door->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT, {"eef", "group"});
     // Create moveit_msgs/Constraints Message
     // auto constraints = std::make_shared<moveit_msgs::msg::Constraints>();
@@ -258,13 +255,13 @@ namespace door_opening_mechanism_mtc
 
     // Generate a pose (this gets put in the IK wrapper below)
     auto generate_pose_push_open_door_stage =
-        std::make_unique<moveit::task_constructor::stages::GeneratePose>("generate pose push open door");
+      std::make_unique<moveit::task_constructor::stages::GeneratePose>("generate pose push open door");
     generate_pose_push_open_door_stage->setPose(pose_push_open_door);
     generate_pose_push_open_door_stage->setMonitoredStage(task.stages()->findChild("current"));
 
     // Compute IK
     auto ik_wrapper_push_open_door = std::make_unique<moveit::task_constructor::stages::ComputeIK>(
-        "generate pose push open door IK", std::move(generate_pose_push_open_door_stage));
+      "generate pose push open door IK", std::move(generate_pose_push_open_door_stage));
     ik_wrapper_push_open_door->setMaxIKSolutions(3);
     ik_wrapper_push_open_door->setMinSolutionDistance(1.0);
     ik_wrapper_push_open_door->setTimeout(0.3);
@@ -276,7 +273,7 @@ namespace door_opening_mechanism_mtc
 
     // Connect the two stages
     auto connector_stage_move_gripper_above_handle = std::make_unique<moveit::task_constructor::stages::Connect>(
-        "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
+      "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
     connector_stage_move_gripper_above_handle->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT,
                                                                               {"eef", "group"});
     task.add(std::move(connector_stage_move_gripper_above_handle));
@@ -284,18 +281,18 @@ namespace door_opening_mechanism_mtc
     // Create a pose to move the door handle above the door handle again
     geometry_msgs::msg::PoseStamped pose_above_door_handle_again = door_handle_pose;
     pose_above_door_handle_again.pose.position.x -=
-        (FORWARD_DISTANCE_TO_PUSH_DOOR_OUT_OF_LATCH + DOOR_DETECTION_OFFSET);
+      (FORWARD_DISTANCE_TO_PUSH_DOOR_OUT_OF_LATCH + DOOR_DETECTION_OFFSET);
     pose_above_door_handle_again.pose.position.z += DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN;
 
     // Generate a pose (this gets put in the IK wrapper below)
     auto generate_pose_above_door_handle_again_stage =
-        std::make_unique<moveit::task_constructor::stages::GeneratePose>("generate pose above door handle again");
+      std::make_unique<moveit::task_constructor::stages::GeneratePose>("generate pose above door handle again");
     generate_pose_above_door_handle_again_stage->setPose(pose_above_door_handle_again);
     generate_pose_above_door_handle_again_stage->setMonitoredStage(task.stages()->findChild("current"));
 
     // Compute IK
     auto ik_wrapper_above_door_handle_again = std::make_unique<moveit::task_constructor::stages::ComputeIK>(
-        "generate pose above door handle again IK", std::move(generate_pose_above_door_handle_again_stage));
+      "generate pose above door handle again IK", std::move(generate_pose_above_door_handle_again_stage));
     ik_wrapper_above_door_handle_again->setMaxIKSolutions(3);
     ik_wrapper_above_door_handle_again->setMinSolutionDistance(1.0);
     ik_wrapper_above_door_handle_again->setTimeout(0.3);
@@ -307,7 +304,7 @@ namespace door_opening_mechanism_mtc
 
     // Connect the two stages
     auto connector_stage_push_door_open = std::make_unique<moveit::task_constructor::stages::Connect>(
-        "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
+      "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
     connector_stage_push_door_open->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT,
                                                                    {"eef", "group"});
     task.add(std::move(connector_stage_push_door_open));
@@ -320,13 +317,13 @@ namespace door_opening_mechanism_mtc
 
     // Generate a pose (this gets put in the IK wrapper below)
     auto generate_pose_push_door_open_stage =
-        std::make_unique<moveit::task_constructor::stages::GeneratePose>("generate pose push door open");
+      std::make_unique<moveit::task_constructor::stages::GeneratePose>("generate pose push door open");
     generate_pose_push_door_open_stage->setPose(pose_push_door_open);
     generate_pose_push_door_open_stage->setMonitoredStage(task.stages()->findChild("current"));
 
     // Compute IK
     auto ik_wrapper_push_door_open = std::make_unique<moveit::task_constructor::stages::ComputeIK>(
-        "generate pose push door open IK", std::move(generate_pose_push_door_open_stage));
+      "generate pose push door open IK", std::move(generate_pose_push_door_open_stage));
     ik_wrapper_push_door_open->setMaxIKSolutions(3);
     ik_wrapper_push_door_open->setMinSolutionDistance(1.0);
     ik_wrapper_push_door_open->setTimeout(0.3);
