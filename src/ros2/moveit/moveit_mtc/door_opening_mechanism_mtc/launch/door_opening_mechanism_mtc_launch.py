@@ -1,6 +1,9 @@
 import os
 
+from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from moveit_configs_utils import MoveItConfigsBuilder
 
@@ -55,5 +58,13 @@ def generate_launch_description():
         output="screen",
     )
 
+    launch_pose_publisher = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            get_package_share_directory("publish_pose_from_spatial_detection")
+            + "/launch/publish_pose_from_spatial_detections_launch.py"
+        )
+    )
+
     ld.add_action(door_opening_mechanism_mtc_node)
+    ld.add_action(launch_pose_publisher)
     return ld
