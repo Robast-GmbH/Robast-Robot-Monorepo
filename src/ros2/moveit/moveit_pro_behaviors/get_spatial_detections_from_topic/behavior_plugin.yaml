@@ -1,4 +1,0 @@
-objectives:
-  behavior_loader_plugins:
-    get_spatial_detections_from_topic:
-      - "get_spatial_detections_from_topic::GetSpatialDetectionsFromTopicBehaviorsLoader"

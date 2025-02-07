@@ -1,5 +1,0 @@
-<library path="create_pose_from_spatial_detections">
-  <class type="create_pose_from_spatial_detections::CreatePoseFromSpatialDetectionsBehaviorsLoader"
-         base_class_type="moveit_studio::behaviors::SharedResourcesNodeLoaderBase">
-  </class>
-</library>

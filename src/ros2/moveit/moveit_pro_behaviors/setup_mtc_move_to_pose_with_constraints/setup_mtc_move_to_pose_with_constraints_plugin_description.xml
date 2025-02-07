@@ -1,5 +1,0 @@
-<library path="setup_mtc_move_to_pose_with_constraints">
-  <class type="moveit_studio::behaviors::SetupMtcMoveToPoseWithConstraintsBehaviorsLoader"
-         base_class_type="moveit_studio::behaviors::SharedResourcesNodeLoaderBase">
-  </class>
-</library>

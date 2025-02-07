@@ -1,4 +1,0 @@
-objectives:
-  behavior_loader_plugins:
-    create_pose_from_spatial_detections:
-      - "create_pose_from_spatial_detections::CreatePoseFromSpatialDetectionsBehaviorsLoader"

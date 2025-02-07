@@ -1,5 +1,0 @@
-<library path="get_spatial_detections_from_topic">
-  <class type="get_spatial_detections_from_topic::GetSpatialDetectionsFromTopicBehaviorsLoader"
-         base_class_type="moveit_studio::behaviors::SharedResourcesNodeLoaderBase">
-  </class>
-</library>
