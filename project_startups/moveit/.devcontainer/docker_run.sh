@@ -12,9 +12,7 @@ docker run \
 	--volume=/home/robot/robast/Monorepo/src/ros2/ros2_control/hardware_interfaces/ros2_control_base_movement:/workspace/src/ros2_control/hardware_interfaces/ros2_control_base_movement \
 	--volume=/home/robot/robast/Monorepo/src/ros2/ros2_control/hardware_interfaces/hardware_interface_utils:/workspace/src/ros2_control/hardware_interfaces/hardware_interface_utils \
 	--volume=/home/robot/robast/Monorepo/src/ros2/ros2_control/ros2_controllers:/workspace/src/ros2_control/ros2_controllers \
-	--volume=/home/robot/robast/Monorepo/src/ros2/moveit/moveit_mtc:/workspace/src/moveit/moveit_mtc \
-	--volume=/home/robot/robast/Monorepo/src/ros2/moveit/moveit_resources:/workspace/src/moveit/moveit_resources \
-	--volume=/home/robot/robast/Monorepo/src/ros2/moveit/perception:/workspace/src/moveit/perception \
+	--volume=/home/robot/robast/Monorepo/src/ros2/moveit:/workspace/src/moveit \
 	--volume=/home/robot/robast/Monorepo/src/ros2/dds_configs:/workspace/dds_configs \
 	--volume=/home/robot/robast/Monorepo/src/ros2/utils/launch_manager:/workspace/src/utils/launch_manager \
 	-e DISPLAY=:0 \
