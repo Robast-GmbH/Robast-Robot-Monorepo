@@ -27,9 +27,9 @@ void QrCodeScanner::image_callback(const sensor_msgs::msg::CompressedImage::Shar
   {
     return;
   }
-  cv::Mat image = cv::imdecode(cv::Mat(msg->data), cv::IMREAD_COLOR);
-  read_qr_codes_from_image(image, visible_qr_codes);
-  for (const auto &qrCode : visible_qr_codes)
+  const cv::Mat image = cv::imdecode(cv::Mat(msg->data), cv::IMREAD_COLOR);
+  _visible_qr_codes = read_qr_codes_from_image(image);
+  for (const auto &qrCode : _visible_qr_codes)
   {
     RCLCPP_INFO(this->get_logger(), "QR Code: %s", qrCode.c_str());
   }
@@ -39,16 +39,16 @@ void QrCodeScanner::read_qr_code_service_callback(
   const std::shared_ptr<communication_interfaces::srv::ReadQrCode::Request> request,
   std::shared_ptr<communication_interfaces::srv::ReadQrCode::Response> response)
 {
-  visible_qr_codes.clear();
+  _visible_qr_codes.clear();
   _active_service_calls_counter++;
-  bool found_match = false;
 
+  bool found_match = false;
   int timeout_counter = 0;
   int timeout_limit = request->timeout_in_s * 10;
 
   while (!found_match && timeout_counter < timeout_limit)
   {
-    found_match = std::ranges::find(visible_qr_codes, request->expected_data) != visible_qr_codes.end();
+    found_match = std::ranges::find(_visible_qr_codes, request->expected_data) != _visible_qr_codes.end();
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     timeout_counter++;
   }
@@ -57,9 +57,9 @@ void QrCodeScanner::read_qr_code_service_callback(
   response->success = found_match;
 }
 
-void QrCodeScanner::read_qr_codes_from_image(const cv::Mat &image, std::vector<std::string> &qr_codes)
+std::vector<std::string> QrCodeScanner::read_qr_codes_from_image(const cv::Mat &image)
 {
-  qr_codes.clear();
+  std::vector<std::string> qr_codes;
   int width = image.cols;
   int height = image.rows;
 
@@ -89,4 +89,6 @@ void QrCodeScanner::read_qr_codes_from_image(const cv::Mat &image, std::vector<s
       qr_codes.emplace_back((char *) data.payload);
     }
   }
+
+  return qr_codes;
 }

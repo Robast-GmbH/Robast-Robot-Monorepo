@@ -53,8 +53,8 @@ class ImagePublisher : public rclcpp::Node
 TEST_CASE("TestQrCodeScanner")
 {
   // Setup
-  string expected_qr_code = "http://en.m.wikipedia.org";
-  string example_path = "/workspace/src/hardware_nodes/qr_code_scanner/test/qr_code.png";
+  const string expected_qr_code = "http://en.m.wikipedia.org";
+  const string example_path = "/workspace/src/hardware_nodes/qr_code_scanner/test/qr_code.png";
 
   rclcpp::init(0, nullptr);
 

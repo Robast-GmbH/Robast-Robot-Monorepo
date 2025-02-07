@@ -15,11 +15,11 @@ include_directories(/robast/libs/quirc/lib)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 # Create a library from the source code
-add_library(qr_code_scanner_lib STATIC src/qr_code_scanner.cpp
-/robast/libs/quirc/lib/decode.c
-/robast/libs/quirc/lib/identify.c
-/robast/libs/quirc/lib/quirc.c
-/robast/libs/quirc/lib/version_db.c
+add_library(qr_code_scanner_lib STATIC  src/qr_code_scanner.cpp
+                                        /robast/libs/quirc/lib/decode.c
+                                        /robast/libs/quirc/lib/identify.c
+                                        /robast/libs/quirc/lib/quirc.c
+                                        /robast/libs/quirc/lib/version_db.c
 )
 
 # Link the library to rclcpp and other dependencies
