@@ -58,6 +58,7 @@ USER root
 
 RUN apt-get update && apt-get upgrade -y && \
   apt-get install -y \
+  libopencv-dev \
   ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
   && rm -rf /var/cache/apk/*
 
@@ -67,4 +68,4 @@ RUN echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_
 
 USER robast
 WORKDIR /robast
-  
+
