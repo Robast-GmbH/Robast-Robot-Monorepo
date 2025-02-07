@@ -28,7 +28,7 @@ class QrCodeScanner : public rclcpp::Node
     int _active_service_calls_counter = 0;
     struct quirc *_qr_decoder = quirc_new();
     std::vector<std::string> _visible_qr_codes;
-    rclcpp::SubscriptionOptions image_subscription_options;
+    rclcpp::SubscriptionOptions _image_subscription_options;
     rclcpp::Subscription<sensor_msgs::msg::CompressedImage>::SharedPtr _zed_image_subscriber;
     rclcpp::Service<communication_interfaces::srv::ReadQrCode>::SharedPtr _read_qr_code_service;
 };

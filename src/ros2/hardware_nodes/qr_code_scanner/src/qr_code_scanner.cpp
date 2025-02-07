@@ -2,11 +2,15 @@
 
 QrCodeScanner::QrCodeScanner() : Node("qr_code_scanner")
 {
-  image_subscription_options.callback_group = this->create_callback_group(rclcpp::CallbackGroupType::Reentrant);
+  rclcpp::CallbackGroup::SharedPtr reentrant_callback_group =
+    this->create_callback_group(rclcpp::CallbackGroupType::Reentrant);
+  _image_subscription_options.callback_group = reentrant_callback_group;
 
   _read_qr_code_service = this->create_service<communication_interfaces::srv::ReadQrCode>(
     "read_qr_code",
-    bind(&QrCodeScanner::read_qr_code_service_callback, this, std::placeholders::_1, std::placeholders::_2));
+    bind(&QrCodeScanner::read_qr_code_service_callback, this, std::placeholders::_1, std::placeholders::_2),
+    rmw_qos_profile_services_default,
+    reentrant_callback_group);
 }
 
 QrCodeScanner::~QrCodeScanner()
@@ -22,7 +26,7 @@ void QrCodeScanner::toggle_image_subscription(bool enable)
       "/robot/zed/zed_node/left_gray/image_rect_gray/compressed",
       10,
       bind(&QrCodeScanner::image_callback, this, std::placeholders::_1),
-      image_subscription_options);
+      _image_subscription_options);
   }
   else
   {
