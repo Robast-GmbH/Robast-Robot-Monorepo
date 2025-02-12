@@ -29,6 +29,7 @@ you need to run the following thing:
 1. Start the `perception` docker and run `ros2 launch door_handle_detection yolo.launch.py` to get door handle detections.
 2. Start the `moveit` docker and run `ros2 launch moveit_door_opening_mechanism_config moveit_real_world_launch.py` (runs ros2 control and moveit)
 3. In the `moveit` docker run `ros2 launch door_opening_mechanism_mtc door_opening_mechanism_mtc_launch.py` (runs mtc)
+4. Trigger the door opening by publishing `ros2 topic pub /trigger_door_opening std_msgs/msg/Empty --once`.
 
 
 ### moveit_pro_configs
