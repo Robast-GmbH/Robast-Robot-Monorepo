@@ -216,6 +216,10 @@ venv
 !src/web/frontend/robot_apps_flutter/apps/**/lib/
 !src/web/frontend/robot_apps_flutter/packages/**/lib/
 
+#quirc lib exception
+!src/ros2/hardware_nodes/qr_code_scanner/include/quirc/lib/
+
+
 COLCON_IGNORE
 
 # Frontend copy

@@ -6,7 +6,7 @@ package is for the interface to the NFC module and handels the communiction to t
 Overview for the included libraries, the corresponding license and a link to the repository:
 | Library | Licence     | Description                     | Repository                     |
 | ------- | ----------- | ------------------------------- | ------------------------------ |
-| pqxx    | BSD license | interaction to the postgress DB | https://github.com/jtv/libpqxx |
+
 
 
 

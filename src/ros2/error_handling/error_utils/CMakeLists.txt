@@ -8,7 +8,7 @@ find_package(Python REQUIRED COMPONENTS Interpreter Development)
 find_package(communication_interfaces REQUIRED)
 
 add_custom_target(run_script ALL
-    COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/generate_error_mapping.py
+    COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/generate_error_mapping.py --output_dir ${CMAKE_INSTALL_PREFIX}/bin
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
 
@@ -73,6 +73,3 @@ install(DIRECTORY include/
 
 ament_export_include_directories(include)
 ament_package()
-
-install(CODE "file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/error_codes.py DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)")
-install(CODE "file(REMOVE ${CMAKE_CURRENT_SOURCE_DIR}/error_codes.py)")
