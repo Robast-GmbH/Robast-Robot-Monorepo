@@ -166,7 +166,7 @@ namespace door_opening_mechanism_mtc
     std::string state_description;
 
     {
-      state_description = "Current state";
+      state_description = "current";
       auto stage_state_current = std::make_unique<mtc::stages::CurrentState>(state_description);
       task.add(std::move(stage_state_current));
     }
@@ -251,7 +251,7 @@ namespace door_opening_mechanism_mtc
 
       geometry_msgs::msg::Vector3Stamped vec;
       vec.header.frame_id = end_effector_parent_link;
-      vec.vector.z = FORWARD_DISTANCE_TO_PUSH_DOOR_OUT_OF_LATCH;
+      vec.vector.z = -FORWARD_DISTANCE_TO_PUSH_DOOR_OUT_OF_LATCH;
       stage->setDirection(vec);
       task.add(std::move(stage));
     }
@@ -274,37 +274,63 @@ namespace door_opening_mechanism_mtc
     }
 
     {
-      state_description = "Push door open";
-      auto stage =
-        std::make_unique<moveit::task_constructor::stages::MoveRelative>(state_description, cartesian_planner);
-      stage->properties().set("link", end_effector_parent_link);   // link to perform IK for
-      stage->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT,
-                                            {"group"});   // inherit group from parent stage
-      stage->setIKFrame(end_effector_parent_link);
-      // stage->setMinMaxDistance(params.approach_object_min_dist, params.approach_object_max_dist);
+      // Connect the two stages
+      auto connector_stage_push_door_open = std::make_unique<moveit::task_constructor::stages::Connect>(
+        "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
+      connector_stage_push_door_open->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT,
+                                                                     {"eef", "group"});
+      task.add(std::move(connector_stage_push_door_open));
 
-      geometry_msgs::msg::Vector3Stamped vec;
-      vec.header.frame_id = end_effector_parent_link;
-      // TODO: double check these:
-      vec.vector.z = FORWARD_DISTANCE_TO_PUSH_DOOR_OPEN;
-      vec.vector.y = DISTANCE_TO_OTHER_SIDE_OF_DOOR;
-      stage->setDirection(vec);
-      task.add(std::move(stage));
+      // Create a pose to push door open
+      state_description = "generate pose push door open";
+      geometry_msgs::msg::PoseStamped pose_push_door_open = door_handle_pose;
+      pose_push_door_open.pose.position.x -= (FORWARD_DISTANCE_TO_PUSH_DOOR_OPEN + DOOR_DETECTION_OFFSET);
+      pose_push_door_open.pose.position.z += DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN;
+      pose_push_door_open.pose.position.y += DISTANCE_TO_OTHER_SIDE_OF_DOOR;
+
+      // Generate a pose (this gets put in the IK wrapper below)
+      auto generate_pose_push_door_open_stage =
+        std::make_unique<moveit::task_constructor::stages::GeneratePose>(state_description);
+      generate_pose_push_door_open_stage->setPose(pose_push_door_open);
+      generate_pose_push_door_open_stage->setMonitoredStage(task.stages()->findChild("current"));
+
+      // Compute IK
+      state_description = "Compute IK for pose push door open";
+      auto ik_wrapper_push_door_open = std::make_unique<moveit::task_constructor::stages::ComputeIK>(
+        state_description, std::move(generate_pose_push_door_open_stage));
+      ik_wrapper_push_door_open->setMaxIKSolutions(3);
+      ik_wrapper_push_door_open->setMinSolutionDistance(1.0);
+      ik_wrapper_push_door_open->setTimeout(0.3);
+      ik_wrapper_push_door_open->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT,
+                                                                {"eef", "group"});
+      ik_wrapper_push_door_open->properties().configureInitFrom(moveit::task_constructor::Stage::INTERFACE,
+                                                                {"target_pose"});
+      task.add(std::move(ik_wrapper_push_door_open));
     }
 
     {
       state_description = "Move arm into pre homing position";
+      std::map<std::string, double> pre_homing_joint_positions;
+      pre_homing_joint_positions["robot/door_opening_mechanism_joint_y_axis_slide"] = 0.2;
+      pre_homing_joint_positions["robot/door_opening_mechanism_joint_x_axis_slide"] = 0.27;
+      pre_homing_joint_positions["robot/door_opening_mechanism_joint_rotating_arm"] = 0;
+      pre_homing_joint_positions["robot/door_opening_mechanism_joint_freely_rotating_hook"] = 0.0;
       auto stage = std::make_unique<mtc::stages::MoveTo>(state_description, sampling_planner);
       stage->setGroup(group_name);
-      stage->setGoal("pre_homing_position");
+      stage->setGoal(pre_homing_joint_positions);
       task.add(std::move(stage));
     }
 
     {
       state_description = "Move arm into final homing position";
+      std::map<std::string, double> homing_joint_positions;
+      homing_joint_positions["robot/door_opening_mechanism_joint_y_axis_slide"] = 0.1;
+      homing_joint_positions["robot/door_opening_mechanism_joint_x_axis_slide"] = 0.27;
+      homing_joint_positions["robot/door_opening_mechanism_joint_rotating_arm"] = 0;
+      homing_joint_positions["robot/door_opening_mechanism_joint_freely_rotating_hook"] = 0.0;
       auto stage = std::make_unique<mtc::stages::MoveTo>(state_description, sampling_planner);
       stage->setGroup(group_name);
-      stage->setGoal("homing_position");
+      stage->setGoal(homing_joint_positions);
       task.add(std::move(stage));
     }
 
