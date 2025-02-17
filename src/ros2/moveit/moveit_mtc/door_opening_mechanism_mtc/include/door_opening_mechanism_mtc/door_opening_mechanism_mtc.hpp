@@ -20,12 +20,13 @@ namespace door_opening_mechanism_mtc
 {
   namespace mtc = moveit::task_constructor;
 
-  constexpr float DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN = 0.055;
+  constexpr float DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN = 0.070;
+  constexpr float DISTANCE_FOR_GRIPPER_ABOVE_DOOR_HANDLE = 0.04;
   constexpr float FORWARD_DISTANCE_TO_PUSH_DOOR_OUT_OF_LATCH = 0.05;
-  constexpr float FORWARD_DISTANCE_TO_PUSH_DOOR_OPEN = 0.6;
+  constexpr float FORWARD_DISTANCE_TO_PUSH_DOOR_OPEN = 1.7;
   constexpr float DISTANCE_TO_OTHER_SIDE_OF_DOOR = 0.6;
-  constexpr float DOOR_DETECTION_OFFSET = 0.077;
-  constexpr float Z_DOOR_DETECTION_OFFSET = 0.04;
+  constexpr float DOOR_DETECTION_OFFSET = 0.057;
+  constexpr float DOOR_DETECTION_OFFSET_Y = 0.02;
 
   class DoorMechanismMtc : public rclcpp::Node
   {

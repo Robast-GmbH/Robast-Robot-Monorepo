@@ -201,8 +201,9 @@ namespace door_opening_mechanism_mtc
     {
       state_description = "Generate pose above door handle";
       geometry_msgs::msg::PoseStamped pose_above_door_handle = door_handle_pose;
-      pose_above_door_handle.pose.position.z += DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN;
+      pose_above_door_handle.pose.position.z += DISTANCE_FOR_GRIPPER_ABOVE_DOOR_HANDLE;
       pose_above_door_handle.pose.position.x -= DOOR_DETECTION_OFFSET;
+      pose_above_door_handle.pose.position.y += DOOR_DETECTION_OFFSET_Y;
 
       // Generate a pose (this gets put in the IK wrapper below)
       auto generate_pose_above_door_handle_stage =
@@ -234,7 +235,7 @@ namespace door_opening_mechanism_mtc
 
       geometry_msgs::msg::Vector3Stamped vec;
       vec.header.frame_id = end_effector_parent_link;
-      vec.vector.x = DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN + Z_DOOR_DETECTION_OFFSET;
+      vec.vector.x = DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN;
       stage->setDirection(vec);
       task.add(std::move(stage));
     }
@@ -268,7 +269,7 @@ namespace door_opening_mechanism_mtc
 
       geometry_msgs::msg::Vector3Stamped vec;
       vec.header.frame_id = end_effector_parent_link;
-      vec.vector.x = -DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN - Z_DOOR_DETECTION_OFFSET;
+      vec.vector.x = -DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN;
       stage->setDirection(vec);
       task.add(std::move(stage));
     }
@@ -284,8 +285,8 @@ namespace door_opening_mechanism_mtc
       // Create a pose to push door open
       state_description = "generate pose push door open";
       geometry_msgs::msg::PoseStamped pose_push_door_open = door_handle_pose;
-      pose_push_door_open.pose.position.x -= (FORWARD_DISTANCE_TO_PUSH_DOOR_OPEN + DOOR_DETECTION_OFFSET);
-      pose_push_door_open.pose.position.z += DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN;
+      pose_push_door_open.pose.position.x -= FORWARD_DISTANCE_TO_PUSH_DOOR_OPEN;
+      pose_push_door_open.pose.position.z += DISTANCE_FOR_GRIPPER_ABOVE_DOOR_HANDLE + 0.01;
       pose_push_door_open.pose.position.y += DISTANCE_TO_OTHER_SIDE_OF_DOOR;
 
       // Generate a pose (this gets put in the IK wrapper below)
@@ -321,18 +322,18 @@ namespace door_opening_mechanism_mtc
       task.add(std::move(stage));
     }
 
-    {
-      state_description = "Move arm into final homing position";
-      std::map<std::string, double> homing_joint_positions;
-      homing_joint_positions["robot/door_opening_mechanism_joint_y_axis_slide"] = 0.1;
-      homing_joint_positions["robot/door_opening_mechanism_joint_x_axis_slide"] = 0.27;
-      homing_joint_positions["robot/door_opening_mechanism_joint_rotating_arm"] = 0;
-      homing_joint_positions["robot/door_opening_mechanism_joint_freely_rotating_hook"] = 0.0;
-      auto stage = std::make_unique<mtc::stages::MoveTo>(state_description, sampling_planner);
-      stage->setGroup(group_name);
-      stage->setGoal(homing_joint_positions);
-      task.add(std::move(stage));
-    }
+    // {
+    //   state_description = "Move arm into final homing position";
+    //   std::map<std::string, double> homing_joint_positions;
+    //   homing_joint_positions["robot/door_opening_mechanism_joint_y_axis_slide"] = 0.1;
+    //   homing_joint_positions["robot/door_opening_mechanism_joint_x_axis_slide"] = 0.27;
+    //   homing_joint_positions["robot/door_opening_mechanism_joint_rotating_arm"] = 0;
+    //   homing_joint_positions["robot/door_opening_mechanism_joint_freely_rotating_hook"] = 0.0;
+    //   auto stage = std::make_unique<mtc::stages::MoveTo>(state_description, sampling_planner);
+    //   stage->setGroup(group_name);
+    //   stage->setGoal(homing_joint_positions);
+    //   task.add(std::move(stage));
+    // }
 
     return task;
   }
