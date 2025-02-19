@@ -12,7 +12,6 @@ RUN apt-get update && apt-get install -y \
   ros-humble-ros-testing \
   ros-humble-ament-cmake-test \
   ros-humble-launch-testing \
-  libpqxx-dev \
   libboost-all-dev \
   git \
   && rosdep init || echo "rosdep already initialized"
@@ -23,7 +22,7 @@ RUN mkdir src; cd src; git clone https://github.com/SICKAG/sick_safevisionary_ro
   rosdep init; rosdep update
 
 RUN rosdep install --from-paths ./ --ignore-src -y
-  
+
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh; colcon build --packages-select sick_safevisionary_base sick_safevisionary_interfaces sick_safevisionary_driver  --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 RUN echo "if [ -f /ws/install/setup.bash ]; then source /ws/install/setup.bash; fi" >> ~root/.bashrc

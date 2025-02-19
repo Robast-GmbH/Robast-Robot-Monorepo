@@ -6,6 +6,8 @@ from sub_bridges.nfc_bridge import NfcBridge
 from sub_bridges.disinfection_module_bridge import DisinfectionModuleBridge
 from sub_bridges.error_bridge import ErrorBridge
 from sub_bridges.robot_status_bridge import RobotStatusBridge
+from sub_bridges.qr_bridge import QrBridge
+
 
 class RosBridge:
     def __init__(self, ip: str, port: int) -> None:
@@ -18,3 +20,4 @@ class RosBridge:
         self.disinfection_module_bridge = DisinfectionModuleBridge(self.ros)
         self.error_bridge = ErrorBridge(self.ros)
         self.robot_status_bridge = RobotStatusBridge(self.ros)
+        self.qr_bridge = QrBridge(self.ros)

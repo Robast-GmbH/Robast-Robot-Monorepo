@@ -1,11 +1,12 @@
+ARG QUIRC_VERSION=1.2
 ARG ROS_BUILD_DISTRO=humble
 ARG BRANCH_TAG
 FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO}${BRANCH_TAG} AS devel
 ARG ROS_BUILD_DISTRO
-
+ARG QUIRC_VERSION
+USER root
 RUN apt-get update && apt-get install -y \
-  libboost-all-dev \
-  libpqxx-dev \
+  libopencv-dev \
   ros-${ROS_BUILD_DISTRO}-ament-cmake-test \
   ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
   ros-${ROS_BUILD_DISTRO}-ros-testing \
@@ -13,13 +14,18 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/cache/apk/* \
   && rosdep init || echo "rosdep already initialized"
 
+USER robast
+WORKDIR /robast/libs
+RUN curl https://github.com/dlbeer/quirc/archive/refs/tags/v${QUIRC_VERSION}.tar.gz -L | tar -xvz && mv quirc-${QUIRC_VERSION} quirc
+
 
 ############################## Build ##################################
 FROM ghcr.io/robast-gmbh/monorepo/robast-source:${ROS_BUILD_DISTRO} AS build
 ARG ROS_BUILD_DISTRO
 COPY . /ws/src/hardware_nodes
+COPY --from=devel /robast/libs /robast/libs
 USER root
-RUN apt-get update && apt-get install -y git
+RUN apt-get update && apt-get install -y git libopencv-dev 
 
 
 # TODO: No idea why but it seems that this version is broken: ros-humble-ros2-socketcan/jammy 1.3.0-1jammy.20240729.003002 amd64
@@ -53,7 +59,7 @@ USER root
 
 RUN apt-get update && apt-get upgrade -y && \
   apt-get install -y \
-  libboost-all-dev \
+  libopencv-dev \
   ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
   && rm -rf /var/cache/apk/*
 
@@ -63,4 +69,4 @@ RUN echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_
 
 USER robast
 WORKDIR /robast
-  
+

@@ -1,8 +1,8 @@
 #include <memory>
 
+#include "drawer/e_drawer_config_manager.hpp"
 #include "drawer_controller/global.hpp"
 #include "led/led_strip.hpp"
-#include "utils/e_drawer_config_manager.hpp"
 
 // VERY IMPORTANT: Set the hardware version of the drawer controller pcb here (currently 3 and 4 are supported):
 #define HARDWARE_VERSION 4
@@ -38,7 +38,7 @@ constexpr uint32_t MODULE_ID = module_id::generate_module_id(USER_CONFIG.module_
 
 std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, MODULE_HARDWARE_CONFIG.total_num_of_leds>> led_strip;
 
-std::unique_ptr<utils::EDrawerConfigManager> config_manager;
+std::unique_ptr<drawer::EDrawerConfigManager> config_manager;
 
 // Initialize can_controller based on HARDWARE_VERSION
 #if HARDWARE_VERSION == 3
@@ -209,6 +209,11 @@ void process_can_msgs_task_loop(void* pvParameters)
         }
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_MOTOR_CONTROL:
         {
+          if (!MODULE_HARDWARE_CONFIG.is_electrical_drawer)
+          {
+            serial_println_warning("[Main]: Received motor control message, but module is not an electrical drawer!");
+            break;
+          }
           const bool enable_motor =
             received_message->get_can_signals()
               .at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::ENABLE_MOTOR)
@@ -216,7 +221,9 @@ void process_can_msgs_task_loop(void* pvParameters)
           const uint8_t motor_id = received_message->get_can_signals()
                                      .at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::MOTOR_ID)
                                      .get_data();
-          i_drawer->set_motor_driver_state(enable_motor, motor_id);
+          motion_controller->set_motor_driver_state(enable_motor, motor_id);
+          can_utils->enqueue_e_drawer_motor_control_msg(
+            MODULE_ID, motor_id, enable_motor, drawer::CONFIRM_MOTOR_CONTROL_CHANGE);
         }
         default:
           serial_println_warning("[Main]: Received unsupported CAN message.");
@@ -247,7 +254,7 @@ void setup()
   Serial.begin(115200);
   serial_printf_green("[Main]: Start the module with the module id: %d.\n", MODULE_ID);
 
-  config_manager = std::make_unique<utils::EDrawerConfigManager>();
+  config_manager = std::make_unique<drawer::EDrawerConfigManager>();
   config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                              USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
   config_manager->print_all_configs();
@@ -312,22 +319,27 @@ void setup()
 
   if (MODULE_HARDWARE_CONFIG.is_electrical_drawer)
   {
-    i_drawer = std::make_shared<drawer::ElectricalDrawer>(
+    motion_controller = std::make_shared<drawer::MotionController>(
       MODULE_ID,
       USER_CONFIG.lock_id,
-      gpio_wrapper,
-      can_utils,
-      stepper_1_pin_id_config,
       MODULE_HARDWARE_CONFIG.use_encoder,
       gpio_wrapper->get_gpio_num_for_pin_id(gpio_defines::pin_id::STEPPER_1_ENCODER_A),
       gpio_wrapper->get_gpio_num_for_pin_id(gpio_defines::pin_id::STEPPER_1_ENCODER_B),
       STEPPER_MOTOR_1_ADDRESS,
-      config_manager->get_motor_config(),
-      endstop_switch,
-      drawer_lock,
-      config_manager->get_drawer_config(),
       config_manager->get_encoder_config(),
-      config_manager->get_motor_monitor_config());
+      config_manager->get_motor_config(),
+      config_manager->get_motor_monitor_config(),
+      stepper_1_pin_id_config,
+      gpio_wrapper,
+      config_manager->get_drawer_config());
+
+    i_drawer = std::make_shared<drawer::ElectricalDrawer>(MODULE_ID,
+                                                          USER_CONFIG.lock_id,
+                                                          can_utils,
+                                                          endstop_switch,
+                                                          config_manager->get_drawer_config(),
+                                                          motion_controller,
+                                                          drawer_lock);
   }
   else
   {

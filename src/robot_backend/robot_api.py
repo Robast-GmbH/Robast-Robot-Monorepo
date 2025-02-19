@@ -162,15 +162,27 @@ NFC API Endpoints
 """
 
 
-@app.get("/nfc_tag", tags=["NFC"])
-def get_nfc_tag():
-    return {"nfc_tag": ros_bridge.nfc_bridge.get_nfc_tag()}
-
-
 @app.get("/read_nfc_tag", tags=["NFC"])
 def read_nfc_tag(timeout_in_s: int):
     api_logger.info(f"Received read NFC tag request with timeout: {timeout_in_s}")
     return ros_bridge.nfc_bridge.read_nfc_tag(timeout_in_s=timeout_in_s)
+
+
+"""
+======================
+QR Reader API Endpoints
+======================
+"""
+
+
+@app.get("/read_qr_code", tags=["QR Reader"])
+def read_qr_code(expected_data: str, timeout_in_s: int):
+    api_logger.info(
+        f"Received read QR code request with expected value: {expected_data} and timeout: {timeout_in_s}"
+    )
+    return ros_bridge.qr_bridge.read_qr_code(
+        expected_data=expected_data, timeout_in_s=timeout_in_s
+    )
 
 
 """

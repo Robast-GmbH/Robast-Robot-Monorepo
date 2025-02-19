@@ -1,5 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
-#include <utils/partial_drawer_config_manager.hpp>
+#include <tray/partial_drawer_config_manager.hpp>
 
 // How to run this:
 // Go into the utils folder and run the following command:
@@ -11,7 +11,7 @@
 
 TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
 {
-  auto config_manager = std::make_unique<utils::PartialDrawerConfigManager>();
+  auto config_manager = std::make_unique<tray::PartialDrawerConfigManager>();
 
   auto e_drawer_config = config_manager->get_drawer_config();
   auto encoder_config = config_manager->get_encoder_config();

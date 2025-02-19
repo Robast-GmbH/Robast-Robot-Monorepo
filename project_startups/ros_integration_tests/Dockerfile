@@ -20,10 +20,9 @@ RUN apt-get update && apt-get install -y \
     qtbase5-dev \
     libqt5svg5-dev \
     gdb \
-    libpqxx-dev \
     lcov \
     && rm -rf /var/lib/apt/lists/*
-    
+
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,compute,utility
 
@@ -40,9 +39,9 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /robotnik
 RUN git clone -b humble-devel https://github.com/RobotnikAutomation/robotnik_msgs.git && \
-. /opt/ros/${ROS_DISTRO}/setup.sh && \
-colcon build --packages-select robotnik_msgs --install-base /robast/${ROS_DISTRO}/ --cmake-args -DCMAKE_BUILD_TYPE=Release \
- && echo "if [ -f /robast/humble/setup.bash ]; then source /robast/humble/setup.bash; fi" >> /home/${USER}/.bashrc
+    . /opt/ros/${ROS_DISTRO}/setup.sh && \
+    colcon build --packages-select robotnik_msgs --install-base /robast/${ROS_DISTRO}/ --cmake-args -DCMAKE_BUILD_TYPE=Release \
+    && echo "if [ -f /robast/humble/setup.bash ]; then source /robast/humble/setup.bash; fi" >> /home/${USER}/.bashrc
 
 WORKDIR /workspace
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 

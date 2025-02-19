@@ -6,8 +6,8 @@
 #include "gpio/gpio_wrapper_pca9535.hpp"
 #include "peripherals/gpio_defines.hpp"
 #include "peripherals/pinout_defines.hpp"
+#include "tray/partial_drawer_config_manager.hpp"
 #include "tray/tray_manager.hpp"
-#include "utils/partial_drawer_config_manager.hpp"
 
 // These are the very basic top level configurations for the drawer controller you need to set.
 // Besides that there are a lot of other configs that are managed by the ConfigManager and can be set via CAN messages.
@@ -33,7 +33,7 @@ std::shared_ptr<tray::TrayManager> tray_manager;
 
 std::unique_ptr<can_toolbox::CanController> can_controller;
 
-std::unique_ptr<utils::PartialDrawerConfigManager> config_manager;
+std::unique_ptr<tray::PartialDrawerConfigManager> config_manager;
 
 stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
   .stepper_enn_tmc2209_pin_id = peripherals::pin_id::STEPPER_1_ENN_TMC2209,
@@ -165,7 +165,9 @@ void process_can_msgs_task_loop(void* pvParameters)
           const uint8_t motor_id = received_message->get_can_signals()
                                      .at(robast_can_msgs::can_signal::id::electrical_drawer_motor_control::MOTOR_ID)
                                      .get_data();
-          e_drawer->set_motor_driver_state(enable_motor, motor_id);
+          motion_controller->set_motor_driver_state(enable_motor, motor_id);
+          can_utils->enqueue_e_drawer_motor_control_msg(
+            MODULE_ID, motor_id, enable_motor, drawer::CONFIRM_MOTOR_CONTROL_CHANGE);
         }
         default:
           serial_println_warning("[Main]: Received unsupported CAN message.");
@@ -227,7 +229,7 @@ void setup()
   can_controller = std::make_unique<can_toolbox::CanController>(
     MODULE_ID, can_db, peripherals::pinout::TWAI_TX_PIN, peripherals::pinout::TWAI_RX_PIN);
 
-  config_manager = std::make_unique<utils::PartialDrawerConfigManager>();
+  config_manager = std::make_unique<tray::PartialDrawerConfigManager>();
   config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                              USER_CONFIG.is_shaft_direction_inverted ? 1 : 0);
   config_manager->print_all_configs();
@@ -238,22 +240,30 @@ void setup()
 
   heartbeat = std::make_shared<watchdog::Heartbeat>(MODULE_ID, can_utils, config_manager->get_heartbeat_config());
 
-  e_drawer = std::make_shared<drawer::ElectricalDrawer>(
+  // The partial drawer currently has no drawer lock
+  const std::optional<std::shared_ptr<lock::ElectricalDrawerLock>> drawer_lock = std::nullopt;
+
+  motion_controller = std::make_shared<drawer::MotionController>(
     MODULE_ID,
     USER_CONFIG.lock_id,
-    gpio_wrapper,
-    can_utils,
-    stepper_1_pin_id_config,
     MODULE_HARDWARE_CONFIG.use_encoder,
     gpio_wrapper->get_gpio_num_for_pin_id(peripherals::pin_id::STEPPER_1_ENCODER_A),
     gpio_wrapper->get_gpio_num_for_pin_id(peripherals::pin_id::STEPPER_1_ENCODER_B),
     STEPPER_MOTOR_1_ADDRESS,
-    config_manager->get_motor_config(),
-    endstop_switch,
-    std::nullopt,
-    config_manager->get_drawer_config(),
     config_manager->get_encoder_config(),
-    config_manager->get_motor_monitor_config());
+    config_manager->get_motor_config(),
+    config_manager->get_motor_monitor_config(),
+    stepper_1_pin_id_config,
+    gpio_wrapper,
+    config_manager->get_drawer_config());
+
+  e_drawer = std::make_shared<drawer::ElectricalDrawer>(MODULE_ID,
+                                                        USER_CONFIG.lock_id,
+                                                        can_utils,
+                                                        endstop_switch,
+                                                        config_manager->get_drawer_config(),
+                                                        motion_controller,
+                                                        drawer_lock);
 
   std::vector<tray::TrayPinConfig> tray_pin_config = {{peripherals::pin_id::LOCK_1_OPEN_CONTROL,
                                                        peripherals::pin_id::LOCK_1_CLOSE_CONTROL,
@@ -283,7 +293,7 @@ void setup()
   tray_manager = std::make_shared<tray::TrayManager>(tray_pin_config,
                                                      gpio_wrapper,
                                                      wire_onboard_led_driver,
-                                                     e_drawer,
+                                                     motion_controller,
                                                      config_manager->get_motor_monitor_config(),
                                                      config_manager->get_tray_manager_config(),
                                                      SWITCH_PRESSED_THRESHOLD,

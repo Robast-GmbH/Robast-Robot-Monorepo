@@ -236,7 +236,7 @@
                             led_topic="/led_cmd"
                             leds="{leds}"/>
         <GeneratePartialPosition drawer_address="{drawer}"
-                                 front_offset="10"
+                                 front_offset="17"
                                  tray_count="8"
                                  target_position="{target_position}"/>
         <Delay delay_msec="1000">
@@ -333,7 +333,7 @@
       <input_port name="drawer_address"
                   default="{drawer}"/>
       <input_port name="front_offset"
-                  default="10">uint8</input_port>
+                  default="17">uint8</input_port>
       <input_port name="tray_count"
                   default="8">uint8</input_port>
       <output_port name="target_position"
