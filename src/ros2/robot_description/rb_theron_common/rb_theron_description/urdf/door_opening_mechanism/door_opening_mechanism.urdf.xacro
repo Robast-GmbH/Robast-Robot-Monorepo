@@ -71,8 +71,8 @@
             axis_x="0"
             axis_y="0"
             axis_z="1"
-            lower_limit="-0.015"
-            upper_limit="0.40"
+            lower_limit="0.0"
+            upper_limit="0.2"
             damping="0.1"
             friction="0.3"
             ros2_control_hardware_type="${ros2_control_hardware_type}"
@@ -92,7 +92,7 @@
             r="1"
             g="0"
             b="0">
-            <origin xyz="-0.075 -0.225 -0.1" rpy="0 0 0"/>
+            <origin xyz="-0.075 -0.225 0.0" rpy="0 0 0"/>
         </xacro:basic_joint>
 
         <xacro:basic_joint 
@@ -103,7 +103,7 @@
             axis_y="0"
             axis_z="1"
             lower_limit="-0.01"
-            upper_limit="0.30"
+            upper_limit="0.27"
             damping="0.1"
             friction="0.3"
             ros2_control_hardware_type="${ros2_control_hardware_type}"

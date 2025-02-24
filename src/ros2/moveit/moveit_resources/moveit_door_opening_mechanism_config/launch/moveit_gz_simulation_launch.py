@@ -29,6 +29,7 @@ def generate_launch_description():
     launch_arguments = {
         "ros2_control_hardware_type": "gz_ros2_control",
         "position_joint_type": "prismatic",
+        "model_door_opening_mechanism": "true",
     }
 
     ros_distro = os.environ["ROS_DISTRO"]

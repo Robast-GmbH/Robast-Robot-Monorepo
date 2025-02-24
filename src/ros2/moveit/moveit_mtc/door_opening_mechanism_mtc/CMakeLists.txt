@@ -10,6 +10,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(depthai_ros_msgs REQUIRED)
 find_package(graph_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(rviz_visual_tools REQUIRED)
 find_package(moveit_visual_tools REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
@@ -34,6 +35,7 @@ set(dependencies
   rclcpp
   depthai_ros_msgs
   graph_msgs
+  std_msgs
   rviz_visual_tools
   moveit_visual_tools
   moveit_ros_planning_interface

@@ -1,14 +1,23 @@
 import os
 
+from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from moveit_configs_utils import MoveItConfigsBuilder
 
 
 def generate_launch_description():
-    launch_arguments = {
-        "ros2_control_hardware_type": "gz_ros2_control",
+    urdf_launch_arguments = {
+        "ros_distro": os.environ["ROS_DISTRO"],
+        "prefix": "robot/",
+        "ros2_control_hardware_type": "dryve_d1",
         "position_joint_type": "prismatic",
+        "model_door_opening_mechanism": "true",
+        "model_module_cage": "false",
+        "model_sensors": "false",
+        "ros2_control_hardware_type_positon_joint": "real_life",
     }
 
     ros_distro = os.environ["ROS_DISTRO"]
@@ -25,10 +34,12 @@ def generate_launch_description():
             package_name="moveit_door_opening_mechanism_config",
         )
         .robot_description(
-            file_path="config/rb_theron.urdf.xacro", mappings=launch_arguments
+            file_path="config/rb_theron.urdf.xacro", mappings=urdf_launch_arguments
         )
-        .trajectory_execution(file_path="config/moveit_controllers.yaml")
+        .robot_description_semantic(file_path="config/rb_theron_real_world.srdf")
+        .trajectory_execution(file_path="config/moveit_controllers_real_world.yaml")
         .planning_pipelines(pipelines=planning_pipelines)
+        .joint_limits(file_path="config/joint_limits_real_world.yaml")
         .to_moveit_configs()
     )
 
@@ -37,7 +48,7 @@ def generate_launch_description():
     door_opening_mechanism_mtc_node = Node(
         package="door_opening_mechanism_mtc",
         executable="door_opening_mechanism_mtc",
-        name="door_opening_mechanism_mtc",
+        name="door_opening_mechanism_mtc_node",
         parameters=[
             {"moveit2_planning_group_name": "mobile_base_arm"},
             {"use_sim_time": True},
@@ -47,5 +58,13 @@ def generate_launch_description():
         output="screen",
     )
 
+    launch_pose_publisher = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            get_package_share_directory("publish_pose_from_spatial_detection")
+            + "/launch/publish_pose_from_spatial_detections_launch.py"
+        )
+    )
+
     ld.add_action(door_opening_mechanism_mtc_node)
+    ld.add_action(launch_pose_publisher)
     return ld

@@ -25,6 +25,9 @@ from launch.conditions import IfCondition, UnlessCondition
 
 def launch_robot_state_publisher(context, *args, **settings):
     position_joint_type = LaunchConfiguration("position_joint_type").perform(context)
+    model_door_opening_mechanism = LaunchConfiguration(
+        "model_door_opening_mechanism"
+    ).perform(context)
 
     robot_xml = xacro.process_file(
         os.path.join(
@@ -38,6 +41,7 @@ def launch_robot_state_publisher(context, *args, **settings):
             "ros2_control_hardware_type_positon_joint": "gz_ros2_control",
             "ros_distro": settings["ros_distro"],
             "position_joint_type": position_joint_type,
+            "model_door_opening_mechanism": model_door_opening_mechanism,
             "robot_type": settings["robot_type"],
         },
     ).toxml()
@@ -108,6 +112,7 @@ def generate_launch_description():
     headless = LaunchConfiguration("headless")
     robot_name = LaunchConfiguration("robot_name")
     position_joint_type = LaunchConfiguration("position_joint_type")
+    model_door_opening_mechanism = LaunchConfiguration("model_door_opening_mechanism")
     init_x = os.environ["init_x"]
     init_y = os.environ["init_y"]
     init_yaw = os.environ["init_yaw"]
@@ -212,6 +217,12 @@ def generate_launch_description():
         "position_joint_type",
         default_value="fixed",
         description="whether to model the position joint as fixed, prismatic or planar",
+    )
+
+    declare_model_door_opening_mechanism_cmd = DeclareLaunchArgument(
+        "model_door_opening_mechanism",
+        default_value="False",
+        description="whether to model the door opening mechanism",
     )
 
     # As far as I understand, to get the value of a launch argument
@@ -328,9 +339,7 @@ def generate_launch_description():
     )
 
     spawn_ros2_controller_without_arm = GroupAction(
-        condition=IfCondition(
-            PythonExpression(["'", position_joint_type, "' == 'fixed'"])
-        ),
+        condition=UnlessCondition(model_door_opening_mechanism),
         actions=[
             RegisterEventHandler(
                 event_handler=OnProcessExit(
@@ -354,9 +363,7 @@ def generate_launch_description():
     )
 
     spawn_ros2_controller_with_arm = GroupAction(
-        condition=IfCondition(
-            PythonExpression(["'", position_joint_type, "' == 'prismatic'"])
-        ),
+        condition=IfCondition(PythonExpression([model_door_opening_mechanism])),
         actions=[
             RegisterEventHandler(
                 event_handler=OnProcessExit(
@@ -397,6 +404,7 @@ def generate_launch_description():
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_position_joint_type_cmd)
+    ld.add_action(declare_model_door_opening_mechanism_cmd)
     ld.add_action(declare_world_model_cmd)
     ld.add_action(declare_robot_model_cmd)
     ld.add_action(declare_headless_cmd)

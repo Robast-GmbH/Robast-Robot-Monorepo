@@ -13,11 +13,25 @@
         <chain base_link="alu_profile_link_right" tip_link="door_opening_mechanism_link_freely_rotating_hook"/>
         <joint name="position_joint" />
     </group>
+    
+    <group name="rotating_arm">
+        <chain base_link="door_opening_mechanism_link_rotating_arm" tip_link="hook_base_link"/>
+        <link name="hook_link_back_side" />
+        <link name="hook_link_front_side" />
+    </group>
 
-    <group_state name="starting_position" group="mobile_base_arm">
+    <group_state name="starting_position_right" group="mobile_base_arm">
         <joint name="door_opening_mechanism_joint_y_axis_slide" value="0.2"/>
-        <joint name="door_opening_mechanism_joint_x_axis_slide" value="0.1"/>
-        <joint name="door_opening_mechanism_joint_rotating_arm" value="0.1"/>
+        <joint name="door_opening_mechanism_joint_x_axis_slide" value="0.0"/>
+        <joint name="door_opening_mechanism_joint_rotating_arm" value="1.57079632679"/>
+        <joint name="door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
+        <joint name="position_joint" value="0"/>
+    </group_state>
+
+    <group_state name="starting_position_left" group="mobile_base_arm">
+        <joint name="door_opening_mechanism_joint_y_axis_slide" value="0.2"/>
+        <joint name="door_opening_mechanism_joint_x_axis_slide" value="0.27"/>
+        <joint name="door_opening_mechanism_joint_rotating_arm" value="1.57079632679"/>
         <joint name="door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
         <joint name="position_joint" value="0"/>
     </group_state>
@@ -74,6 +88,8 @@
     <disable_default_collisions link="front_rightsupport" />
     <disable_default_collisions link="left_wheel_tire_link" />
     <disable_default_collisions link="right_wheel_tire_link" />
+    <disable_default_collisions link="odom" />
+    <disable_default_collisions link="base_footprint" />
     <disable_default_collisions link="base_link" />
 
      <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->

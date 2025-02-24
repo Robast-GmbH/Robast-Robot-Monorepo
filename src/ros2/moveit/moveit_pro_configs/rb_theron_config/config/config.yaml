@@ -33,9 +33,11 @@ hardware:
 
   # Specify additional launch files for running the robot with real hardware.
   # [Optional, defaults to a blank launch file if not specified]
+  # This is run when running robot.app
   robot_driver_persist_launch_file:
     package: "rb_theron_config"
     path: "launch/robot_drivers_to_persist_launch.py"
+    # This is run when running agent.app
   hardware_launch_file:
     package: "moveit_studio_agent"
     path: "launch/blank.launch.py"
@@ -82,6 +84,7 @@ hardware:
       - prefix: ""
       - ros2_control_hardware_type: "mock_components"
       - position_joint_type: "prismatic"
+      - model_door_opening_mechanism: "true"
       - ros2_control_hardware_type_positon_joint: "mock_components"
 
 # Sets ROS global params for launch.
@@ -119,15 +122,21 @@ moveit_params:
   ompl_planning:
     package: "moveit_door_opening_mechanism_config"
     path: "config/ompl_iron_planning.yaml" # check above comment
+  stomp_planning:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/stomp_planning.yaml"
+  pilz_planning:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/pilz_industrial_motion_planner_planning.yaml"
   kinematics:
     package: "moveit_door_opening_mechanism_config"
     path: "config/kinematics.yaml"
+  moveit_simple_controller_manager:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/moveit_simple_controller_manager.yaml"
   servo:
     package: "moveit_door_opening_mechanism_config"
     path: "config/rb_theron_servo.yaml"
-  sensors_3d:
-    package: "moveit_door_opening_mechanism_config"
-    path: "config/sensors_3d.yaml"
   servo_kinematics:
     package: "moveit_door_opening_mechanism_config"
     path: "config/kinematics.yaml"
@@ -153,8 +162,6 @@ moveit_params:
     allowed_goal_duration_margin: 0.5
     allowed_start_tolerance: 0.01
 
-  # According to Henning this should be supported soon but is not yet (as of 09.11.2023)
-  moveit_controller_manager: moveit_ros_control_interface/Ros2ControlManager
 
 # Additional configurable parameters for the MoveIt Studio user interface.
 # [Required]

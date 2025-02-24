@@ -151,6 +151,15 @@
   lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
+- ros_topic_name: "back_top_realsense_camera/color_camera_info"
+  gz_topic_name: "/back_top_realsense_camera/back_top_realsense_camera/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "ignition.msgs.CameraInfo"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
 - ros_topic_name: "/back_realsense_camera/color"
   gz_topic_name: "/back_realsense_camera/color"
   ros_type_name: "sensor_msgs/msg/Image"

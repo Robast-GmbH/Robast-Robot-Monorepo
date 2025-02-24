@@ -11,8 +11,8 @@ docker run \
 	--volume=/home/robot/robast/Monorepo/src/ros2/ros2_control/hardware_interfaces/ros2_control_plugin_dryve_d1:/workspace/src/ros2_control/hardware_interfaces/ros2_control_plugin_dryve_d1 \
 	--volume=/home/robot/robast/Monorepo/src/ros2/ros2_control/hardware_interfaces/ros2_control_base_movement:/workspace/src/ros2_control/hardware_interfaces/ros2_control_base_movement \
 	--volume=/home/robot/robast/Monorepo/src/ros2/ros2_control/hardware_interfaces/hardware_interface_utils:/workspace/src/ros2_control/hardware_interfaces/hardware_interface_utils \
-	--volume=/home/robot/robast/Monorepo/src/ros2/moveit:/workspace/src/moveit \
 	--volume=/home/robot/robast/Monorepo/src/ros2/ros2_control/ros2_controllers:/workspace/src/ros2_control/ros2_controllers \
+	--volume=/home/robot/robast/Monorepo/src/ros2/moveit:/workspace/src/moveit \
 	--volume=/home/robot/robast/Monorepo/src/ros2/dds_configs:/workspace/dds_configs \
 	--volume=/home/robot/robast/Monorepo/src/ros2/utils/launch_manager:/workspace/src/utils/launch_manager \
 	-e DISPLAY=:0 \
@@ -20,5 +20,6 @@ docker run \
 	--env robot=rb_theron \
 	--env prefix="" \
 	--user robast \
-	ghcr.io/robast-gmbh/monorepo/moveit:devel-humble
+	ghcr.io/robast-gmbh/monorepo/moveit:devel-humble \
+	bash -c "cd ~/../../workspace && sudo apt-get update && sudo apt-get upgrade -y && rosdep update && rosdep install --from-paths src --ignore-src -r -y && colcon build && bash"
 
