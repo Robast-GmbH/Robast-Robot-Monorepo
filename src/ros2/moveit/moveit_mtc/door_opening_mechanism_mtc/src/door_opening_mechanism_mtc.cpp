@@ -188,6 +188,14 @@ namespace door_opening_mechanism_mtc
     }
 
     {
+      state_description = "Disable collision checking";
+      auto modify_planning_scene_stage = std::make_unique<mtc::stages::ModifyPlanningScene>(state_description);
+      modify_planning_scene_stage->allowCollisions("robot/right_wheel_link", "robot/right_wheel_tire_link", true);
+      modify_planning_scene_stage->allowCollisions("robot/left_wheel_link", "robot/left_wheel_tire_link", true);
+      task.add(std::move(modify_planning_scene_stage));
+    }
+
+    {
       state_description = "Move above door handle";
       // Connect the initial stage with the generated IK solution using the sampling planner.
       auto connector_stage = std::make_unique<moveit::task_constructor::stages::Connect>(
@@ -224,6 +232,14 @@ namespace door_opening_mechanism_mtc
     }
 
     {
+      state_description = "Disable collision checking";
+      auto modify_planning_scene_stage = std::make_unique<mtc::stages::ModifyPlanningScene>(state_description);
+      modify_planning_scene_stage->allowCollisions("robot/right_wheel_link", "robot/right_wheel_tire_link", true);
+      modify_planning_scene_stage->allowCollisions("robot/left_wheel_link", "robot/left_wheel_tire_link", true);
+      task.add(std::move(modify_planning_scene_stage));
+    }
+
+    {
       state_description = "Push door handle down";
       auto stage =
         std::make_unique<moveit::task_constructor::stages::MoveRelative>(state_description, cartesian_planner);
@@ -238,6 +254,14 @@ namespace door_opening_mechanism_mtc
       vec.vector.x = DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN;
       stage->setDirection(vec);
       task.add(std::move(stage));
+    }
+
+    {
+      state_description = "Disable collision checking";
+      auto modify_planning_scene_stage = std::make_unique<mtc::stages::ModifyPlanningScene>(state_description);
+      modify_planning_scene_stage->allowCollisions("robot/right_wheel_link", "robot/right_wheel_tire_link", true);
+      modify_planning_scene_stage->allowCollisions("robot/left_wheel_link", "robot/left_wheel_tire_link", true);
+      task.add(std::move(modify_planning_scene_stage));
     }
 
     {
@@ -258,6 +282,14 @@ namespace door_opening_mechanism_mtc
     }
 
     {
+      state_description = "Disable collision checking";
+      auto modify_planning_scene_stage = std::make_unique<mtc::stages::ModifyPlanningScene>(state_description);
+      modify_planning_scene_stage->allowCollisions("robot/right_wheel_link", "robot/right_wheel_tire_link", true);
+      modify_planning_scene_stage->allowCollisions("robot/left_wheel_link", "robot/left_wheel_tire_link", true);
+      task.add(std::move(modify_planning_scene_stage));
+    }
+
+    {
       state_description = "Move gripper above door handle again";
       auto stage =
         std::make_unique<moveit::task_constructor::stages::MoveRelative>(state_description, cartesian_planner);
@@ -272,6 +304,14 @@ namespace door_opening_mechanism_mtc
       vec.vector.x = -DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN;
       stage->setDirection(vec);
       task.add(std::move(stage));
+    }
+
+    {
+      state_description = "Disable collision checking";
+      auto modify_planning_scene_stage = std::make_unique<mtc::stages::ModifyPlanningScene>(state_description);
+      modify_planning_scene_stage->allowCollisions("robot/right_wheel_link", "robot/right_wheel_tire_link", true);
+      modify_planning_scene_stage->allowCollisions("robot/left_wheel_link", "robot/left_wheel_tire_link", true);
+      task.add(std::move(modify_planning_scene_stage));
     }
 
     {
@@ -307,6 +347,14 @@ namespace door_opening_mechanism_mtc
       ik_wrapper_push_door_open->properties().configureInitFrom(moveit::task_constructor::Stage::INTERFACE,
                                                                 {"target_pose"});
       task.add(std::move(ik_wrapper_push_door_open));
+    }
+
+    {
+      state_description = "Disable collision checking";
+      auto modify_planning_scene_stage = std::make_unique<mtc::stages::ModifyPlanningScene>(state_description);
+      modify_planning_scene_stage->allowCollisions("robot/right_wheel_link", "robot/right_wheel_tire_link", true);
+      modify_planning_scene_stage->allowCollisions("robot/left_wheel_link", "robot/left_wheel_tire_link", true);
+      task.add(std::move(modify_planning_scene_stage));
     }
 
     {

@@ -20,7 +20,7 @@ namespace door_opening_mechanism_mtc
 {
   namespace mtc = moveit::task_constructor;
 
-  constexpr float DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN = 0.070;
+  constexpr float DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN = 0.08;
   constexpr float DISTANCE_FOR_GRIPPER_ABOVE_DOOR_HANDLE = 0.04;
   constexpr float FORWARD_DISTANCE_TO_PUSH_DOOR_OUT_OF_LATCH = 0.05;
   constexpr float FORWARD_DISTANCE_TO_PUSH_DOOR_OPEN = 1.7;
