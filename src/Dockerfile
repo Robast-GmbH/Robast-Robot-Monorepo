@@ -120,7 +120,8 @@ WORKDIR /workspace
 # Dockerfile that contains the code of the Monorepo in the main branch.
 # Should be used in the CI/CD pipeline to build the docker image.
 ARG ROS_BUILD_DISTRO=humble
-FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS robast-source
+ARG BRANCH_TAG
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO}${BRANCH_TAG} AS robast-source
 
 COPY Hardware/ /monorepo/src/Hardware/
 COPY robot_backend/ /monorepo/src/robot_backend/

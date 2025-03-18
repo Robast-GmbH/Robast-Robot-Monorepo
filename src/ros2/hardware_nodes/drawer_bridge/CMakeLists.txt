@@ -29,29 +29,18 @@ find_package(can_msgs REQUIRED)
 find_package(error_utils REQUIRED)
 
 include_directories(include)
-include_directories(test/include)
 
 set(executable_drawer_bridge drawer_bridge)
-set(executable_drawer_bridge_test drawer_bridge_test)
 
 add_executable(${executable_drawer_bridge}
   src/main.cpp)
-add_executable(${executable_drawer_bridge_test}
-  test/ros2_tests/main.cpp)
 
 set(library_drawer_bridge ${executable_drawer_bridge}_core)
-set(library_drawer_bridge_test ${executable_drawer_bridge_test}_core)
 
 add_library(${library_drawer_bridge} SHARED
   src/drawer_bridge.cpp
   src/can_encoder_decoder.cpp
   src/can_message_creator.cpp
-)
-add_library(${library_drawer_bridge_test} SHARED
-  src/drawer_bridge.cpp
-  src/can_encoder_decoder.cpp
-  src/can_message_creator.cpp
-  test/src/test_drawer_bridge.cpp
 )
 
 set(dependencies
@@ -69,15 +58,7 @@ ament_target_dependencies(${executable_drawer_bridge}
 )
 target_link_libraries(${executable_drawer_bridge} ${library_drawer_bridge})
 
-ament_target_dependencies(${executable_drawer_bridge_test}
-  ${dependencies}
-)
-target_link_libraries(${executable_drawer_bridge_test} ${library_drawer_bridge_test})
-
 ament_target_dependencies(${library_drawer_bridge}
-  ${dependencies}
-)
-ament_target_dependencies(${library_drawer_bridge_test}
   ${dependencies}
 )
 
@@ -86,14 +67,56 @@ target_include_directories(drawer_bridge PUBLIC
   $<INSTALL_INTERFACE:include>)
 
 if(BUILD_TESTING)
+  include_directories(test/include)
+
   file(GLOB_RECURSE test_srcs "test/src/*.cpp")
 
   add_launch_test(test/ros2_tests/node_test_launch_testing.py)
+
+  set(executable_drawer_bridge_test drawer_bridge_test)
+  set(library_drawer_bridge_test ${executable_drawer_bridge_test}_core)
+
+  add_executable(${executable_drawer_bridge_test} test/ros2_tests/main.cpp)
+
+  add_library(${library_drawer_bridge_test} SHARED
+    src/drawer_bridge.cpp
+    src/can_encoder_decoder.cpp
+    src/can_message_creator.cpp
+    test/src/test_drawer_bridge.cpp
+  )
+
+  ament_target_dependencies(${executable_drawer_bridge_test}
+    ${dependencies}
+  )
+  target_link_libraries(${executable_drawer_bridge_test} ${library_drawer_bridge_test})
+
+  ament_target_dependencies(${library_drawer_bridge_test}
+    ${dependencies}
+  )
+
+  install(TARGETS
+    ${library_drawer_bridge_test}
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+  )
+
+  install(TARGETS
+    ${executable_drawer_bridge_test}
+    RUNTIME DESTINATION lib/${PROJECT_NAME}
+  )
+
+  install(FILES
+    test/ros2_tests/node_test_launch_testing.py
+    test/ros2_tests/node_test_expected_data.yaml 
+    test/ros2_tests/node_test_input_data.yaml 
+    DESTINATION lib/${PROJECT_NAME}
+  )
+
 endif()
 
 install(TARGETS
   ${library_drawer_bridge}
-  ${library_drawer_bridge_test}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -101,7 +124,6 @@ install(TARGETS
 
 install(TARGETS
   ${executable_drawer_bridge}
-  ${executable_drawer_bridge_test}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -113,12 +135,6 @@ install(DIRECTORY
   launch
   DESTINATION share/${PROJECT_NAME}/
 )
-
-install(FILES
-  test/ros2_tests/node_test_launch_testing.py
-  test/ros2_tests/node_test_expected_data.yaml 
-  test/ros2_tests/node_test_input_data.yaml 
-  DESTINATION lib/${PROJECT_NAME})
 
 ament_export_include_directories(include)
 

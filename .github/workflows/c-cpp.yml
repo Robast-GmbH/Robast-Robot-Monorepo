@@ -32,3 +32,49 @@ jobs:
           echo "Done"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  remove-simulation-branch-images:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: simulation    
+
+  remove-nav-branch-images:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: navigation
+
+  remove-statemachine-branch-images:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: statemachine
+
+  remove-hardware-nodes-branch-images:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: hardware_nodes
+
+  remove-moveit-branch-images:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: moveit
+
+  remove-base-branch-images:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: robast-dev-base
+
+  remove-base-core-branch-images:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: robast-dev-core
+
+  remove-base-source-branch-images:
+    uses: ./.github/workflows/remove_image_from_ghcr.yml
+    with:
+      project-name: robast-source
+  
+
+        
+
+
+    

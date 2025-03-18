@@ -1,5 +1,6 @@
 ARG ROS_BUILD_DISTRO=humble
-FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS base
+ARG BRANCH_TAG
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO}${BRANCH_TAG} AS base
 ARG GAZEBO_VERSION=fortress
 USER root
 
