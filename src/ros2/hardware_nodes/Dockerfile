@@ -8,6 +8,9 @@ RUN apt-get update && apt-get install -y \
   libopencv-dev \
   ros-${ROS_BUILD_DISTRO}-ament-cmake-test \
   ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
+  ros-humble-ros-testing \
+  alsa-utils \
+  mpg123 \
   ros-${ROS_BUILD_DISTRO}-ros-testing \
   ros-${ROS_BUILD_DISTRO}-launch-testing \
   && rm -rf /var/cache/apk/* \
@@ -60,6 +63,8 @@ RUN apt-get update && apt-get upgrade -y && \
   apt-get install -y \
   libopencv-dev \
   ros-${ROS_BUILD_DISTRO}-ros2-socketcan \
+  alsa-utils \
+  mpg123 \
   && rm -rf /var/cache/apk/*
 
 ENV ROS_DOMAIN_ID=0

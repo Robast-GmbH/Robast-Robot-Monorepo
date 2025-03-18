@@ -29,6 +29,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "action/ElectricalDrawerMotorControl.action"
   "action/ImportYamlPoses.action"
   "action/ModuleConfig.action"
+  "action/PlaySound.action"
 
   "srv/HandleDrawer.srv"
   "srv/ShowDrawerInterface.srv"

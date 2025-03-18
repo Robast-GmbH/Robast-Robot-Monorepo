@@ -41,11 +41,17 @@ services:
       - BLUE=${BLUE:-0}
       - BRIGHTNESS=${BRIGHTNESS:-0}
       - CYCLONEDDS_URI=/DDS/cyclone_DDS_config.xml
+      - PULSE_SERVER=unix:/run/user/1000/pulse/native
+      - XDG_RUNTIME_DIR=/run/user/1000
     devices:
       - "/dev/robast/robast_nfc:/dev/robast/robast_nfc"
+      - "/dev/snd:/dev/snd"
     volumes:
       - ./start_scripts/:/start_scripts/:ro
       - ./DDS/:/DDS/:ro
+      - /run/user/1000/pulse:/run/user/1000/pulse
+      - /home/robast/workspace/Monorepo/data/sounds/:/robast/sounds/:ro
+      - /run/user/1000:/run/user/1000
     stop_signal: SIGINT
     restart: unless-stopped
     network_mode: "host"

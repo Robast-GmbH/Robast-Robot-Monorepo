@@ -4,7 +4,7 @@
   <BehaviorTree ID="MainTree">
     <Sequence>
       <RecoveryNode name="NavigateRecovery"
-                    number_of_retries="7">
+                    number_of_retries="11">
         <PipelineSequence name="NavigateWithReplanning">
           <RateController hz="1.0">
             <RecoveryNode name="ComputePathToPose"
@@ -20,7 +20,10 @@
                   <IfThenElse>
                     <CheckPersonInFront topic="person_distance"
                                         detection_range="10"/>
-                    <Wait wait_duration="5"/>
+                    <Sequence>
+                      <PlaySoundAction file_name="aus_dem_weg.mp3"/>
+                      <Wait wait_duration="5"/>
+                    </Sequence>
                     <AlwaysSuccess/>
                   </IfThenElse>
                   <ComputePathToPose goal="{goal}"
@@ -56,7 +59,19 @@
               <ClearEntireCostmap name="ClearGlobalCostmap-Subtree"
                                   service_name="global_costmap/clear_entirely_global_costmap"/>
             </Sequence>
+            <IfThenElse>
+              <CheckPersonInFront topic="person_distance"
+                                  detection_range="10"/>
+              <Sequence>
+                <PlaySoundAction file_name="aus_dem_weg.mp3"/>
+                <Wait wait_duration="5"/>
+              </Sequence>
+              <AlwaysSuccess/>
+            </IfThenElse>
             <Wait wait_duration="2"/>
+            <ComputePathToPose goal="{goal}"
+                               path="{path}"
+                               planner_id="GridBased"/>
           </RoundRobin>
         </ReactiveFallback>
       </RecoveryNode>
@@ -94,6 +109,9 @@
     </Action>
     <Control ID="PipelineSequence"
              editable="true"/>
+    <Action ID="PlaySoundAction">
+      <input_port name="file_name">Name of the sound to be played</input_port>
+    </Action>
     <Decorator ID="RateController"
                editable="true">
       <input_port name="hz"/>
