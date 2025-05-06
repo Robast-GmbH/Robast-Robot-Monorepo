@@ -54,23 +54,24 @@
 
 	<xacro:arg name="ros_distro" default="humble" />
 
+	<!-- Whether the sensors should be modeled -->
+	<xacro:arg name="model_sensors" default="true" />
+
+	<!-- Whether the robot should have the module cage including the modules -->
+	<xacro:arg name="model_module_cage" default="true" />
+
+	<!-- Whether the robot should have a door opening mechanism -->
+	<xacro:arg name="model_door_opening_mechanism" default="false" />
+
 	<!-- Whether the position joint should be modeled as a fixed joint, a prismatic joint or a planar joint -->
 	<xacro:arg name="position_joint_type" default="fixed" />
-	<xacro:property name="position_joint_type_prop" value="$(arg position_joint_type)"/>
 
-	<!-- If we model the position joint, the sensors need be placed in the base_link frame,
-	otherwise they should be placed in the base_footprint frame -->
-	<xacro:if value="${position_joint_type_prop == 'prismatic' or position_joint_type_prop == 'planar'}">
+	<xacro:if value="${publish_bf}">
+		<xacro:property name="sensor_base_frame" value="base_footprint"/>
+	</xacro:if>
+	<xacro:unless value="${publish_bf}">
 		<xacro:property name="sensor_base_frame" value="base_link"/>
-	</xacro:if>
-	<xacro:if value="${position_joint_type_prop == 'fixed'}">
-		<xacro:if value="${publish_bf}">
-			<xacro:property name="sensor_base_frame" value="base_footprint"/>
-		</xacro:if>
-		<xacro:unless value="${publish_bf}">
-			<xacro:property name="sensor_base_frame" value="base_link"/>
-		</xacro:unless>
-	</xacro:if>
+	</xacro:unless>
 
 	<!-- *************** -->
 	<!-- Robots Elements -->
@@ -84,147 +85,152 @@
 	  ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
 	  ros2_control_hardware_type_positon_joint="$(arg ros2_control_hardware_type_positon_joint)"
 	  ros_distro="$(arg ros_distro)"
-	  position_joint_type="$(arg position_joint_type)">
+	  position_joint_type="$(arg position_joint_type)"
+	  model_door_opening_mechanism="$(arg model_door_opening_mechanism)">
 	</xacro:rb_theron_base>
 
 	<!-- Gazebo ros control pluggins -->
 	<!-- <xacro:ros_control/> -->
 	<xacro:gazebo_colors prefix="$(arg prefix)"/>
 
-	<!-- SENSORS  DEBUGG-->
-	<!-- TODO: Should be sensor_intel_d435, but this one isn't migrated to ros2 yet -->
-	<!-- TODO: Moved 0.01 in x, otherwise the camera is still inside the robot -->
-	<xacro:sensor_r430 prefix="$(arg prefix)front_realsense_camera" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="front_realsense_camera" hq="${hq}">
-		<origin xyz="0.3305 0.0 0.1468" rpy="0 0 0"/>
-	</xacro:sensor_r430>
+	<!-- SENSORS -->
+	<xacro:if value="$(arg model_sensors)">
+		<!-- TODO: Should be sensor_intel_d435, but this one isn't migrated to ros2 yet -->
+		<!-- TODO: Moved 0.01 in x, otherwise the camera is still inside the robot -->
+		<xacro:sensor_r430 prefix="$(arg prefix)front_realsense_camera" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="front_realsense_camera" hq="${hq}">
+			<origin xyz="0.3305 0.0 0.1468" rpy="0 0 0"/>
+		</xacro:sensor_r430>
 
-	<xacro:sensor_r430 prefix="$(arg prefix)back_realsense_camera" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="back_realsense_camera" hq="${hq}">
-		<origin xyz="-0.3305 0.0 0.1468" rpy="0 0 3.1416"/>
-	</xacro:sensor_r430>
+		<xacro:sensor_r430 prefix="$(arg prefix)back_realsense_camera" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="back_realsense_camera" hq="${hq}">
+			<origin xyz="-0.3305 0.0 0.1468" rpy="0 0 3.1416"/>
+		</xacro:sensor_r430>
 
-	<!--Added back top realsense camera because running YOLO network on depthai camera in simulation reduces Real Time Factor (RTF)-->
-	<xacro:sensor_r430 prefix="$(arg prefix)back_top_realsense_camera" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="back_top_realsense_camera" hq="${hq}">
-		<origin xyz="-0.3305 0.0 1.1468" rpy="0 0 3.1416"/>
-	</xacro:sensor_r430>
+		<!--Added back top realsense camera because running YOLO network on depthai camera in simulation reduces Real Time Factor (RTF)-->
+		<xacro:sensor_r430 prefix="$(arg prefix)back_top_realsense_camera" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="back_top_realsense_camera" hq="${hq}">
+			<origin xyz="-0.3305 0.0 1.1468" rpy="0 0 3.1416"/>
+		</xacro:sensor_r430>
 
-	<!-- TODO: Moved 0.01 in x, otherwise the camera is still inside the robot -->
-	<!--xacro:sensor_orbbec_astra prefix="$(arg prefix)front_rgbd_camera" parent="$(arg prefix)base_link" prefix_topic="front_rgbd_camera">
-		<origin xyz="0.3305 0.0 0.1898" rpy="0 0 0"/>
-	</xacro:sensor_orbbec_astra -->
+		<!-- TODO: Moved 0.01 in x, otherwise the camera is still inside the robot -->
+		<!--xacro:sensor_orbbec_astra prefix="$(arg prefix)front_rgbd_camera" parent="$(arg prefix)base_link" prefix_topic="front_rgbd_camera">
+			<origin xyz="0.3305 0.0 0.1898" rpy="0 0 0"/>
+		</xacro:sensor_orbbec_astra -->
 
-	<xacro:sensor_imu_hector prefix="$(arg prefix)imu" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}">
-		<origin xyz="-0.1975 0.0 0.1598" rpy="0 0 0"/>
-	</xacro:sensor_imu_hector>
-	
-	<xacro:if value="${robot_type_prop == 'cura'}">
-		<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="front_laser" hq="${hq}" min_angle="-2.356" max_angle="2.356" gpu="true">
-			<origin xyz="0.2675 -0.215 0.1613" rpy="0 -3.1416 2.3562"/>
-		</xacro:sensor_sick_nanoscan3>
-		<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)rear_laser" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="rear_laser" hq="${hq}" min_angle="-2.356" max_angle="2.356" gpu="true">
-			<origin xyz="-0.2675 0.215 0.1613" rpy="0 -3.1416 -0.7854"/>
-		</xacro:sensor_sick_nanoscan3>
+		<xacro:sensor_imu_hector prefix="$(arg prefix)imu" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}">
+			<origin xyz="-0.1975 0.0 0.1598" rpy="0 0 0"/>
+		</xacro:sensor_imu_hector>
+
+		<xacro:if value="${robot_type_prop == 'cura'}">
+			<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="front_laser" hq="${hq}" min_angle="-2.356" max_angle="2.356" gpu="true">
+				<origin xyz="0.2675 -0.215 0.1613" rpy="0 -3.1416 2.3562"/>
+			</xacro:sensor_sick_nanoscan3>
+			<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)rear_laser" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="rear_laser" hq="${hq}" min_angle="-2.356" max_angle="2.356" gpu="true">
+				<origin xyz="-0.2675 0.215 0.1613" rpy="0 -3.1416 -0.7854"/>
+			</xacro:sensor_sick_nanoscan3>
+		</xacro:if>
+		<xacro:unless value="${robot_type_prop == 'cura'}">
+			<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="front_laser" hq="${hq}" min_angle="-1.9507619" max_angle="1.9507619" gpu="true">
+				<origin xyz="0.250 0.0 0.1643" rpy="0 3.1416 3.1416"/>
+			</xacro:sensor_sick_nanoscan3> 
+		</xacro:unless>
+
+		<!--<xacro:sensor_rs_lidar_16 prefix="$(arg prefix)top_laser" parent="$(arg prefix)base_link" prefix_topic="top_laser" min_angle="-3.1416" max_angle="3.1416">
+			<origin xyz="0.214 0.0 0.275" rpy="-1.57079632679 0 -0.23"/>
+		</xacro:sensor_rs_lidar_16>-->
+
+		<xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="top_laser" hq="${hq}" range_min="0.1" range_max="90" hfov="360" samples="1800" vfov="90.0" lasers="32" fps="10" gpu="false">
+			<origin xyz="0.3 -0.175 1.165" rpy="-1.570796326795 0 -1.570796326795"/>
+			<!-- positions of the b-pearl based on solid: xyz="0.333 -0.180 1.194" rpy="-1.570796326795 0 -1.570796326795" -->
+		</xacro:sensor_rs_bpearl>
+
+		<!-- <xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)back_laser" parent="$(arg prefix)base_link" prefix_topic="back_laser" min_angle="-1.8107619" max_angle="1.8107619">
+			<origin xyz="-0.250 0.0 0.1643" rpy="0 3.1416 0"/>
+		</xacro:sensor_sick_nanoscan3> -->
+
+		<xacro:arg name="front_oak_d_camera_model" default="OAK-D-S2" />
+		<xacro:arg name="front_oak_d_base_frame" default="oak-d-s2-usb-base--frame" />
+		<xacro:arg name="front_oak_d_pos_x" default="0.317" />
+		<xacro:arg name="front_oak_d_pos_y" default="-0.197" />
+		<xacro:arg name="front_oak_d_pos_z" default="1.3044" />
+		<xacro:arg name="front_oak_d_roll" default="0.0" />
+		<xacro:arg name="front_oak_d_pitch" default="0.0" />
+		<xacro:arg name="front_oak_d_yaw" default="0.0" />
+		<xacro:depthai_camera
+			prefix="$(arg prefix)front_top_oak_d_camera"
+			parent="$(arg prefix)base_link"
+			sensor_base_frame="${sensor_base_frame}"
+			robot_name="${robot_name}"
+			prefix_topic="front_top_oak_d_camera"
+			camera_model="$(arg front_oak_d_camera_model)"
+			base_frame="$(arg front_oak_d_base_frame)"
+			cam_pos_x="$(arg front_oak_d_pos_x)"
+			cam_pos_y="$(arg front_oak_d_pos_y)"
+			cam_pos_z="$(arg front_oak_d_pos_z)"
+			cam_roll="$(arg front_oak_d_roll)"
+			cam_pitch="$(arg front_oak_d_pitch)"
+			cam_yaw="$(arg front_oak_d_yaw)"
+			hq="${hq}">
+		</xacro:depthai_camera>
 	</xacro:if>
-	<xacro:unless value="${robot_type_prop == 'cura'}">
-		<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="front_laser" hq="${hq}" min_angle="-1.9507619" max_angle="1.9507619" gpu="true">
-			<origin xyz="0.250 0.0 0.1643" rpy="0 3.1416 3.1416"/>
-		</xacro:sensor_sick_nanoscan3> 
-	</xacro:unless>
 
-	<!--<xacro:sensor_rs_lidar_16 prefix="$(arg prefix)top_laser" parent="$(arg prefix)base_link" prefix_topic="top_laser" min_angle="-3.1416" max_angle="3.1416">
-		<origin xyz="0.214 0.0 0.275" rpy="-1.57079632679 0 -0.23"/>
-	</xacro:sensor_rs_lidar_16>-->
+	<xacro:if value="$(arg model_module_cage)">
+		<!-- ROBAST Module Cage -->
+		<xacro:include filename="$(find rb_theron_description)/urdf/module_cage/module_cage.urdf.xacro" />
+		<xacro:module_cage prefix="$(arg prefix)" parent="$(arg prefix)base_link" hq="${hq}">
+			<origin xyz="-0.15 0.0 0.725" rpy="0 0 0"/>
+		</xacro:module_cage>
 
-	<xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="top_laser" hq="${hq}" range_min="0.1" range_max="90" hfov="360" samples="1800" vfov="90.0" lasers="32" fps="10" gpu="false">
-		<origin xyz="0.3 -0.175 1.165" rpy="-1.570796326795 0 -1.570796326795"/>
-		<!-- positions of the b-pearl based on solid: xyz="0.333 -0.180 1.194" rpy="-1.570796326795 0 -1.570796326795" -->
-	</xacro:sensor_rs_bpearl>
-
-	<!-- <xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)back_laser" parent="$(arg prefix)base_link" prefix_topic="back_laser" min_angle="-1.8107619" max_angle="1.8107619">
-		<origin xyz="-0.250 0.0 0.1643" rpy="0 3.1416 0"/>
-	</xacro:sensor_sick_nanoscan3> -->
-
-	<xacro:arg name="front_oak_d_camera_model" default="OAK-D-S2" />
-	<xacro:arg name="front_oak_d_base_frame" default="oak-d-s2-usb-base--frame" />
-	<xacro:arg name="front_oak_d_pos_x" default="0.317" />
-	<xacro:arg name="front_oak_d_pos_y" default="-0.197" />
-	<xacro:arg name="front_oak_d_pos_z" default="1.3044" />
-	<xacro:arg name="front_oak_d_roll" default="0.0" />
-	<xacro:arg name="front_oak_d_pitch" default="0.0" />
-	<xacro:arg name="front_oak_d_yaw" default="0.0" />
-	<xacro:depthai_camera
-		prefix="$(arg prefix)front_top_oak_d_camera"
-		parent="$(arg prefix)base_link"
-		sensor_base_frame="${sensor_base_frame}"
-		robot_name="${robot_name}"
-		prefix_topic="front_top_oak_d_camera"
-		camera_model="$(arg front_oak_d_camera_model)"
-		base_frame="$(arg front_oak_d_base_frame)"
-		cam_pos_x="$(arg front_oak_d_pos_x)"
-		cam_pos_y="$(arg front_oak_d_pos_y)"
-		cam_pos_z="$(arg front_oak_d_pos_z)"
-		cam_roll="$(arg front_oak_d_roll)"
-		cam_pitch="$(arg front_oak_d_pitch)"
-		cam_yaw="$(arg front_oak_d_yaw)"
-		hq="${hq}">
-	</xacro:depthai_camera>
-
-	<!-- ROBAST Module Cage -->
-	<xacro:include filename="$(find rb_theron_description)/urdf/module_cage/module_cage.urdf.xacro" />
-	<xacro:module_cage prefix="$(arg prefix)" parent="$(arg prefix)base_link" hq="${hq}">
-		<origin xyz="-0.15 0.0 0.725" rpy="0 0 0"/>
-	</xacro:module_cage>
-
-	<!-- ROBAST Drawer -->
-	<xacro:include filename="$(find rb_theron_description)/urdf/drawer/drawer.urdf.xacro" />
-	<xacro:drawer
-	    prefix="$(arg prefix)"
-		suffix="5"
-		parent="$(arg prefix)base_link"
-		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
-		ros_distro="$(arg ros_distro)"
-		drawer_size_z="0.28">
-		<origin xyz="0.125 0.0 0.42" rpy="0 0 0"/>
-	</xacro:drawer>
-	<xacro:drawer
-	    prefix="$(arg prefix)"
-		suffix="4"
-		parent="$(arg prefix)base_link"
-		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
-		ros_distro="$(arg ros_distro)"
-		drawer_size_z="0.18">
-		<origin xyz="0.125 0.0 0.67" rpy="0 0 0"/>
-	</xacro:drawer>
-	<xacro:drawer
-	    prefix="$(arg prefix)"
-		suffix="3"
-		parent="$(arg prefix)base_link"
-		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
-		ros_distro="$(arg ros_distro)"
-		drawer_size_z="0.08">
-		<origin xyz="0.125 0.0 0.82" rpy="0 0 0"/>
-	</xacro:drawer>
-	<xacro:drawer
-		prefix="$(arg prefix)"
-		suffix="2"
-		parent="$(arg prefix)base_link"
-		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
-		ros_distro="$(arg ros_distro)"
-		drawer_size_z="0.08">
-		<origin xyz="0.125 0.0 0.92" rpy="0 0 0"/>
-	</xacro:drawer>
-	<xacro:drawer
-		prefix="$(arg prefix)"
-		suffix="1"
-		parent="$(arg prefix)base_link"
-		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
-		ros_distro="$(arg ros_distro)"
-		drawer_size_z="0.08">
-		<origin xyz="0.125 0.0 1.02" rpy="0 0 0"/>
-	</xacro:drawer>
+		<!-- ROBAST Drawer -->
+		<xacro:include filename="$(find rb_theron_description)/urdf/drawer/drawer.urdf.xacro" />
+		<xacro:drawer
+			prefix="$(arg prefix)"
+			suffix="5"
+			parent="$(arg prefix)base_link"
+			ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+			ros_distro="$(arg ros_distro)"
+			drawer_size_z="0.28">
+			<origin xyz="0.125 0.0 0.42" rpy="0 0 0"/>
+		</xacro:drawer>
+		<xacro:drawer
+			prefix="$(arg prefix)"
+			suffix="4"
+			parent="$(arg prefix)base_link"
+			ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+			ros_distro="$(arg ros_distro)"
+			drawer_size_z="0.18">
+			<origin xyz="0.125 0.0 0.67" rpy="0 0 0"/>
+		</xacro:drawer>
+		<xacro:drawer
+			prefix="$(arg prefix)"
+			suffix="3"
+			parent="$(arg prefix)base_link"
+			ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+			ros_distro="$(arg ros_distro)"
+			drawer_size_z="0.08">
+			<origin xyz="0.125 0.0 0.82" rpy="0 0 0"/>
+		</xacro:drawer>
+		<xacro:drawer
+			prefix="$(arg prefix)"
+			suffix="2"
+			parent="$(arg prefix)base_link"
+			ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+			ros_distro="$(arg ros_distro)"
+			drawer_size_z="0.08">
+			<origin xyz="0.125 0.0 0.92" rpy="0 0 0"/>
+		</xacro:drawer>
+		<xacro:drawer
+			prefix="$(arg prefix)"
+			suffix="1"
+			parent="$(arg prefix)base_link"
+			ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+			ros_distro="$(arg ros_distro)"
+			drawer_size_z="0.08">
+			<origin xyz="0.125 0.0 1.02" rpy="0 0 0"/>
+		</xacro:drawer>
+	</xacro:if>
 
 	<!-- ROBAST Door Opening Mechanism -->
 	<!-- The door opening mechanism should NOT be included when used for normal navigation simulations. -->
-	<xacro:if value="${position_joint_type_prop == 'prismatic' or position_joint_type_prop == 'planar'}">
+	<xacro:if value="$(arg model_door_opening_mechanism)">
 		<xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/door_opening_mechanism.urdf.xacro" />
 		<xacro:door_opening_mechanism
 			prefix="$(arg prefix)"

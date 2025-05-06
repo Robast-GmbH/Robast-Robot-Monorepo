@@ -3,7 +3,7 @@
 namespace door_opening_mechanism_mtc
 {
 
-  DoorMechanismMtc::DoorMechanismMtc() : Node("door_mechanism_mtc")
+  DoorMechanismMtc::DoorMechanismMtc(const rclcpp::NodeOptions& options) : Node("door_mechanism_mtc", options)
   {
     handle_node_parameter();
     create_subscriptions();
@@ -11,112 +11,76 @@ namespace door_opening_mechanism_mtc
 
   void DoorMechanismMtc::handle_node_parameter()
   {
-    declare_parameter("moveit2_planning_group_name", _DEFAULT_PLANNING_GROUP_NAME);
-    declare_parameter("planning_pipeline", _DEFAULT_PLANNING_GROUP_NAME);
+    declare_parameter<std::string>("topic_name_pose_stamped", "/stereo/door_handle_pose");
+    declare_parameter<std::string>("topic_name_trigger_door_opening", "/trigger_door_opening");
+    declare_parameter<double>("door_handle_pose_timeout", 2.0);
 
     _planning_group_name = get_parameter("moveit2_planning_group_name").as_string();
     _planning_pipeline = get_parameter("planning_pipeline").as_string();
+    _topic_name_pose_stamped = get_parameter("topic_name_pose_stamped").as_string();
+    _topic_name_trigger_door_opening = get_parameter("topic_name_trigger_door_opening").as_string();
+    _door_handle_pose_timeout = get_parameter("door_handle_pose_timeout").as_double();
+
+    RCLCPP_INFO(_LOGGER, "Node parameters:");
+    RCLCPP_INFO(_LOGGER, "  moveit2_planning_group_name: %s", _planning_group_name.c_str());
+    RCLCPP_INFO(_LOGGER, "  planning_pipeline: %s", _planning_pipeline.c_str());
+    RCLCPP_INFO(_LOGGER, "  topic_name_pose_stamped: %s", _topic_name_pose_stamped.c_str());
+    RCLCPP_INFO(_LOGGER, "  topic_name_trigger_door_opening: %s", _topic_name_trigger_door_opening.c_str());
+    RCLCPP_INFO(_LOGGER, "  door_handle_pose_timeout: %f", _door_handle_pose_timeout);
   }
 
   void DoorMechanismMtc::create_subscriptions()
   {
-    auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
-    qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
-    qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
-    qos.avoid_ros_namespace_conventions(false);
+    _door_handle_pose_subscription = create_subscription<geometry_msgs::msg::PoseStamped>(
+      _topic_name_pose_stamped,
+      10,
+      std::bind(&DoorMechanismMtc::door_handle_pose_callback, this, std::placeholders::_1));
 
-    _door_handle_position_subscription = create_subscription<depthai_ros_msgs::msg::SpatialDetectionArray>(
-      _DOOR_HANDLE_POSITION_TOPIC,
-      qos,
-      std::bind(&DoorMechanismMtc::door_handle_position_callback, this, std::placeholders::_1));
+    _trigger_door_opening_subscription = create_subscription<std_msgs::msg::Empty>(
+      _topic_name_trigger_door_opening,
+      10,
+      std::bind(&DoorMechanismMtc::trigger_door_opening_callback, this, std::placeholders::_1));
   }
 
-  geometry_msgs::msg::PoseStamped DoorMechanismMtc::convert_pose_to_target_reference_frame(
-    const geometry_msgs::msg::PoseStamped pose_in_source_frame, const std::string target_frame)
+  void DoorMechanismMtc::door_handle_pose_callback(const geometry_msgs::msg::PoseStamped& msg)
   {
-    tf2_ros::Buffer tf_buffer(get_clock());
-    tf2_ros::TransformListener tf_listener(tf_buffer, shared_from_this());
+    RCLCPP_DEBUG(_LOGGER, "Received door handle pose message!");
 
-    try
-    {
-      // Wait for the transform from frame A to frame B to become available
-      tf_buffer.canTransform(
-        target_frame, pose_in_source_frame.header.frame_id, tf2::TimePointZero, tf2::durationFromSec(1.0));
-
-      // Convert the position from frame A to frame B
-      geometry_msgs::msg::PoseStamped pose_in_target_frame = tf_buffer.transform(pose_in_source_frame, target_frame);
-
-      // Print the transformed position
-      RCLCPP_INFO(_LOGGER, "Position in target frame %s:", target_frame.c_str());
-      RCLCPP_INFO(_LOGGER, "  x: %f", pose_in_target_frame.pose.position.x);
-      RCLCPP_INFO(_LOGGER, "  y: %f", pose_in_target_frame.pose.position.y);
-      RCLCPP_INFO(_LOGGER, "  z: %f", pose_in_target_frame.pose.position.z);
-
-      return pose_in_target_frame;   // TODO: return this or better return a shared_ptr?
-    }
-    catch (tf2::TransformException& ex)
-    {
-      RCLCPP_ERROR(_LOGGER, "Transform from frame A to frame B not found: %s", ex.what());
-    }
+    _latest_door_handle_pose = msg;
   }
 
-  void DoorMechanismMtc::door_handle_position_callback(const depthai_ros_msgs::msg::SpatialDetectionArray& msg)
+  void DoorMechanismMtc::trigger_door_opening_callback(const std_msgs::msg::Empty& msg)
   {
-    RCLCPP_INFO(_LOGGER,
-                "I heard from the %s topic %li detections for the frame_id %s",
-                _DOOR_HANDLE_POSITION_TOPIC.c_str(),
-                msg.detections.size(),
-                msg.header.frame_id.c_str());
+    RCLCPP_INFO(_LOGGER, "Received trigger door opening message!");
 
-    // Very important: We spin up the moveit interaction in new thread, otherwise
+    if (_latest_door_handle_pose.header.stamp.sec == 0)
+    {
+      RCLCPP_ERROR(_LOGGER, "No door handle pose received yet!");
+      return;
+    }
+
+    // Check that the latest door handle pose is not too old
+    if (now() - _latest_door_handle_pose.header.stamp >
+        rclcpp::Duration(std::chrono::duration_cast<std::chrono::nanoseconds>(
+          std::chrono::duration<double>(_door_handle_pose_timeout))))
+    {
+      RCLCPP_ERROR(_LOGGER, "Latest door handle pose is too old!");
+      return;
+    }
+
+    // Very important: We spin up the moveit interaction in a new thread, otherwise
     // the current state monitor won't get any information about the robot's state.
-    std::thread{std::bind(&DoorMechanismMtc::open_door_in_simulation, this, std::placeholders::_1),
-                std::make_shared<depthai_ros_msgs::msg::SpatialDetectionArray>(msg)}
-      .detach();
+    std::thread{std::bind(&DoorMechanismMtc::open_door, this)}.detach();
   }
 
-  void DoorMechanismMtc::open_door_in_simulation(
-    const std::shared_ptr<depthai_ros_msgs::msg::SpatialDetectionArray> door_handle_poses)
+  void DoorMechanismMtc::open_door()
   {
-    for (uint8_t i = 0; i < door_handle_poses->detections.size(); i++)
-    {
-      RCLCPP_INFO(_LOGGER, "Target position for detection %i:", i);
-      RCLCPP_INFO(_LOGGER, "   x = %f", door_handle_poses->detections[i].position.x);
-      RCLCPP_INFO(_LOGGER, "   y = %f", door_handle_poses->detections[i].position.y);
-      RCLCPP_INFO(_LOGGER, "   z = %f", door_handle_poses->detections[i].position.z);
-    }
-
-    geometry_msgs::msg::PoseStamped pose_in_source_frame;
-    pose_in_source_frame.header = door_handle_poses->header;
-    pose_in_source_frame.pose.position = door_handle_poses->detections[0].position;
-    geometry_msgs::msg::PoseStamped target_pose =
-      convert_pose_to_target_reference_frame(pose_in_source_frame, "base_footprint");
-
-    do_task(target_pose);
+    do_task(_latest_door_handle_pose);
   }
 
-  void DoorMechanismMtc::setup_planning_scene()
+  void DoorMechanismMtc::do_task(const geometry_msgs::msg::PoseStamped& door_handle_pose)
   {
-    moveit_msgs::msg::CollisionObject object;
-    object.id = "object";
-    object.header.frame_id = "world";
-    object.primitives.resize(1);
-    object.primitives[0].type = shape_msgs::msg::SolidPrimitive::CYLINDER;
-    object.primitives[0].dimensions = {0.1, 0.02};
-
-    geometry_msgs::msg::Pose pose;
-    pose.position.x = 0.5;
-    pose.position.y = -0.25;
-    pose.orientation.w = 1.0;
-    object.pose = pose;
-
-    moveit::planning_interface::PlanningSceneInterface psi;
-    psi.applyCollisionObject(object);
-  }
-
-  void DoorMechanismMtc::do_task(geometry_msgs::msg::PoseStamped target_pose)
-  {
-    _task = create_task(target_pose);
+    _task = create_task(door_handle_pose);
 
     RCLCPP_INFO(_LOGGER, "Initializing task!");
     try
@@ -148,6 +112,7 @@ namespace door_opening_mechanism_mtc
     _task.introspection().publishSolution(*_task.solutions().front());
 
     RCLCPP_INFO(_LOGGER, "Executing task!");
+    // TODO: Uncomment this line to execute the task
     auto result = _task.execute(*_task.solutions().front());
     if (result.val != moveit_msgs::msg::MoveItErrorCodes::SUCCESS)
     {
@@ -158,44 +123,29 @@ namespace door_opening_mechanism_mtc
     return;
   }
 
-  mtc::Task DoorMechanismMtc::create_task(geometry_msgs::msg::PoseStamped target_pose)
+  mtc::Task DoorMechanismMtc::create_task(const geometry_msgs::msg::PoseStamped& door_handle_pose)
   {
     RCLCPP_INFO(_LOGGER, "Creating task!");
 
-    RCLCPP_INFO(_LOGGER, "target_pose with frame %s:", target_pose.header.frame_id.c_str());
-    RCLCPP_INFO(_LOGGER, "  x: %f", target_pose.pose.position.x);
-    RCLCPP_INFO(_LOGGER, "  y: %f", target_pose.pose.position.y);
-    RCLCPP_INFO(_LOGGER, "  z: %f", target_pose.pose.position.z);
-
-    double roll = 1.57079632679;
-    double pitch = 1.57079632679;
-    double yaw = 0.0;
-    // Create a Quaternion
-    tf2::Quaternion quaternion;
-    quaternion.setRPY(roll, pitch, yaw);
-    target_pose.pose.orientation.x = quaternion.x();
-    target_pose.pose.orientation.y = quaternion.y();
-    target_pose.pose.orientation.z = quaternion.z();
-    target_pose.pose.orientation.w = quaternion.w();
+    RCLCPP_INFO(_LOGGER, "door_handle_pose with frame %s:", door_handle_pose.header.frame_id.c_str());
+    RCLCPP_INFO(_LOGGER, "  x: %f", door_handle_pose.pose.position.x);
+    RCLCPP_INFO(_LOGGER, "  y: %f", door_handle_pose.pose.position.y);
+    RCLCPP_INFO(_LOGGER, "  z: %f", door_handle_pose.pose.position.z);
 
     mtc::Task task;
-    task.stages()->setName("approach door handle task");
+    task.stages()->setName("Open door task");
     task.loadRobotModel(shared_from_this());
 
     const auto& group_name = "mobile_base_arm";
     const auto& end_effector_name = "door_opening_end_effector";
-    const auto& end_effector_parent_link = "door_opening_mechanism_link_freely_rotating_hook";
+    const auto& end_effector_parent_link = "robot/door_opening_mechanism_link_freely_rotating_hook";
 
     // Set task properties
     task.setProperty("group", group_name);
     task.setProperty("eef", end_effector_name);
     task.setProperty("ik_frame", end_effector_parent_link);
 
-    mtc::Stage* current_state_ptr = nullptr;   // Forward current_state on to grasp pose generator
-    auto stage_state_current = std::make_unique<mtc::stages::CurrentState>("current");
-    current_state_ptr = stage_state_current.get();
-    task.add(std::move(stage_state_current));
-
+    // Setup the planner
     auto sampling_planner = std::make_shared<mtc::solvers::PipelinePlanner>(shared_from_this(), _planning_pipeline);
     moveit_msgs::msg::WorkspaceParameters workspace_params;
     workspace_params.min_corner.x = -10.0;
@@ -213,32 +163,225 @@ namespace door_opening_mechanism_mtc
     cartesian_planner->setMaxAccelerationScalingFactor(1.0);
     cartesian_planner->setStepSize(.01);
 
-    // Connect the initial stage with the generated IK solution using the sampling planner.
-    auto connector_stage = std::make_unique<moveit::task_constructor::stages::Connect>(
-      "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
-    connector_stage->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT, {"eef", "group"});
-    task.add(std::move(connector_stage));
+    std::string state_description;
 
-    // Generate a pose (this gets put in the IK wrapper below)
-    auto generate_pose_stage = std::make_unique<moveit::task_constructor::stages::GeneratePose>("generate pose");
-    generate_pose_stage->setPose(target_pose);
-    generate_pose_stage->setMonitoredStage(task.stages()->findChild("current"));
+    {
+      state_description = "current";
+      auto stage_state_current = std::make_unique<mtc::stages::CurrentState>(state_description);
+      task.add(std::move(stage_state_current));
+    }
 
-    // Compute IK
-    auto ik_wrapper =
-      std::make_unique<moveit::task_constructor::stages::ComputeIK>("generate pose IK", std::move(generate_pose_stage));
-    ik_wrapper->setMaxIKSolutions(5);
-    ik_wrapper->setMinSolutionDistance(1.0);
-    ik_wrapper->setTimeout(1.0);
-    // ik_wrapper->setIKFrame(end_effector_parent_link);
-    ik_wrapper->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT, {"eef", "group"});
-    ik_wrapper->properties().configureInitFrom(moveit::task_constructor::Stage::INTERFACE, {"target_pose"});
-    task.add(std::move(ik_wrapper));
+    {
+      state_description = "Disable collision checking";
+      auto modify_planning_scene_stage = std::make_unique<mtc::stages::ModifyPlanningScene>(state_description);
+      modify_planning_scene_stage->allowCollisions("robot/right_wheel_link", "robot/right_wheel_tire_link", true);
+      modify_planning_scene_stage->allowCollisions("robot/left_wheel_link", "robot/left_wheel_tire_link", true);
+      task.add(std::move(modify_planning_scene_stage));
+    }
 
-    auto stage = std::make_unique<mtc::stages::MoveTo>("Starting position", sampling_planner);
-    stage->setGroup(group_name);
-    stage->setGoal("starting_position");
-    task.add(std::move(stage));
+    {
+      state_description = "Starting position";
+      auto stage = std::make_unique<mtc::stages::MoveTo>(state_description, sampling_planner);
+      stage->setGroup(group_name);
+      stage->setGoal("starting_position_middle");
+      task.add(std::move(stage));
+    }
+
+    {
+      state_description = "Disable collision checking";
+      auto modify_planning_scene_stage = std::make_unique<mtc::stages::ModifyPlanningScene>(state_description);
+      modify_planning_scene_stage->allowCollisions("robot/right_wheel_link", "robot/right_wheel_tire_link", true);
+      modify_planning_scene_stage->allowCollisions("robot/left_wheel_link", "robot/left_wheel_tire_link", true);
+      task.add(std::move(modify_planning_scene_stage));
+    }
+
+    {
+      state_description = "Move above door handle";
+      // Connect the initial stage with the generated IK solution using the sampling planner.
+      auto connector_stage = std::make_unique<moveit::task_constructor::stages::Connect>(
+        state_description,
+        moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
+      connector_stage->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT, {"eef", "group"});
+      task.add(std::move(connector_stage));
+    }
+
+    // Generate a pose above the door handle and compute its IK
+    {
+      state_description = "Generate pose above door handle";
+      geometry_msgs::msg::PoseStamped pose_above_door_handle = door_handle_pose;
+      pose_above_door_handle.pose.position.z += DISTANCE_FOR_GRIPPER_ABOVE_DOOR_HANDLE;
+      pose_above_door_handle.pose.position.x -= DOOR_DETECTION_OFFSET;
+      pose_above_door_handle.pose.position.y += DOOR_DETECTION_OFFSET_Y;
+
+      // Generate a pose (this gets put in the IK wrapper below)
+      auto generate_pose_above_door_handle_stage =
+        std::make_unique<moveit::task_constructor::stages::GeneratePose>(state_description);
+      generate_pose_above_door_handle_stage->setPose(pose_above_door_handle);
+      generate_pose_above_door_handle_stage->setMonitoredStage(task.stages()->findChild("current"));
+
+      state_description = "Compute IK for pose above door handle";
+      auto ik_wrapper = std::make_unique<moveit::task_constructor::stages::ComputeIK>(
+        state_description, std::move(generate_pose_above_door_handle_stage));
+      ik_wrapper->setMaxIKSolutions(3);
+      ik_wrapper->setMinSolutionDistance(1.0);
+      ik_wrapper->setTimeout(0.3);
+      // ik_wrapper->setIKFrame(end_effector_parent_link);
+      ik_wrapper->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT, {"eef", "group"});
+      ik_wrapper->properties().configureInitFrom(moveit::task_constructor::Stage::INTERFACE, {"target_pose"});
+      task.add(std::move(ik_wrapper));
+    }
+
+    {
+      state_description = "Disable collision checking";
+      auto modify_planning_scene_stage = std::make_unique<mtc::stages::ModifyPlanningScene>(state_description);
+      modify_planning_scene_stage->allowCollisions("robot/right_wheel_link", "robot/right_wheel_tire_link", true);
+      modify_planning_scene_stage->allowCollisions("robot/left_wheel_link", "robot/left_wheel_tire_link", true);
+      task.add(std::move(modify_planning_scene_stage));
+    }
+
+    {
+      state_description = "Push door handle down";
+      auto stage =
+        std::make_unique<moveit::task_constructor::stages::MoveRelative>(state_description, cartesian_planner);
+      stage->properties().set("link", end_effector_parent_link);   // link to perform IK for
+      stage->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT,
+                                            {"group"});   // inherit group from parent stage
+      stage->setIKFrame(end_effector_parent_link);
+      // stage->setMinMaxDistance(params.approach_object_min_dist, params.approach_object_max_dist);
+
+      geometry_msgs::msg::Vector3Stamped vec;
+      vec.header.frame_id = end_effector_parent_link;
+      vec.vector.x = DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN;
+      stage->setDirection(vec);
+      task.add(std::move(stage));
+    }
+
+    {
+      state_description = "Disable collision checking";
+      auto modify_planning_scene_stage = std::make_unique<mtc::stages::ModifyPlanningScene>(state_description);
+      modify_planning_scene_stage->allowCollisions("robot/right_wheel_link", "robot/right_wheel_tire_link", true);
+      modify_planning_scene_stage->allowCollisions("robot/left_wheel_link", "robot/left_wheel_tire_link", true);
+      task.add(std::move(modify_planning_scene_stage));
+    }
+
+    {
+      state_description = "Push door open a little bit";
+      auto stage =
+        std::make_unique<moveit::task_constructor::stages::MoveRelative>(state_description, cartesian_planner);
+      stage->properties().set("link", end_effector_parent_link);   // link to perform IK for
+      stage->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT,
+                                            {"group"});   // inherit group from parent stage
+      stage->setIKFrame(end_effector_parent_link);
+      // stage->setMinMaxDistance(params.approach_object_min_dist, params.approach_object_max_dist);
+
+      geometry_msgs::msg::Vector3Stamped vec;
+      vec.header.frame_id = end_effector_parent_link;
+      vec.vector.z = -FORWARD_DISTANCE_TO_PUSH_DOOR_OUT_OF_LATCH;
+      stage->setDirection(vec);
+      task.add(std::move(stage));
+    }
+
+    {
+      state_description = "Disable collision checking";
+      auto modify_planning_scene_stage = std::make_unique<mtc::stages::ModifyPlanningScene>(state_description);
+      modify_planning_scene_stage->allowCollisions("robot/right_wheel_link", "robot/right_wheel_tire_link", true);
+      modify_planning_scene_stage->allowCollisions("robot/left_wheel_link", "robot/left_wheel_tire_link", true);
+      task.add(std::move(modify_planning_scene_stage));
+    }
+
+    {
+      state_description = "Move gripper above door handle again";
+      auto stage =
+        std::make_unique<moveit::task_constructor::stages::MoveRelative>(state_description, cartesian_planner);
+      stage->properties().set("link", end_effector_parent_link);   // link to perform IK for
+      stage->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT,
+                                            {"group"});   // inherit group from parent stage
+      stage->setIKFrame(end_effector_parent_link);
+      // stage->setMinMaxDistance(params.approach_object_min_dist, params.approach_object_max_dist);
+
+      geometry_msgs::msg::Vector3Stamped vec;
+      vec.header.frame_id = end_effector_parent_link;
+      vec.vector.x = -DISTANCE_TO_PUSH_DOOR_HANDLE_DOWN;
+      stage->setDirection(vec);
+      task.add(std::move(stage));
+    }
+
+    {
+      state_description = "Disable collision checking";
+      auto modify_planning_scene_stage = std::make_unique<mtc::stages::ModifyPlanningScene>(state_description);
+      modify_planning_scene_stage->allowCollisions("robot/right_wheel_link", "robot/right_wheel_tire_link", true);
+      modify_planning_scene_stage->allowCollisions("robot/left_wheel_link", "robot/left_wheel_tire_link", true);
+      task.add(std::move(modify_planning_scene_stage));
+    }
+
+    {
+      // Connect the two stages
+      auto connector_stage_push_door_open = std::make_unique<moveit::task_constructor::stages::Connect>(
+        "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
+      connector_stage_push_door_open->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT,
+                                                                     {"eef", "group"});
+      task.add(std::move(connector_stage_push_door_open));
+
+      // Create a pose to push door open
+      state_description = "generate pose push door open";
+      geometry_msgs::msg::PoseStamped pose_push_door_open = door_handle_pose;
+      pose_push_door_open.pose.position.x -= FORWARD_DISTANCE_TO_PUSH_DOOR_OPEN;
+      pose_push_door_open.pose.position.z += DISTANCE_FOR_GRIPPER_ABOVE_DOOR_HANDLE + 0.01;
+      pose_push_door_open.pose.position.y += DISTANCE_TO_OTHER_SIDE_OF_DOOR;
+
+      // Generate a pose (this gets put in the IK wrapper below)
+      auto generate_pose_push_door_open_stage =
+        std::make_unique<moveit::task_constructor::stages::GeneratePose>(state_description);
+      generate_pose_push_door_open_stage->setPose(pose_push_door_open);
+      generate_pose_push_door_open_stage->setMonitoredStage(task.stages()->findChild("current"));
+
+      // Compute IK
+      state_description = "Compute IK for pose push door open";
+      auto ik_wrapper_push_door_open = std::make_unique<moveit::task_constructor::stages::ComputeIK>(
+        state_description, std::move(generate_pose_push_door_open_stage));
+      ik_wrapper_push_door_open->setMaxIKSolutions(3);
+      ik_wrapper_push_door_open->setMinSolutionDistance(1.0);
+      ik_wrapper_push_door_open->setTimeout(0.3);
+      ik_wrapper_push_door_open->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT,
+                                                                {"eef", "group"});
+      ik_wrapper_push_door_open->properties().configureInitFrom(moveit::task_constructor::Stage::INTERFACE,
+                                                                {"target_pose"});
+      task.add(std::move(ik_wrapper_push_door_open));
+    }
+
+    {
+      state_description = "Disable collision checking";
+      auto modify_planning_scene_stage = std::make_unique<mtc::stages::ModifyPlanningScene>(state_description);
+      modify_planning_scene_stage->allowCollisions("robot/right_wheel_link", "robot/right_wheel_tire_link", true);
+      modify_planning_scene_stage->allowCollisions("robot/left_wheel_link", "robot/left_wheel_tire_link", true);
+      task.add(std::move(modify_planning_scene_stage));
+    }
+
+    {
+      state_description = "Move arm into pre homing position";
+      std::map<std::string, double> pre_homing_joint_positions;
+      pre_homing_joint_positions["robot/door_opening_mechanism_joint_y_axis_slide"] = 0.2;
+      pre_homing_joint_positions["robot/door_opening_mechanism_joint_x_axis_slide"] = 0.27;
+      pre_homing_joint_positions["robot/door_opening_mechanism_joint_rotating_arm"] = 0;
+      pre_homing_joint_positions["robot/door_opening_mechanism_joint_freely_rotating_hook"] = 0.0;
+      auto stage = std::make_unique<mtc::stages::MoveTo>(state_description, sampling_planner);
+      stage->setGroup(group_name);
+      stage->setGoal(pre_homing_joint_positions);
+      task.add(std::move(stage));
+    }
+
+    // {
+    //   state_description = "Move arm into final homing position";
+    //   std::map<std::string, double> homing_joint_positions;
+    //   homing_joint_positions["robot/door_opening_mechanism_joint_y_axis_slide"] = 0.1;
+    //   homing_joint_positions["robot/door_opening_mechanism_joint_x_axis_slide"] = 0.27;
+    //   homing_joint_positions["robot/door_opening_mechanism_joint_rotating_arm"] = 0;
+    //   homing_joint_positions["robot/door_opening_mechanism_joint_freely_rotating_hook"] = 0.0;
+    //   auto stage = std::make_unique<mtc::stages::MoveTo>(state_description, sampling_planner);
+    //   stage->setGroup(group_name);
+    //   stage->setGoal(homing_joint_positions);
+    //   task.add(std::move(stage));
+    // }
 
     return task;
   }

@@ -59,6 +59,7 @@ def generate_launch_description():
         "ros2_control_hardware_type": "mock_components",
         "ros2_control_hardware_type_positon_joint": "real_life",
         "position_joint_type": "planar",
+        "model_door_opening_mechanism": "true",
     }
 
     moveit_config = (

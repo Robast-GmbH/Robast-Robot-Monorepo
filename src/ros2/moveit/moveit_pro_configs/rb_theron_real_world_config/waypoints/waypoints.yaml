@@ -1,0 +1,51 @@
+- description: ''
+  favorite: false
+  joint_group_names:
+  - mobile_base_arm
+  joint_state:
+    effort: []
+    header:
+      frame_id: robot/base_footprint
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - robot/door_opening_mechanism_joint_y_axis_slide
+    - robot/door_opening_mechanism_joint_x_axis_slide
+    - robot/door_opening_mechanism_joint_rotating_arm
+    - robot/door_opening_mechanism_joint_freely_rotating_hook
+    - position_joint
+    position:
+    - 0.4
+    - 0.0
+    - 1.57079632679
+    - 0.0
+    - 0.0
+    velocity: []
+  name: starting_position_right
+- description: ''
+  favorite: false
+  joint_group_names:
+  - mobile_base_arm
+  joint_state:
+    effort: []
+    header:
+      frame_id: robot/base_footprint
+      stamp:
+        nanosec: 0
+        sec: 0
+    name:
+    - robot/door_opening_mechanism_joint_y_axis_slide
+    - robot/door_opening_mechanism_joint_x_axis_slide
+    - robot/door_opening_mechanism_joint_rotating_arm
+    - robot/door_opening_mechanism_joint_freely_rotating_hook
+    - position_joint
+    position:
+    - 0.4
+    - 0.3
+    - 1.57079632679
+    - 0.0
+    - 0.0
+    velocity: []
+  name: starting_position_left
+

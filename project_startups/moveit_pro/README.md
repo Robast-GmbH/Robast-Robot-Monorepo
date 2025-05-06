@@ -25,13 +25,17 @@ Use one terminal to do a `colcon build`.
 
 Then use the 4 terminals to run (you might need to `source install/setup.bash`):
 
-`agent.app`
+`agent.app` or `ros2 launch rb_theron_config studio_agent_launch.py`
 
 `robot.app` (not sure if this is always required)
 
 `studio_bridge.app`
 
 `rest_api.app`
+
+If you want to run door handle detection open another terminal and run:
+
+`ros2 launch door_handle_detector_sim door_handle_detection_sim.launch.py` (you might need to run `pip install yolov5` before and you might need `pip3 install setuptools==65.5.1` after that)
 
 # How to run MoveIt Pro over ssh
 

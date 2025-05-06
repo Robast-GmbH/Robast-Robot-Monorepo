@@ -142,6 +142,8 @@ planner_configs:
     type: geometric::TrajOpt
 
 mobile_base_arm:
+  enforce_constrained_state_space: True
+  projection_evaluator: joints(position_joint,door_opening_mechanism_joint_y_axis_slide,door_opening_mechanism_joint_x_axis_slide,door_opening_mechanism_joint_rotating_arm,door_opening_mechanism_joint_freely_rotating_hook)
   default_planner_config: RRTstarkConfigDefault
   planner_configs:
     - SBLkConfigDefault

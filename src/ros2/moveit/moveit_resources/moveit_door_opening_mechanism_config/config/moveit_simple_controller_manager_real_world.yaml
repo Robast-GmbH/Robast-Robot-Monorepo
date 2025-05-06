@@ -1,0 +1,13 @@
+controller_names:
+  - joint_trajectory_controller
+
+joint_trajectory_controller:
+    action_ns: follow_joint_trajectory
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - robot/door_opening_mechanism_joint_y_axis_slide
+      - robot/door_opening_mechanism_joint_x_axis_slide
+      - robot/door_opening_mechanism_joint_rotating_arm
+      - robot/door_opening_mechanism_joint_freely_rotating_hook
+      - position_joint

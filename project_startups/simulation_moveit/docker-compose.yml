@@ -71,7 +71,9 @@ services:
     volumes:
       - ./moveit/:/workspace/:cached
       - ../../src/ros2/robot_description:/workspace/src/robot_description:cached
-      - ../../src/ros2/moveit:/workspace/src/moveit:cached
+      - ../../src/ros2/moveit/moveit_mtc:/workspace/src/moveit/moveit_mtc:cached
+      - ../../src/ros2/moveit/moveit_resources:/workspace/src/moveit/moveit_resources:cached
+      - ../../src/ros2/moveit/perception:/workspace/src/moveit/perception:cached
       - ../../src/ros2/ros2_control/hardware_interfaces/ros2_control_base_movement:/workspace/src/ros2_control/hardware_interfaces/ros2_control_base_movement:cached
       - ../../src/ros2/ros2_control/hardware_interfaces/hardware_interface_utils:/workspace/src/ros2_control/hardware_interfaces/hardware_interface_utils:cached
       - ../../src/ros2/ros2_control/ros2_controllers:/workspace/src/ros2_control/ros2_controllers:cached

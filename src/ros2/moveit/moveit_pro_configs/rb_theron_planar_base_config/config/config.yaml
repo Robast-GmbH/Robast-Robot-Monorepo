@@ -82,6 +82,7 @@ hardware:
       - prefix: ""
       - ros2_control_hardware_type: "mock_components"
       - position_joint_type: "planar"
+      - model_door_opening_mechanism: "true"
       - ros2_control_hardware_type_positon_joint: "mock_components"
 
 # Sets ROS global params for launch.

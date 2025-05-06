@@ -16,6 +16,10 @@ urdf_launch_arguments = {
     "ros2_control_hardware_type": "dryve_d1",
     "ros2_control_hardware_type_positon_joint": "real_life",
     "position_joint_type": "prismatic",
+    "model_door_opening_mechanism": "true",
+    "model_sensors": "false",
+    "model_module_cage": "false",
+    "prefix": "robot/",
 }
 
 
@@ -29,6 +33,18 @@ def get_urdf_launch_arguments(context):
     )
     urdf_launch_arguments["position_joint_type"] = str(
         LaunchConfiguration("position_joint_type").perform(context)
+    )
+    urdf_launch_arguments["model_door_opening_mechanism"] = str(
+        LaunchConfiguration("model_door_opening_mechanism").perform(context)
+    )
+    urdf_launch_arguments["model_sensors"] = str(
+        LaunchConfiguration("model_sensors").perform(context)
+    )
+    urdf_launch_arguments["model_module_cage"] = str(
+        LaunchConfiguration("prefix").perform(context)
+    )
+    urdf_launch_arguments["prefix"] = str(
+        LaunchConfiguration("prefix").perform(context)
     )
 
 
@@ -53,6 +69,30 @@ def generate_launch_description():
         description="Whether to use position joint (between base_link and base_footprint) or not",
     )
 
+    declare_model_door_opening_mechanism_cmd = DeclareLaunchArgument(
+        "model_door_opening_mechanism",
+        default_value="true",
+        description="Whether to model door opening mechanism or not",
+    )
+
+    declare_model_sensors_cmd = DeclareLaunchArgument(
+        "model_sensors",
+        default_value="false",
+        description="Whether to model sensors or not",
+    )
+
+    declare_model_module_cage_cmd = DeclareLaunchArgument(
+        "model_module_cage",
+        default_value="false",
+        description="Whether to model module cage or not",
+    )
+
+    declare_prefix_cmd = DeclareLaunchArgument(
+        "prefix",
+        default_value="",
+        description="Prefix to add to all link names in URDF file",
+    )
+
     ros_distro = os.environ["ROS_DISTRO"]
     if ros_distro == "humble":
         planning_pipelines = ["ompl_humble"]
@@ -71,10 +111,10 @@ def generate_launch_description():
             package_name="moveit_door_opening_mechanism_config",
         )
         .robot_description(
-            file_path="config/rb_theron_arm.urdf.xacro",
+            file_path="config/rb_theron.urdf.xacro",
             mappings=urdf_launch_arguments,
         )
-        .robot_description_semantic(file_path="config/rb_theron_arm.srdf")
+        .robot_description_semantic(file_path="config/rb_theron_real_world.srdf")
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .planning_pipelines(pipelines=planning_pipelines)
         .sensors_3d(file_path="config/sensors_3d_real_world.yaml")
@@ -83,7 +123,7 @@ def generate_launch_description():
 
     rviz_config_file = (
         get_package_share_directory("moveit_door_opening_mechanism_config")
-        + "/config/moveit.rviz"
+        + "/config/moveit_real_world.rviz"
     )
     rviz2_cmd = Node(
         package="rviz2",
@@ -103,6 +143,10 @@ def generate_launch_description():
     ld.add_action(declare_ros2_control_hardware_type_cmd)
     ld.add_action(declare_ros2_control_hardware_type_positon_joint_cmd)
     ld.add_action(declare_position_joint_type_cmd)
+    ld.add_action(declare_model_door_opening_mechanism_cmd)
+    ld.add_action(declare_model_sensors_cmd)
+    ld.add_action(declare_model_module_cage_cmd)
+    ld.add_action(declare_prefix_cmd)
 
     ld.add_action(get_urdf_launch_arguments_opaque_func)
 

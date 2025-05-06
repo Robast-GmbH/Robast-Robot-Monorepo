@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This does not replace URDF, and is not an extension of URDF.
+    This is a format for representing semantic information about the robot structure.
+    A URDF file must exist for this robot as well, where the joints and the links that are referenced are defined
+-->
+<robot name="rb_theron">
+    <!--GROUPS: Representation of a set of joints and links. This can be useful for specifying DOF to plan for, defining arms, end effectors, etc-->
+    <!--LINKS: When a link is specified, the parent joint of that link (if it exists) is automatically included-->
+    <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
+    <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
+    <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
+    <group name="mobile_base_arm">
+        <chain base_link="robot/alu_profile_link_right" tip_link="robot/door_opening_mechanism_link_freely_rotating_hook"/>
+        <joint name="position_joint" />
+    </group>
+
+    <group name="rotating_arm">
+        <chain base_link="robot/door_opening_mechanism_link_rotating_arm" tip_link="robot/hook_base_link"/>
+        <link name="robot/hook_link_back_side" />
+        <link name="robot/hook_link_front_side" />
+    </group>
+
+    <group_state name="starting_position_right" group="mobile_base_arm">
+        <joint name="robot/door_opening_mechanism_joint_y_axis_slide" value="0.2"/>
+        <joint name="robot/door_opening_mechanism_joint_x_axis_slide" value="0.0"/>
+        <joint name="robot/door_opening_mechanism_joint_rotating_arm" value="1.57079632679"/>
+        <joint name="robot/door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
+        <joint name="position_joint" value="0"/>
+    </group_state>
+
+    <group_state name="starting_position_middle" group="mobile_base_arm">
+        <joint name="robot/door_opening_mechanism_joint_y_axis_slide" value="0.2"/>
+        <joint name="robot/door_opening_mechanism_joint_x_axis_slide" value="0.135"/>
+        <joint name="robot/door_opening_mechanism_joint_rotating_arm" value="1.57079632679"/>
+        <joint name="robot/door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
+        <joint name="position_joint" value="0"/>
+    </group_state>
+
+    <group_state name="starting_position_left" group="mobile_base_arm">
+        <joint name="robot/door_opening_mechanism_joint_y_axis_slide" value="0.2"/>
+        <joint name="robot/door_opening_mechanism_joint_x_axis_slide" value="0.27"/>
+        <joint name="robot/door_opening_mechanism_joint_rotating_arm" value="1.57079632679"/>
+        <joint name="robot/door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
+        <joint name="position_joint" value="0"/>
+    </group_state>
+
+    <group_state name="pre_homing_position" group="mobile_base_arm">
+        <joint name="robot/door_opening_mechanism_joint_y_axis_slide" value="0.2"/>
+        <joint name="robot/door_opening_mechanism_joint_x_axis_slide" value="0.27"/>
+        <joint name="robot/door_opening_mechanism_joint_rotating_arm" value="0"/>
+        <joint name="robot/door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
+        <joint name="position_joint" value="0"/>
+    </group_state>
+
+    <group_state name="homing_position" group="mobile_base_arm">
+        <joint name="robot/door_opening_mechanism_joint_y_axis_slide" value="0.0"/>
+        <joint name="robot/door_opening_mechanism_joint_x_axis_slide" value="0.27"/>
+        <joint name="robot/door_opening_mechanism_joint_rotating_arm" value="0"/>
+        <joint name="robot/door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
+        <joint name="position_joint" value="0"/>
+    </group_state>
+
+    <group_state name="home_base" group="mobile_base_arm">
+        <joint name="robot/door_opening_mechanism_joint_y_axis_slide" value="0"/>
+        <joint name="robot/door_opening_mechanism_joint_x_axis_slide" value="0"/>
+        <joint name="robot/door_opening_mechanism_joint_rotating_arm" value="0"/>
+        <joint name="robot/door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
+        <joint name="position_joint" value="0"/>
+    </group_state>
+
+    <group_state name="forward_base" group="mobile_base_arm">
+        <joint name="robot/door_opening_mechanism_joint_y_axis_slide" value="0"/>
+        <joint name="robot/door_opening_mechanism_joint_x_axis_slide" value="0"/>
+        <joint name="robot/door_opening_mechanism_joint_rotating_arm" value="0"/>
+        <joint name="robot/door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
+        <joint name="position_joint" value="1"/>
+    </group_state>
+    <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
+    <end_effector name="door_opening_end_effector" parent_link="robot/door_opening_mechanism_link_freely_rotating_hook" group="mobile_base_arm"/>
+    <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
+    <!-- <virtual_joint name="FixedBase" type="fixed" parent_frame="world" child_link="base_footprint" /> -->
+    <!-- <virtual_joint name="position" type="planar" parent_frame="odom" child_link="base_footprint"/>
+    <joint_property joint_name="position" property_name="motion_model" value="diff_drive" />
+    <joint_property joint_name="position" property_name="min_translational_distance" value="0.01" />
+    <joint_property joint_name="position" property_name="angular_distance_weight" value="0.5" /> -->
+    <!--PASSIVE JOINT: Purpose: this element is used to mark joints that are not actuated-->
+    <passive_joint name="robot/front_leftjoint_support"/>
+    <passive_joint name="robot/front_leftjoint_wheel"/>
+    <passive_joint name="robot/front_rightjoint_support"/>
+    <passive_joint name="robot/front_rightjoint_wheel"/>
+    <passive_joint name="robot/left_wheel_joint"/>
+    <passive_joint name="robot/rear_leftjoint_support"/>
+    <passive_joint name="robot/rear_leftjoint_wheel"/>
+    <passive_joint name="robot/rear_rightjoint_support"/>
+    <passive_joint name="robot/rear_rightjoint_wheel"/>
+    <passive_joint name="robot/right_wheel_joint"/>
+
+    <disable_default_collisions link="robot/rear_leftwheel" />
+    <disable_default_collisions link="robot/rear_rightwheel" />
+    <disable_default_collisions link="robot/front_leftwheel" />
+    <disable_default_collisions link="robot/front_rightwheel" />
+    <disable_default_collisions link="robot/left_wheel_link" />
+    <disable_default_collisions link="robot/right_wheel_link" />
+    <disable_default_collisions link="robot/rear_leftsupport" />
+    <disable_default_collisions link="robot/rear_rightsupport" />
+    <disable_default_collisions link="robot/front_leftsupport" />
+    <disable_default_collisions link="robot/front_rightsupport" />
+    <disable_default_collisions link="robot/left_wheel_tire_link" />
+    <disable_default_collisions link="robot/right_wheel_tire_link" />
+    <disable_default_collisions link="robot/odom" />
+    <disable_default_collisions link="robot/base_footprint" />
+    <disable_default_collisions link="robot/base_link" />
+
+    <!-- This is what I found out through trial and error and checking the content of the planning scene: -->
+    <!-- To make the links named in disable_default_collisions appear in the planning scene, they need
+    to be named at least once with disable_collisions like this: -->
+    <disable_collisions link1="robot/base_link" link2="robot/rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/left_wheel_link" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/right_wheel_link" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/left_wheel_tire_link" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/right_wheel_tire_link" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/odom" reason="Never"/>
+
+    <disable_collisions link1="robot/right_wheel_tire_link" link2="robot/right_wheel_link" reason="Never"/>
+
+     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/alu_profile_link_left" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/alu_profile_link_right" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/alu_profile_link_top" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/base_footprint" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/base_link" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/bottom_sheet_link" reason="Default"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/door_opening_mechanism_base_link" reason="Adjacent"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/hook_base_link" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/hook_link_front_side" reason="Never"/>
+
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/alu_profile_link_right" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/alu_profile_link_top" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/base_footprint" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/base_link" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/bottom_sheet_link" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/door_opening_mechanism_base_link" reason="Adjacent"/>
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/hook_base_link" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_left" link2="robot/hook_link_front_side" reason="Never"/>
+
+    <disable_collisions link1="robot/alu_profile_link_right" link2="robot/alu_profile_link_top" reason="Default"/>
+    <disable_collisions link1="robot/alu_profile_link_right" link2="robot/base_footprint" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_right" link2="robot/base_link" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_right" link2="robot/bottom_sheet_link" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_right" link2="robot/door_opening_mechanism_base_link" reason="Adjacent"/>
+    <disable_collisions link1="robot/alu_profile_link_right" link2="robot/door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_right" link2="robot/door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_right" link2="robot/door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_right" link2="robot/door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_right" link2="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_right" link2="robot/door_opening_mechanism_link_y_axis_rail" reason="Default"/>
+    <disable_collisions link1="robot/alu_profile_link_right" link2="robot/door_opening_mechanism_link_y_axis_slide" reason="Adjacent"/>
+    <disable_collisions link1="robot/alu_profile_link_right" link2="robot/hook_base_link" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_right" link2="robot/hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_right" link2="robot/hook_link_front_side" reason="Never"/>
+
+    <disable_collisions link1="robot/alu_profile_link_top" link2="robot/base_footprint" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_top" link2="robot/base_link" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_top" link2="robot/bottom_sheet_link" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_top" link2="robot/door_opening_mechanism_base_link" reason="Adjacent"/>
+    <disable_collisions link1="robot/alu_profile_link_top" link2="robot/door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_top" link2="robot/door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_top" link2="robot/door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_top" link2="robot/door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_top" link2="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_top" link2="robot/door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_top" link2="robot/door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_top" link2="robot/hook_base_link" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_top" link2="robot/hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="robot/alu_profile_link_top" link2="robot/hook_link_front_side" reason="Never"/>
+
+    <disable_collisions link1="robot/base_footprint" link2="robot/base_link" reason="Adjacent"/>
+    <disable_collisions link1="robot/base_footprint" link2="robot/bottom_sheet_link" reason="Never"/>
+    <disable_collisions link1="robot/base_footprint" link2="robot/door_opening_mechanism_base_link" reason="Never"/>
+    <disable_collisions link1="robot/base_footprint" link2="robot/door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="robot/base_footprint" link2="robot/door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="robot/base_footprint" link2="robot/door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="robot/base_footprint" link2="robot/door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/base_footprint" link2="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="robot/base_footprint" link2="robot/door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="robot/base_footprint" link2="robot/door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/base_footprint" link2="robot/hook_base_link" reason="Never"/>
+    <disable_collisions link1="robot/base_footprint" link2="robot/hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="robot/base_footprint" link2="robot/hook_link_front_side" reason="Never"/>
+
+    <disable_collisions link1="robot/base_link" link2="robot/bottom_sheet_link" reason="Adjacent"/>
+    <disable_collisions link1="robot/base_link" link2="robot/door_opening_mechanism_base_link" reason="Adjacent"/>
+    <disable_collisions link1="robot/base_link" link2="robot/door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/hook_base_link" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/hook_link_front_side" reason="Never"/>
+
+    <disable_collisions link1="robot/bottom_sheet_link" link2="robot/door_opening_mechanism_base_link" reason="Never"/>
+    <disable_collisions link1="robot/bottom_sheet_link" link2="robot/door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="robot/bottom_sheet_link" link2="robot/door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="robot/bottom_sheet_link" link2="robot/door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="robot/bottom_sheet_link" link2="robot/door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/bottom_sheet_link" link2="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="robot/bottom_sheet_link" link2="robot/door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="robot/bottom_sheet_link" link2="robot/door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/bottom_sheet_link" link2="robot/hook_base_link" reason="Never"/>
+    <disable_collisions link1="robot/bottom_sheet_link" link2="robot/hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="robot/bottom_sheet_link" link2="robot/hook_link_front_side" reason="Never"/>
+
+    <disable_collisions link1="robot/door_opening_mechanism_base_link" link2="robot/door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_base_link" link2="robot/door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_base_link" link2="robot/door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_base_link" link2="robot/door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_base_link" link2="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_base_link" link2="robot/door_opening_mechanism_link_y_axis_rail" reason="Adjacent"/>
+    <disable_collisions link1="robot/door_opening_mechanism_base_link" link2="robot/door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_base_link" link2="robot/hook_base_link" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_base_link" link2="robot/hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_base_link" link2="robot/hook_link_front_side" reason="Never"/>
+
+    <disable_collisions link1="robot/door_opening_mechanism_link_freely_rotating_hook" link2="robot/door_opening_mechanism_link_gripper_adapter" reason="Adjacent"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_freely_rotating_hook" link2="robot/door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_freely_rotating_hook" link2="robot/door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_freely_rotating_hook" link2="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_freely_rotating_hook" link2="robot/door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_freely_rotating_hook" link2="robot/door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_freely_rotating_hook" link2="robot/hook_base_link" reason="Adjacent"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_freely_rotating_hook" link2="robot/hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_freely_rotating_hook" link2="robot/hook_link_front_side" reason="Never"/>
+  
+    <disable_collisions link1="robot/door_opening_mechanism_link_gripper_adapter" link2="robot/door_opening_mechanism_link_rotating_arm" reason="Adjacent"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_gripper_adapter" link2="robot/door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_gripper_adapter" link2="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_gripper_adapter" link2="robot/door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_gripper_adapter" link2="robot/door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_gripper_adapter" link2="robot/hook_base_link" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_gripper_adapter" link2="robot/hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_gripper_adapter" link2="robot/hook_link_front_side" reason="Never"/>
+
+    <disable_collisions link1="robot/door_opening_mechanism_link_rotating_arm" link2="robot/door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_rotating_arm" link2="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Adjacent"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_rotating_arm" link2="robot/door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_rotating_arm" link2="robot/door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_rotating_arm" link2="robot/hook_base_link" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_rotating_arm" link2="robot/hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_rotating_arm" link2="robot/hook_link_front_side" reason="Never"/>
+
+    <disable_collisions link1="robot/door_opening_mechanism_link_x_axis_slide" link2="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Adjacent"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_x_axis_slide" link2="robot/door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_x_axis_slide" link2="robot/door_opening_mechanism_link_y_axis_slide" reason="Adjacent"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_x_axis_slide" link2="robot/hook_base_link" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_x_axis_slide" link2="robot/hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_x_axis_slide" link2="robot/hook_link_front_side" reason="Never"/>
+
+    <disable_collisions link1="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" link2="robot/door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" link2="robot/door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" link2="robot/hook_base_link" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" link2="robot/hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_rotating_arm_mounting_plate_link" link2="robot/hook_link_front_side" reason="Never"/>
+
+    <disable_collisions link1="robot/door_opening_mechanism_link_y_axis_rail" link2="robot/door_opening_mechanism_link_y_axis_slide" reason="Default"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_y_axis_rail" link2="robot/hook_base_link" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_y_axis_rail" link2="robot/hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="robot/door_opening_mechanism_link_y_axis_rail" link2="robot/hook_link_front_side" reason="Never"/>
+
+    <disable_collisions link1="robot/hook_base_link" link2="robot/hook_link_back_side" reason="Adjacent"/>
+    <disable_collisions link1="robot/hook_base_link" link2="robot/hook_link_front_side" reason="Adjacent"/>
+
+    <disable_collisions link1="robot/hook_link_back_side" link2="robot/hook_link_front_side" reason="Never"/>
+</robot>
