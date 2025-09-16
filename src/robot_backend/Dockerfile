@@ -1,5 +1,6 @@
 ARG ROS_BUILD_DISTRO=humble
-FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO}
+ARG BRANCH_TAG
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO}${BRANCH_TAG}
 ARG ROS_BUILD_DISTRO
 
 ENV PATH=/opt/ros/${ROS_BUILD_DISTRO}/bin:$PATH

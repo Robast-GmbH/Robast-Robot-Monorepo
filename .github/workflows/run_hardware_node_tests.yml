@@ -8,62 +8,76 @@ on:
       - src/ros2/communication_interfaces/**
       - .github/workflows/run_hardware_node_tests.yml
       - .github/workflows/docker_create_hardware_nodes.yml
+
+env:
+  Registry: ghcr.io
+  Repo: robast-gmbh/monorepo
+  Project-Name: hardware_nodes
        
 jobs:
   test-run-hardware_nodes:
-
-    runs-on: ubuntu-latest
-    env:
-      Project: hardware_nodes
-
+    runs-on: self-hosted
     steps:
-    #- uses: actions/checkout@v4 
-    # - uses: dorny/paths-filter@v2.11.1
-    #   id: filter
-    #   with:
-    #     filters: |
-    #       hardware_docker_changed:
-    #         - 'src/ros2/hardware_nodes/Dockerfile'
-    #       ${{ env.Project }}_docker_changed:
-    #         - 'src/ros2/${{ env.Project }}/Dockerfile'
-
     - name: Checkout repository and submodules
       uses: actions/checkout@v4
       with:
-          fetch-depth: 2
+          submodules: recursive
 
+    - name: Set branch tag
+      id: set-branch-tag
+      run: |
+        get_branch_name() {
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "${{ github.head_ref || 'none' }}"
+          else
+            echo "${{ github.ref_name || 'none' }}"
+          fi
+        }
+    
+        branch_name=$(get_branch_name)
+    
+        if ([ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]) && [ "$branch_name" = "main" ]; then
+          branch_tag=""
+        else
+          if [[ $branch_name =~ [0-9] ]]; then
+            branch_tag="-RE-$(echo $branch_name | grep -oP '\d{1,5}')"
+          else
+            branch_tag="-$branch_name"
+          fi
+        fi
+    
+        echo "branch-tag=$branch_tag" >> "$GITHUB_ENV"
+          
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v3
       with:
-          registry: ghcr.io
+          registry: ${{ env.Registry }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: configures Docker Buildx to create a builder instance for running the image build.
       uses: docker/setup-buildx-action@v3       
-    
            
     - name: Run docker and execute tests
-      working-directory: src/ros2/${{ env.Project }}
+      working-directory: src/ros2/${{ env.Project-Name }}
       run: >
-              docker run -v $(pwd):/workspace/src/${{ env.Project }} 
-              -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces 
-              -v $(pwd)/../error_handling/error_utils:/workspace/src/error_handling/error_utils
-              -v $(pwd)/../dds_configs:/workspace/dds_configs
-              -v $(pwd)/../../Hardware/cpp/libs:/workspace/libs 
-              --rm ghcr.io/robast-gmbh/monorepo/${{ env.Project }}:release
-              /bin/sh -c "cd /workspace/ &&
-              sudo apt-get update && 
-              sudo apt-get upgrade -y &&
-              sudo apt install lcov -y &&
-              rosdep update; rosdep install --from-paths src --ignore-src -r -y && 
-              export CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_github_config.xml &&
-              . /opt/ros/humble/setup.sh &&
-              . /robast/humble/setup.sh &&
-              colcon build --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=\"${CMAKE_CXX_FLAGS} --coverage\" -DCMAKE_C_FLAGS=\"${CMAKE_C_FLAGS} --coverage\" -Wall -Wextra -Wpedantic && 
-              colcon test --event-handler=console_direct+ &&
-              colcon test-result --all &&
-              lcov --directory . --capture --output-file coverage-${{env.Project}}.info &&
-              lcov --remove coverage-${{env.Project}}.info '/usr/*' --output-file coverage-${{env.Project}}.info &&
-              lcov --list coverage-${{env.Project}}.info"
-      
+        docker pull ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release${{ env.branch-tag }} &&
+        docker run -v $(pwd):/workspace/src/${{ env.Project-Name }}
+        -v $(pwd)/../dds_configs:/workspace/dds_configs
+        -v $(pwd)/../../Hardware/cpp/libs:/workspace/libs 
+        --rm ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release${{ env.branch-tag }}
+        /bin/sh -c "cd /workspace/ &&
+        sudo apt-get update && 
+        sudo apt-get upgrade -y &&
+        sudo apt install lcov -y &&
+        rosdep update; rosdep install --from-paths src --ignore-src -r -y && 
+        export CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_github_config.xml &&
+        . /opt/ros/humble/setup.sh &&
+        . /robast/humble/setup.sh &&
+        colcon build --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=\"${CMAKE_CXX_FLAGS} --coverage\" -DCMAKE_C_FLAGS=\"${CMAKE_C_FLAGS} --coverage\" -Wall -Wextra -Wpedantic && 
+        colcon test --event-handler=console_direct+ &&
+        colcon test-result --all &&
+        lcov --directory . --capture --output-file coverage-${{env.Project-Name}}.info &&
+        lcov --remove coverage-${{env.Project-Name}}.info '/usr/*' --output-file coverage-${{env.Project-Name}}.info &&
+        lcov --list coverage-${{env.Project-Name}}.info" &&
+        docker rmi ${{ env.Registry }}/${{ env.Repo }}/${{ env.Project-Name }}:release${{ env.branch-tag }}

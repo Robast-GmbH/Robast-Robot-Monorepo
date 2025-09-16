@@ -1,67 +1,86 @@
 name: Create Docker Image Statemachine
 
-#trigger workflow every day at 00:00
+# Trigger workflow every day at 00:00
 on:
   schedule:
     - cron: '0 0 07 */2 *'
   push:
     branches:
-        - main
+      - main
     paths:
-        - src/ros2/statemachine/Dockerfile
-        - src/ros2/statemachine/**
-        - src/ros2/communication_interfaces/**
+      - src/ros2/statemachine/Dockerfile
+      - src/ros2/statemachine/**
+  pull_request:
+    paths:
+      - src/ros2/statemachine/Dockerfile
+      - src/ros2/statemachine/**
   workflow_dispatch:
 
+env:
+  Project-Name: statemachine
+  Release-Tag: release
+  Devel-Tag: devel
 
 jobs:
-  build:
+  # Allowed expressions in the `with` section are `github` and `needs`.
+  # Therefore we need to take the env vars and set them as outputs to access them with `needs`.
+  set_output_from_env:
     runs-on: ubuntu-latest
-    env:
-      Ros-Distro: humble
-      Project-Name: statemachine
-
+    outputs:
+      project-name: ${{ steps.set-project-name.outputs.project-name }}
+      devel-tag: ${{ steps.set-devel-tag.outputs.devel-tag }}
+      release-tag: ${{ steps.set-release-tag.outputs.release-tag }}
+      branch-tag: ${{ steps.set-branch-tag.outputs.branch-tag }}
     steps:
-    - name: Checkout repository and submodules
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 2
+    - id: set-project-name
+      run: echo "project-name=${{ env.Project-Name }}" >> "$GITHUB_OUTPUT"
+    - id: set-devel-tag
+      run: echo "devel-tag=${{ env.Devel-Tag }}" >> "$GITHUB_OUTPUT"
+    - id: set-release-tag
+      run: echo "release-tag=${{ env.Release-Tag }}" >> "$GITHUB_OUTPUT"
+    - id: set-branch-tag
+      run: |
+        get_branch_name() {
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "${{ github.head_ref || 'none' }}"
+          else
+            echo "${{ github.ref_name || 'none' }}"
+          fi
+        }
     
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: configures Docker Buildx to create a builder instance for running the image build.
-      uses: docker/setup-buildx-action@v3 
+        branch_name=$(get_branch_name)
     
-    - name: Build ${{ env.Project-Name }} devel docker
-      uses: docker/build-push-action@v6
-      with:
-        context: src/ros2/${{ env.Project-Name }}/
-        target: devel
-        push: true
-        file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
+        if ([ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]) && [ "$branch_name" = "main" ]; then
+          branch_tag=""
+        else
+          if [[ $branch_name =~ [0-9] ]]; then
+            branch_tag="-RE-$(echo $branch_name | grep -oP '\d{1,5}')"
+          else
+            branch_tag="-$branch_name"
+          fi
+        fi
+    
+        echo "branch-tag=$branch_tag" >> "$GITHUB_OUTPUT"
 
-    - name: Cache Docker layers
-      uses: actions/cache@v4
-      with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
+  build-devel:
+    needs: set_output_from_env
+    uses: ./.github/workflows/create_multi_platform_image.yml
+    with:
+      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
+      tag: ${{ needs.set_output_from_env.outputs.devel-tag }}
+      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
+      context: src/ros2/${{ needs.set_output_from_env.outputs.project-name }}
+      file: src/ros2/${{ needs.set_output_from_env.outputs.project-name }}/Dockerfile      
+      target: ${{ needs.set_output_from_env.outputs.devel-tag }}
 
-    - name: Build ${{ env.Project-Name }} release docker
-      uses: docker/build-push-action@v6
-      with:
-        context: src/ros2/${{ env.Project-Name }}/
-        target: release
-        platforms: linux/arm64/v8
-        push: true
-        file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache
+
+  build-release:
+    needs: set_output_from_env
+    uses: ./.github/workflows/create_multi_platform_image.yml
+    with:
+      project-name: ${{ needs.set_output_from_env.outputs.project-name }}
+      tag: ${{ needs.set_output_from_env.outputs.release-tag }}
+      branch-tag: ${{ needs.set_output_from_env.outputs.branch-tag }}
+      context: src/ros2/${{ needs.set_output_from_env.outputs.project-name }}
+      file: src/ros2/${{ needs.set_output_from_env.outputs.project-name }}/Dockerfile      
+      target: ${{ needs.set_output_from_env.outputs.release-tag }}

@@ -1,6 +1,7 @@
 ARG QUIRC_VERSION=1.2
 ARG ROS_BUILD_DISTRO=humble
-FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS devel
+ARG BRANCH_TAG
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO}${BRANCH_TAG} AS devel
 ARG ROS_BUILD_DISTRO
 ARG QUIRC_VERSION
 USER root
@@ -49,7 +50,7 @@ RUN rosdep update && \
   colcon build --install-base /robast/${ROS_BUILD_DISTRO}/ --cmake-args '-DCMAKE_BUILD_TYPE=Release' '-DBUILD_TESTING=OFF'
 
 ############################## Release ##################################
-FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS release
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO}${BRANCH_TAG} AS release
 ARG ROS_BUILD_DISTRO
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast

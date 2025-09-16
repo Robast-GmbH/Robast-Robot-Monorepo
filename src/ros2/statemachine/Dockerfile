@@ -1,5 +1,6 @@
 ARG ROS_BUILD_DISTRO=humble
-FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS devel
+ARG BRANCH_TAG
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO}${BRANCH_TAG} AS devel
 ARG ROS_BUILD_DISTRO
 
 USER root
@@ -23,7 +24,7 @@ RUN echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bas
   && echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 ############################## Build ##################################
-FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS build
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO}${BRANCH_TAG} AS build
 ARG ROS_BUILD_DISTRO
 
 USER root
@@ -41,7 +42,7 @@ RUN mkdir -p /robast/src/BT && \
 USER robast
 
 ############################## Release ##################################
-FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO} AS release
+FROM ghcr.io/robast-gmbh/monorepo/robast-dev-base:${ROS_BUILD_DISTRO}${BRANCH_TAG} AS release
 ARG ROS_BUILD_DISTRO
 
 USER root

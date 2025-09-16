@@ -1,0 +1,54 @@
+name: Remove Image from ghcr.io
+on:
+  workflow_call:
+    inputs:
+      project-name:
+        description: 'The project name to remove the image from'
+        required: true
+        type: string
+
+jobs:
+  remove-image:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Set branch tag
+      id: set-branch-tag
+      run: |
+        get_branch_name() {
+            if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "${{ github.head_ref || 'none' }}"
+            else
+            echo "${{ github.ref_name || 'none' }}"
+            fi
+        }
+    
+        branch_name=$(get_branch_name)
+    
+        if ([ "${{ github.event_name }}" = "push" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]) && [ "$branch_name" = "main" ]; then
+            branch_tag="none"
+        else
+            if [[ $branch_name =~ [0-9] ]]; then
+            branch_tag="-RE-$(echo $branch_name | grep -oP '\d{1,5}')"
+            else
+            branch_tag="-$branch_name"
+            fi
+        fi
+    
+        echo "branch-tag=$branch_tag" >> "$GITHUB_ENV"
+
+    - name: Prune branch image ${{ env.branch-tag }} from ghcr.io
+      uses: vlaurin/action-ghcr-prune@v0.6.0
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        organization: robast-gmbh
+        container: monorepo/${{ inputs.project-name }}
+        dry-run: true # Dry-run first, then change to `false`
+        prune-tags-regexes: |
+          ${{ env.branch-tag }}
