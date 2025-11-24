@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository and submodules
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
            
     - name: Execute tests 
       working-directory: src/Hardware/platformio_libs
@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository and submodules
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Set up PlatformIO
       uses: actions/setup-python@v5
