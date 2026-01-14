@@ -7,18 +7,23 @@
 		"source=${localWorkspaceFolder}/../../src/ros2/error_handling/error_utils/,target=/workspace/src/error_utils/,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces/,target=/workspace/src/communication_interfaces,type=bind",
 		"source=${localWorkspaceFolder}/../../src/Hardware/cpp/libs,target=/workspace/libs,type=bind",
-		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind"
+		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind",
+		"source=${localWorkspaceFolder}/../../data/sounds,target=/workspace/sounds,type=bind",
+		"source=/run/user/1000/pulse,target=/run/user/1000/pulse,type=bind"
 	],
 	"workspaceFolder": "/workspace",
 	"remoteUser": "robast",
 	"remoteEnv": {
-		"ROS_DOMAIN_ID": "23"
+		"ROS_DOMAIN_ID": "23",
+		"PULSE_SERVER": "unix:/run/user/1000/pulse/native"
 	},
 	"runArgs": [
 		"--name=hardware_nodes_full_stack",
 		"--network=host",
-		"--volume=/dev/shm:/dev/shm", //needed if you use the fast dds on the host network with multiple docker containers running on the same host
-		"--device=/dev/robast/robast_nfc" //Robo module: usb-OEM_TWN4_B1.09_NCF4.06_PRS1.04_B-if00  // Demo module:  usb-OEM_TWN4_B1.09_NCF4.06_PRS1.04-if00 
+		"--privileged=true",
+		"--device=/dev/snd:/dev/snd",
+    	"-e PULSE_SERVER=unix:/run/user/1000/pulse/native"
+		// "--device=/dev/robast/robast_nfc" //Robo module: usb-OEM_TWN4_B1.09_NCF4.06_PRS1.04_B-if00  // Demo module:  usb-OEM_TWN4_B1.09_NCF4.06_PRS1.04-if00 
 	],
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
 	// Set *default* container specific settings.json values on container create.

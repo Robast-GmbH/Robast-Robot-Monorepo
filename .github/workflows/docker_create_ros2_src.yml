@@ -35,6 +35,14 @@ jobs:
     - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
 
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
     - name: Build and push robast-dev-base
       uses: docker/build-push-action@v6
       with:
@@ -45,8 +53,8 @@ jobs:
         target: robast-dev-base
         tags: |
           ghcr.io/robast-gmbh/monorepo/robast-dev-base:${{ env.Ros-Distro }}
-        cache-from: type=gha
-        cache-to: type=gha
+        cache-from: type=gha,scope=build-dev-base
+        cache-to: type=gha,scope=build-dev-base,mode=max
 
   build-dev-core:
     runs-on: ubuntu-latest
@@ -69,6 +77,14 @@ jobs:
     - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
 
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
     - name: Build and push robast-dev-core
       uses: docker/build-push-action@v6
       with:
@@ -79,8 +95,8 @@ jobs:
         target: robast-dev-core
         tags: |
           ghcr.io/robast-gmbh/monorepo/robast-dev-core:${{ env.Ros-Distro }}
-        cache-from: type=gha
-        cache-to: type=gha
+        cache-from: type=gha,scope=build-dev-core
+        cache-to: type=gha,scope=build-dev-core,mode=max
 
   build-source:
     runs-on: ubuntu-latest
@@ -104,6 +120,14 @@ jobs:
     - name: Configure Docker Buildx
       uses: docker/setup-buildx-action@v3 
 
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
     - name: Build and push robast-source
       uses: docker/build-push-action@v6
       with:
@@ -114,5 +138,5 @@ jobs:
         target: robast-source
         tags: |
           ghcr.io/robast-gmbh/monorepo/robast-source:${{ env.Ros-Distro }}
-        cache-from: type=gha
-        cache-to: type=gha
+        cache-from: type=gha,scope=build-source
+        cache-to: type=gha,scope=build-source,mode=max

@@ -22,10 +22,7 @@ namespace nav2_behavior_tree
       sub_option);
   }
 
-  BT::PortsList CheckPersonInFrontCondition::providedPorts()
-  {
-    return {BT::InputPort<std::string>("topic"), BT::InputPort<float>("detection_range")};
-  }
+ 
 
   BT::NodeStatus CheckPersonInFrontCondition::tick()
   {

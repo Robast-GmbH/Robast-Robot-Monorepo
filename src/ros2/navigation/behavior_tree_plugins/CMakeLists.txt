@@ -65,6 +65,8 @@ add_library(change_footprint_action_bt_node SHARED plugins/action/change_footpri
 list(APPEND plugin_libs change_footprint_action_bt_node)
 add_library(change_footprint_padding_action_bt_node SHARED plugins/action/change_footprint_padding_action.cpp)
 list(APPEND plugin_libs change_footprint_padding_action_bt_node)
+add_library(play_sound_action_bt_node SHARED plugins/action/play_sound_action.cpp)
+list(APPEND plugin_libs play_sound_action_bt_node)
 
 # CONDITION NODES
 add_library(check_state_condition_bt_node SHARED plugins/condition/check_state_condition.cpp)

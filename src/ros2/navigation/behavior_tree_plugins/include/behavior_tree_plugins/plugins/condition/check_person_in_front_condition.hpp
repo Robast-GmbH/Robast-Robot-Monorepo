@@ -15,8 +15,10 @@ namespace nav2_behavior_tree
    public:
     CheckPersonInFrontCondition(const std::string& name, const BT::NodeConfiguration& conf);
 
-    static BT::PortsList providedPorts();
-
+    static BT::PortsList providedPorts()
+    {
+      return {BT::InputPort<std::string>("topic"), BT::InputPort<float>("detection_range")};
+    }
     BT::NodeStatus tick() override;
 
    private:
@@ -26,7 +28,7 @@ namespace nav2_behavior_tree
     rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
     geometry_msgs::msg::PointStamped _detection_data;
     rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr _detection_subscriber;
-    };
+  };
 
 }   // namespace nav2_behavior_tree
 
